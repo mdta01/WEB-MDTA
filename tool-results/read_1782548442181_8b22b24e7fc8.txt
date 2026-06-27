@@ -1,0 +1,1537 @@
+     1→'use client'
+     2→
+     3→import { useState, useEffect, useMemo } from 'react'
+     4→import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+     5→import { motion, AnimatePresence } from 'framer-motion'
+     6→import {
+     7→  LayoutDashboard, Newspaper, Megaphone, Users, GraduationCap,
+     8→  BookOpen, Trophy, ImageIcon, Calendar, MessageSquare, FileText,
+     9→  Download, Mail, Lightbulb, Settings, LogOut, Menu, X,
+    10→  ChevronRight, Shield, Loader2, Save, DollarSign, Clock, Star,
+    11→} from 'lucide-react'
+    12→import { toast } from 'sonner'
+    13→import { Button } from '@/components/ui/button'
+    14→import { Input } from '@/components/ui/input'
+    15→import { Textarea } from '@/components/ui/textarea'
+    16→import { Label } from '@/components/ui/label'
+    17→import { Switch } from '@/components/ui/switch'
+    18→import { Badge } from '@/components/ui/badge'
+    19→import { Separator } from '@/components/ui/separator'
+    20→import { ScrollArea } from '@/components/ui/scroll-area'
+    21→import {
+    22→  Select,
+    23→  SelectContent,
+    24→  SelectItem,
+    25→  SelectTrigger,
+    26→  SelectValue,
+    27→} from '@/components/ui/select'
+    28→import {
+    29→  Table,
+    30→  TableBody,
+    31→  TableCell,
+    32→  TableHead,
+    33→  TableHeader,
+    34→  TableRow,
+    35→} from '@/components/ui/table'
+    36→import {
+    37→  Dialog,
+    38→  DialogContent,
+    39→  DialogHeader,
+    40→  DialogTitle,
+    41→  DialogDescription,
+    42→  DialogFooter,
+    43→} from '@/components/ui/dialog'
+    44→import {
+    45→  AlertDialog,
+    46→  AlertDialogAction,
+    47→  AlertDialogCancel,
+    48→  AlertDialogContent,
+    49→  AlertDialogDescription,
+    50→  AlertDialogFooter,
+    51→  AlertDialogHeader,
+    52→  AlertDialogTitle,
+    53→} from '@/components/ui/alert-dialog'
+    54→import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+    55→import CRUDManager, { type FormFieldConfig, type ColumnConfig } from './CRUDManager'
+    56→import AdminDashboard from './AdminDashboard'
+    57→
+    58→// --- Types ---
+    59→
+    60→type AdminSection =
+    61→  | 'dashboard'
+    62→  | 'news'
+    63→  | 'announcements'
+    64→  | 'teachers'
+    65→  | 'students'
+    66→  | 'programs'
+    67→  | 'achievements'
+    68→  | 'gallery'
+    69→  | 'events'
+    70→  | 'testimonials'
+    71→  | 'faqs'
+    72→  | 'downloads'
+    73→  | 'dakwah'
+    74→  | 'alumni'
+    75→  | 'schedules'
+    76→  | 'payments'
+    77→  | 'ppdb'
+    78→  | 'contact-messages'
+    79→  | 'suggestions'
+    80→  | 'settings'
+    81→
+    82→interface NavItem {
+    83→  id: AdminSection
+    84→  label: string
+    85→  icon: React.ReactNode
+    86→  group?: string
+    87→}
+    88→
+    89→// --- Navigation Config ---
+    90→
+    91→const navItems: NavItem[] = [
+    92→  { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard className="h-4 w-4" /> },
+    93→  { id: 'news', label: 'Kelola Berita', icon: <Newspaper className="h-4 w-4" />, group: 'Konten' },
+    94→  { id: 'announcements', label: 'Kelola Pengumuman', icon: <Megaphone className="h-4 w-4" />, group: 'Konten' },
+    95→  { id: 'dakwah', label: 'Kelola Dakwah', icon: <BookOpen className="h-4 w-4" />, group: 'Konten' },
+    96→  { id: 'events', label: 'Kelola Event', icon: <Calendar className="h-4 w-4" />, group: 'Konten' },
+    97→  { id: 'gallery', label: 'Kelola Galeri', icon: <ImageIcon className="h-4 w-4" />, group: 'Konten' },
+    98→  { id: 'downloads', label: 'Kelola Download', icon: <Download className="h-4 w-4" />, group: 'Konten' },
+    99→  { id: 'faqs', label: 'Kelola FAQ', icon: <FileText className="h-4 w-4" />, group: 'Konten' },
+   100→  { id: 'teachers', label: 'Kelola Guru', icon: <Users className="h-4 w-4" />, group: 'Akademik' },
+   101→  { id: 'students', label: 'Kelola Santri', icon: <GraduationCap className="h-4 w-4" />, group: 'Akademik' },
+   102→  { id: 'programs', label: 'Kelola Program', icon: <BookOpen className="h-4 w-4" />, group: 'Akademik' },
+   103→  { id: 'schedules', label: 'Kelola Jadwal', icon: <Clock className="h-4 w-4" />, group: 'Akademik' },
+   104→  { id: 'achievements', label: 'Kelola Prestasi', icon: <Trophy className="h-4 w-4" />, group: 'Lainnya' },
+   105→  { id: 'testimonials', label: 'Kelola Testimoni', icon: <Star className="h-4 w-4" />, group: 'Lainnya' },
+   106→  { id: 'alumni', label: 'Kelola Alumni', icon: <GraduationCap className="h-4 w-4" />, group: 'Lainnya' },
+   107→  { id: 'payments', label: 'Kelola Pembayaran', icon: <DollarSign className="h-4 w-4" />, group: 'Lainnya' },
+   108→  { id: 'ppdb', label: 'Kelola PPDB', icon: <Shield className="h-4 w-4" />, group: 'Pendaftaran' },
+   109→  { id: 'contact-messages', label: 'Pesan Kontak', icon: <Mail className="h-4 w-4" />, group: 'Pesan' },
+   110→  { id: 'suggestions', label: 'Kritik & Saran', icon: <Lightbulb className="h-4 w-4" />, group: 'Pesan' },
+   111→  { id: 'settings', label: 'Pengaturan Website', icon: <Settings className="h-4 w-4" />, group: 'Sistem' },
+   112→]
+   113→
+   114→// --- Entity Configurations ---
+   115→
+   116→interface EntityConfig {
+   117→  title: string
+   118→  apiPath: string
+   119→  itemName: string
+   120→  columns: ColumnConfig[]
+   121→  formFields: FormFieldConfig[]
+   122→  canCreate?: boolean
+   123→  canDelete?: boolean
+   124→  canEdit?: boolean
+   125→}
+   126→
+   127→const entityConfigs: Record<string, EntityConfig> = {
+   128→  news: {
+   129→    title: 'Kelola Berita',
+   130→    apiPath: 'news',
+   131→    itemName: 'Berita',
+   132→    columns: [
+   133→      { key: 'title', label: 'Judul' },
+   134→      { key: 'category', label: 'Kategori' },
+   135→      { key: 'isPublished', label: 'Status' },
+   136→      { key: 'createdAt', label: 'Tanggal' },
+   137→    ],
+   138→    formFields: [
+   139→      { name: 'title', label: 'Judul', type: 'text', required: true, placeholder: 'Judul berita', colSpan: 2 },
+   140→      { name: 'category', label: 'Kategori', type: 'select', options: [
+   141→        { label: 'Kegiatan', value: 'kegiatan' },
+   142→        { label: 'PHBI', value: 'phbi' },
+   143→        { label: 'Keagamaan', value: 'keagamaan' },
+   144→        { label: 'Lomba', value: 'lomba' },
+   145→        { label: 'Prestasi', value: 'prestasi' },
+   146→      ]},
+   147→      { name: 'isPublished', label: 'Dipublikasi', type: 'switch' },
+   148→      { name: 'excerpt', label: 'Ringkasan', type: 'textarea', placeholder: 'Ringkasan singkat berita', colSpan: 2 },
+   149→      { name: 'image', label: 'URL Gambar', type: 'text', placeholder: 'https://...', colSpan: 2 },
+   150→      { name: 'content', label: 'Konten', type: 'textarea', required: true, placeholder: 'Isi berita lengkap', colSpan: 2 },
+   151→    ],
+   152→  },
+   153→  announcements: {
+   154→    title: 'Kelola Pengumuman',
+   155→    apiPath: 'announcements',
+   156→    itemName: 'Pengumuman',
+   157→    columns: [
+   158→      { key: 'title', label: 'Judul' },
+   159→      { key: 'type', label: 'Tipe' },
+   160→      { key: 'priority', label: 'Prioritas' },
+   161→      { key: 'isActive', label: 'Status' },
+   162→    ],
+   163→    formFields: [
+   164→      { name: 'title', label: 'Judul', type: 'text', required: true, placeholder: 'Judul pengumuman', colSpan: 2 },
+   165→      { name: 'type', label: 'Tipe', type: 'select', options: [
+   166→        { label: 'Umum', value: 'general' },
+   167→        { label: 'Ujian', value: 'exam' },
+   168→        { label: 'Libur', value: 'holiday' },
+   169→        { label: 'Acara', value: 'event' },
+   170→        { label: 'PPDB', value: 'ppdb' },
+   171→      ]},
+   172→      { name: 'priority', label: 'Prioritas', type: 'number', placeholder: '0' },
+   173→      { name: 'isActive', label: 'Aktif', type: 'switch' },
+   174→      { name: 'content', label: 'Konten', type: 'textarea', required: true, placeholder: 'Isi pengumuman', colSpan: 2 },
+   175→    ],
+   176→  },
+   177→  teachers: {
+   178→    title: 'Kelola Guru',
+   179→    apiPath: 'teachers',
+   180→    itemName: 'Guru',
+   181→    columns: [
+   182→      { key: 'name', label: 'Nama' },
+   183→      { key: 'position', label: 'Jabatan' },
+   184→      { key: 'subject', label: 'Mata Pelajaran' },
+   185→      { key: 'isActive', label: 'Status' },
+   186→    ],
+   187→    formFields: [
+   188→      { name: 'name', label: 'Nama', type: 'text', required: true, placeholder: 'Nama lengkap guru' },
+   189→      { name: 'position', label: 'Jabatan', type: 'text', required: true, placeholder: 'Jabatan/posisi' },
+   190→      { name: 'subject', label: 'Mata Pelajaran', type: 'text', placeholder: 'Mata pelajaran yang diampu' },
+   191→      { name: 'phone', label: 'No. Telepon', type: 'text', placeholder: '08xxx' },
+   192→      { name: 'order', label: 'Urutan', type: 'number', placeholder: '0' },
+   193→      { name: 'isActive', label: 'Aktif', type: 'switch' },
+   194→      { name: 'image', label: 'URL Foto', type: 'text', placeholder: 'https://...', colSpan: 2 },
+   195→    ],
+   196→  },
+   197→  students: {
+   198→    title: 'Kelola Santri',
+   199→    apiPath: 'students',
+   200→    itemName: 'Santri',
+   201→    columns: [
+   202→      { key: 'name', label: 'Nama' },
+   203→      { key: 'class', label: 'Kelas' },
+   204→      { key: 'nis', label: 'NIS' },
+   205→      { key: 'isActive', label: 'Status' },
+   206→    ],
+   207→    formFields: [
+   208→      { name: 'name', label: 'Nama', type: 'text', required: true, placeholder: 'Nama lengkap santri' },
+   209→      { name: 'class', label: 'Kelas', type: 'text', required: true, placeholder: 'Kelas' },
+   210→      { name: 'nis', label: 'NIS', type: 'text', placeholder: 'Nomor Induk Santri' },
+   211→      { name: 'isActive', label: 'Aktif', type: 'switch' },
+   212→    ],
+   213→  },
+   214→  programs: {
+   215→    title: 'Kelola Program',
+   216→    apiPath: 'programs',
+   217→    itemName: 'Program',
+   218→    columns: [
+   219→      { key: 'title', label: 'Nama Program' },
+   220→      { key: 'category', label: 'Kategori' },
+   221→      { key: 'order', label: 'Urutan' },
+   222→      { key: 'isActive', label: 'Status' },
+   223→    ],
+   224→    formFields: [
+   225→      { name: 'title', label: 'Nama Program', type: 'text', required: true, placeholder: 'Nama program', colSpan: 2 },
+   226→      { name: 'category', label: 'Kategori', type: 'select', options: [
+   227→        { label: 'Kelas', value: 'kelas' },
+   228→        { label: 'Kurikulum', value: 'kurikulum' },
+   229→        { label: 'Unggulan', value: 'unggulan' },
+   230→        { label: 'Ekstrakurikuler', value: 'ekstrakurikuler' },
+   231→      ]},
+   232→      { name: 'order', label: 'Urutan', type: 'number', placeholder: '0' },
+   233→      { name: 'isActive', label: 'Aktif', type: 'switch' },
+   234→      { name: 'icon', label: 'Ikon', type: 'text', placeholder: 'Nama ikon Lucide', colSpan: 2 },
+   235→      { name: 'description', label: 'Deskripsi', type: 'textarea', required: true, placeholder: 'Deskripsi program', colSpan: 2 },
+   236→    ],
+   237→  },
+   238→  achievements: {
+   239→    title: 'Kelola Prestasi',
+   240→    apiPath: 'achievements',
+   241→    itemName: 'Prestasi',
+   242→    columns: [
+   243→      { key: 'title', label: 'Judul' },
+   244→      { key: 'achiever', label: 'Pencapaian Oleh' },
+   245→      { key: 'category', label: 'Kategori' },
+   246→      { key: 'level', label: 'Tingkat' },
+   247→      { key: 'year', label: 'Tahun' },
+   248→    ],
+   249→    formFields: [
+   250→      { name: 'title', label: 'Judul Prestasi', type: 'text', required: true, placeholder: 'Judul prestasi', colSpan: 2 },
+   251→      { name: 'achiever', label: 'Pencapaian Oleh', type: 'text', required: true, placeholder: 'Nama orang/kelompok' },
+   252→      { name: 'category', label: 'Kategori', type: 'select', options: [
+   253→        { label: 'Santri', value: 'santri' },
+   254→        { label: 'Guru', value: 'guru' },
+   255→      ]},
+   256→      { name: 'level', label: 'Tingkat', type: 'select', options: [
+   257→        { label: 'Kecamatan', value: 'kecamatan' },
+   258→        { label: 'Kabupaten', value: 'kabupaten' },
+   259→        { label: 'Provinsi', value: 'provinsi' },
+   260→        { label: 'Nasional', value: 'nasional' },
+   261→      ]},
+   262→      { name: 'year', label: 'Tahun', type: 'text', required: true, placeholder: '2024' },
+   263→      { name: 'image', label: 'URL Gambar', type: 'text', placeholder: 'https://...', colSpan: 2 },
+   264→      { name: 'description', label: 'Deskripsi', type: 'textarea', placeholder: 'Deskripsi prestasi', colSpan: 2 },
+   265→    ],
+   266→  },
+   267→  gallery: {
+   268→    title: 'Kelola Galeri',
+   269→    apiPath: 'gallery',
+   270→    itemName: 'Galeri',
+   271→    columns: [
+   272→      { key: 'title', label: 'Judul' },
+   273→      { key: 'category', label: 'Kategori' },
+   274→      { key: 'type', label: 'Tipe' },
+   275→      { key: 'year', label: 'Tahun' },
+   276→    ],
+   277→    formFields: [
+   278→      { name: 'title', label: 'Judul', type: 'text', required: true, placeholder: 'Judul galeri' },
+   279→      { name: 'image', label: 'URL Gambar/Video', type: 'text', required: true, placeholder: 'https://...' },
+   280→      { name: 'category', label: 'Kategori', type: 'select', options: [
+   281→        { label: 'Kegiatan', value: 'kegiatan' },
+   282→        { label: 'Acara', value: 'acara' },
+   283→        { label: 'Tahunan', value: 'tahunan' },
+   284→      ]},
+   285→      { name: 'type', label: 'Tipe', type: 'select', options: [
+   286→        { label: 'Foto', value: 'foto' },
+   287→        { label: 'Video', value: 'video' },
+   288→      ]},
+   289→      { name: 'year', label: 'Tahun', type: 'text', placeholder: '2024' },
+   290→    ],
+   291→  },
+   292→  events: {
+   293→    title: 'Kelola Event',
+   294→    apiPath: 'events',
+   295→    itemName: 'Event',
+   296→    columns: [
+   297→      { key: 'title', label: 'Judul' },
+   298→      { key: 'date', label: 'Tanggal' },
+   299→      { key: 'location', label: 'Lokasi' },
+   300→      { key: 'category', label: 'Kategori' },
+   301→    ],
+   302→    formFields: [
+   303→      { name: 'title', label: 'Judul Event', type: 'text', required: true, placeholder: 'Judul event', colSpan: 2 },
+   304→      { name: 'date', label: 'Tanggal', type: 'date', required: true },
+   305→      { name: 'category', label: 'Kategori', type: 'select', options: [
+   306→        { label: 'Kegiatan', value: 'kegiatan' },
+   307→        { label: 'PHBI', value: 'phbi' },
+   308→        { label: 'Keagamaan', value: 'keagamaan' },
+   309→        { label: 'Lomba', value: 'lomba' },
+   310→      ]},
+   311→      { name: 'location', label: 'Lokasi', type: 'text', placeholder: 'Lokasi acara', colSpan: 2 },
+   312→      { name: 'image', label: 'URL Gambar', type: 'text', placeholder: 'https://...', colSpan: 2 },
+   313→      { name: 'description', label: 'Deskripsi', type: 'textarea', placeholder: 'Deskripsi event', colSpan: 2 },
+   314→    ],
+   315→  },
+   316→  testimonials: {
+   317→    title: 'Kelola Testimoni',
+   318→    apiPath: 'testimonials',
+   319→    itemName: 'Testimoni',
+   320→    columns: [
+   321→      { key: 'name', label: 'Nama' },
+   322→      { key: 'role', label: 'Peran' },
+   323→      { key: 'isActive', label: 'Status' },
+   324→    ],
+   325→    formFields: [
+   326→      { name: 'name', label: 'Nama', type: 'text', required: true, placeholder: 'Nama pemberi testimoni' },
+   327→      { name: 'role', label: 'Peran', type: 'select', required: true, options: [
+   328→        { label: 'Wali Santri', value: 'wali_santri' },
+   329→        { label: 'Alumni', value: 'alumni' },
+   330→      ]},
+   331→      { name: 'isActive', label: 'Aktif', type: 'switch' },
+   332→      { name: 'image', label: 'URL Foto', type: 'text', placeholder: 'https://...' },
+   333→      { name: 'content', label: 'Testimoni', type: 'textarea', required: true, placeholder: 'Isi testimoni', colSpan: 2 },
+   334→    ],
+   335→  },
+   336→  faqs: {
+   337→    title: 'Kelola FAQ',
+   338→    apiPath: 'faqs',
+   339→    itemName: 'FAQ',
+   340→    columns: [
+   341→      { key: 'question', label: 'Pertanyaan' },
+   342→      { key: 'order', label: 'Urutan' },
+   343→      { key: 'isActive', label: 'Status' },
+   344→    ],
+   345→    formFields: [
+   346→      { name: 'question', label: 'Pertanyaan', type: 'text', required: true, placeholder: 'Pertanyaan yang sering diajukan', colSpan: 2 },
+   347→      { name: 'answer', label: 'Jawaban', type: 'textarea', required: true, placeholder: 'Jawaban pertanyaan', colSpan: 2 },
+   348→      { name: 'order', label: 'Urutan', type: 'number', placeholder: '0' },
+   349→      { name: 'isActive', label: 'Aktif', type: 'switch' },
+   350→    ],
+   351→  },
+   352→  downloads: {
+   353→    title: 'Kelola Download',
+   354→    apiPath: 'downloads',
+   355→    itemName: 'Download',
+   356→    columns: [
+   357→      { key: 'title', label: 'Judul' },
+   358→      { key: 'category', label: 'Kategori' },
+   359→      { key: 'fileUrl', label: 'File URL' },
+   360→    ],
+   361→    formFields: [
+   362→      { name: 'title', label: 'Judul', type: 'text', required: true, placeholder: 'Judul file download' },
+   363→      { name: 'category', label: 'Kategori', type: 'select', required: true, options: [
+   364→        { label: 'Formulir', value: 'formulir' },
+   365→        { label: 'Kalender', value: 'kalender' },
+   366→        { label: 'Tata Tertib', value: 'tata_tertib' },
+   367→        { label: 'Jadwal', value: 'jadwal' },
+   368→        { label: 'Surat Edaran', value: 'surat_edaran' },
+   369→        { label: 'Lainnya', value: 'lainnya' },
+   370→      ]},
+   371→      { name: 'fileUrl', label: 'URL File', type: 'text', required: true, placeholder: 'https://...', colSpan: 2 },
+   372→    ],
+   373→  },
+   374→  dakwah: {
+   375→    title: 'Kelola Dakwah',
+   376→    apiPath: 'dakwah',
+   377→    itemName: 'Dakwah',
+   378→    columns: [
+   379→      { key: 'title', label: 'Judul' },
+   380→      { key: 'category', label: 'Kategori' },
+   381→      { key: 'author', label: 'Penulis' },
+   382→      { key: 'isPublished', label: 'Status' },
+   383→    ],
+   384→    formFields: [
+   385→      { name: 'title', label: 'Judul', type: 'text', required: true, placeholder: 'Judul dakwah', colSpan: 2 },
+   386→      { name: 'category', label: 'Kategori', type: 'select', options: [
+   387→        { label: 'Kajian', value: 'kajian' },
+   388→        { label: 'Artikel', value: 'artikel' },
+   389→        { label: 'Kultum', value: 'kultum' },
+   390→        { label: 'Video', value: 'video' },
+   391→        { label: 'Materi', value: 'materi' },
+   392→      ]},
+   393→      { name: 'isPublished', label: 'Dipublikasi', type: 'switch' },
+   394→      { name: 'author', label: 'Penulis', type: 'text', placeholder: 'Nama penulis/ustadz' },
+   395→      { name: 'videoUrl', label: 'URL Video', type: 'text', placeholder: 'https://youtube.com/...', colSpan: 2 },
+   396→      { name: 'image', label: 'URL Gambar', type: 'text', placeholder: 'https://...', colSpan: 2 },
+   397→      { name: 'content', label: 'Konten', type: 'textarea', required: true, placeholder: 'Isi dakwah', colSpan: 2 },
+   398→    ],
+   399→  },
+   400→  alumni: {
+   401→    title: 'Kelola Alumni',
+   402→    apiPath: 'alumni',
+   403→    itemName: 'Alumni',
+   404→    columns: [
+   405→      { key: 'name', label: 'Nama' },
+   406→      { key: 'year', label: 'Tahun Lulus' },
+   407→      { key: 'currentActivity', label: 'Aktivitas Saat Ini' },
+   408→    ],
+   409→    formFields: [
+   410→      { name: 'name', label: 'Nama', type: 'text', required: true, placeholder: 'Nama lengkap alumni' },
+   411→      { name: 'year', label: 'Tahun Lulus', type: 'text', required: true, placeholder: '2024' },
+   412→      { name: 'currentActivity', label: 'Aktivitas Saat Ini', type: 'text', placeholder: 'Kuliah/Bekerja/dll' },
+   413→      { name: 'image', label: 'URL Foto', type: 'text', placeholder: 'https://...' },
+   414→      { name: 'testimony', label: 'Testimoni', type: 'textarea', placeholder: 'Testimoni alumni', colSpan: 2 },
+   415→    ],
+   416→  },
+   417→  schedules: {
+   418→    title: 'Kelola Jadwal',
+   419→    apiPath: 'schedules',
+   420→    itemName: 'Jadwal',
+   421→    columns: [
+   422→      { key: 'title', label: 'Mata Pelajaran' },
+   423→      { key: 'day', label: 'Hari' },
+   424→      { key: 'timeStart', label: 'Mulai' },
+   425→      { key: 'timeEnd', label: 'Selesai' },
+   426→      { key: 'class', label: 'Kelas' },
+   427→    ],
+   428→    formFields: [
+   429→      { name: 'title', label: 'Mata Pelajaran', type: 'text', required: true, placeholder: 'Nama mata pelajaran' },
+   430→      { name: 'day', label: 'Hari', type: 'select', required: true, options: [
+   431→        { label: 'Senin', value: 'Senin' },
+   432→        { label: 'Selasa', value: 'Selasa' },
+   433→        { label: 'Rabu', value: 'Rabu' },
+   434→        { label: 'Kamis', value: 'Kamis' },
+   435→        { label: 'Jumat', value: 'Jumat' },
+   436→        { label: 'Sabtu', value: 'Sabtu' },
+   437→      ]},
+   438→      { name: 'timeStart', label: 'Jam Mulai', type: 'text', required: true, placeholder: '07:00' },
+   439→      { name: 'timeEnd', label: 'Jam Selesai', type: 'text', required: true, placeholder: '08:30' },
+   440→      { name: 'subject', label: 'Pelajaran', type: 'text', placeholder: 'Nama pelajaran' },
+   441→      { name: 'teacher', label: 'Guru', type: 'text', placeholder: 'Nama guru pengajar' },
+   442→      { name: 'class', label: 'Kelas', type: 'text', placeholder: 'Kelas' },
+   443→    ],
+   444→  },
+   445→  payments: {
+   446→    title: 'Kelola Pembayaran',
+   447→    apiPath: 'payments',
+   448→    itemName: 'Pembayaran',
+   449→    columns: [
+   450→      { key: 'title', label: 'Judul' },
+   451→      { key: 'amount', label: 'Jumlah' },
+   452→      { key: 'dueDate', label: 'Jatuh Tempo' },
+   453→      { key: 'isActive', label: 'Status' },
+   454→    ],
+   455→    formFields: [
+   456→      { name: 'title', label: 'Judul', type: 'text', required: true, placeholder: 'SPP Bulan ...', colSpan: 2 },
+   457→      { name: 'amount', label: 'Jumlah', type: 'text', required: true, placeholder: 'Rp 150.000' },
+   458→      { name: 'dueDate', label: 'Jatuh Tempo', type: 'date' },
+   459→      { name: 'isActive', label: 'Aktif', type: 'switch' },
+   460→      { name: 'description', label: 'Deskripsi', type: 'textarea', placeholder: 'Keterangan pembayaran', colSpan: 2 },
+   461→    ],
+   462→  },
+   463→}
+   464→
+   465→// --- Special Components ---
+   466→
+   467→function PPDBManager() {
+   468→  const queryClient = useQueryClient()
+   469→  const [selectedReg, setSelectedReg] = useState<Record<string, unknown> | null>(null)
+   470→  const [newStatus, setNewStatus] = useState('')
+   471→
+   472→  const { data, isLoading } = useQuery({
+   473→    queryKey: ['admin', 'ppdb'],
+   474→    queryFn: async () => {
+   475→      const res = await fetch('/api/admin/ppdb')
+   476→      if (!res.ok) return []
+   477→      return res.json()
+   478→    },
+   479→  })
+   480→
+   481→  const updateMutation = useMutation({
+   482→    mutationFn: async ({ id, status }: { id: string; status: string }) => {
+   483→      const res = await fetch(`/api/admin/ppdb/${id}`, {
+   484→        method: 'PUT',
+   485→        headers: { 'Content-Type': 'application/json' },
+   486→        body: JSON.stringify({ status }),
+   487→      })
+   488→      if (!res.ok) throw new Error('Gagal mengubah status')
+   489→      return res.json()
+   490→    },
+   491→    onSuccess: () => {
+   492→      queryClient.invalidateQueries({ queryKey: ['admin', 'ppdb'] })
+   493→      toast.success('Status pendaftaran berhasil diperbarui')
+   494→      setSelectedReg(null)
+   495→    },
+   496→    onError: () => {
+   497→      toast.error('Gagal mengubah status')
+   498→    },
+   499→  })
+   500→
+   501→  const items: Record<string, unknown>[] = Array.isArray(data) ? data : []
+   502→
+   503→  return (
+   504→    <div className="space-y-4">
+   505→      <div>
+   506→        <h2 className="text-xl font-bold text-gray-900">Kelola PPDB</h2>
+   507→        <p className="text-sm text-gray-500">Kelola pendaftaran santri baru</p>
+   508→      </div>
+   509→
+   510→      <div className="border rounded-lg bg-white overflow-hidden">
+   511→        <div className="overflow-x-auto">
+   512→          <Table>
+   513→            <TableHeader>
+   514→              <TableRow className="bg-gray-50">
+   515→                <TableHead>#</TableHead>
+   516→                <TableHead>Nama</TableHead>
+   517→                <TableHead>Tempat Lahir</TableHead>
+   518→                <TableHead>Nama Orang Tua</TableHead>
+   519→                <TableHead>No. HP Ortu</TableHead>
+   520→                <TableHead>Status</TableHead>
+   521→                <TableHead>Tanggal Daftar</TableHead>
+   522→                <TableHead className="text-center">Aksi</TableHead>
+   523→              </TableRow>
+   524→            </TableHeader>
+   525→            <TableBody>
+   526→              {isLoading ? (
+   527→                <TableRow>
+   528→                  <TableCell colSpan={8} className="text-center py-12">
+   529→                    <Loader2 className="h-6 w-6 animate-spin mx-auto text-emerald-600" />
+   530→                  </TableCell>
+   531→                </TableRow>
+   532→              ) : items.length === 0 ? (
+   533→                <TableRow>
+   534→                  <TableCell colSpan={8} className="text-center py-12 text-gray-500">
+   535→                    Belum ada pendaftaran
+   536→                  </TableCell>
+   537→                </TableRow>
+   538→              ) : (
+   539→                items.map((reg, idx) => (
+   540→                  <TableRow key={reg.id as string}>
+   541→                    <TableCell className="text-gray-400 text-xs">{idx + 1}</TableCell>
+   542→                    <TableCell className="font-medium">{reg.name as string}</TableCell>
+   543→                    <TableCell>{reg.birthPlace as string}</TableCell>
+   544→                    <TableCell>{reg.parentName as string}</TableCell>
+   545→                    <TableCell>{reg.parentPhone as string}</TableCell>
+   546→                    <TableCell>
+   547→                      <Badge
+   548→                        className={
+   549→                          reg.status === 'accepted'
+   550→                            ? 'bg-emerald-100 text-emerald-800'
+   551→                            : reg.status === 'rejected'
+   552→                            ? 'bg-red-100 text-red-800'
+   553→                            : 'bg-amber-100 text-amber-800'
+   554→                        }
+   555→                      >
+   556→                        {reg.status === 'accepted' ? 'Diterima' : reg.status === 'rejected' ? 'Ditolak' : 'Menunggu'}
+   557→                      </Badge>
+   558→                    </TableCell>
+   559→                    <TableCell className="text-xs">
+   560→                      {reg.createdAt ? new Date(reg.createdAt as string).toLocaleDateString('id-ID') : '-'}
+   561→                    </TableCell>
+   562→                    <TableCell className="text-center">
+   563→                      <div className="flex items-center justify-center gap-1">
+   564→                        <Button
+   565→                          variant="ghost"
+   566→                          size="sm"
+   567→                          className="text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50"
+   568→                          onClick={() => {
+   569→                            setSelectedReg(reg)
+   570→                            setNewStatus(reg.status as string)
+   571→                          }}
+   572→                        >
+   573→                          Ubah Status
+   574→                        </Button>
+   575→                      </div>
+   576→                    </TableCell>
+   577→                  </TableRow>
+   578→                ))
+   579→              )}
+   580→            </TableBody>
+   581→          </Table>
+   582→        </div>
+   583→      </div>
+   584→
+   585→      {/* Status Update Dialog */}
+   586→      <Dialog open={!!selectedReg} onOpenChange={(open) => { if (!open) setSelectedReg(null) }}>
+   587→        <DialogContent className="sm:max-w-md">
+   588→          <DialogHeader>
+   589→            <DialogTitle>Ubah Status Pendaftaran</DialogTitle>
+   590→            <DialogDescription>
+   591→              Ubah status pendaftaran untuk {selectedReg?.name as string}
+   592→            </DialogDescription>
+   593→          </DialogHeader>
+   594→          <div className="space-y-4 py-4">
+   595→            <div className="space-y-2">
+   596→              <Label>Status</Label>
+   597→              <Select value={newStatus} onValueChange={setNewStatus}>
+   598→                <SelectTrigger>
+   599→                  <SelectValue />
+   600→                </SelectTrigger>
+   601→                <SelectContent>
+   602→                  <SelectItem value="pending">Menunggu</SelectItem>
+   603→                  <SelectItem value="accepted">Diterima</SelectItem>
+   604→                  <SelectItem value="rejected">Ditolak</SelectItem>
+   605→                </SelectContent>
+   606→              </Select>
+   607→            </div>
+   608→            {selectedReg && (
+   609→              <div className="space-y-2 text-sm bg-gray-50 rounded-lg p-3">
+   610→                <p><span className="text-gray-500">Nama:</span> <span className="font-medium">{selectedReg.name as string}</span></p>
+   611→                <p><span className="text-gray-500">Tempat, Tanggal Lahir:</span> {selectedReg.birthPlace as string}, {selectedReg.birthDate ? new Date(selectedReg.birthDate as string).toLocaleDateString('id-ID') : '-'}</p>
+   612→                <p><span className="text-gray-500">Orang Tua:</span> {selectedReg.parentName as string}</p>
+   613→                <p><span className="text-gray-500">No. HP:</span> {selectedReg.parentPhone as string}</p>
+   614→                {selectedReg.address && <p><span className="text-gray-500">Alamat:</span> {selectedReg.address as string}</p>}
+   615→                {selectedReg.previousSchool && <p><span className="text-gray-500">Sekolah Asal:</span> {selectedReg.previousSchool as string}</p>}
+   616→              </div>
+   617→            )}
+   618→          </div>
+   619→          <DialogFooter>
+   620→            <Button variant="outline" onClick={() => setSelectedReg(null)}>Batal</Button>
+   621→            <Button
+   622→              className="bg-emerald-700 hover:bg-emerald-800 text-white"
+   623→              onClick={() => {
+   624→                if (selectedReg && newStatus) {
+   625→                  updateMutation.mutate({ id: selectedReg.id as string, status: newStatus })
+   626→                }
+   627→              }}
+   628→              disabled={updateMutation.isPending}
+   629→            >
+   630→              {updateMutation.isPending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
+   631→              Simpan
+   632→            </Button>
+   633→          </DialogFooter>
+   634→        </DialogContent>
+   635→      </Dialog>
+   636→    </div>
+   637→  )
+   638→}
+   639→
+   640→function ContactMessagesManager() {
+   641→  const queryClient = useQueryClient()
+   642→  const [selectedMsg, setSelectedMsg] = useState<Record<string, unknown> | null>(null)
+   643→
+   644→  const { data, isLoading } = useQuery({
+   645→    queryKey: ['admin', 'contact-messages'],
+   646→    queryFn: async () => {
+   647→      const res = await fetch('/api/admin/contact-messages')
+   648→      if (!res.ok) return []
+   649→      return res.json()
+   650→    },
+   651→  })
+   652→
+   653→  const markReadMutation = useMutation({
+   654→    mutationFn: async (id: string) => {
+   655→      const res = await fetch(`/api/admin/contact-messages/${id}`, {
+   656→        method: 'PUT',
+   657→      })
+   658→      if (!res.ok) throw new Error('Gagal menandai pesan')
+   659→      return res.json()
+   660→    },
+   661→    onSuccess: () => {
+   662→      queryClient.invalidateQueries({ queryKey: ['admin', 'contact-messages'] })
+   663→      toast.success('Pesan ditandai sebagai dibaca')
+   664→      setSelectedMsg(null)
+   665→    },
+   666→    onError: () => {
+   667→      toast.error('Gagal menandai pesan')
+   668→    },
+   669→  })
+   670→
+   671→  const items: Record<string, unknown>[] = Array.isArray(data) ? data : []
+   672→
+   673→  return (
+   674→    <div className="space-y-4">
+   675→      <div>
+   676→        <h2 className="text-xl font-bold text-gray-900">Pesan Kontak</h2>
+   677→        <p className="text-sm text-gray-500">Lihat pesan dari pengunjung website</p>
+   678→      </div>
+   679→
+   680→      <div className="border rounded-lg bg-white overflow-hidden">
+   681→        <div className="overflow-x-auto">
+   682→          <Table>
+   683→            <TableHeader>
+   684→              <TableRow className="bg-gray-50">
+   685→                <TableHead>#</TableHead>
+   686→                <TableHead>Nama</TableHead>
+   687→                <TableHead>Email</TableHead>
+   688→                <TableHead>Subjek</TableHead>
+   689→                <TableHead>Status</TableHead>
+   690→                <TableHead>Tanggal</TableHead>
+   691→                <TableHead className="text-center">Aksi</TableHead>
+   692→              </TableRow>
+   693→            </TableHeader>
+   694→            <TableBody>
+   695→              {isLoading ? (
+   696→                <TableRow>
+   697→                  <TableCell colSpan={7} className="text-center py-12">
+   698→                    <Loader2 className="h-6 w-6 animate-spin mx-auto text-emerald-600" />
+   699→                  </TableCell>
+   700→                </TableRow>
+   701→              ) : items.length === 0 ? (
+   702→                <TableRow>
+   703→                  <TableCell colSpan={7} className="text-center py-12 text-gray-500">
+   704→                    Belum ada pesan
+   705→                  </TableCell>
+   706→                </TableRow>
+   707→              ) : (
+   708→                items.map((msg, idx) => (
+   709→                  <TableRow key={msg.id as string} className={!msg.isRead ? 'bg-amber-50/50' : ''}>
+   710→                    <TableCell className="text-gray-400 text-xs">{idx + 1}</TableCell>
+   711→                    <TableCell className="font-medium">
+   712→                      <div className="flex items-center gap-2">
+   713→                        {!msg.isRead && <span className="w-2 h-2 rounded-full bg-amber-500" />}
+   714→                        {msg.name as string}
+   715→                      </div>
+   716→                    </TableCell>
+   717→                    <TableCell>{(msg.email as string) || '-'}</TableCell>
+   718→                    <TableCell>{(msg.subject as string) || '-'}</TableCell>
+   719→                    <TableCell>
+   720→                      <Badge className={msg.isRead ? 'bg-gray-100 text-gray-600' : 'bg-amber-100 text-amber-800'}>
+   721→                        {msg.isRead ? 'Dibaca' : 'Baru'}
+   722→                      </Badge>
+   723→                    </TableCell>
+   724→                    <TableCell className="text-xs">
+   725→                      {msg.createdAt ? new Date(msg.createdAt as string).toLocaleDateString('id-ID') : '-'}
+   726→                    </TableCell>
+   727→                    <TableCell className="text-center">
+   728→                      <div className="flex items-center justify-center gap-1">
+   729→                        <Button
+   730→                          variant="ghost"
+   731→                          size="icon"
+   732→                          className="h-8 w-8 text-blue-600 hover:text-blue-800"
+   733→                          onClick={() => setSelectedMsg(msg)}
+   734→                        >
+   735→                          <FileText className="h-4 w-4" />
+   736→                        </Button>
+   737→                        {!msg.isRead && (
+   738→                          <Button
+   739→                            variant="ghost"
+   740→                            size="icon"
+   741→                            className="h-8 w-8 text-emerald-600 hover:text-emerald-800"
+   742→                            onClick={() => markReadMutation.mutate(msg.id as string)}
+   743→                          >
+   744→                            <Mail className="h-4 w-4" />
+   745→                          </Button>
+   746→                        )}
+   747→                      </div>
+   748→                    </TableCell>
+   749→                  </TableRow>
+   750→                ))
+   751→              )}
+   752→            </TableBody>
+   753→          </Table>
+   754→        </div>
+   755→      </div>
+   756→
+   757→      {/* View Message Dialog */}
+   758→      <Dialog open={!!selectedMsg} onOpenChange={(open) => { if (!open) setSelectedMsg(null) }}>
+   759→        <DialogContent className="sm:max-w-lg">
+   760→          <DialogHeader>
+   761→            <DialogTitle>Detail Pesan</DialogTitle>
+   762→          </DialogHeader>
+   763→          {selectedMsg && (
+   764→            <div className="space-y-3">
+   765→              <div className="grid grid-cols-2 gap-3">
+   766→                <div>
+   767→                  <Label className="text-xs text-gray-500">Nama</Label>
+   768→                  <p className="text-sm font-medium">{selectedMsg.name as string}</p>
+   769→                </div>
+   770→                <div>
+   771→                  <Label className="text-xs text-gray-500">Email</Label>
+   772→                  <p className="text-sm">{(selectedMsg.email as string) || '-'}</p>
+   773→                </div>
+   774→                <div>
+   775→                  <Label className="text-xs text-gray-500">Telepon</Label>
+   776→                  <p className="text-sm">{(selectedMsg.phone as string) || '-'}</p>
+   777→                </div>
+   778→                <div>
+   779→                  <Label className="text-xs text-gray-500">Tanggal</Label>
+   780→                  <p className="text-sm">
+   781→                    {selectedMsg.createdAt ? new Date(selectedMsg.createdAt as string).toLocaleDateString('id-ID', {
+   782→                      day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit',
+   783→                    }) : '-'}
+   784→                  </p>
+   785→                </div>
+   786→              </div>
+   787→              {(selectedMsg.subject as string) && (
+   788→                <div>
+   789→                  <Label className="text-xs text-gray-500">Subjek</Label>
+   790→                  <p className="text-sm font-medium">{selectedMsg.subject as string}</p>
+   791→                </div>
+   792→              )}
+   793→              <div>
+   794→                <Label className="text-xs text-gray-500">Pesan</Label>
+   795→                <div className="bg-gray-50 rounded-lg p-3 mt-1">
+   796→                  <p className="text-sm whitespace-pre-wrap">{selectedMsg.message as string}</p>
+   797→                </div>
+   798→              </div>
+   799→            </div>
+   800→          )}
+   801→          <DialogFooter>
+   802→            {selectedMsg && !selectedMsg.isRead && (
+   803→              <Button
+   804→                className="bg-emerald-700 hover:bg-emerald-800 text-white"
+   805→                onClick={() => markReadMutation.mutate(selectedMsg.id as string)}
+   806→                disabled={markReadMutation.isPending}
+   807→              >
+   808→                Tandai Dibaca
+   809→              </Button>
+   810→            )}
+   811→            <Button variant="outline" onClick={() => setSelectedMsg(null)}>Tutup</Button>
+   812→          </DialogFooter>
+   813→        </DialogContent>
+   814→      </Dialog>
+   815→    </div>
+   816→  )
+   817→}
+   818→
+   819→function SuggestionsManager() {
+   820→  const queryClient = useQueryClient()
+   821→  const [selectedItem, setSelectedItem] = useState<Record<string, unknown> | null>(null)
+   822→
+   823→  const { data, isLoading } = useQuery({
+   824→    queryKey: ['admin', 'suggestions'],
+   825→    queryFn: async () => {
+   826→      const res = await fetch('/api/admin/suggestions')
+   827→      if (!res.ok) return []
+   828→      return res.json()
+   829→    },
+   830→  })
+   831→
+   832→  const markReadMutation = useMutation({
+   833→    mutationFn: async (id: string) => {
+   834→      const res = await fetch(`/api/admin/suggestions/${id}`, {
+   835→        method: 'PUT',
+   836→      })
+   837→      if (!res.ok) throw new Error('Gagal menandai')
+   838→      return res.json()
+   839→    },
+   840→    onSuccess: () => {
+   841→      queryClient.invalidateQueries({ queryKey: ['admin', 'suggestions'] })
+   842→      toast.success('Saran ditandai sebagai dibaca')
+   843→      setSelectedItem(null)
+   844→    },
+   845→    onError: () => {
+   846→      toast.error('Gagal menandai saran')
+   847→    },
+   848→  })
+   849→
+   850→  const items: Record<string, unknown>[] = Array.isArray(data) ? data : []
+   851→
+   852→  return (
+   853→    <div className="space-y-4">
+   854→      <div>
+   855→        <h2 className="text-xl font-bold text-gray-900">Kritik & Saran</h2>
+   856→        <p className="text-sm text-gray-500">Lihat kritik dan saran dari pengunjung</p>
+   857→      </div>
+   858→
+   859→      <div className="border rounded-lg bg-white overflow-hidden">
+   860→        <div className="overflow-x-auto">
+   861→          <Table>
+   862→            <TableHeader>
+   863→              <TableRow className="bg-gray-50">
+   864→                <TableHead>#</TableHead>
+   865→                <TableHead>Nama</TableHead>
+   866→                <TableHead>Tipe</TableHead>
+   867→                <TableHead>Pesan</TableHead>
+   868→                <TableHead>Status</TableHead>
+   869→                <TableHead>Tanggal</TableHead>
+   870→                <TableHead className="text-center">Aksi</TableHead>
+   871→              </TableRow>
+   872→            </TableHeader>
+   873→            <TableBody>
+   874→              {isLoading ? (
+   875→                <TableRow>
+   876→                  <TableCell colSpan={7} className="text-center py-12">
+   877→                    <Loader2 className="h-6 w-6 animate-spin mx-auto text-emerald-600" />
+   878→                  </TableCell>
+   879→                </TableRow>
+   880→              ) : items.length === 0 ? (
+   881→                <TableRow>
+   882→                  <TableCell colSpan={7} className="text-center py-12 text-gray-500">
+   883→                    Belum ada saran
+   884→                  </TableCell>
+   885→                </TableRow>
+   886→              ) : (
+   887→                items.map((item, idx) => (
+   888→                  <TableRow key={item.id as string} className={!item.isRead ? 'bg-amber-50/50' : ''}>
+   889→                    <TableCell className="text-gray-400 text-xs">{idx + 1}</TableCell>
+   890→                    <TableCell className="font-medium">
+   891→                      <div className="flex items-center gap-2">
+   892→                        {!item.isRead && <span className="w-2 h-2 rounded-full bg-amber-500" />}
+   893→                        {item.name as string}
+   894→                      </div>
+   895→                    </TableCell>
+   896→                    <TableCell>
+   897→                      <Badge variant="outline" className="capitalize">{(item.type as string) || 'saran'}</Badge>
+   898→                    </TableCell>
+   899→                    <TableCell className="max-w-48 truncate">{(item.message as string)?.slice(0, 60)}</TableCell>
+   900→                    <TableCell>
+   901→                      <Badge className={item.isRead ? 'bg-gray-100 text-gray-600' : 'bg-amber-100 text-amber-800'}>
+   902→                        {item.isRead ? 'Dibaca' : 'Baru'}
+   903→                      </Badge>
+   904→                    </TableCell>
+   905→                    <TableCell className="text-xs">
+   906→                      {item.createdAt ? new Date(item.createdAt as string).toLocaleDateString('id-ID') : '-'}
+   907→                    </TableCell>
+   908→                    <TableCell className="text-center">
+   909→                      <div className="flex items-center justify-center gap-1">
+   910→                        <Button
+   911→                          variant="ghost"
+   912→                          size="icon"
+   913→                          className="h-8 w-8 text-blue-600"
+   914→                          onClick={() => setSelectedItem(item)}
+   915→                        >
+   916→                          <FileText className="h-4 w-4" />
+   917→                        </Button>
+   918→                        {!item.isRead && (
+   919→                          <Button
+   920→                            variant="ghost"
+   921→                            size="icon"
+   922→                            className="h-8 w-8 text-emerald-600"
+   923→                            onClick={() => markReadMutation.mutate(item.id as string)}
+   924→                          >
+   925→                            <Mail className="h-4 w-4" />
+   926→                          </Button>
+   927→                        )}
+   928→                      </div>
+   929→                    </TableCell>
+   930→                  </TableRow>
+   931→                ))
+   932→              )}
+   933→            </TableBody>
+   934→          </Table>
+   935→        </div>
+   936→      </div>
+   937→
+   938→      {/* View Suggestion Dialog */}
+   939→      <Dialog open={!!selectedItem} onOpenChange={(open) => { if (!open) setSelectedItem(null) }}>
+   940→        <DialogContent className="sm:max-w-md">
+   941→          <DialogHeader>
+   942→            <DialogTitle>Detail Saran</DialogTitle>
+   943→          </DialogHeader>
+   944→          {selectedItem && (
+   945→            <div className="space-y-3">
+   946→              <div className="grid grid-cols-2 gap-3">
+   947→                <div>
+   948→                  <Label className="text-xs text-gray-500">Nama</Label>
+   949→                  <p className="text-sm font-medium">{selectedItem.name as string}</p>
+   950→                </div>
+   951→                <div>
+   952→                  <Label className="text-xs text-gray-500">Tipe</Label>
+   953→                  <Badge variant="outline" className="capitalize">{(selectedItem.type as string) || 'saran'}</Badge>
+   954→                </div>
+   955→              </div>
+   956→              <div>
+   957→                <Label className="text-xs text-gray-500">Pesan</Label>
+   958→                <div className="bg-gray-50 rounded-lg p-3 mt-1">
+   959→                  <p className="text-sm whitespace-pre-wrap">{selectedItem.message as string}</p>
+   960→                </div>
+   961→              </div>
+   962→              <div>
+   963→                <Label className="text-xs text-gray-500">Tanggal</Label>
+   964→                <p className="text-sm">
+   965→                  {selectedItem.createdAt ? new Date(selectedItem.createdAt as string).toLocaleDateString('id-ID', {
+   966→                    day: 'numeric', month: 'long', year: 'numeric',
+   967→                  }) : '-'}
+   968→                </p>
+   969→              </div>
+   970→            </div>
+   971→          )}
+   972→          <DialogFooter>
+   973→            {selectedItem && !selectedItem.isRead && (
+   974→              <Button
+   975→                className="bg-emerald-700 hover:bg-emerald-800 text-white"
+   976→                onClick={() => markReadMutation.mutate(selectedItem.id as string)}
+   977→                disabled={markReadMutation.isPending}
+   978→              >
+   979→                Tandai Dibaca
+   980→              </Button>
+   981→            )}
+   982→            <Button variant="outline" onClick={() => setSelectedItem(null)}>Tutup</Button>
+   983→          </DialogFooter>
+   984→        </DialogContent>
+   985→      </Dialog>
+   986→    </div>
+   987→  )
+   988→}
+   989→
+   990→function SettingsManager() {
+   991→  const queryClient = useQueryClient()
+   992→
+   993→  const { data: settingsData, isLoading: settingsLoading } = useQuery({
+   994→    queryKey: ['admin', 'settings'],
+   995→    queryFn: async () => {
+   996→      const res = await fetch('/api/admin/settings')
+   997→      if (!res.ok) return []
+   998→      return res.json()
+   999→    },
+  1000→  })
+  1001→
+  1002→  const { data: statisticsData, isLoading: statsLoading } = useQuery({
+  1003→    queryKey: ['admin', 'statistics'],
+  1004→    queryFn: async () => {
+  1005→      const res = await fetch('/api/admin/statistics')
+  1006→      if (!res.ok) return []
+  1007→      return res.json()
+  1008→    },
+  1009→  })
+  1010→
+  1011→  const { data: institutionData, isLoading: institutionLoading } = useQuery({
+  1012→    queryKey: ['admin', 'institution'],
+  1013→    queryFn: async () => {
+  1014→      const res = await fetch('/api/admin/institution')
+  1015→      if (!res.ok) return []
+  1016→      return res.json()
+  1017→    },
+  1018→  })
+  1019→
+  1020→  // Track local edits separate from API data
+  1021→  const [settingsEdits, setSettingsEdits] = useState<Record<string, string>>({})
+  1022→  const [statsEdits, setStatsEdits] = useState<Record<string, string>>({})
+  1023→  const [institutionEdits, setInstitutionEdits] = useState<Record<string, { value: string; label: string }>>({})
+  1024→
+  1025→  // Derive current values from API data + local edits
+  1026→  const settingsValues = useMemo(() => {
+  1027→    const map: Record<string, string> = {}
+  1028→    if (Array.isArray(settingsData)) {
+  1029→      settingsData.forEach((s: { key: string; value: string }) => { map[s.key] = s.value })
+  1030→    }
+  1031→    return { ...map, ...settingsEdits }
+  1032→  }, [settingsData, settingsEdits])
+  1033→
+  1034→  const statsValues = useMemo(() => {
+  1035→    const map: Record<string, string> = {}
+  1036→    if (Array.isArray(statisticsData)) {
+  1037→      statisticsData.forEach((s: { key: string; value: string }) => { map[s.key] = s.value })
+  1038→    }
+  1039→    return { ...map, ...statsEdits }
+  1040→  }, [statisticsData, statsEdits])
+  1041→
+  1042→  const institutionValues = useMemo(() => {
+  1043→    const map: Record<string, { value: string; label: string }> = {}
+  1044→    if (Array.isArray(institutionData)) {
+  1045→      institutionData.forEach((s: { key: string; value: string; label: string }) => {
+  1046→        map[s.key] = { value: s.value, label: s.label }
+  1047→      })
+  1048→    }
+  1049→    // Merge edits
+  1050→    const merged = { ...map }
+  1051→    Object.entries(institutionEdits).forEach(([key, val]) => {
+  1052→      merged[key] = { ...merged[key], ...val }
+  1053→    })
+  1054→    return merged
+  1055→  }, [institutionData, institutionEdits])
+  1056→
+  1057→  const saveSettingsMutation = useMutation({
+  1058→    mutationFn: async () => {
+  1059→      const settings = Object.entries(settingsValues).map(([key, value]) => ({ key, value }))
+  1060→      const res = await fetch('/api/admin/settings', {
+  1061→        method: 'PUT',
+  1062→        headers: { 'Content-Type': 'application/json' },
+  1063→        body: JSON.stringify({ settings }),
+  1064→      })
+  1065→      if (!res.ok) throw new Error('Gagal menyimpan pengaturan')
+  1066→      return res.json()
+  1067→    },
+  1068→    onSuccess: () => {
+  1069→      queryClient.invalidateQueries({ queryKey: ['admin', 'settings'] })
+  1070→      toast.success('Pengaturan berhasil disimpan')
+  1071→    },
+  1072→    onError: () => {
+  1073→      toast.error('Gagal menyimpan pengaturan')
+  1074→    },
+  1075→  })
+  1076→
+  1077→  const saveStatsMutation = useMutation({
+  1078→    mutationFn: async () => {
+  1079→      const statistics = Object.entries(statsValues).map(([key, value]) => ({ key, value }))
+  1080→      const res = await fetch('/api/admin/statistics', {
+  1081→        method: 'PUT',
+  1082→        headers: { 'Content-Type': 'application/json' },
+  1083→        body: JSON.stringify({ statistics }),
+  1084→      })
+  1085→      if (!res.ok) throw new Error('Gagal menyimpan statistik')
+  1086→      return res.json()
+  1087→    },
+  1088→    onSuccess: () => {
+  1089→      queryClient.invalidateQueries({ queryKey: ['admin', 'statistics'] })
+  1090→      toast.success('Statistik berhasil disimpan')
+  1091→    },
+  1092→    onError: () => {
+  1093→      toast.error('Gagal menyimpan statistik')
+  1094→    },
+  1095→  })
+  1096→
+  1097→  const saveInstitutionMutation = useMutation({
+  1098→    mutationFn: async () => {
+  1099→      const data = Object.entries(institutionValues).map(([key, { value, label }]) => ({ key, value, label }))
+  1100→      const res = await fetch('/api/admin/institution', {
+  1101→        method: 'PUT',
+  1102→        headers: { 'Content-Type': 'application/json' },
+  1103→        body: JSON.stringify({ data }),
+  1104→      })
+  1105→      if (!res.ok) throw new Error('Gagal menyimpan data lembaga')
+  1106→      return res.json()
+  1107→    },
+  1108→    onSuccess: () => {
+  1109→      queryClient.invalidateQueries({ queryKey: ['admin', 'institution'] })
+  1110→      toast.success('Data lembaga berhasil disimpan')
+  1111→    },
+  1112→    onError: () => {
+  1113→      toast.error('Gagal menyimpan data lembaga')
+  1114→    },
+  1115→  })
+  1116→
+  1117→  const [activeTab, setActiveTab] = useState<'settings' | 'statistics' | 'institution'>('settings')
+  1118→
+  1119→  if (settingsLoading || statsLoading || institutionLoading) {
+  1120→    return (
+  1121→      <div className="flex items-center justify-center py-12">
+  1122→        <Loader2 className="h-6 w-6 animate-spin text-emerald-600" />
+  1123→      </div>
+  1124→    )
+  1125→  }
+  1126→
+  1127→  return (
+  1128→    <div className="space-y-4">
+  1129→      <div>
+  1130→        <h2 className="text-xl font-bold text-gray-900">Pengaturan Website</h2>
+  1131→        <p className="text-sm text-gray-500">Kelola pengaturan dan data website</p>
+  1132→      </div>
+  1133→
+  1134→      {/* Tab selector */}
+  1135→      <div className="flex gap-2 border-b pb-2">
+  1136→        {[
+  1137→          { id: 'settings' as const, label: 'Pengaturan' },
+  1138→          { id: 'statistics' as const, label: 'Statistik' },
+  1139→          { id: 'institution' as const, label: 'Data Lembaga' },
+  1140→        ].map((tab) => (
+  1141→          <Button
+  1142→            key={tab.id}
+  1143→            variant={activeTab === tab.id ? 'default' : 'ghost'}
+  1144→            size="sm"
+  1145→            className={activeTab === tab.id ? 'bg-emerald-700 hover:bg-emerald-800' : ''}
+  1146→            onClick={() => setActiveTab(tab.id)}
+  1147→          >
+  1148→            {tab.label}
+  1149→          </Button>
+  1150→        ))}
+  1151→      </div>
+  1152→
+  1153→      {/* Settings Tab */}
+  1154→      {activeTab === 'settings' && (
+  1155→        <Card>
+  1156→          <CardHeader className="pb-3">
+  1157→            <div className="flex items-center justify-between">
+  1158→              <CardTitle className="text-base">Pengaturan Website</CardTitle>
+  1159→              <Button
+  1160→                size="sm"
+  1161→                className="bg-emerald-700 hover:bg-emerald-800 text-white"
+  1162→                onClick={() => saveSettingsMutation.mutate()}
+  1163→                disabled={saveSettingsMutation.isPending}
+  1164→              >
+  1165→                {saveSettingsMutation.isPending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
+  1166→                Simpan
+  1167→              </Button>
+  1168→            </div>
+  1169→          </CardHeader>
+  1170→          <CardContent>
+  1171→            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+  1172→              {Object.entries(settingsValues).map(([key, value]) => (
+  1173→                <div key={key} className="space-y-1">
+  1174→                  <Label className="text-xs text-gray-500 capitalize">
+  1175→                    {key.replace(/_/g, ' ').replace(/madrasah/g, '').trim() || key}
+  1176→                  </Label>
+  1177→                  <Input
+  1178→                    value={value}
+  1179→                    onChange={(e) => setSettingsEdits((prev) => ({ ...prev, [key]: e.target.value }))}
+  1180→                  />
+  1181→                </div>
+  1182→              ))}
+  1183→              {Object.keys(settingsValues).length === 0 && (
+  1184→                <p className="text-sm text-gray-500 col-span-2 text-center py-4">
+  1185→                  Belum ada pengaturan. Data akan muncul setelah pertama kali disimpan.
+  1186→                </p>
+  1187→              )}
+  1188→            </div>
+  1189→          </CardContent>
+  1190→        </Card>
+  1191→      )}
+  1192→
+  1193→      {/* Statistics Tab */}
+  1194→      {activeTab === 'statistics' && (
+  1195→        <Card>
+  1196→          <CardHeader className="pb-3">
+  1197→            <div className="flex items-center justify-between">
+  1198→              <CardTitle className="text-base">Statistik Website</CardTitle>
+  1199→              <Button
+  1200→                size="sm"
+  1201→                className="bg-emerald-700 hover:bg-emerald-800 text-white"
+  1202→                onClick={() => saveStatsMutation.mutate()}
+  1203→                disabled={saveStatsMutation.isPending}
+  1204→              >
+  1205→                {saveStatsMutation.isPending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
+  1206→                Simpan
+  1207→              </Button>
+  1208→            </div>
+  1209→          </CardHeader>
+  1210→          <CardContent>
+  1211→            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+  1212→              {Object.entries(statsValues).map(([key, value]) => (
+  1213→                <div key={key} className="space-y-1">
+  1214→                  <Label className="text-xs text-gray-500 capitalize">
+  1215→                    {key.replace(/_/g, ' ')}
+  1216→                  </Label>
+  1217→                  <Input
+  1218→                    value={value}
+  1219→                    onChange={(e) => setStatsEdits((prev) => ({ ...prev, [key]: e.target.value }))}
+  1220→                  />
+  1221→                </div>
+  1222→              ))}
+  1223→              {Object.keys(statsValues).length === 0 && (
+  1224→                <p className="text-sm text-gray-500 col-span-2 text-center py-4">
+  1225→                  Belum ada statistik. Data akan muncul setelah pertama kali disimpan.
+  1226→                </p>
+  1227→              )}
+  1228→            </div>
+  1229→          </CardContent>
+  1230→        </Card>
+  1231→      )}
+  1232→
+  1233→      {/* Institution Tab */}
+  1234→      {activeTab === 'institution' && (
+  1235→        <Card>
+  1236→          <CardHeader className="pb-3">
+  1237→            <div className="flex items-center justify-between">
+  1238→              <CardTitle className="text-base">Data Kelembagaan</CardTitle>
+  1239→              <Button
+  1240→                size="sm"
+  1241→                className="bg-emerald-700 hover:bg-emerald-800 text-white"
+  1242→                onClick={() => saveInstitutionMutation.mutate()}
+  1243→                disabled={saveInstitutionMutation.isPending}
+  1244→              >
+  1245→                {saveInstitutionMutation.isPending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
+  1246→                Simpan
+  1247→              </Button>
+  1248→            </div>
+  1249→          </CardHeader>
+  1250→          <CardContent>
+  1251→            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+  1252→              {Object.entries(institutionValues).map(([key, { value, label }]) => (
+  1253→                <div key={key} className="space-y-1">
+  1254→                  <Label className="text-xs text-gray-500">{label || key.replace(/_/g, ' ')}</Label>
+  1255→                  <Input
+  1256→                    value={value}
+  1257→                    onChange={(e) => setInstitutionEdits((prev) => ({
+  1258→                      ...prev,
+  1259→                      [key]: { ...prev[key], value: e.target.value },
+  1260→                    }))}
+  1261→                  />
+  1262→                </div>
+  1263→              ))}
+  1264→              {Object.keys(institutionValues).length === 0 && (
+  1265→                <p className="text-sm text-gray-500 col-span-2 text-center py-4">
+  1266→                  Belum ada data lembaga. Data akan muncul setelah pertama kali disimpan.
+  1267→                </p>
+  1268→              )}
+  1269→            </div>
+  1270→          </CardContent>
+  1271→        </Card>
+  1272→      )}
+  1273→    </div>
+  1274→  )
+  1275→}
+  1276→
+  1277→// --- Main AdminPanel Component ---
+  1278→
+  1279→interface AdminPanelProps {
+  1280→  adminName?: string
+  1281→  onLogout?: () => void
+  1282→}
+  1283→
+  1284→export default function AdminPanel({ adminName: adminNameProp, onLogout }: AdminPanelProps) {
+  1285→  const [activeSection, setActiveSection] = useState<AdminSection>('dashboard')
+  1286→  const [sidebarOpen, setSidebarOpen] = useState(false)
+  1287→
+  1288→  const adminName = adminNameProp || 'Admin'
+  1289→
+  1290→  const handleLogout = async () => {
+  1291→    try {
+  1292→      await fetch('/api/admin/logout', { method: 'POST' })
+  1293→    } catch {
+  1294→      // ignore
+  1295→    }
+  1296→    if (onLogout) {
+  1297→      onLogout()
+  1298→    } else {
+  1299→      window.location.href = '/admin'
+  1300→    }
+  1301→  }
+  1302→
+  1303→  const handleNavigate = (section: string) => {
+  1304→    setActiveSection(section as AdminSection)
+  1305→    setSidebarOpen(false)
+  1306→  }
+  1307→
+  1308→  // Get breadcrumb
+  1309→  const getBreadcrumb = () => {
+  1310→    const item = navItems.find((n) => n.id === activeSection)
+  1311→    return item?.label || 'Dashboard'
+  1312→  }
+  1313→
+  1314→  // Render content
+  1315→  const renderContent = () => {
+  1316→    if (activeSection === 'dashboard') {
+  1317→      return <AdminDashboard onNavigate={handleNavigate} />
+  1318→    }
+  1319→    if (activeSection === 'ppdb') {
+  1320→      return <PPDBManager />
+  1321→    }
+  1322→    if (activeSection === 'contact-messages') {
+  1323→      return <ContactMessagesManager />
+  1324→    }
+  1325→    if (activeSection === 'suggestions') {
+  1326→      return <SuggestionsManager />
+  1327→    }
+  1328→    if (activeSection === 'settings') {
+  1329→      return <SettingsManager />
+  1330→    }
+  1331→    const config = entityConfigs[activeSection]
+  1332→    if (config) {
+  1333→      return (
+  1334→        <CRUDManager
+  1335→          title={config.title}
+  1336→          apiPath={config.apiPath}
+  1337→          columns={config.columns}
+  1338→          formFields={config.formFields}
+  1339→          itemName={config.itemName}
+  1340→          canCreate={config.canCreate}
+  1341→          canDelete={config.canDelete}
+  1342→          canEdit={config.canEdit}
+  1343→        />
+  1344→      )
+  1345→    }
+  1346→    return <AdminDashboard onNavigate={handleNavigate} />
+  1347→  }
+  1348→
+  1349→  // Group nav items
+  1350→  const groupedNav: { group: string; items: NavItem[] }[] = []
+  1351→  let currentGroup = '__none__'
+  1352→  navItems.forEach((item) => {
+  1353→    const group = item.group || ''
+  1354→    if (group !== currentGroup) {
+  1355→      groupedNav.push({ group, items: [item] })
+  1356→      currentGroup = group
+  1357→    } else {
+  1358→      groupedNav[groupedNav.length - 1].items.push(item)
+  1359→    }
+  1360→  })
+  1361→
+  1362→  return (
+  1363→    <div className="min-h-screen flex bg-gray-50">
+  1364→      {/* Sidebar Overlay (mobile) */}
+  1365→      <AnimatePresence>
+  1366→        {sidebarOpen && (
+  1367→          <motion.div
+  1368→            initial={{ opacity: 0 }}
+  1369→            animate={{ opacity: 1 }}
+  1370→            exit={{ opacity: 0 }}
+  1371→            className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+  1372→            onClick={() => setSidebarOpen(false)}
+  1373→          />
+  1374→        )}
+  1375→      </AnimatePresence>
+  1376→
+  1377→      {/* Sidebar */}
+  1378→      <aside
+  1379→        className={`fixed inset-y-0 left-0 z-50 w-64 bg-gradient-to-b from-emerald-800 to-emerald-900 text-white transform transition-transform duration-300 lg:translate-x-0 lg:static lg:z-auto ${
+  1380→          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+  1381→        }`}
+  1382→      >
+  1383→        <div className="flex flex-col h-full">
+  1384→          {/* Logo */}
+  1385→          <div className="p-4 border-b border-emerald-700">
+  1386→            <div className="flex items-center justify-between">
+  1387→              <div className="flex items-center gap-3">
+  1388→                <div className="w-10 h-10 rounded-lg overflow-hidden shadow">
+  1389→                  <img src="/images/logo-madin-warna.png" alt="Logo" className="w-full h-full object-contain" />
+  1390→                </div>
+  1391→                <div>
+  1392→                  <p className="font-bold text-sm leading-tight">MDTA Miftahul Ulum</p>
+  1393→                  <p className="text-emerald-300 text-xs">Admin Panel</p>
+  1394→                </div>
+  1395→              </div>
+  1396→              <Button
+  1397→                variant="ghost"
+  1398→                size="icon"
+  1399→                className="lg:hidden text-emerald-200 hover:text-white hover:bg-emerald-700 h-8 w-8"
+  1400→                onClick={() => setSidebarOpen(false)}
+  1401→              >
+  1402→                <X className="h-4 w-4" />
+  1403→              </Button>
+  1404→            </div>
+  1405→          </div>
+  1406→
+  1407→          {/* Navigation */}
+  1408→          <ScrollArea className="flex-1 py-2">
+  1409→            <div className="px-3">
+  1410→              {groupedNav.map((group) => (
+  1411→                <div key={group.group || 'main'} className="mb-2">
+  1412→                  {group.group && (
+  1413→                    <p className="text-emerald-400 text-[10px] font-semibold uppercase tracking-wider px-3 py-2 mt-2">
+  1414→                      {group.group}
+  1415→                    </p>
+  1416→                  )}
+  1417→                  {group.items.map((item) => (
+  1418→                    <button
+  1419→                      key={item.id}
+  1420→                      onClick={() => handleNavigate(item.id)}
+  1421→                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
+  1422→                        activeSection === item.id
+  1423→                          ? 'bg-emerald-700 text-white font-medium'
+  1424→                          : 'text-emerald-200 hover:bg-emerald-700/50 hover:text-white'
+  1425→                      }`}
+  1426→                    >
+  1427→                      {item.icon}
+  1428→                      <span>{item.label}</span>
+  1429→                    </button>
+  1430→                  ))}
+  1431→                </div>
+  1432→              ))}
+  1433→            </div>
+  1434→          </ScrollArea>
+  1435→
+  1436→          {/* User & Logout */}
+  1437→          <div className="p-4 border-t border-emerald-700">
+  1438→            <div className="flex items-center justify-between mb-3">
+  1439→              <div className="flex items-center gap-2 min-w-0">
+  1440→                <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0">
+  1441→                  <img src="/images/logo-madin-warna.png" alt="Logo" className="w-full h-full object-contain" />
+  1442→                </div>
+  1443→                <div className="min-w-0">
+  1444→                  <p className="text-sm font-medium truncate">{adminName || 'Admin'}</p>
+  1445→                  <p className="text-xs text-emerald-400">Administrator</p>
+  1446→                </div>
+  1447→              </div>
+  1448→              <Button
+  1449→                variant="ghost"
+  1450→                size="icon"
+  1451→                className="text-emerald-300 hover:text-white hover:bg-emerald-700 h-8 w-8 shrink-0"
+  1452→                onClick={handleLogout}
+  1453→                title="Logout"
+  1454→              >
+  1455→                <LogOut className="h-4 w-4" />
+  1456→              </Button>
+  1457→            </div>
+  1458→            <a
+  1459→              href="/"
+  1460→              className="flex items-center gap-2 text-xs text-emerald-300 hover:text-amber-400 transition-colors"
+  1461→            >
+  1462→              ← Kembali ke Website
+  1463→            </a>
+  1464→          </div>
+  1465→        </div>
+  1466→      </aside>
+  1467→
+  1468→      {/* Main Content */}
+  1469→      <div className="flex-1 flex flex-col min-w-0">
+  1470→        {/* Top Bar */}
+  1471→        <header className="sticky top-0 z-30 bg-white border-b shadow-sm">
+  1472→          <div className="flex items-center justify-between h-14 px-4">
+  1473→            <div className="flex items-center gap-3">
+  1474→              <Button
+  1475→                variant="ghost"
+  1476→                size="icon"
+  1477→                className="lg:hidden h-8 w-8"
+  1478→                onClick={() => setSidebarOpen(true)}
+  1479→              >
+  1480→                <Menu className="h-5 w-5" />
+  1481→              </Button>
+  1482→              <div className="flex items-center gap-2 text-sm text-gray-500">
+  1483→                <LayoutDashboard className="h-4 w-4" />
+  1484→                <span>Admin</span>
+  1485→                <ChevronRight className="h-3 w-3" />
+  1486→                <span className="text-gray-900 font-medium">{getBreadcrumb()}</span>
+  1487→              </div>
+  1488→            </div>
+  1489→            <div className="flex items-center gap-3">
+  1490→              <a href="/" target="_blank" rel="noopener noreferrer">
+  1491→                <Button
+  1492→                  variant="outline"
+  1493→                  size="sm"
+  1494→                  className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 border-emerald-200"
+  1495→                >
+  1496→                  <span className="hidden sm:inline">Lihat Website</span>
+  1497→                  <span className="sm:hidden">Website</span>
+  1498→                </Button>
+  1499→              </a>
+  1500→              <div className="hidden sm:flex items-center gap-2 text-sm text-gray-500">
+  1501→                <div className="w-7 h-7 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold text-xs">
+  1502→                  {(adminName || 'A').charAt(0).toUpperCase()}
+  1503→                </div>
+  1504→                <span>{adminName || 'Admin'}</span>
+  1505→              </div>
+  1506→              <Button
+  1507→                variant="outline"
+  1508→                size="sm"
+  1509→                onClick={handleLogout}
+  1510→                className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+  1511→              >
+  1512→                <LogOut className="h-4 w-4 mr-1" />
+  1513→                <span className="hidden sm:inline">Keluar</span>
+  1514→              </Button>
+  1515→            </div>
+  1516→          </div>
+  1517→        </header>
+  1518→
+  1519→        {/* Page Content */}
+  1520→        <main className="flex-1 p-4 md:p-6 overflow-auto">
+  1521→          <AnimatePresence mode="wait">
+  1522→            <motion.div
+  1523→              key={activeSection}
+  1524→              initial={{ opacity: 0, y: 10 }}
+  1525→              animate={{ opacity: 1, y: 0 }}
+  1526→              exit={{ opacity: 0, y: -10 }}
+  1527→              transition={{ duration: 0.2 }}
+  1528→            >
+  1529→              {renderContent()}
+  1530→            </motion.div>
+  1531→          </AnimatePresence>
+  1532→        </main>
+  1533→      </div>
+  1534→    </div>
+  1535→  )
+  1536→}
+  1537→

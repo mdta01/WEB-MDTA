@@ -34,6 +34,7 @@ async function main() {
     { key: 'madrasah_mission', value: '1. Menyelenggarakan pendidikan agama Islam yang berkualitas\n2. Membentuk santri yang berakhlakul karimah\n3. Mengembangkan potensi dan prestasi santri\n4. Mencetak generasi yang cinta Al-Quran dan As-Sunnah\n5. Membangun karakter santri yang mandiri dan bertanggung jawab', label: 'Misi' },
     { key: 'madrasah_history', value: 'MDTA Miftahul Ulum 01 didirikan pada tahun 1998 oleh KH. Abdul Rahman bersama tokoh masyarakat setempat dengan tujuan memberikan pendidikan agama Islam yang berkualitas bagi anak-anak di wilayah Cikarang dan sekitarnya. Bermula dari sebuah musholla kecil dengan hanya 15 santri, madrasah ini terus berkembang hingga kini memiliki ratusan santri aktif dengan fasilitas yang terus diperbaiki. Nama "Miftahul Ulum" yang berarti "Kunci Ilmu" dipilih dengan harapan madrasah ini menjadi pintu gerbang ilmu pengetahuan, khususnya ilmu agama Islam, bagi generasi mendatang.', label: 'Sejarah' },
     { key: 'madrasah_principals_name', value: 'Ustadz H. Muhammad Syafii, S.Pd.I', label: 'Nama Kepala Madrasah' },
+    { key: 'madrasah_principal_photo', value: '/images/kepala-madrasah.png', label: 'Foto Kepala Madrasah' },
     { key: 'madrasah_yayasan', value: 'Yayasan Pendidikan Islam Miftahul Ulum', label: 'Naungan Yayasan' },
     { key: 'madrasah_nsdt', value: '311232010012', label: 'Nomor Statistik (NSDT)' },
     { key: 'madrasah_sk', value: 'SK Pendirian No. 456/Kes/1998', label: 'SK Pendirian' },

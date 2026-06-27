@@ -1168,8 +1168,37 @@ function SettingsManager() {
             </div>
           </CardHeader>
           <CardContent>
+            {/* Principal Photo Section - Special UI */}
+            {settingsValues['madrasah_principal_photo'] !== undefined && (
+              <div className="mb-6 p-4 border border-amber-200 bg-amber-50 rounded-lg">
+                <div className="flex items-start gap-4">
+                  <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-amber-400 shadow-md flex-shrink-0">
+                    <img 
+                      src={settingsValues['madrasah_principal_photo'] || '/images/kepala-madrasah.png'} 
+                      alt="Preview Foto Kepala Madrasah"
+                      className="w-full h-full object-cover"
+                      onError={(e) => { (e.target as HTMLImageElement).src = '/images/kepala-madrasah.png' }}
+                    />
+                  </div>
+                  <div className="flex-1 space-y-2">
+                    <Label className="text-sm font-semibold text-amber-800 flex items-center gap-2">
+                      <ImageIcon className="h-4 w-4" />
+                      Foto Kepala Madrasah
+                    </Label>
+                    <p className="text-xs text-gray-500">Masukkan URL gambar foto Kepala Madrasah. Kosongkan untuk menggunakan foto default.</p>
+                    <Input
+                      value={settingsValues['madrasah_principal_photo'] || ''}
+                      onChange={(e) => setSettingsEdits((prev) => ({ ...prev, madrasah_principal_photo: e.target.value }))}
+                      placeholder="/images/kepala-madrasah.png"
+                      className="bg-white"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {Object.entries(settingsValues).map(([key, value]) => (
+              {Object.entries(settingsValues).filter(([key]) => key !== 'madrasah_principal_photo').map(([key, value]) => (
                 <div key={key} className="space-y-1">
                   <Label className="text-xs text-gray-500 capitalize">
                     {key.replace(/_/g, ' ').replace(/madrasah/g, '').trim() || key}

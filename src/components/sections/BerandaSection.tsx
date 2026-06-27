@@ -224,7 +224,7 @@ export default function BerandaSection() {
                   }} />
                 </div>
                 <div className="relative">
-                  <div className="w-28 h-28 rounded-full overflow-hidden mb-4 border-4 border-amber-400 shadow-lg">
+                  <div className="w-32 h-32 md:w-36 md:h-36 rounded-full overflow-hidden mb-4 border-4 border-amber-400 shadow-xl ring-4 ring-white/20">
                     <img 
                       src={getSetting('madrasah_principal_photo') || '/images/kepala-madrasah.png'} 
                       alt="Kepala Madrasah" 
@@ -233,7 +233,7 @@ export default function BerandaSection() {
                   </div>
                 </div>
                 <h3 className="font-bold text-lg text-center relative">Kepala Madrasah</h3>
-                <p className="text-amber-300 text-sm mt-1 font-medium relative">
+                <p className="text-amber-300 text-sm mt-1 font-medium text-center relative">
                   {getSetting('madrasah_principals_name') || getSetting('madrasah_principal_name') || 'Kepala Madrasah'}
                 </p>
               </div>
