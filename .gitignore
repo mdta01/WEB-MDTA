@@ -51,16 +51,11 @@ next-env.d.ts
 
 # logs
 *.log
-dev.log
-dev.out.log
-server.log
 
 # IDE / OS
 .claude
 .z-ai-config
 local-*
-test
-prompt
 
 # Skills directory
 /skills/
@@ -68,8 +63,26 @@ prompt
 # Worklog
 worklog.md
 
-# Mini services (optional - uncomment if not needed)
-# /mini-services/
+# Screenshots
+screenshot-*.png
 
 # Upload temp
 /upload/
+
+# Z scripts
+/.zscripts/
+
+# Agent context
+/agent-ctx/
+
+# Mini services
+/mini-services/
+
+# Examples
+/examples/
+
+# Download
+/download/
+
+# Caddy
+Caddyfile
