@@ -25,7 +25,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { statistics } = body as { statistics: { key: string; value: string }[] }
+    const { statistics } = body as { statistics: { key: string; value: string; label?: string }[] }
 
     if (!statistics || !Array.isArray(statistics)) {
       return NextResponse.json({ error: 'Format data tidak valid' }, { status: 400 })
@@ -35,7 +35,7 @@ export async function PUT(request: NextRequest) {
       db.statistic.upsert({
         where: { key: stat.key },
         update: { value: stat.value },
-        create: { key: stat.key, value: stat.value },
+        create: { key: stat.key, value: stat.value, label: stat.label || stat.key.replace(/_/g, ' ') },
       })
     )
 
