@@ -1285,23 +1285,6 @@ export default function AdminPanel({ adminName: adminNameProp, onLogout }: Admin
   const [activeSection, setActiveSection] = useState<AdminSection>('dashboard')
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
-  // Check authentication
-  const { data: authData, isLoading: authLoading } = useQuery({
-    queryKey: ['admin', 'check'],
-    queryFn: async () => {
-      const res = await fetch('/api/admin/check')
-      return res.json()
-    },
-  })
-
-  // Redirect if not authenticated
-  useEffect(() => {
-    if (!authLoading && authData && !(authData as { authenticated?: boolean }).authenticated) {
-      // Not authenticated, redirect to login
-      window.location.href = '/admin'
-    }
-  }, [authData, authLoading])
-
   const adminName = adminNameProp || 'Admin'
 
   const handleLogout = async () => {
@@ -1375,17 +1358,6 @@ export default function AdminPanel({ adminName: adminNameProp, onLogout }: Admin
       groupedNav[groupedNav.length - 1].items.push(item)
     }
   })
-
-  if (authLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin mx-auto text-emerald-600" />
-          <p className="mt-2 text-gray-500">Memverifikasi...</p>
-        </div>
-      </div>
-    )
-  }
 
   return (
     <div className="min-h-screen flex bg-gray-50">

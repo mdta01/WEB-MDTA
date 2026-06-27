@@ -1,7 +1,7 @@
 'use client'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
 import { Lock, User, Eye, EyeOff, LogIn, Shield, Loader2 } from 'lucide-react'
@@ -61,7 +61,6 @@ function AdminLoginPage({ onLoginSuccess }: { onLoginSuccess: (name: string) => 
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 left-0 w-96 h-96 bg-emerald-100 rounded-full -translate-x-1/2 -translate-y-1/2 opacity-50" />
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-amber-100 rounded-full translate-x-1/2 translate-y-1/2 opacity-50" />
-        {/* Islamic pattern */}
         <div className="absolute inset-0 opacity-[0.03]" style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23065f46' fill-opacity='1'%3E%3Cpath d='M30 0L60 30L30 60L0 30z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
         }} />
@@ -76,7 +75,6 @@ function AdminLoginPage({ onLoginSuccess }: { onLoginSuccess: (name: string) => 
         <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
           {/* Header */}
           <div className="bg-gradient-to-br from-emerald-700 via-emerald-800 to-emerald-900 p-8 pb-14 relative overflow-hidden">
-            {/* Decorative pattern */}
             <div className="absolute inset-0 opacity-10">
               <svg className="w-full h-full" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -210,8 +208,9 @@ function AdminPageContent() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [adminName, setAdminName] = useState('')
   const [checking, setChecking] = useState(true)
+  const failedCheckCount = useRef(0)
 
-  // Check if already authenticated
+  // Check if already authenticated on mount
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -220,9 +219,10 @@ function AdminPageContent() {
         if (data.authenticated) {
           setIsAuthenticated(true)
           setAdminName(data.name || 'Admin')
+          failedCheckCount.current = 0
         }
       } catch {
-        // ignore
+        // Network error - don't logout on first failure
       } finally {
         setChecking(false)
       }
@@ -230,12 +230,46 @@ function AdminPageContent() {
     checkAuth()
   }, [])
 
-  const handleLoginSuccess = (name: string) => {
+  // Periodic auth check (every 2 minutes) - only logout after 3 consecutive failures
+  useEffect(() => {
+    if (!isAuthenticated) return
+
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch('/api/admin/check')
+        const data = await res.json()
+        if (data.authenticated) {
+          failedCheckCount.current = 0
+        } else {
+          failedCheckCount.current++
+          // Only logout after 3 consecutive failures (avoid single network glitch)
+          if (failedCheckCount.current >= 3) {
+            setIsAuthenticated(false)
+            setAdminName('')
+            toast.error('Sesi Anda telah berakhir. Silakan login kembali.')
+          }
+        }
+      } catch {
+        // Network error - count as failure but tolerate some
+        failedCheckCount.current++
+        if (failedCheckCount.current >= 3) {
+          setIsAuthenticated(false)
+          setAdminName('')
+          toast.error('Koneksi terputus. Silakan login kembali.')
+        }
+      }
+    }, 120000) // Check every 2 minutes
+
+    return () => clearInterval(interval)
+  }, [isAuthenticated])
+
+  const handleLoginSuccess = useCallback((name: string) => {
     setIsAuthenticated(true)
     setAdminName(name)
-  }
+    failedCheckCount.current = 0
+  }, [])
 
-  const handleLogout = async () => {
+  const handleLogout = useCallback(async () => {
     try {
       await fetch('/api/admin/logout', { method: 'POST' })
     } catch {
@@ -244,7 +278,7 @@ function AdminPageContent() {
     setIsAuthenticated(false)
     setAdminName('')
     toast.success('Berhasil logout')
-  }
+  }, [])
 
   // Loading state while checking auth
   if (checking) {
@@ -273,8 +307,9 @@ export default function AdminPage() {
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: 60 * 1000,
-            retry: 1,
+            staleTime: 5 * 60 * 1000, // 5 minutes - don't refetch too aggressively
+            retry: 2,
+            refetchOnWindowFocus: false, // Don't refetch on window focus - prevents auto-logout
           },
         },
       })
