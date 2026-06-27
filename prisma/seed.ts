@@ -8,11 +8,11 @@ async function main() {
 
   // Create Admin
   await prisma.admin.upsert({
-    where: { username: 'admin' },
+    where: { username: 'mdta_mu01_superadmin' },
     update: {},
     create: {
-      username: 'admin',
-      password: await hash('admin123'),
+      username: 'mdta_mu01_superadmin',
+      password: await hash('MdtaMU01@2025!Sec'),
       name: 'Administrator',
       email: 'admin@mdta-miftahululum01.com',
       role: 'superadmin',
