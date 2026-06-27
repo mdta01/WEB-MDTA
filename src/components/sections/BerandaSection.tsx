@@ -7,12 +7,22 @@ import {
   Calendar, Star, ChevronLeft, ChevronRight, Quote,
   MapPin,
 } from 'lucide-react'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useSyncExternalStore } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAppStore } from '@/store/useAppStore'
+
+// Read a value only on the client (returns null on server) to avoid hydration mismatch
+// for time-dependent data like dates.
+function useClientValue<T>(getValue: () => T): T | null {
+  return useSyncExternalStore(
+    () => () => {}, // no subscription needed — value is read once on mount
+    getValue, // client snapshot
+    () => null // server snapshot (null avoids hydration mismatch)
+  )
+}
 
 function AnimatedCounter({ target, duration = 2000 }: { target: number; duration?: number }) {
   const [count, setCount] = useState(0)
@@ -93,6 +103,11 @@ function getHijriDate(): string {
 export default function BerandaSection() {
   const { setCurrentPage } = useAppStore()
   const [testimonialIdx, setTestimonialIdx] = useState(0)
+  // Read dates on client only to avoid hydration mismatch (server vs client timezone/day)
+  const masehiDate = useClientValue(() =>
+    new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+  )
+  const hijriDate = useClientValue(() => getHijriDate())
 
   const { data: settingsData } = useQuery({
     queryKey: ['settings'],
@@ -285,7 +300,7 @@ export default function BerandaSection() {
               <Calendar className="h-8 w-8 mx-auto mb-2 text-amber-400" />
               <h3 className="text-lg font-bold mb-1">Kalender Hijriyah</h3>
               <p className="text-2xl font-bold text-amber-400" id="hijri-date">
-                {getHijriDate()}
+                {hijriDate ?? '\u00A0'}
               </p>
             </div>
           </Card>
@@ -294,7 +309,7 @@ export default function BerandaSection() {
               <Calendar className="h-8 w-8 mx-auto mb-2 text-emerald-300" />
               <h3 className="text-lg font-bold mb-1">Kalender Masehi</h3>
               <p className="text-2xl font-bold text-emerald-200">
-                {new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                {masehiDate ?? '\u00A0'}
               </p>
             </div>
           </Card>
