@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import {
-  Menu, Lock, Search, ChevronDown, Phone,
+  Menu, Search, ChevronDown, Phone,
 } from 'lucide-react'
 import { useAppStore, type PageSection } from '@/store/useAppStore'
 import { Button } from '@/components/ui/button'
@@ -150,17 +150,6 @@ export default function Header() {
               >
                 <Search className="h-4 w-4" />
               </Button>
-              <a href="/admin">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-9 w-9 text-emerald-100 hover:text-white hover:bg-emerald-700"
-                  title="Admin Panel"
-                >
-                  <Lock className="h-4 w-4" />
-                </Button>
-              </a>
-
               {/* Mobile menu */}
               <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
                 <SheetTrigger asChild>
@@ -196,15 +185,7 @@ export default function Header() {
                         {item.label}
                       </button>
                     ))}
-                    <div className="border-t border-emerald-700 mt-2 pt-2 px-6">
-                      <a
-                        href="/admin"
-                        className="flex items-center gap-2 py-3 text-sm font-medium text-amber-400 hover:text-amber-300 transition-colors"
-                      >
-                        <Lock className="h-4 w-4" />
-                        Admin Panel
-                      </a>
-                    </div>
+
                   </div>
                 </SheetContent>
               </Sheet>

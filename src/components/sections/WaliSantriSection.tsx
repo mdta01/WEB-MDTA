@@ -3,8 +3,8 @@
 import { useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
 import {
-  CreditCard, Bell, Calendar, MessageSquare, ExternalLink,
-  Send, DollarSign, Clock, AlertCircle,
+  CreditCard, Bell, Calendar, MessageSquare,
+  Send, Clock, AlertCircle,
 } from 'lucide-react'
 import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
@@ -260,26 +260,6 @@ export default function WaliSantriSection() {
             </Card>
           </motion.div>
 
-          {/* Admin Links */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
-            <Card className="border-0 shadow-md bg-emerald-50">
-              <CardContent className="p-6 text-center">
-                <ExternalLink className="h-8 w-8 text-emerald-600 mx-auto mb-3" />
-                <h4 className="font-bold text-emerald-800 mb-2">Akses Admin</h4>
-                <p className="text-sm text-gray-500 mb-4">
-                  Klik tombol di bawah untuk mengakses panel admin madrasah
-                </p>
-                <a href="/admin">
-                  <Button
-                    variant="outline"
-                    className="border-emerald-300 text-emerald-700 hover:bg-emerald-100"
-                  >
-                    Buka Panel Admin
-                  </Button>
-                </a>
-              </CardContent>
-            </Card>
-          </motion.div>
         </div>
       </div>
     </div>
