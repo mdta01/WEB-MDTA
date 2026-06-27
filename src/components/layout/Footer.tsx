@@ -44,8 +44,8 @@ export default function Footer() {
           {/* Tentang Kami */}
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-full overflow-hidden">
-                <img src="/images/logo-madin-warna.png" alt="Logo MDTA Miftahul Ulum 01" className="w-full h-full object-cover" />
+              <div className="w-10 h-10 rounded-lg overflow-hidden bg-white/10 p-0.5">
+                <img src="/images/logo-madin-warna.png" alt="Logo MDTA Miftahul Ulum 01" className="w-full h-full object-contain" />
               </div>
               <div>
                 <h3 className="font-bold text-white text-lg">MDTA Miftahul Ulum 01</h3>

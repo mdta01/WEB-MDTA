@@ -92,9 +92,9 @@ function AdminLoginPage({ onLoginSuccess }: { onLoginSuccess: (name: string) => 
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-                className="w-20 h-20 rounded-full overflow-hidden mb-4 shadow-lg"
+                className="w-20 h-20 rounded-xl overflow-hidden mb-4 shadow-lg bg-white/10 p-1"
               >
-                <img src="/images/logo-madin-warna.png" alt="Logo MDTA" className="w-full h-full object-cover" />
+                <img src="/images/logo-madin-warna.png" alt="Logo MDTA" className="w-full h-full object-contain" />
               </motion.div>
               <h1 className="text-2xl font-bold text-white">Admin Panel</h1>
               <p className="text-emerald-200 text-sm mt-1">MDTA Miftahul Ulum 01</p>
