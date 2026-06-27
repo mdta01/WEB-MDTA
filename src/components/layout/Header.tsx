@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import {
   Menu, Lock, Search, ChevronDown, Phone,
 } from 'lucide-react'
@@ -17,6 +18,7 @@ const navItems: { label: string; page: PageSection }[] = [
   { label: 'Galeri', page: 'galeri' },
   { label: 'Pengumuman', page: 'pengumuman' },
   { label: 'PPDB', page: 'ppdb' },
+  { label: 'FAQ', page: 'faq' },
   { label: 'Download', page: 'download' },
   { label: 'Dakwah', page: 'dakwah' },
   { label: 'Kelembagaan', page: 'kelembagaan' },
@@ -29,6 +31,13 @@ export default function Header() {
   const { currentPage, setCurrentPage, setSearchQuery } = useAppStore()
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+
+  const { data: settingsData } = useQuery({
+    queryKey: ['settings'],
+    queryFn: () => fetch('/api/settings').then(r => r.json()),
+  })
+  const settings = Array.isArray(settingsData) ? settingsData : (settingsData?.settings || [])
+  const getSetting = (key: string) => settings.find((s: { key: string }) => s.key === key)?.value || ''
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10)
@@ -48,6 +57,10 @@ export default function Header() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
+  const madrasahName = getSetting('madrasah_name') || 'MDTA Miftahul Ulum 01'
+  const madrasahSubtitle = getSetting('madrasah_subtitle') || 'Madrasah Diniyah Takmiliyah Awaliyah'
+  const madrasahLogo = getSetting('madrasah_logo') || '/images/logo-madin-warna.png'
+
   return (
     <header
       className={`sticky top-0 z-50 transition-all duration-300 ${
@@ -60,12 +73,12 @@ export default function Header() {
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1">
               <Phone className="h-3 w-3" />
-              (021) 123-4567
+              {getSetting('madrasah_phone') || '(021) 123-4567'}
             </span>
-            <span>info@miftahululum01.sch.id</span>
+            <span>{getSetting('madrasah_email') || 'info@miftahululum01.sch.id'}</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-emerald-300">MDTA Miftahul Ulum 01</span>
+            <span className="text-emerald-300">{madrasahName}</span>
           </div>
         </div>
       </div>
@@ -80,12 +93,12 @@ export default function Header() {
               className="flex items-center gap-3 group"
             >
               <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg overflow-hidden shadow-md group-hover:scale-105 transition-transform">
-                <img src="/images/logo-madin-warna.png" alt="Logo MDTA Miftahul Ulum 01" className="w-full h-full object-contain" />
+                <img src={madrasahLogo} alt={`Logo ${madrasahName}`} className="w-full h-full object-contain" />
               </div>
               <div className="flex flex-col">
-                <span className="font-bold text-sm md:text-lg leading-tight">MDTA Miftahul Ulum 01</span>
+                <span className="font-bold text-sm md:text-lg leading-tight">{madrasahName}</span>
                 <span className="text-emerald-200 text-[10px] md:text-xs hidden sm:block">
-                  Madrasah Diniyah Takmiliyah Awaliyah
+                  {madrasahSubtitle}
                 </span>
               </div>
             </button>
@@ -164,9 +177,9 @@ export default function Header() {
                   <div className="flex items-center justify-between p-4 border-b border-emerald-700">
                     <div className="flex items-center gap-2">
                       <div className="w-8 h-8 rounded-lg overflow-hidden">
-                        <img src="/images/logo-madin-warna.png" alt="Logo" className="w-full h-full object-contain" />
+                        <img src={madrasahLogo} alt="Logo" className="w-full h-full object-contain" />
                       </div>
-                      <span className="font-bold text-sm">MDTA Miftahul Ulum 01</span>
+                      <span className="font-bold text-sm">{madrasahName}</span>
                     </div>
                   </div>
                   <div className="overflow-y-auto max-h-[calc(100vh-64px)] py-2">

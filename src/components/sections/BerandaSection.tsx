@@ -133,10 +133,10 @@ export default function BerandaSection() {
   const events = ((Array.isArray(eventsData) ? eventsData : (eventsData?.events || []))).slice(0, 3)
 
   const statsCards = [
-    { icon: GraduationCap, label: 'Santri Aktif', value: getStat('santri_aktif') || 245, color: 'bg-emerald-600', delay: 0 },
-    { icon: Users, label: 'Tenaga Pengajar', value: getStat('guru_aktif') || 18, color: 'bg-teal-600', delay: 0.1 },
-    { icon: Award, label: 'Prestasi', value: getStat('prestasi') || 85, color: 'bg-amber-600', delay: 0.2 },
-    { icon: BookOpen, label: 'Alumni', value: getStat('alumni') || 1250, color: 'bg-emerald-800', delay: 0.3 },
+    { icon: GraduationCap, label: 'Santri Aktif', value: getStat('santri_aktif') || 0, color: 'bg-emerald-600', delay: 0 },
+    { icon: Users, label: 'Tenaga Pengajar', value: getStat('guru_aktif') || 0, color: 'bg-teal-600', delay: 0.1 },
+    { icon: Award, label: 'Prestasi', value: getStat('prestasi') || 0, color: 'bg-amber-600', delay: 0.2 },
+    { icon: BookOpen, label: 'Alumni', value: getStat('alumni') || 0, color: 'bg-emerald-800', delay: 0.3 },
   ]
 
   const nextTestimonial = () => {
@@ -158,7 +158,7 @@ export default function BerandaSection() {
           {/* Hero background image */}
           <div className="absolute inset-0">
             <img 
-              src="/images/hero-madrasah.png" 
+              src={getSetting('madrasah_hero_image') || '/images/hero-madrasah.png'} 
               alt="MDTA Miftahul Ulum 01" 
               className="w-full h-full object-cover opacity-30"
             />
@@ -176,13 +176,13 @@ export default function BerandaSection() {
                   بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
                 </Badge>
                 <h1 className="text-3xl md:text-5xl font-bold mb-4 leading-tight">
-                  MDTA Miftahul Ulum 01
+                  {getSetting('madrasah_name') || 'MDTA Miftahul Ulum 01'}
                 </h1>
                 <p className="text-emerald-200 text-lg md:text-xl mb-2">
-                  Madrasah Diniyah Takmiliyah Awaliyah
+                  {getSetting('madrasah_subtitle') || 'Madrasah Diniyah Takmiliyah Awaliyah'}
                 </p>
                 <p className="text-emerald-300 text-sm md:text-base mb-8 max-w-xl leading-relaxed">
-                  Mencetak generasi Muslim yang berilmu, berakhlak mulia, dan berprestasi melalui pendidikan Islam yang berkualitas dan menyeluruh.
+                  {getSetting('madrasah_description') || 'Mencetak generasi Muslim yang berilmu, berakhlak mulia, dan berprestasi melalui pendidikan Islam yang berkualitas dan menyeluruh.'}
                 </p>
                 <div className="flex flex-wrap gap-3">
                   <Button
@@ -234,7 +234,7 @@ export default function BerandaSection() {
                 </div>
                 <h3 className="font-bold text-lg text-center relative">Kepala Madrasah</h3>
                 <p className="text-amber-300 text-sm mt-1 font-medium text-center relative">
-                  {getSetting('madrasah_principals_name') || getSetting('madrasah_principal_name') || 'Kepala Madrasah'}
+                  {getSetting('madrasah_principals_name') || 'Kepala Madrasah'}
                 </p>
               </div>
               <div className="md:col-span-2 p-8">

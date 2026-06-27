@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
-import { GraduationCap, Quote, Briefcase, Calendar } from 'lucide-react'
+import { GraduationCap, Quote, Briefcase } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -79,46 +79,10 @@ export default function AlumniSection() {
           ))}
         </div>
       ) : (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[
-            { name: 'Ahmad Rizki', year: '2018', activity: 'Mahasiswa UIN Jakarta', testimony: 'Alhamdulillah, ilmu yang saya dapatkan di Miftahul Ulum sangat bermanfaat.' },
-            { name: 'Siti Nurhaliza', year: '2019', activity: 'Guru Tahfidz', testimony: 'Madrasah ini membentuk karakter dan hafalan Al-Quran saya.' },
-            { name: 'Muhammad Fadli', year: '2020', activity: 'Santri Ponpes Al-Zaytun', testimony: 'Dasar keagamaan yang kuat dari Miftahul Ulum sangat membantu.' },
-            { name: 'Aisyah Putri', year: '2017', activity: 'Dai & Motivator', testimony: 'Saya bangga pernah bersekolah di Miftahul Ulum 01.' },
-            { name: 'Hasan Basri', year: '2021', activity: 'Mahasiswa STAI', testimony: 'Lingkungan Islami di madrasah membentuk pribadi yang lebih baik.' },
-            { name: 'Fatimah Zahra', year: '2016', activity: 'Pengusaha Muslimah', testimony: 'Pendidikan akhlak di Miftahul Ulum menjadi bekal saya.' },
-          ].map((item, idx) => (
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.05 }}
-            >
-              <Card className="border-0 shadow-md hover:shadow-lg transition-shadow h-full">
-                <CardContent className="p-6 text-center">
-                  <Avatar className="w-16 h-16 mx-auto mb-3">
-                    <AvatarFallback className="bg-emerald-600 text-white text-xl font-bold">
-                      {item.name.charAt(0)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <h4 className="font-semibold text-emerald-800">{item.name}</h4>
-                  <Badge variant="outline" className="mt-1 text-xs border-emerald-200 text-emerald-600">
-                    <GraduationCap className="h-3 w-3 mr-1" />
-                    Angkatan {item.year}
-                  </Badge>
-                  <div className="mt-3 text-sm text-gray-500 italic relative">
-                    <Quote className="h-4 w-4 text-amber-400 absolute -top-1 -left-1" />
-                    <p className="pl-4 line-clamp-3">{item.testimony}</p>
-                  </div>
-                  <div className="mt-3 flex items-center justify-center gap-1 text-xs text-gray-400">
-                    <Briefcase className="h-3 w-3" />
-                    {item.activity}
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
+        <Card className="p-8 text-center border-0">
+          <GraduationCap className="h-12 w-12 text-emerald-200 mx-auto mb-3" />
+          <p className="text-gray-500">Data alumni belum tersedia</p>
+        </Card>
       )}
     </div>
   )

@@ -30,7 +30,11 @@ export default function Footer() {
   })
 
   const settings = Array.isArray(settingsData) ? settingsData : (settingsData?.settings || [])
-  const getSetting = (key: string) => settings.find((s: { key: string; label?: string }) => s.key === key || s.label === key)?.value || ''
+  const getSetting = (key: string) => settings.find((s: { key: string }) => s.key === key)?.value || ''
+
+  const madrasahName = getSetting('madrasah_name') || 'MDTA Miftahul Ulum 01'
+  const madrasahSubtitle = getSetting('madrasah_subtitle') || 'Madrasah Diniyah Takmiliyah Awaliyah'
+  const madrasahLogo = getSetting('madrasah_logo') || '/images/logo-madin-warna.png'
 
   const handleNav = (page: PageSection) => {
     setCurrentPage(page)
@@ -45,15 +49,15 @@ export default function Footer() {
           <div>
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-lg overflow-hidden">
-                <img src="/images/logo-madin-warna.png" alt="Logo MDTA Miftahul Ulum 01" className="w-full h-full object-contain" />
+                <img src={madrasahLogo} alt={`Logo ${madrasahName}`} className="w-full h-full object-contain" />
               </div>
               <div>
-                <h3 className="font-bold text-white text-lg">MDTA Miftahul Ulum 01</h3>
-                <p className="text-emerald-300 text-xs">Madrasah Diniyah Takmiliyah Awaliyah</p>
+                <h3 className="font-bold text-white text-lg">{madrasahName}</h3>
+                <p className="text-emerald-300 text-xs">{madrasahSubtitle}</p>
               </div>
             </div>
             <p className="text-emerald-200 text-sm leading-relaxed">
-              Mencetak generasi Muslim yang berilmu, berakhlak mulia, dan berprestasi melalui pendidikan Islam yang berkualitas.
+              {getSetting('madrasah_footer_description') || 'Mencetak generasi Muslim yang berilmu, berakhlak mulia, dan berprestasi melalui pendidikan Islam yang berkualitas.'}
             </p>
           </div>
 
@@ -98,7 +102,7 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-2 text-sm">
                 <Clock className="h-4 w-4 text-amber-400 shrink-0" />
-                <span>Senin - Sabtu: 08.00 - 16.00 WIB</span>
+                <span>{getSetting('madrasah_service_hours') || 'Senin - Sabtu: 08.00 - 16.00 WIB'}</span>
               </li>
             </ul>
           </div>
@@ -133,10 +137,10 @@ export default function Footer() {
       <div className="border-t border-emerald-800">
         <div className="container mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-between gap-2">
           <p className="text-emerald-300 text-xs">
-            &copy; {new Date().getFullYear()} MDTA Miftahul Ulum 01. Hak cipta dilindungi.
+            &copy; {new Date().getFullYear()} {madrasahName}. Hak cipta dilindungi.
           </p>
           <p className="text-emerald-400 text-xs">
-            Mencetak Generasi Muslim yang Berilmu & Berakhlak Mulia
+            {getSetting('madrasah_copyright') || 'Mencetak Generasi Muslim yang Berilmu & Berakhlak Mulia'}
           </p>
         </div>
       </div>

@@ -36,6 +36,32 @@ export default function PPDBSection() {
   const getSetting = (key: string) => settings.find((s: { key: string }) => s.key === key)?.value || ''
   const ppdbStatus = getSetting('ppdb_status') || 'open'
 
+  const { data: paymentsData } = useQuery({
+    queryKey: ['payments'],
+    queryFn: () => fetch('/api/payments').then(r => r.json()),
+  })
+  const payments = Array.isArray(paymentsData) ? paymentsData : (paymentsData?.payments || [])
+
+  const { data: eventsData } = useQuery({
+    queryKey: ['events'],
+    queryFn: () => fetch('/api/events').then(r => r.json()),
+  })
+  const events = Array.isArray(eventsData) ? eventsData : (eventsData?.events || [])
+  const ppdbEvents = events.filter((e: { category: string }) => e.category === 'ppdb')
+
+  // Parse requirements from settings (newline-separated)
+  const requirements = getSetting('ppdb_requirements')
+    ? getSetting('ppdb_requirements').split('\n').map((line: string) => line.trim()).filter((line: string) => line.length > 0)
+    : []
+
+  // Parse contacts from settings (format: "name|phone", one per line)
+  const contacts = getSetting('ppdb_contact')
+    ? getSetting('ppdb_contact').split('\n').map((line: string) => line.trim()).filter((line: string) => line.length > 0).map((line: string) => {
+        const parts = line.split('|')
+        return { name: parts[0]?.trim() || '', phone: parts[1]?.trim() || '' }
+      })
+    : []
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }))
   }
@@ -108,21 +134,18 @@ export default function PPDBSection() {
                   <ClipboardList className="h-5 w-5 text-amber-500" />
                   Persyaratan Pendaftaran
                 </h3>
-                <ul className="space-y-2">
-                  {[
-                    'Mengisi formulir pendaftaran secara lengkap',
-                    'Fotokopi Akta Kelahiran',
-                    'Fotokopi Kartu Keluarga',
-                    'Pas Foto 3x4 (4 lembar)',
-                    'Fotokopi KTP Orang Tua/Wali',
-                    'Surat Keterangan Lulus (bagi pindahan)',
-                  ].map((item, idx) => (
-                    <li key={idx} className="flex items-start gap-2 text-sm text-gray-600">
-                      <CheckCircle className="h-4 w-4 text-emerald-500 mt-0.5 shrink-0" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
+                {requirements.length > 0 ? (
+                  <ul className="space-y-2">
+                    {requirements.map((item, idx) => (
+                      <li key={idx} className="flex items-start gap-2 text-sm text-gray-600">
+                        <CheckCircle className="h-4 w-4 text-emerald-500 mt-0.5 shrink-0" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-gray-400 italic text-sm">Persyaratan pendaftaran belum tersedia.</p>
+                )}
               </CardContent>
             </Card>
           </motion.div>
@@ -135,30 +158,33 @@ export default function PPDBSection() {
                   <CreditCard className="h-5 w-5 text-amber-500" />
                   Biaya Pendidikan
                 </h3>
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="bg-emerald-50">
-                        <TableHead className="font-semibold">Jenis Biaya</TableHead>
-                        <TableHead className="font-semibold">Jumlah</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {[
-                        { name: 'Uang Pendaftaran', amount: 'Rp 50.000' },
-                        { name: 'Uang Pangkal', amount: 'Rp 300.000' },
-                        { name: 'SPP Bulanan', amount: 'Rp 75.000/bulan' },
-                        { name: 'Seragam (opsional)', amount: 'Rp 150.000' },
-                        { name: 'Buku Paket', amount: 'Rp 100.000' },
-                      ].map((item, idx) => (
-                        <TableRow key={idx}>
-                          <TableCell className="text-sm">{item.name}</TableCell>
-                          <TableCell className="font-medium text-emerald-700">{item.amount}</TableCell>
+                {payments.length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow className="bg-emerald-50">
+                          <TableHead className="font-semibold">Jenis Biaya</TableHead>
+                          <TableHead className="font-semibold">Jumlah</TableHead>
+                          <TableHead className="font-semibold hidden md:table-cell">Keterangan</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
+                      </TableHeader>
+                      <TableBody>
+                        {payments.map((item: { id: string; title: string; amount: string; description?: string | null }, idx: number) => (
+                          <TableRow key={item.id || idx}>
+                            <TableCell className="text-sm">{item.title}</TableCell>
+                            <TableCell className="font-medium text-emerald-700">{item.amount}</TableCell>
+                            <TableCell className="text-sm text-gray-500 hidden md:table-cell">{item.description || '-'}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                ) : (
+                  <div className="text-center py-6">
+                    <CreditCard className="h-10 w-10 text-emerald-200 mx-auto mb-2" />
+                    <p className="text-gray-400 italic text-sm">Informasi biaya pendidikan belum tersedia.</p>
+                  </div>
+                )}
                 <p className="text-xs text-gray-400 mt-3">* Biaya dapat berubah sewaktu-waktu</p>
               </CardContent>
             </Card>
@@ -172,18 +198,38 @@ export default function PPDBSection() {
                   <Calendar className="h-5 w-5 text-amber-500" />
                   Jadwal Pendaftaran
                 </h3>
-                <div className="grid md:grid-cols-3 gap-4">
-                  {[
-                    { label: 'Pendaftaran', date: 'Januari - Juni 2025', color: 'bg-emerald-50 border-emerald-200' },
-                    { label: 'Tes Seleksi', date: 'Juli 2025', color: 'bg-amber-50 border-amber-200' },
-                    { label: 'Pengumuman', date: 'Juli 2025', color: 'bg-teal-50 border-teal-200' },
-                  ].map((item) => (
-                    <div key={item.label} className={`${item.color} border rounded-xl p-4 text-center`}>
-                      <p className="font-semibold text-sm text-emerald-800">{item.label}</p>
-                      <p className="text-gray-600 text-sm mt-1">{item.date}</p>
-                    </div>
-                  ))}
-                </div>
+                {ppdbEvents.length > 0 ? (
+                  <div className="grid md:grid-cols-3 gap-4">
+                    {ppdbEvents.map((event: { id: string; title: string; date: string; location?: string | null }, idx: number) => {
+                      const colors = [
+                        'bg-emerald-50 border-emerald-200',
+                        'bg-amber-50 border-amber-200',
+                        'bg-teal-50 border-teal-200',
+                      ]
+                      const formattedDate = new Date(event.date).toLocaleDateString('id-ID', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric',
+                      })
+                      return (
+                        <div key={event.id} className={`${colors[idx % 3]} border rounded-xl p-4 text-center`}>
+                          <p className="font-semibold text-sm text-emerald-800">{event.title}</p>
+                          <p className="text-gray-600 text-sm mt-1">{formattedDate}</p>
+                          {event.location && (
+                            <p className="text-gray-500 text-xs mt-1 flex items-center justify-center gap-1">
+                              <MapPin className="h-3 w-3" /> {event.location}
+                            </p>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+                ) : (
+                  <div className="text-center py-6">
+                    <Calendar className="h-10 w-10 text-emerald-200 mx-auto mb-2" />
+                    <p className="text-gray-400 italic text-sm">Jadwal pendaftaran belum tersedia. Silakan hubungi panitia untuk informasi lebih lanjut.</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </motion.div>
@@ -258,10 +304,17 @@ export default function PPDBSection() {
                 <Phone className="h-8 w-8 text-emerald-600 mx-auto mb-3" />
                 <h4 className="font-bold text-emerald-800 mb-2">Hubungi Panitia PPDB</h4>
                 <p className="text-sm text-gray-600 mb-3">Untuk informasi lebih lanjut, silakan hubungi:</p>
-                <div className="space-y-1 text-sm text-emerald-700">
-                  <p>Ust. Ahmad Fauzi: 0812-3456-7890</p>
-                  <p>Ustz. Siti Aisyah: 0813-4567-8901</p>
-                </div>
+                {contacts.length > 0 ? (
+                  <div className="space-y-1 text-sm text-emerald-700">
+                    {contacts.map((contact, idx) => (
+                      <p key={idx}>
+                        {contact.name}{contact.phone ? `: ${contact.phone}` : ''}
+                      </p>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-400 italic">Kontak panitia belum tersedia.</p>
+                )}
               </CardContent>
             </Card>
           </motion.div>

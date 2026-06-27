@@ -30,18 +30,7 @@ export default function FAQSection() {
     )
   }, [faqs, searchQuery])
 
-  const defaultFaqs = [
-    { id: '1', question: 'Apa itu MDTA?', answer: 'MDTA adalah singkatan dari Madrasah Diniyah Takmiliyah Awaliyah, yaitu lembaga pendidikan Islam non-formal setingkat SD yang mengajarkan ilmu-ilmu keislaman secara sistematis.' },
-    { id: '2', question: 'Berapa usia minimal untuk mendaftar?', answer: 'Usia minimal untuk mendaftar adalah 6 tahun atau sudah duduk di kelas 1 SD/MI sederajat.' },
-    { id: '3', question: 'Berapa SPP per bulan?', answer: 'SPP bulanan adalah Rp 75.000. Selain itu juga ada uang pangkal Rp 300.000 yang dibayarkan satu kali saat pendaftaran.' },
-    { id: '4', question: 'Apa saja mata pelajaran yang diajarkan?', answer: 'Mata pelajaran meliputi: Al-Quran & Tajwid, Tahfidz, Fiqih Ibadah, Aqidah, Akhlaq, Hadits, Bahasa Arab, dan Sirah Nabawiyah.' },
-    { id: '5', question: 'Apakah ada program tahfidz?', answer: 'Ya, kami memiliki Program Tahfidz Intensif dengan target hafalan minimal 3 Juz selama masa studi di madrasah.' },
-    { id: '6', question: 'Jam belajar di madrasah kapan?', answer: 'Kegiatan Belajar Mengajar (KBM) dilaksanakan setiap Senin - Sabtu, pukul 14:00 - 17:00 WIB (sesuai jadwal masing-masing kelas).' },
-    { id: '7', question: 'Bagaimana cara mendaftar?', answer: 'Pendaftaran dapat dilakukan secara online melalui menu PPDB di website ini, atau langsung datang ke sekretariat madrasah pada jam operasional.' },
-    { id: '8', question: 'Apakah ada beasiswa?', answer: 'Ya, madrasah menyediakan keringanan biaya bagi santri yang kurang mampu. Silakan hubungi panitia PPDB untuk informasi lebih lanjut.' },
-  ]
-
-  const displayFaqs = filteredFaqs.length > 0 ? filteredFaqs : (searchQuery.trim() ? [] : defaultFaqs)
+  const displayFaqs = filteredFaqs
 
   return (
     <div className="space-y-8">
@@ -102,7 +91,9 @@ export default function FAQSection() {
       ) : (
         <Card className="p-12 text-center border-0 max-w-md mx-auto">
           <HelpCircle className="h-12 w-12 text-emerald-200 mx-auto mb-3" />
-          <p className="text-gray-500">Tidak ditemukan pertanyaan yang cocok</p>
+          <p className="text-gray-500">
+            {searchQuery.trim() ? 'Tidak ditemukan pertanyaan yang cocok' : 'FAQ belum tersedia'}
+          </p>
         </Card>
       )}
     </div>

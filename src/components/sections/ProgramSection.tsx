@@ -3,7 +3,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
 import {
-  BookOpen, Star, Trophy, Music, Clock, Calendar,
+  BookOpen, Star, Trophy, Music, Clock,
   GraduationCap, Palette, Swords, BookHeart,
 } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
@@ -52,6 +52,15 @@ function getIcon(iconName?: string | null) {
 }
 
 function ProgramGrid({ items, color }: { items: ProgramItem[]; color: string }) {
+  if (items.length === 0) {
+    return (
+      <Card className="border-0 shadow-md p-8 text-center">
+        <BookOpen className="h-12 w-12 text-emerald-200 mx-auto mb-3" />
+        <p className="text-gray-500">Data belum tersedia</p>
+      </Card>
+    )
+  }
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {items.map((item, idx) => {
@@ -80,39 +89,6 @@ function ProgramGrid({ items, color }: { items: ProgramItem[]; color: string }) 
     </div>
   )
 }
-
-const defaultKelas: ProgramItem[] = [
-  { id: '1', title: "Kelas 1 (I'dadiyah)", description: 'Tingkat awal untuk santri baru', icon: 'default' },
-  { id: '2', title: "Kelas 2 (I'dadiyah)", description: "Tingkat lanjutan I'dadiyah", icon: 'default' },
-  { id: '3', title: 'Kelas 3 (Ibtidaiyah)', description: 'Tingkat menengah pertama', icon: 'default' },
-  { id: '4', title: 'Kelas 4 (Ibtidaiyah)', description: 'Tingkat menengah akhir', icon: 'default' },
-  { id: '5', title: 'Kelas 5 (Tajhidiyah)', description: 'Tingkat tinggi', icon: 'default' },
-  { id: '6', title: 'Kelas 6 (Tajhidiyah)', description: 'Tingkat akhir / lulusan', icon: 'default' },
-]
-
-const defaultKurikulum: ProgramItem[] = [
-  { id: 'k1', title: 'Al-Quran & Tajwid', description: 'Membaca Al-Quran dengan tajwid yang benar', icon: 'quran' },
-  { id: 'k2', title: 'Tahfidz Al-Quran', description: 'Menghafal Al-Quran minimal 3 Juz', icon: 'tahfidz' },
-  { id: 'k3', title: 'Fiqih Ibadah', description: 'Hukum-hukum ibadah Islam', icon: 'fiqih' },
-  { id: 'k4', title: 'Aqidah', description: 'Dasar-dasar keimanan Islam', icon: 'aqidah' },
-  { id: 'k5', title: 'Akhlaq', description: 'Pendidikan akhlak dan budi pekerti', icon: 'akhlaq' },
-  { id: 'k6', title: 'Hadits', description: 'Studi hadits-hadits Nabi SAW', icon: 'hadits' },
-  { id: 'k7', title: 'Bahasa Arab', description: 'Dasar bahasa Arab untuk memahami kitab', icon: 'bahasa-arab' },
-  { id: 'k8', title: 'Sirah Nabawiyah', description: 'Perjalanan hidup Rasulullah SAW', icon: 'sirah' },
-]
-
-const defaultUnggulan: ProgramItem[] = [
-  { id: 'u1', title: 'Program Tahfidz Intensif', description: 'Target hafalan minimal 3 Juz selama masa studi', icon: 'tahfidz' },
-  { id: 'u2', title: 'Tahsin Al-Quran', description: 'Perbaikan bacaan Al-Quran dengan metode mutqin', icon: 'tahsin' },
-  { id: 'u3', title: 'Lomba Keagamaan', description: 'Pembinaan santri untuk mengikuti lomba tingkat kecamatan hingga nasional', icon: 'default' },
-]
-
-const defaultEkskul: ProgramItem[] = [
-  { id: 'e1', title: 'Kaligrafi', description: 'Seni tulis indah huruf Arab', icon: 'kaligrafi' },
-  { id: 'e2', title: 'Pramuka', description: 'Kegiatan kepanduan dan kepemimpinan', icon: 'pramuka' },
-  { id: 'e3', title: 'Pidato B. Arab', description: 'Latihan berpidato dalam bahasa Arab', icon: 'pidato' },
-  { id: 'e4', title: 'Hadroh & Sholawat', description: 'Seni musik Islami dan sholawat Nabi', icon: 'hadroh' },
-]
 
 export default function ProgramSection() {
   const { data: programsData, isLoading: programsLoading } = useQuery({
@@ -149,19 +125,19 @@ export default function ProgramSection() {
         </TabsList>
 
         <TabsContent value="kelas">
-          <ProgramGrid items={kelasPrograms.length > 0 ? kelasPrograms : defaultKelas} color={categoryColors['kelas']} />
+          <ProgramGrid items={kelasPrograms} color={categoryColors['kelas']} />
         </TabsContent>
 
         <TabsContent value="kurikulum">
-          <ProgramGrid items={kurikulumPrograms.length > 0 ? kurikulumPrograms : defaultKurikulum} color={categoryColors['kurikulum']} />
+          <ProgramGrid items={kurikulumPrograms} color={categoryColors['kurikulum']} />
         </TabsContent>
 
         <TabsContent value="unggulan">
-          <ProgramGrid items={unggulanPrograms.length > 0 ? unggulanPrograms : defaultUnggulan} color={categoryColors['unggulan']} />
+          <ProgramGrid items={unggulanPrograms} color={categoryColors['unggulan']} />
         </TabsContent>
 
         <TabsContent value="ekskul">
-          <ProgramGrid items={ekskulPrograms.length > 0 ? ekskulPrograms : defaultEkskul} color={categoryColors['ekstrakurikuler']} />
+          <ProgramGrid items={ekskulPrograms} color={categoryColors['ekstrakurikuler']} />
         </TabsContent>
       </Tabs>
 
@@ -206,26 +182,11 @@ export default function ProgramSection() {
                     </TableRow>
                   ))
                 ) : (
-                  <>
-                    {[
-                      { day: 'Senin', time: '14:00 - 15:30', subject: 'Al-Quran & Tajwid', teacher: 'Ust. Ahmad', class: 'Kelas 1-2' },
-                      { day: 'Senin', time: '15:30 - 17:00', subject: 'Fiqih Ibadah', teacher: 'Ust. Ibrahim', class: 'Kelas 3-4' },
-                      { day: 'Selasa', time: '14:00 - 15:30', subject: 'Aqidah & Akhlaq', teacher: 'Ustz. Aisyah', class: 'Kelas 1-2' },
-                      { day: 'Selasa', time: '15:30 - 17:00', subject: 'Bahasa Arab', teacher: 'Ust. Hasan', class: 'Kelas 5-6' },
-                      { day: 'Rabu', time: '14:00 - 15:30', subject: 'Tahfidz Al-Quran', teacher: 'Ust. Yusuf', class: 'Semua Kelas' },
-                      { day: 'Kamis', time: '14:00 - 15:30', subject: 'Hadits & Sirah', teacher: 'Ust. Ahmad', class: 'Kelas 3-6' },
-                      { day: 'Jumat', time: '14:00 - 16:00', subject: "Tahsin & Muroja'ah", teacher: 'Ust. Yusuf', class: 'Semua Kelas' },
-                      { day: 'Sabtu', time: '08:00 - 10:00', subject: 'Ekstrakurikuler', teacher: 'Semua Guru', class: 'Semua Kelas' },
-                    ].map((item, idx) => (
-                      <TableRow key={idx} className="hover:bg-emerald-50">
-                        <TableCell className="font-medium text-emerald-800">{item.day}</TableCell>
-                        <TableCell>{item.time}</TableCell>
-                        <TableCell>{item.subject}</TableCell>
-                        <TableCell>{item.teacher}</TableCell>
-                        <TableCell><Badge variant="secondary" className="bg-emerald-50 text-emerald-700 text-xs">{item.class}</Badge></TableCell>
-                      </TableRow>
-                    ))}
-                  </>
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center text-gray-400 py-8">
+                      Jadwal belum tersedia
+                    </TableCell>
+                  </TableRow>
                 )}
               </TableBody>
             </Table>

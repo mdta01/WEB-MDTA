@@ -1,11 +1,19 @@
 'use client'
 
+import { useQuery } from '@tanstack/react-query'
 import { MessageCircle } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 
 export default function WhatsAppButton() {
-  const phoneNumber = '6281234567890'
-  const message = 'Assalamualaikum, saya ingin bertanya tentang MDTA Miftahul Ulum 01'
+  const { data: settingsData } = useQuery({
+    queryKey: ['settings'],
+    queryFn: () => fetch('/api/settings').then(r => r.json()),
+  })
+  const settings = Array.isArray(settingsData) ? settingsData : (settingsData?.settings || [])
+  const getSetting = (key: string) => settings.find((s: { key: string }) => s.key === key)?.value || ''
+
+  const phoneNumber = getSetting('madrasah_whatsapp_number') || '6281234567890'
+  const message = getSetting('madrasah_whatsapp_message') || 'Assalamualaikum, saya ingin bertanya tentang MDTA Miftahul Ulum 01'
   const waUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`
 
   return (

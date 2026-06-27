@@ -6,6 +6,31 @@ const prisma = new PrismaClient()
 async function main() {
   console.log('Seeding database...')
 
+  // Clean all data first (order matters due to foreign keys)
+  console.log('Cleaning existing data...')
+  await prisma.suggestion.deleteMany()
+  await prisma.contactMessage.deleteMany()
+  await prisma.pPDBRegistration.deleteMany()
+  await prisma.paymentInfo.deleteMany()
+  await prisma.schedule.deleteMany()
+  await prisma.dakwah.deleteMany()
+  await prisma.download.deleteMany()
+  await prisma.fAQ.deleteMany()
+  await prisma.testimonial.deleteMany()
+  await prisma.alumni.deleteMany()
+  await prisma.gallery.deleteMany()
+  await prisma.achievement.deleteMany()
+  await prisma.news.deleteMany()
+  await prisma.event.deleteMany()
+  await prisma.program.deleteMany()
+  await prisma.teacher.deleteMany()
+  await prisma.student.deleteMany()
+  await prisma.announcement.deleteMany()
+  await prisma.institutionData.deleteMany()
+  await prisma.statistic.deleteMany()
+  await prisma.siteSetting.deleteMany()
+  console.log('Data cleaned.')
+
   // Create Admin
   await prisma.admin.upsert({
     where: { username: 'mdta_mu01_superadmin' },
@@ -22,6 +47,8 @@ async function main() {
   // Site Settings
   const settings = [
     { key: 'madrasah_name', value: 'MDTA Miftahul Ulum 01', label: 'Nama Madrasah' },
+    { key: 'madrasah_subtitle', value: 'Madrasah Diniyah Takmiliyah Awaliyah', label: 'Subjudul Madrasah' },
+    { key: 'madrasah_description', value: 'Mencetak generasi Muslim yang berilmu, berakhlak mulia, dan berprestasi melalui pendidikan Islam yang berkualitas dan menyeluruh.', label: 'Deskripsi Madrasah' },
     { key: 'madrasah_address', value: 'Jl. Raya Desa Miftahul Ulum No. 01, Kec. Cikarang, Kab. Bekasi, Jawa Barat 17530', label: 'Alamat' },
     { key: 'madrasah_phone', value: '081234567890', label: 'Telepon/WhatsApp' },
     { key: 'madrasah_email', value: 'info@mdta-miftahululum01.com', label: 'Email' },
@@ -32,7 +59,9 @@ async function main() {
     { key: 'madrasah_welcome', value: 'Assalamu\'alaikum Warahmatullahi Wabarakatuh. Selamat datang di website resmi MDTA Miftahul Ulum 01. Semoga website ini dapat menjadi sarana informasi dan komunikasi yang bermanfaat bagi seluruh jamaah madrasah.', label: 'Sambutan Kepala Madrasah' },
     { key: 'madrasah_vision', value: 'Terwujudnya generasi Muslim yang berilmu, berakhlak mulia, dan berprestasi', label: 'Visi' },
     { key: 'madrasah_mission', value: '1. Menyelenggarakan pendidikan agama Islam yang berkualitas\n2. Membentuk santri yang berakhlakul karimah\n3. Mengembangkan potensi dan prestasi santri\n4. Mencetak generasi yang cinta Al-Quran dan As-Sunnah\n5. Membangun karakter santri yang mandiri dan bertanggung jawab', label: 'Misi' },
+    { key: 'madrasah_goals', value: '1. Menghasilkan lulusan yang hafal Al-Quran minimal 3 Juz\n2. Menumbuhkan semangat belajar dan berprestasi\n3. Membentuk santri yang berakhlakul karimah\n4. Menjalin kerjasama yang baik dengan orang tua dan masyarakat', label: 'Tujuan' },
     { key: 'madrasah_history', value: 'MDTA Miftahul Ulum 01 didirikan pada tahun 1998 oleh KH. Abdul Rahman bersama tokoh masyarakat setempat dengan tujuan memberikan pendidikan agama Islam yang berkualitas bagi anak-anak di wilayah Cikarang dan sekitarnya. Bermula dari sebuah musholla kecil dengan hanya 15 santri, madrasah ini terus berkembang hingga kini memiliki ratusan santri aktif dengan fasilitas yang terus diperbaiki. Nama "Miftahul Ulum" yang berarti "Kunci Ilmu" dipilih dengan harapan madrasah ini menjadi pintu gerbang ilmu pengetahuan, khususnya ilmu agama Islam, bagi generasi mendatang.', label: 'Sejarah' },
+    { key: 'madrasah_history_year', value: '1998', label: 'Tahun Berdiri' },
     { key: 'madrasah_principals_name', value: 'Ustadz H. Muhammad Syafii, S.Pd.I', label: 'Nama Kepala Madrasah' },
     { key: 'madrasah_principal_photo', value: '/images/kepala-madrasah.png', label: 'Foto Kepala Madrasah' },
     { key: 'madrasah_yayasan', value: 'Yayasan Pendidikan Islam Miftahul Ulum', label: 'Naungan Yayasan' },
@@ -42,8 +71,26 @@ async function main() {
     { key: 'madrasah_akreditasi', value: 'Terakreditasi A', label: 'Akreditasi' },
     { key: 'madrasah_service_hours', value: 'Senin - Sabtu: 07.00 - 12.00 WIB', label: 'Jam Pelayanan' },
     { key: 'madrasah_maps', value: '-6.3082,107.1732', label: 'Koordinat Google Maps' },
+    { key: 'madrasah_maps_embed_url', value: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3965.0!2d106.6!3d-6.3!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNsKwMTgnMDAuMCJTIDEwNsKwMzYnMDAuMCJF!5e0!3m2!1sid!2sid!4v1', label: 'URL Embed Google Maps' },
+    { key: 'madrasah_logo', value: '/images/logo-madin-warna.png', label: 'Logo URL' },
+    { key: 'madrasah_hero_image', value: '/images/hero-madrasah.png', label: 'Gambar Hero' },
+    { key: 'madrasah_footer_description', value: 'Mencetak generasi Muslim yang berilmu, berakhlak mulia, dan berprestasi melalui pendidikan Islam yang berkualitas.', label: 'Deskripsi Footer' },
+    { key: 'madrasah_copyright', value: 'Mencetak Generasi Muslim yang Berilmu & Berakhlak Mulia', label: 'Teks Copyright' },
+    { key: 'madrasah_whatsapp_number', value: '6281234567890', label: 'Nomor WhatsApp (Format Internasional)' },
+    { key: 'madrasah_whatsapp_message', value: 'Assalamualaikum, saya ingin bertanya tentang MDTA Miftahul Ulum 01', label: 'Pesan Default WhatsApp' },
+    { key: 'madrasah_struktur_organisasi', value: JSON.stringify([
+      { role: 'Kepala Madrasah', name: 'Ustadz H. Muhammad Syafii, S.Pd.I', level: 1 },
+      { role: 'Wakil Kepala Madrasah', name: 'Ustadzah Hj. Siti Aisyah, S.Ag', level: 2 },
+      { role: 'Sekretaris', name: 'Ustadz Ahmad Fauzi, S.Pd', level: 3 },
+      { role: 'Bendahara', name: 'Ustadzah Zulfa Husna, S.Ag', level: 3 },
+      { role: 'Kurikulum', name: 'Ustadzah Nurhasanah, S.Pd.I', level: 3 },
+      { role: 'Kesantrian', name: 'Ustadz Rahman Hakim, S.Ag', level: 3 },
+    ]), label: 'Struktur Organisasi (JSON)' },
     { key: 'ppdb_status', value: 'open', label: 'Status PPDB' },
     { key: 'ppdb_info', value: 'Pendaftaran Santri Baru Tahun Ajaran 2025/2026 telah dibuka! Segera daftarkan putra-putri Anda.', label: 'Info PPDB' },
+    { key: 'ppdb_requirements', value: 'Mengisi formulir pendaftaran secara lengkap\nFotokopi Akta Kelahiran\nFotokopi Kartu Keluarga\nPas Foto 3x4 (4 lembar)\nFotokopi KTP Orang Tua/Wali\nSurat Keterangan Lulus (bagi pindahan)', label: 'Persyaratan PPDB' },
+    { key: 'ppdb_contact', value: 'Panitia PPDB MDTA Miftahul Ulum 01|081234567890', label: 'Kontak PPDB (nama|nomor)' },
+    { key: 'wali_santri_meeting_schedule', value: 'Pertemuan Awal Tahun Ajaran|Januari 2025|09:00 - 12:00 WIB\nRapat Tengah Semester|Juni 2025|09:00 - 12:00 WIB\nPenerimaan Rapor|Desember 2025|08:00 - 12:00 WIB', label: 'Jadwal Pertemuan Wali Santri (judul|tanggal|waktu)' },
   ]
 
   for (const s of settings) {

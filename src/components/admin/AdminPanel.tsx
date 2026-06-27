@@ -1031,6 +1031,15 @@ function SettingsManager() {
     return { ...map, ...settingsEdits }
   }, [settingsData, settingsEdits])
 
+  // Map of setting key -> label from API
+  const settingsLabels = useMemo(() => {
+    const map: Record<string, string> = {}
+    if (Array.isArray(settingsData)) {
+      settingsData.forEach((s: { key: string; value: string; label?: string }) => { map[s.key] = s.label || '' })
+    }
+    return map
+  }, [settingsData])
+
   const statsValues = useMemo(() => {
     const map: Record<string, string> = {}
     if (Array.isArray(statisticsData)) {
@@ -1168,53 +1177,123 @@ function SettingsManager() {
             </div>
           </CardHeader>
           <CardContent>
-            {/* Principal Photo Section - Special UI */}
-            {settingsValues['madrasah_principal_photo'] !== undefined && (
-              <div className="mb-6 p-4 border border-amber-200 bg-amber-50 rounded-lg">
-                <div className="flex items-start gap-4">
-                  <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-amber-400 shadow-md flex-shrink-0">
-                    <img 
-                      src={settingsValues['madrasah_principal_photo'] || '/images/kepala-madrasah.png'} 
-                      alt="Preview Foto Kepala Madrasah"
-                      className="w-full h-full object-cover"
-                      onError={(e) => { (e.target as HTMLImageElement).src = '/images/kepala-madrasah.png' }}
-                    />
-                  </div>
-                  <div className="flex-1 space-y-2">
-                    <Label className="text-sm font-semibold text-amber-800 flex items-center gap-2">
-                      <ImageIcon className="h-4 w-4" />
-                      Foto Kepala Madrasah
-                    </Label>
-                    <p className="text-xs text-gray-500">Masukkan URL gambar foto Kepala Madrasah. Kosongkan untuk menggunakan foto default.</p>
-                    <Input
-                      value={settingsValues['madrasah_principal_photo'] || ''}
-                      onChange={(e) => setSettingsEdits((prev) => ({ ...prev, madrasah_principal_photo: e.target.value }))}
-                      placeholder="/images/kepala-madrasah.png"
-                      className="bg-white"
-                    />
+            {/* Image Settings - Special UI with preview */}
+            {(['madrasah_principal_photo', 'madrasah_hero_image', 'madrasah_logo'] as const).map((imgKey) => 
+              settingsValues[imgKey] !== undefined && (
+                <div key={imgKey} className="mb-4 p-4 border border-amber-200 bg-amber-50 rounded-lg">
+                  <div className="flex items-start gap-4">
+                    <div className="w-20 h-20 rounded-lg overflow-hidden border-2 border-amber-400 shadow-md flex-shrink-0 bg-white">
+                      <img 
+                        src={settingsValues[imgKey] || '/images/kepala-madrasah.png'} 
+                        alt={`Preview ${imgKey}`}
+                        className="w-full h-full object-cover"
+                        onError={(e) => { (e.target as HTMLImageElement).src = '/images/kepala-madrasah.png' }}
+                      />
+                    </div>
+                    <div className="flex-1 space-y-2">
+                      <Label className="text-sm font-semibold text-amber-800 flex items-center gap-2">
+                        <ImageIcon className="h-4 w-4" />
+                        {imgKey === 'madrasah_principal_photo' ? 'Foto Kepala Madrasah' : 
+                         imgKey === 'madrasah_hero_image' ? 'Gambar Hero Beranda' : 'Logo Madrasah'}
+                      </Label>
+                      <p className="text-xs text-gray-500">Masukkan URL gambar. Gunakan path relatif (contoh: /images/foto.png) atau URL lengkap.</p>
+                      <Input
+                        value={settingsValues[imgKey] || ''}
+                        onChange={(e) => setSettingsEdits((prev) => ({ ...prev, [imgKey]: e.target.value }))}
+                        placeholder="/images/..."
+                        className="bg-white"
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
+              )
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {Object.entries(settingsValues).filter(([key]) => key !== 'madrasah_principal_photo').map(([key, value]) => (
-                <div key={key} className="space-y-1">
-                  <Label className="text-xs text-gray-500 capitalize">
-                    {key.replace(/_/g, ' ').replace(/madrasah/g, '').trim() || key}
-                  </Label>
-                  <Input
-                    value={value}
-                    onChange={(e) => setSettingsEdits((prev) => ({ ...prev, [key]: e.target.value }))}
-                  />
+            {/* Grouped Settings */}
+            {(() => {
+              const imageKeys = ['madrasah_principal_photo', 'madrasah_hero_image', 'madrasah_logo']
+              const longTextKeys = ['madrasah_history', 'madrasah_welcome', 'madrasah_mission', 'madrasah_goals', 'madrasah_struktur_organisasi', 'ppdb_requirements', 'wali_santri_meeting_schedule']
+              const filteredEntries = Object.entries(settingsValues).filter(([key]) => !imageKeys.includes(key))
+              
+              const groups: Record<string, string[]> = {
+                'Identitas Madrasah': ['madrasah_name', 'madrasah_subtitle', 'madrasah_description', 'madrasah_history_year', 'madrasah_footer_description', 'madrasah_copyright'],
+                'Kontak & Sosial Media': ['madrasah_address', 'madrasah_phone', 'madrasah_email', 'madrasah_service_hours', 'madrasah_facebook', 'madrasah_instagram', 'madrasah_youtube', 'madrasah_tiktok', 'madrasah_whatsapp_number', 'madrasah_whatsapp_message'],
+                'Profil Madrasah': ['madrasah_welcome', 'madrasah_vision', 'madrasah_mission', 'madrasah_goals', 'madrasah_history', 'madrasah_struktur_organisasi', 'madrasah_principals_name'],
+                'Kelembagaan': ['madrasah_yayasan', 'madrasah_nsdt', 'madrasah_sk', 'madrasah_izin', 'madrasah_akreditasi', 'madrasah_maps', 'madrasah_maps_embed_url'],
+                'PPDB': ['ppdb_status', 'ppdb_info', 'ppdb_requirements', 'ppdb_contact'],
+                'Wali Santri': ['wali_santri_meeting_schedule'],
+              }
+
+              const groupedKeys = new Set(Object.values(groups).flat())
+              const otherEntries = filteredEntries.filter(([key]) => !groupedKeys.has(key))
+
+              return (
+                <div className="space-y-6">
+                  {Object.entries(groups).map(([groupName, keys]) => {
+                    const groupEntries = keys.filter(k => settingsValues[k] !== undefined).map(k => [k, settingsValues[k]] as [string, string])
+                    if (groupEntries.length === 0) return null
+                    return (
+                      <div key={groupName}>
+                        <h4 className="text-sm font-semibold text-emerald-800 mb-3 flex items-center gap-2">
+                          <div className="w-1 h-4 bg-amber-500 rounded-full" />
+                          {groupName}
+                        </h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {groupEntries.map(([key, value]) => (
+                            <div key={key} className={longTextKeys.includes(key) ? 'md:col-span-2' : ''}>
+                              <Label className="text-xs text-gray-500">
+                                {settingsLabels[key] || key.replace(/_/g, ' ').replace(/madrasah/g, '').trim() || key}
+                              </Label>
+                              {longTextKeys.includes(key) ? (
+                                <Textarea
+                                  value={value}
+                                  onChange={(e) => setSettingsEdits((prev) => ({ ...prev, [key]: e.target.value }))}
+                                  rows={4}
+                                  className="mt-1"
+                                />
+                              ) : (
+                                <Input
+                                  value={value}
+                                  onChange={(e) => setSettingsEdits((prev) => ({ ...prev, [key]: e.target.value }))}
+                                  className="mt-1"
+                                />
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )
+                  })}
+                  {otherEntries.length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-semibold text-emerald-800 mb-3 flex items-center gap-2">
+                        <div className="w-1 h-4 bg-amber-500 rounded-full" />
+                        Lainnya
+                      </h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {otherEntries.map(([key, value]) => (
+                          <div key={key}>
+                            <Label className="text-xs text-gray-500">
+                              {settingsLabels[key] || key.replace(/_/g, ' ').replace(/madrasah/g, '').trim() || key}
+                            </Label>
+                            <Input
+                              value={value}
+                              onChange={(e) => setSettingsEdits((prev) => ({ ...prev, [key]: e.target.value }))}
+                              className="mt-1"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {Object.keys(settingsValues).length === 0 && (
+                    <p className="text-sm text-gray-500 text-center py-4">
+                      Belum ada pengaturan. Data akan muncul setelah pertama kali disimpan.
+                    </p>
+                  )}
                 </div>
-              ))}
-              {Object.keys(settingsValues).length === 0 && (
-                <p className="text-sm text-gray-500 col-span-2 text-center py-4">
-                  Belum ada pengaturan. Data akan muncul setelah pertama kali disimpan.
-                </p>
-              )}
-            </div>
+              )
+            })()}
           </CardContent>
         </Card>
       )}

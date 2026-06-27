@@ -37,8 +37,23 @@ export default function WaliSantriSection() {
     queryFn: () => fetch('/api/announcements').then(r => r.json()),
   })
 
+  const { data: settingsData } = useQuery({
+    queryKey: ['settings'],
+    queryFn: () => fetch('/api/settings').then(r => r.json()),
+  })
+
+  const settings = Array.isArray(settingsData) ? settingsData : (settingsData?.settings || [])
+  const getSetting = (key: string) => settings.find((s: { key: string }) => s.key === key)?.value || ''
+
   const payments = Array.isArray(paymentsData) ? paymentsData : (paymentsData?.payments || [])
   const announcements = ((Array.isArray(announcementsData) ? announcementsData : (announcementsData?.announcements || []))).slice(0, 5)
+
+  const meetingSchedule = getSetting('wali_santri_meeting_schedule')
+    ? getSetting('wali_santri_meeting_schedule').split('\n').filter(Boolean).map(line => {
+        const [title, date, time] = line.split('|')
+        return { title: title?.trim() || '', date: date?.trim() || '', time: time?.trim() || '' }
+      })
+    : []
 
   const handleSuggestionSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -112,23 +127,7 @@ export default function WaliSantriSection() {
                     ))}
                   </div>
                 ) : (
-                  <div className="space-y-3">
-                    {[
-                      { title: 'SPP Bulan ini', amount: 'Rp 75.000', due: '10 Maret 2025' },
-                      { title: 'Uang Kegiatan', amount: 'Rp 50.000', due: '15 Maret 2025' },
-                    ].map((item, idx) => (
-                      <div key={idx} className="flex items-center justify-between p-3 bg-emerald-50 rounded-lg">
-                        <div>
-                          <p className="font-medium text-sm text-emerald-800">{item.title}</p>
-                          <p className="text-xs text-gray-400 mt-1 flex items-center gap-1">
-                            <Clock className="h-3 w-3" />
-                            Jatuh tempo: {item.due}
-                          </p>
-                        </div>
-                        <Badge className="bg-amber-100 text-amber-800 font-bold">{item.amount}</Badge>
-                      </div>
-                    ))}
-                  </div>
+                  <p className="text-gray-400 text-sm">Informasi pembayaran belum tersedia</p>
                 )}
               </CardContent>
             </Card>
@@ -172,19 +171,19 @@ export default function WaliSantriSection() {
                   Jadwal Pertemuan Wali Santri
                 </h3>
                 <div className="space-y-3">
-                  {[
-                    { title: 'Pertemuan Awal Tahun Ajaran', date: 'Januari 2025', time: '09:00 - 12:00 WIB' },
-                    { title: 'Rapat Tengah Semester', date: 'Juni 2025', time: '09:00 - 12:00 WIB' },
-                    { title: 'Penerimaan Rapor', date: 'Desember 2025', time: '08:00 - 12:00 WIB' },
-                  ].map((item, idx) => (
-                    <div key={idx} className="p-3 bg-emerald-50 rounded-lg">
-                      <p className="font-medium text-sm text-emerald-800">{item.title}</p>
-                      <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
-                        <span>{item.date}</span>
-                        <span>{item.time}</span>
+                  {meetingSchedule.length > 0 ? (
+                    meetingSchedule.map((item, idx) => (
+                      <div key={idx} className="p-3 bg-emerald-50 rounded-lg">
+                        <p className="font-medium text-sm text-emerald-800">{item.title}</p>
+                        <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
+                          <span>{item.date}</span>
+                          <span>{item.time}</span>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))
+                  ) : (
+                    <p className="text-gray-400 text-sm">Jadwal pertemuan belum tersedia</p>
+                  )}
                 </div>
               </CardContent>
             </Card>
