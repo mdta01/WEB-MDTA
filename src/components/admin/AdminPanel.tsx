@@ -1385,8 +1385,8 @@ export default function AdminPanel({ adminName: adminNameProp, onLogout }: Admin
           <div className="p-4 border-b border-emerald-700">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-amber-500 flex items-center justify-center text-emerald-900 font-bold text-lg shadow">
-                  M
+                <div className="w-10 h-10 rounded-full overflow-hidden shadow">
+                  <img src="/images/logo-madin-warna.png" alt="Logo" className="w-full h-full object-cover" />
                 </div>
                 <div>
                   <p className="font-bold text-sm leading-tight">MDTA Miftahul Ulum</p>
@@ -1437,8 +1437,8 @@ export default function AdminPanel({ adminName: adminNameProp, onLogout }: Admin
           <div className="p-4 border-t border-emerald-700">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2 min-w-0">
-                <div className="w-8 h-8 rounded-full bg-amber-500 flex items-center justify-center text-emerald-900 font-bold text-sm shrink-0">
-                  {(adminName || 'A').charAt(0).toUpperCase()}
+                <div className="w-8 h-8 rounded-full overflow-hidden shrink-0">
+                  <img src="/images/logo-madin-warna.png" alt="Logo" className="w-full h-full object-cover" />
                 </div>
                 <div className="min-w-0">
                   <p className="text-sm font-medium truncate">{adminName || 'Admin'}</p>

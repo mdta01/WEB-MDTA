@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   keywords: ["MDTA", "Miftahul Ulum", "Madrasah Diniyah", "Pondok Pesantren", "Tahfidz Quran", "Pendidikan Islam"],
   authors: [{ name: "MDTA Miftahul Ulum 01" }],
   icons: {
-    icon: "/logo.svg",
+    icon: "/images/logo-madin-warna.png",
   },
   openGraph: {
     title: "MDTA Miftahul Ulum 01",

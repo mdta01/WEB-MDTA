@@ -209,8 +209,8 @@ export default function BerandaSection() {
           <Card className="overflow-hidden border-0 shadow-lg">
             <div className="grid md:grid-cols-3 gap-0">
               <div className="bg-gradient-to-br from-emerald-600 to-emerald-800 p-8 flex flex-col items-center justify-center text-white">
-                <div className="w-24 h-24 rounded-full bg-white/20 flex items-center justify-center mb-4">
-                  <Users className="h-12 w-12 text-amber-400" />
+                <div className="w-24 h-24 rounded-full overflow-hidden mb-4 border-2 border-amber-400">
+                  <img src="/images/logo-madin-warna.png" alt="Logo MDTA" className="w-full h-full object-cover" />
                 </div>
                 <h3 className="font-bold text-lg text-center">Kepala Madrasah</h3>
                 <p className="text-emerald-200 text-sm mt-1">Ustadz Ahmad Fauzi, S.Pd.I</p>
