@@ -1,0 +1,1541 @@
+'use client'
+
+import { useState, useEffect, useMemo } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { motion, AnimatePresence } from 'framer-motion'
+import {
+  LayoutDashboard, Newspaper, Megaphone, Users, GraduationCap,
+  BookOpen, Trophy, ImageIcon, Calendar, MessageSquare, FileText,
+  Download, Mail, Lightbulb, Settings, LogOut, Menu, X,
+  ChevronRight, Shield, Loader2, Save, DollarSign, Clock, Star,
+} from 'lucide-react'
+import { toast } from 'sonner'
+import { useAppStore } from '@/store/useAppStore'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Label } from '@/components/ui/label'
+import { Switch } from '@/components/ui/switch'
+import { Badge } from '@/components/ui/badge'
+import { Separator } from '@/components/ui/separator'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@/components/ui/dialog'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import CRUDManager, { type FormFieldConfig, type ColumnConfig } from './CRUDManager'
+import AdminDashboard from './AdminDashboard'
+
+// --- Types ---
+
+type AdminSection =
+  | 'dashboard'
+  | 'news'
+  | 'announcements'
+  | 'teachers'
+  | 'students'
+  | 'programs'
+  | 'achievements'
+  | 'gallery'
+  | 'events'
+  | 'testimonials'
+  | 'faqs'
+  | 'downloads'
+  | 'dakwah'
+  | 'alumni'
+  | 'schedules'
+  | 'payments'
+  | 'ppdb'
+  | 'contact-messages'
+  | 'suggestions'
+  | 'settings'
+
+interface NavItem {
+  id: AdminSection
+  label: string
+  icon: React.ReactNode
+  group?: string
+}
+
+// --- Navigation Config ---
+
+const navItems: NavItem[] = [
+  { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard className="h-4 w-4" /> },
+  { id: 'news', label: 'Kelola Berita', icon: <Newspaper className="h-4 w-4" />, group: 'Konten' },
+  { id: 'announcements', label: 'Kelola Pengumuman', icon: <Megaphone className="h-4 w-4" />, group: 'Konten' },
+  { id: 'dakwah', label: 'Kelola Dakwah', icon: <BookOpen className="h-4 w-4" />, group: 'Konten' },
+  { id: 'events', label: 'Kelola Event', icon: <Calendar className="h-4 w-4" />, group: 'Konten' },
+  { id: 'gallery', label: 'Kelola Galeri', icon: <ImageIcon className="h-4 w-4" />, group: 'Konten' },
+  { id: 'downloads', label: 'Kelola Download', icon: <Download className="h-4 w-4" />, group: 'Konten' },
+  { id: 'faqs', label: 'Kelola FAQ', icon: <FileText className="h-4 w-4" />, group: 'Konten' },
+  { id: 'teachers', label: 'Kelola Guru', icon: <Users className="h-4 w-4" />, group: 'Akademik' },
+  { id: 'students', label: 'Kelola Santri', icon: <GraduationCap className="h-4 w-4" />, group: 'Akademik' },
+  { id: 'programs', label: 'Kelola Program', icon: <BookOpen className="h-4 w-4" />, group: 'Akademik' },
+  { id: 'schedules', label: 'Kelola Jadwal', icon: <Clock className="h-4 w-4" />, group: 'Akademik' },
+  { id: 'achievements', label: 'Kelola Prestasi', icon: <Trophy className="h-4 w-4" />, group: 'Lainnya' },
+  { id: 'testimonials', label: 'Kelola Testimoni', icon: <Star className="h-4 w-4" />, group: 'Lainnya' },
+  { id: 'alumni', label: 'Kelola Alumni', icon: <GraduationCap className="h-4 w-4" />, group: 'Lainnya' },
+  { id: 'payments', label: 'Kelola Pembayaran', icon: <DollarSign className="h-4 w-4" />, group: 'Lainnya' },
+  { id: 'ppdb', label: 'Kelola PPDB', icon: <Shield className="h-4 w-4" />, group: 'Pendaftaran' },
+  { id: 'contact-messages', label: 'Pesan Kontak', icon: <Mail className="h-4 w-4" />, group: 'Pesan' },
+  { id: 'suggestions', label: 'Kritik & Saran', icon: <Lightbulb className="h-4 w-4" />, group: 'Pesan' },
+  { id: 'settings', label: 'Pengaturan Website', icon: <Settings className="h-4 w-4" />, group: 'Sistem' },
+]
+
+// --- Entity Configurations ---
+
+interface EntityConfig {
+  title: string
+  apiPath: string
+  itemName: string
+  columns: ColumnConfig[]
+  formFields: FormFieldConfig[]
+  canCreate?: boolean
+  canDelete?: boolean
+  canEdit?: boolean
+}
+
+const entityConfigs: Record<string, EntityConfig> = {
+  news: {
+    title: 'Kelola Berita',
+    apiPath: 'news',
+    itemName: 'Berita',
+    columns: [
+      { key: 'title', label: 'Judul' },
+      { key: 'category', label: 'Kategori' },
+      { key: 'isPublished', label: 'Status' },
+      { key: 'createdAt', label: 'Tanggal' },
+    ],
+    formFields: [
+      { name: 'title', label: 'Judul', type: 'text', required: true, placeholder: 'Judul berita', colSpan: 2 },
+      { name: 'category', label: 'Kategori', type: 'select', options: [
+        { label: 'Kegiatan', value: 'kegiatan' },
+        { label: 'PHBI', value: 'phbi' },
+        { label: 'Keagamaan', value: 'keagamaan' },
+        { label: 'Lomba', value: 'lomba' },
+        { label: 'Prestasi', value: 'prestasi' },
+      ]},
+      { name: 'isPublished', label: 'Dipublikasi', type: 'switch' },
+      { name: 'excerpt', label: 'Ringkasan', type: 'textarea', placeholder: 'Ringkasan singkat berita', colSpan: 2 },
+      { name: 'image', label: 'URL Gambar', type: 'text', placeholder: 'https://...', colSpan: 2 },
+      { name: 'content', label: 'Konten', type: 'textarea', required: true, placeholder: 'Isi berita lengkap', colSpan: 2 },
+    ],
+  },
+  announcements: {
+    title: 'Kelola Pengumuman',
+    apiPath: 'announcements',
+    itemName: 'Pengumuman',
+    columns: [
+      { key: 'title', label: 'Judul' },
+      { key: 'type', label: 'Tipe' },
+      { key: 'priority', label: 'Prioritas' },
+      { key: 'isActive', label: 'Status' },
+    ],
+    formFields: [
+      { name: 'title', label: 'Judul', type: 'text', required: true, placeholder: 'Judul pengumuman', colSpan: 2 },
+      { name: 'type', label: 'Tipe', type: 'select', options: [
+        { label: 'Umum', value: 'general' },
+        { label: 'Ujian', value: 'exam' },
+        { label: 'Libur', value: 'holiday' },
+        { label: 'Acara', value: 'event' },
+        { label: 'PPDB', value: 'ppdb' },
+      ]},
+      { name: 'priority', label: 'Prioritas', type: 'number', placeholder: '0' },
+      { name: 'isActive', label: 'Aktif', type: 'switch' },
+      { name: 'content', label: 'Konten', type: 'textarea', required: true, placeholder: 'Isi pengumuman', colSpan: 2 },
+    ],
+  },
+  teachers: {
+    title: 'Kelola Guru',
+    apiPath: 'teachers',
+    itemName: 'Guru',
+    columns: [
+      { key: 'name', label: 'Nama' },
+      { key: 'position', label: 'Jabatan' },
+      { key: 'subject', label: 'Mata Pelajaran' },
+      { key: 'isActive', label: 'Status' },
+    ],
+    formFields: [
+      { name: 'name', label: 'Nama', type: 'text', required: true, placeholder: 'Nama lengkap guru' },
+      { name: 'position', label: 'Jabatan', type: 'text', required: true, placeholder: 'Jabatan/posisi' },
+      { name: 'subject', label: 'Mata Pelajaran', type: 'text', placeholder: 'Mata pelajaran yang diampu' },
+      { name: 'phone', label: 'No. Telepon', type: 'text', placeholder: '08xxx' },
+      { name: 'order', label: 'Urutan', type: 'number', placeholder: '0' },
+      { name: 'isActive', label: 'Aktif', type: 'switch' },
+      { name: 'image', label: 'URL Foto', type: 'text', placeholder: 'https://...', colSpan: 2 },
+    ],
+  },
+  students: {
+    title: 'Kelola Santri',
+    apiPath: 'students',
+    itemName: 'Santri',
+    columns: [
+      { key: 'name', label: 'Nama' },
+      { key: 'class', label: 'Kelas' },
+      { key: 'nis', label: 'NIS' },
+      { key: 'isActive', label: 'Status' },
+    ],
+    formFields: [
+      { name: 'name', label: 'Nama', type: 'text', required: true, placeholder: 'Nama lengkap santri' },
+      { name: 'class', label: 'Kelas', type: 'text', required: true, placeholder: 'Kelas' },
+      { name: 'nis', label: 'NIS', type: 'text', placeholder: 'Nomor Induk Santri' },
+      { name: 'isActive', label: 'Aktif', type: 'switch' },
+    ],
+  },
+  programs: {
+    title: 'Kelola Program',
+    apiPath: 'programs',
+    itemName: 'Program',
+    columns: [
+      { key: 'title', label: 'Nama Program' },
+      { key: 'category', label: 'Kategori' },
+      { key: 'order', label: 'Urutan' },
+      { key: 'isActive', label: 'Status' },
+    ],
+    formFields: [
+      { name: 'title', label: 'Nama Program', type: 'text', required: true, placeholder: 'Nama program', colSpan: 2 },
+      { name: 'category', label: 'Kategori', type: 'select', options: [
+        { label: 'Kelas', value: 'kelas' },
+        { label: 'Kurikulum', value: 'kurikulum' },
+        { label: 'Unggulan', value: 'unggulan' },
+        { label: 'Ekstrakurikuler', value: 'ekstrakurikuler' },
+      ]},
+      { name: 'order', label: 'Urutan', type: 'number', placeholder: '0' },
+      { name: 'isActive', label: 'Aktif', type: 'switch' },
+      { name: 'icon', label: 'Ikon', type: 'text', placeholder: 'Nama ikon Lucide', colSpan: 2 },
+      { name: 'description', label: 'Deskripsi', type: 'textarea', required: true, placeholder: 'Deskripsi program', colSpan: 2 },
+    ],
+  },
+  achievements: {
+    title: 'Kelola Prestasi',
+    apiPath: 'achievements',
+    itemName: 'Prestasi',
+    columns: [
+      { key: 'title', label: 'Judul' },
+      { key: 'achiever', label: 'Pencapaian Oleh' },
+      { key: 'category', label: 'Kategori' },
+      { key: 'level', label: 'Tingkat' },
+      { key: 'year', label: 'Tahun' },
+    ],
+    formFields: [
+      { name: 'title', label: 'Judul Prestasi', type: 'text', required: true, placeholder: 'Judul prestasi', colSpan: 2 },
+      { name: 'achiever', label: 'Pencapaian Oleh', type: 'text', required: true, placeholder: 'Nama orang/kelompok' },
+      { name: 'category', label: 'Kategori', type: 'select', options: [
+        { label: 'Santri', value: 'santri' },
+        { label: 'Guru', value: 'guru' },
+      ]},
+      { name: 'level', label: 'Tingkat', type: 'select', options: [
+        { label: 'Kecamatan', value: 'kecamatan' },
+        { label: 'Kabupaten', value: 'kabupaten' },
+        { label: 'Provinsi', value: 'provinsi' },
+        { label: 'Nasional', value: 'nasional' },
+      ]},
+      { name: 'year', label: 'Tahun', type: 'text', required: true, placeholder: '2024' },
+      { name: 'image', label: 'URL Gambar', type: 'text', placeholder: 'https://...', colSpan: 2 },
+      { name: 'description', label: 'Deskripsi', type: 'textarea', placeholder: 'Deskripsi prestasi', colSpan: 2 },
+    ],
+  },
+  gallery: {
+    title: 'Kelola Galeri',
+    apiPath: 'gallery',
+    itemName: 'Galeri',
+    columns: [
+      { key: 'title', label: 'Judul' },
+      { key: 'category', label: 'Kategori' },
+      { key: 'type', label: 'Tipe' },
+      { key: 'year', label: 'Tahun' },
+    ],
+    formFields: [
+      { name: 'title', label: 'Judul', type: 'text', required: true, placeholder: 'Judul galeri' },
+      { name: 'image', label: 'URL Gambar/Video', type: 'text', required: true, placeholder: 'https://...' },
+      { name: 'category', label: 'Kategori', type: 'select', options: [
+        { label: 'Kegiatan', value: 'kegiatan' },
+        { label: 'Acara', value: 'acara' },
+        { label: 'Tahunan', value: 'tahunan' },
+      ]},
+      { name: 'type', label: 'Tipe', type: 'select', options: [
+        { label: 'Foto', value: 'foto' },
+        { label: 'Video', value: 'video' },
+      ]},
+      { name: 'year', label: 'Tahun', type: 'text', placeholder: '2024' },
+    ],
+  },
+  events: {
+    title: 'Kelola Event',
+    apiPath: 'events',
+    itemName: 'Event',
+    columns: [
+      { key: 'title', label: 'Judul' },
+      { key: 'date', label: 'Tanggal' },
+      { key: 'location', label: 'Lokasi' },
+      { key: 'category', label: 'Kategori' },
+    ],
+    formFields: [
+      { name: 'title', label: 'Judul Event', type: 'text', required: true, placeholder: 'Judul event', colSpan: 2 },
+      { name: 'date', label: 'Tanggal', type: 'date', required: true },
+      { name: 'category', label: 'Kategori', type: 'select', options: [
+        { label: 'Kegiatan', value: 'kegiatan' },
+        { label: 'PHBI', value: 'phbi' },
+        { label: 'Keagamaan', value: 'keagamaan' },
+        { label: 'Lomba', value: 'lomba' },
+      ]},
+      { name: 'location', label: 'Lokasi', type: 'text', placeholder: 'Lokasi acara', colSpan: 2 },
+      { name: 'image', label: 'URL Gambar', type: 'text', placeholder: 'https://...', colSpan: 2 },
+      { name: 'description', label: 'Deskripsi', type: 'textarea', placeholder: 'Deskripsi event', colSpan: 2 },
+    ],
+  },
+  testimonials: {
+    title: 'Kelola Testimoni',
+    apiPath: 'testimonials',
+    itemName: 'Testimoni',
+    columns: [
+      { key: 'name', label: 'Nama' },
+      { key: 'role', label: 'Peran' },
+      { key: 'isActive', label: 'Status' },
+    ],
+    formFields: [
+      { name: 'name', label: 'Nama', type: 'text', required: true, placeholder: 'Nama pemberi testimoni' },
+      { name: 'role', label: 'Peran', type: 'select', required: true, options: [
+        { label: 'Wali Santri', value: 'wali_santri' },
+        { label: 'Alumni', value: 'alumni' },
+      ]},
+      { name: 'isActive', label: 'Aktif', type: 'switch' },
+      { name: 'image', label: 'URL Foto', type: 'text', placeholder: 'https://...' },
+      { name: 'content', label: 'Testimoni', type: 'textarea', required: true, placeholder: 'Isi testimoni', colSpan: 2 },
+    ],
+  },
+  faqs: {
+    title: 'Kelola FAQ',
+    apiPath: 'faqs',
+    itemName: 'FAQ',
+    columns: [
+      { key: 'question', label: 'Pertanyaan' },
+      { key: 'order', label: 'Urutan' },
+      { key: 'isActive', label: 'Status' },
+    ],
+    formFields: [
+      { name: 'question', label: 'Pertanyaan', type: 'text', required: true, placeholder: 'Pertanyaan yang sering diajukan', colSpan: 2 },
+      { name: 'answer', label: 'Jawaban', type: 'textarea', required: true, placeholder: 'Jawaban pertanyaan', colSpan: 2 },
+      { name: 'order', label: 'Urutan', type: 'number', placeholder: '0' },
+      { name: 'isActive', label: 'Aktif', type: 'switch' },
+    ],
+  },
+  downloads: {
+    title: 'Kelola Download',
+    apiPath: 'downloads',
+    itemName: 'Download',
+    columns: [
+      { key: 'title', label: 'Judul' },
+      { key: 'category', label: 'Kategori' },
+      { key: 'fileUrl', label: 'File URL' },
+    ],
+    formFields: [
+      { name: 'title', label: 'Judul', type: 'text', required: true, placeholder: 'Judul file download' },
+      { name: 'category', label: 'Kategori', type: 'select', required: true, options: [
+        { label: 'Formulir', value: 'formulir' },
+        { label: 'Kalender', value: 'kalender' },
+        { label: 'Tata Tertib', value: 'tata_tertib' },
+        { label: 'Jadwal', value: 'jadwal' },
+        { label: 'Surat Edaran', value: 'surat_edaran' },
+        { label: 'Lainnya', value: 'lainnya' },
+      ]},
+      { name: 'fileUrl', label: 'URL File', type: 'text', required: true, placeholder: 'https://...', colSpan: 2 },
+    ],
+  },
+  dakwah: {
+    title: 'Kelola Dakwah',
+    apiPath: 'dakwah',
+    itemName: 'Dakwah',
+    columns: [
+      { key: 'title', label: 'Judul' },
+      { key: 'category', label: 'Kategori' },
+      { key: 'author', label: 'Penulis' },
+      { key: 'isPublished', label: 'Status' },
+    ],
+    formFields: [
+      { name: 'title', label: 'Judul', type: 'text', required: true, placeholder: 'Judul dakwah', colSpan: 2 },
+      { name: 'category', label: 'Kategori', type: 'select', options: [
+        { label: 'Kajian', value: 'kajian' },
+        { label: 'Artikel', value: 'artikel' },
+        { label: 'Kultum', value: 'kultum' },
+        { label: 'Video', value: 'video' },
+        { label: 'Materi', value: 'materi' },
+      ]},
+      { name: 'isPublished', label: 'Dipublikasi', type: 'switch' },
+      { name: 'author', label: 'Penulis', type: 'text', placeholder: 'Nama penulis/ustadz' },
+      { name: 'videoUrl', label: 'URL Video', type: 'text', placeholder: 'https://youtube.com/...', colSpan: 2 },
+      { name: 'image', label: 'URL Gambar', type: 'text', placeholder: 'https://...', colSpan: 2 },
+      { name: 'content', label: 'Konten', type: 'textarea', required: true, placeholder: 'Isi dakwah', colSpan: 2 },
+    ],
+  },
+  alumni: {
+    title: 'Kelola Alumni',
+    apiPath: 'alumni',
+    itemName: 'Alumni',
+    columns: [
+      { key: 'name', label: 'Nama' },
+      { key: 'year', label: 'Tahun Lulus' },
+      { key: 'currentActivity', label: 'Aktivitas Saat Ini' },
+    ],
+    formFields: [
+      { name: 'name', label: 'Nama', type: 'text', required: true, placeholder: 'Nama lengkap alumni' },
+      { name: 'year', label: 'Tahun Lulus', type: 'text', required: true, placeholder: '2024' },
+      { name: 'currentActivity', label: 'Aktivitas Saat Ini', type: 'text', placeholder: 'Kuliah/Bekerja/dll' },
+      { name: 'image', label: 'URL Foto', type: 'text', placeholder: 'https://...' },
+      { name: 'testimony', label: 'Testimoni', type: 'textarea', placeholder: 'Testimoni alumni', colSpan: 2 },
+    ],
+  },
+  schedules: {
+    title: 'Kelola Jadwal',
+    apiPath: 'schedules',
+    itemName: 'Jadwal',
+    columns: [
+      { key: 'title', label: 'Mata Pelajaran' },
+      { key: 'day', label: 'Hari' },
+      { key: 'timeStart', label: 'Mulai' },
+      { key: 'timeEnd', label: 'Selesai' },
+      { key: 'class', label: 'Kelas' },
+    ],
+    formFields: [
+      { name: 'title', label: 'Mata Pelajaran', type: 'text', required: true, placeholder: 'Nama mata pelajaran' },
+      { name: 'day', label: 'Hari', type: 'select', required: true, options: [
+        { label: 'Senin', value: 'Senin' },
+        { label: 'Selasa', value: 'Selasa' },
+        { label: 'Rabu', value: 'Rabu' },
+        { label: 'Kamis', value: 'Kamis' },
+        { label: 'Jumat', value: 'Jumat' },
+        { label: 'Sabtu', value: 'Sabtu' },
+      ]},
+      { name: 'timeStart', label: 'Jam Mulai', type: 'text', required: true, placeholder: '07:00' },
+      { name: 'timeEnd', label: 'Jam Selesai', type: 'text', required: true, placeholder: '08:30' },
+      { name: 'subject', label: 'Pelajaran', type: 'text', placeholder: 'Nama pelajaran' },
+      { name: 'teacher', label: 'Guru', type: 'text', placeholder: 'Nama guru pengajar' },
+      { name: 'class', label: 'Kelas', type: 'text', placeholder: 'Kelas' },
+    ],
+  },
+  payments: {
+    title: 'Kelola Pembayaran',
+    apiPath: 'payments',
+    itemName: 'Pembayaran',
+    columns: [
+      { key: 'title', label: 'Judul' },
+      { key: 'amount', label: 'Jumlah' },
+      { key: 'dueDate', label: 'Jatuh Tempo' },
+      { key: 'isActive', label: 'Status' },
+    ],
+    formFields: [
+      { name: 'title', label: 'Judul', type: 'text', required: true, placeholder: 'SPP Bulan ...', colSpan: 2 },
+      { name: 'amount', label: 'Jumlah', type: 'text', required: true, placeholder: 'Rp 150.000' },
+      { name: 'dueDate', label: 'Jatuh Tempo', type: 'date' },
+      { name: 'isActive', label: 'Aktif', type: 'switch' },
+      { name: 'description', label: 'Deskripsi', type: 'textarea', placeholder: 'Keterangan pembayaran', colSpan: 2 },
+    ],
+  },
+}
+
+// --- Special Components ---
+
+function PPDBManager() {
+  const queryClient = useQueryClient()
+  const [selectedReg, setSelectedReg] = useState<Record<string, unknown> | null>(null)
+  const [newStatus, setNewStatus] = useState('')
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['admin', 'ppdb'],
+    queryFn: async () => {
+      const res = await fetch('/api/admin/ppdb')
+      if (!res.ok) return []
+      return res.json()
+    },
+  })
+
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, status }: { id: string; status: string }) => {
+      const res = await fetch(`/api/admin/ppdb/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status }),
+      })
+      if (!res.ok) throw new Error('Gagal mengubah status')
+      return res.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'ppdb'] })
+      toast.success('Status pendaftaran berhasil diperbarui')
+      setSelectedReg(null)
+    },
+    onError: () => {
+      toast.error('Gagal mengubah status')
+    },
+  })
+
+  const items: Record<string, unknown>[] = Array.isArray(data) ? data : []
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <h2 className="text-xl font-bold text-gray-900">Kelola PPDB</h2>
+        <p className="text-sm text-gray-500">Kelola pendaftaran santri baru</p>
+      </div>
+
+      <div className="border rounded-lg bg-white overflow-hidden">
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-gray-50">
+                <TableHead>#</TableHead>
+                <TableHead>Nama</TableHead>
+                <TableHead>Tempat Lahir</TableHead>
+                <TableHead>Nama Orang Tua</TableHead>
+                <TableHead>No. HP Ortu</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Tanggal Daftar</TableHead>
+                <TableHead className="text-center">Aksi</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={8} className="text-center py-12">
+                    <Loader2 className="h-6 w-6 animate-spin mx-auto text-emerald-600" />
+                  </TableCell>
+                </TableRow>
+              ) : items.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={8} className="text-center py-12 text-gray-500">
+                    Belum ada pendaftaran
+                  </TableCell>
+                </TableRow>
+              ) : (
+                items.map((reg, idx) => (
+                  <TableRow key={reg.id as string}>
+                    <TableCell className="text-gray-400 text-xs">{idx + 1}</TableCell>
+                    <TableCell className="font-medium">{reg.name as string}</TableCell>
+                    <TableCell>{reg.birthPlace as string}</TableCell>
+                    <TableCell>{reg.parentName as string}</TableCell>
+                    <TableCell>{reg.parentPhone as string}</TableCell>
+                    <TableCell>
+                      <Badge
+                        className={
+                          reg.status === 'accepted'
+                            ? 'bg-emerald-100 text-emerald-800'
+                            : reg.status === 'rejected'
+                            ? 'bg-red-100 text-red-800'
+                            : 'bg-amber-100 text-amber-800'
+                        }
+                      >
+                        {reg.status === 'accepted' ? 'Diterima' : reg.status === 'rejected' ? 'Ditolak' : 'Menunggu'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-xs">
+                      {reg.createdAt ? new Date(reg.createdAt as string).toLocaleDateString('id-ID') : '-'}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <div className="flex items-center justify-center gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50"
+                          onClick={() => {
+                            setSelectedReg(reg)
+                            setNewStatus(reg.status as string)
+                          }}
+                        >
+                          Ubah Status
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+
+      {/* Status Update Dialog */}
+      <Dialog open={!!selectedReg} onOpenChange={(open) => { if (!open) setSelectedReg(null) }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Ubah Status Pendaftaran</DialogTitle>
+            <DialogDescription>
+              Ubah status pendaftaran untuk {selectedReg?.name as string}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>Status</Label>
+              <Select value={newStatus} onValueChange={setNewStatus}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="pending">Menunggu</SelectItem>
+                  <SelectItem value="accepted">Diterima</SelectItem>
+                  <SelectItem value="rejected">Ditolak</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            {selectedReg && (
+              <div className="space-y-2 text-sm bg-gray-50 rounded-lg p-3">
+                <p><span className="text-gray-500">Nama:</span> <span className="font-medium">{selectedReg.name as string}</span></p>
+                <p><span className="text-gray-500">Tempat, Tanggal Lahir:</span> {selectedReg.birthPlace as string}, {selectedReg.birthDate ? new Date(selectedReg.birthDate as string).toLocaleDateString('id-ID') : '-'}</p>
+                <p><span className="text-gray-500">Orang Tua:</span> {selectedReg.parentName as string}</p>
+                <p><span className="text-gray-500">No. HP:</span> {selectedReg.parentPhone as string}</p>
+                {selectedReg.address && <p><span className="text-gray-500">Alamat:</span> {selectedReg.address as string}</p>}
+                {selectedReg.previousSchool && <p><span className="text-gray-500">Sekolah Asal:</span> {selectedReg.previousSchool as string}</p>}
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setSelectedReg(null)}>Batal</Button>
+            <Button
+              className="bg-emerald-700 hover:bg-emerald-800 text-white"
+              onClick={() => {
+                if (selectedReg && newStatus) {
+                  updateMutation.mutate({ id: selectedReg.id as string, status: newStatus })
+                }
+              }}
+              disabled={updateMutation.isPending}
+            >
+              {updateMutation.isPending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
+              Simpan
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  )
+}
+
+function ContactMessagesManager() {
+  const queryClient = useQueryClient()
+  const [selectedMsg, setSelectedMsg] = useState<Record<string, unknown> | null>(null)
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['admin', 'contact-messages'],
+    queryFn: async () => {
+      const res = await fetch('/api/admin/contact-messages')
+      if (!res.ok) return []
+      return res.json()
+    },
+  })
+
+  const markReadMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const res = await fetch(`/api/admin/contact-messages/${id}`, {
+        method: 'PUT',
+      })
+      if (!res.ok) throw new Error('Gagal menandai pesan')
+      return res.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'contact-messages'] })
+      toast.success('Pesan ditandai sebagai dibaca')
+      setSelectedMsg(null)
+    },
+    onError: () => {
+      toast.error('Gagal menandai pesan')
+    },
+  })
+
+  const items: Record<string, unknown>[] = Array.isArray(data) ? data : []
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <h2 className="text-xl font-bold text-gray-900">Pesan Kontak</h2>
+        <p className="text-sm text-gray-500">Lihat pesan dari pengunjung website</p>
+      </div>
+
+      <div className="border rounded-lg bg-white overflow-hidden">
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-gray-50">
+                <TableHead>#</TableHead>
+                <TableHead>Nama</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>Subjek</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Tanggal</TableHead>
+                <TableHead className="text-center">Aksi</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center py-12">
+                    <Loader2 className="h-6 w-6 animate-spin mx-auto text-emerald-600" />
+                  </TableCell>
+                </TableRow>
+              ) : items.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center py-12 text-gray-500">
+                    Belum ada pesan
+                  </TableCell>
+                </TableRow>
+              ) : (
+                items.map((msg, idx) => (
+                  <TableRow key={msg.id as string} className={!msg.isRead ? 'bg-amber-50/50' : ''}>
+                    <TableCell className="text-gray-400 text-xs">{idx + 1}</TableCell>
+                    <TableCell className="font-medium">
+                      <div className="flex items-center gap-2">
+                        {!msg.isRead && <span className="w-2 h-2 rounded-full bg-amber-500" />}
+                        {msg.name as string}
+                      </div>
+                    </TableCell>
+                    <TableCell>{(msg.email as string) || '-'}</TableCell>
+                    <TableCell>{(msg.subject as string) || '-'}</TableCell>
+                    <TableCell>
+                      <Badge className={msg.isRead ? 'bg-gray-100 text-gray-600' : 'bg-amber-100 text-amber-800'}>
+                        {msg.isRead ? 'Dibaca' : 'Baru'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-xs">
+                      {msg.createdAt ? new Date(msg.createdAt as string).toLocaleDateString('id-ID') : '-'}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <div className="flex items-center justify-center gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-blue-600 hover:text-blue-800"
+                          onClick={() => setSelectedMsg(msg)}
+                        >
+                          <FileText className="h-4 w-4" />
+                        </Button>
+                        {!msg.isRead && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-emerald-600 hover:text-emerald-800"
+                            onClick={() => markReadMutation.mutate(msg.id as string)}
+                          >
+                            <Mail className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+
+      {/* View Message Dialog */}
+      <Dialog open={!!selectedMsg} onOpenChange={(open) => { if (!open) setSelectedMsg(null) }}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Detail Pesan</DialogTitle>
+          </DialogHeader>
+          {selectedMsg && (
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label className="text-xs text-gray-500">Nama</Label>
+                  <p className="text-sm font-medium">{selectedMsg.name as string}</p>
+                </div>
+                <div>
+                  <Label className="text-xs text-gray-500">Email</Label>
+                  <p className="text-sm">{(selectedMsg.email as string) || '-'}</p>
+                </div>
+                <div>
+                  <Label className="text-xs text-gray-500">Telepon</Label>
+                  <p className="text-sm">{(selectedMsg.phone as string) || '-'}</p>
+                </div>
+                <div>
+                  <Label className="text-xs text-gray-500">Tanggal</Label>
+                  <p className="text-sm">
+                    {selectedMsg.createdAt ? new Date(selectedMsg.createdAt as string).toLocaleDateString('id-ID', {
+                      day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit',
+                    }) : '-'}
+                  </p>
+                </div>
+              </div>
+              {(selectedMsg.subject as string) && (
+                <div>
+                  <Label className="text-xs text-gray-500">Subjek</Label>
+                  <p className="text-sm font-medium">{selectedMsg.subject as string}</p>
+                </div>
+              )}
+              <div>
+                <Label className="text-xs text-gray-500">Pesan</Label>
+                <div className="bg-gray-50 rounded-lg p-3 mt-1">
+                  <p className="text-sm whitespace-pre-wrap">{selectedMsg.message as string}</p>
+                </div>
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            {selectedMsg && !selectedMsg.isRead && (
+              <Button
+                className="bg-emerald-700 hover:bg-emerald-800 text-white"
+                onClick={() => markReadMutation.mutate(selectedMsg.id as string)}
+                disabled={markReadMutation.isPending}
+              >
+                Tandai Dibaca
+              </Button>
+            )}
+            <Button variant="outline" onClick={() => setSelectedMsg(null)}>Tutup</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  )
+}
+
+function SuggestionsManager() {
+  const queryClient = useQueryClient()
+  const [selectedItem, setSelectedItem] = useState<Record<string, unknown> | null>(null)
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['admin', 'suggestions'],
+    queryFn: async () => {
+      const res = await fetch('/api/admin/suggestions')
+      if (!res.ok) return []
+      return res.json()
+    },
+  })
+
+  const markReadMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const res = await fetch(`/api/admin/suggestions/${id}`, {
+        method: 'PUT',
+      })
+      if (!res.ok) throw new Error('Gagal menandai')
+      return res.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'suggestions'] })
+      toast.success('Saran ditandai sebagai dibaca')
+      setSelectedItem(null)
+    },
+    onError: () => {
+      toast.error('Gagal menandai saran')
+    },
+  })
+
+  const items: Record<string, unknown>[] = Array.isArray(data) ? data : []
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <h2 className="text-xl font-bold text-gray-900">Kritik & Saran</h2>
+        <p className="text-sm text-gray-500">Lihat kritik dan saran dari pengunjung</p>
+      </div>
+
+      <div className="border rounded-lg bg-white overflow-hidden">
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-gray-50">
+                <TableHead>#</TableHead>
+                <TableHead>Nama</TableHead>
+                <TableHead>Tipe</TableHead>
+                <TableHead>Pesan</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Tanggal</TableHead>
+                <TableHead className="text-center">Aksi</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center py-12">
+                    <Loader2 className="h-6 w-6 animate-spin mx-auto text-emerald-600" />
+                  </TableCell>
+                </TableRow>
+              ) : items.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} className="text-center py-12 text-gray-500">
+                    Belum ada saran
+                  </TableCell>
+                </TableRow>
+              ) : (
+                items.map((item, idx) => (
+                  <TableRow key={item.id as string} className={!item.isRead ? 'bg-amber-50/50' : ''}>
+                    <TableCell className="text-gray-400 text-xs">{idx + 1}</TableCell>
+                    <TableCell className="font-medium">
+                      <div className="flex items-center gap-2">
+                        {!item.isRead && <span className="w-2 h-2 rounded-full bg-amber-500" />}
+                        {item.name as string}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className="capitalize">{(item.type as string) || 'saran'}</Badge>
+                    </TableCell>
+                    <TableCell className="max-w-48 truncate">{(item.message as string)?.slice(0, 60)}</TableCell>
+                    <TableCell>
+                      <Badge className={item.isRead ? 'bg-gray-100 text-gray-600' : 'bg-amber-100 text-amber-800'}>
+                        {item.isRead ? 'Dibaca' : 'Baru'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-xs">
+                      {item.createdAt ? new Date(item.createdAt as string).toLocaleDateString('id-ID') : '-'}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <div className="flex items-center justify-center gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-blue-600"
+                          onClick={() => setSelectedItem(item)}
+                        >
+                          <FileText className="h-4 w-4" />
+                        </Button>
+                        {!item.isRead && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-emerald-600"
+                            onClick={() => markReadMutation.mutate(item.id as string)}
+                          >
+                            <Mail className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+
+      {/* View Suggestion Dialog */}
+      <Dialog open={!!selectedItem} onOpenChange={(open) => { if (!open) setSelectedItem(null) }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Detail Saran</DialogTitle>
+          </DialogHeader>
+          {selectedItem && (
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label className="text-xs text-gray-500">Nama</Label>
+                  <p className="text-sm font-medium">{selectedItem.name as string}</p>
+                </div>
+                <div>
+                  <Label className="text-xs text-gray-500">Tipe</Label>
+                  <Badge variant="outline" className="capitalize">{(selectedItem.type as string) || 'saran'}</Badge>
+                </div>
+              </div>
+              <div>
+                <Label className="text-xs text-gray-500">Pesan</Label>
+                <div className="bg-gray-50 rounded-lg p-3 mt-1">
+                  <p className="text-sm whitespace-pre-wrap">{selectedItem.message as string}</p>
+                </div>
+              </div>
+              <div>
+                <Label className="text-xs text-gray-500">Tanggal</Label>
+                <p className="text-sm">
+                  {selectedItem.createdAt ? new Date(selectedItem.createdAt as string).toLocaleDateString('id-ID', {
+                    day: 'numeric', month: 'long', year: 'numeric',
+                  }) : '-'}
+                </p>
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            {selectedItem && !selectedItem.isRead && (
+              <Button
+                className="bg-emerald-700 hover:bg-emerald-800 text-white"
+                onClick={() => markReadMutation.mutate(selectedItem.id as string)}
+                disabled={markReadMutation.isPending}
+              >
+                Tandai Dibaca
+              </Button>
+            )}
+            <Button variant="outline" onClick={() => setSelectedItem(null)}>Tutup</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  )
+}
+
+function SettingsManager() {
+  const queryClient = useQueryClient()
+
+  const { data: settingsData, isLoading: settingsLoading } = useQuery({
+    queryKey: ['admin', 'settings'],
+    queryFn: async () => {
+      const res = await fetch('/api/admin/settings')
+      if (!res.ok) return []
+      return res.json()
+    },
+  })
+
+  const { data: statisticsData, isLoading: statsLoading } = useQuery({
+    queryKey: ['admin', 'statistics'],
+    queryFn: async () => {
+      const res = await fetch('/api/admin/statistics')
+      if (!res.ok) return []
+      return res.json()
+    },
+  })
+
+  const { data: institutionData, isLoading: institutionLoading } = useQuery({
+    queryKey: ['admin', 'institution'],
+    queryFn: async () => {
+      const res = await fetch('/api/admin/institution')
+      if (!res.ok) return []
+      return res.json()
+    },
+  })
+
+  // Track local edits separate from API data
+  const [settingsEdits, setSettingsEdits] = useState<Record<string, string>>({})
+  const [statsEdits, setStatsEdits] = useState<Record<string, string>>({})
+  const [institutionEdits, setInstitutionEdits] = useState<Record<string, { value: string; label: string }>>({})
+
+  // Derive current values from API data + local edits
+  const settingsValues = useMemo(() => {
+    const map: Record<string, string> = {}
+    if (Array.isArray(settingsData)) {
+      settingsData.forEach((s: { key: string; value: string }) => { map[s.key] = s.value })
+    }
+    return { ...map, ...settingsEdits }
+  }, [settingsData, settingsEdits])
+
+  const statsValues = useMemo(() => {
+    const map: Record<string, string> = {}
+    if (Array.isArray(statisticsData)) {
+      statisticsData.forEach((s: { key: string; value: string }) => { map[s.key] = s.value })
+    }
+    return { ...map, ...statsEdits }
+  }, [statisticsData, statsEdits])
+
+  const institutionValues = useMemo(() => {
+    const map: Record<string, { value: string; label: string }> = {}
+    if (Array.isArray(institutionData)) {
+      institutionData.forEach((s: { key: string; value: string; label: string }) => {
+        map[s.key] = { value: s.value, label: s.label }
+      })
+    }
+    // Merge edits
+    const merged = { ...map }
+    Object.entries(institutionEdits).forEach(([key, val]) => {
+      merged[key] = { ...merged[key], ...val }
+    })
+    return merged
+  }, [institutionData, institutionEdits])
+
+  const saveSettingsMutation = useMutation({
+    mutationFn: async () => {
+      const settings = Object.entries(settingsValues).map(([key, value]) => ({ key, value }))
+      const res = await fetch('/api/admin/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ settings }),
+      })
+      if (!res.ok) throw new Error('Gagal menyimpan pengaturan')
+      return res.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'settings'] })
+      toast.success('Pengaturan berhasil disimpan')
+    },
+    onError: () => {
+      toast.error('Gagal menyimpan pengaturan')
+    },
+  })
+
+  const saveStatsMutation = useMutation({
+    mutationFn: async () => {
+      const statistics = Object.entries(statsValues).map(([key, value]) => ({ key, value }))
+      const res = await fetch('/api/admin/statistics', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ statistics }),
+      })
+      if (!res.ok) throw new Error('Gagal menyimpan statistik')
+      return res.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'statistics'] })
+      toast.success('Statistik berhasil disimpan')
+    },
+    onError: () => {
+      toast.error('Gagal menyimpan statistik')
+    },
+  })
+
+  const saveInstitutionMutation = useMutation({
+    mutationFn: async () => {
+      const data = Object.entries(institutionValues).map(([key, { value, label }]) => ({ key, value, label }))
+      const res = await fetch('/api/admin/institution', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data }),
+      })
+      if (!res.ok) throw new Error('Gagal menyimpan data lembaga')
+      return res.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'institution'] })
+      toast.success('Data lembaga berhasil disimpan')
+    },
+    onError: () => {
+      toast.error('Gagal menyimpan data lembaga')
+    },
+  })
+
+  const [activeTab, setActiveTab] = useState<'settings' | 'statistics' | 'institution'>('settings')
+
+  if (settingsLoading || statsLoading || institutionLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-6 w-6 animate-spin text-emerald-600" />
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <h2 className="text-xl font-bold text-gray-900">Pengaturan Website</h2>
+        <p className="text-sm text-gray-500">Kelola pengaturan dan data website</p>
+      </div>
+
+      {/* Tab selector */}
+      <div className="flex gap-2 border-b pb-2">
+        {[
+          { id: 'settings' as const, label: 'Pengaturan' },
+          { id: 'statistics' as const, label: 'Statistik' },
+          { id: 'institution' as const, label: 'Data Lembaga' },
+        ].map((tab) => (
+          <Button
+            key={tab.id}
+            variant={activeTab === tab.id ? 'default' : 'ghost'}
+            size="sm"
+            className={activeTab === tab.id ? 'bg-emerald-700 hover:bg-emerald-800' : ''}
+            onClick={() => setActiveTab(tab.id)}
+          >
+            {tab.label}
+          </Button>
+        ))}
+      </div>
+
+      {/* Settings Tab */}
+      {activeTab === 'settings' && (
+        <Card>
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-base">Pengaturan Website</CardTitle>
+              <Button
+                size="sm"
+                className="bg-emerald-700 hover:bg-emerald-800 text-white"
+                onClick={() => saveSettingsMutation.mutate()}
+                disabled={saveSettingsMutation.isPending}
+              >
+                {saveSettingsMutation.isPending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
+                Simpan
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {Object.entries(settingsValues).map(([key, value]) => (
+                <div key={key} className="space-y-1">
+                  <Label className="text-xs text-gray-500 capitalize">
+                    {key.replace(/_/g, ' ').replace(/madrasah/g, '').trim() || key}
+                  </Label>
+                  <Input
+                    value={value}
+                    onChange={(e) => setSettingsEdits((prev) => ({ ...prev, [key]: e.target.value }))}
+                  />
+                </div>
+              ))}
+              {Object.keys(settingsValues).length === 0 && (
+                <p className="text-sm text-gray-500 col-span-2 text-center py-4">
+                  Belum ada pengaturan. Data akan muncul setelah pertama kali disimpan.
+                </p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Statistics Tab */}
+      {activeTab === 'statistics' && (
+        <Card>
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-base">Statistik Website</CardTitle>
+              <Button
+                size="sm"
+                className="bg-emerald-700 hover:bg-emerald-800 text-white"
+                onClick={() => saveStatsMutation.mutate()}
+                disabled={saveStatsMutation.isPending}
+              >
+                {saveStatsMutation.isPending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
+                Simpan
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {Object.entries(statsValues).map(([key, value]) => (
+                <div key={key} className="space-y-1">
+                  <Label className="text-xs text-gray-500 capitalize">
+                    {key.replace(/_/g, ' ')}
+                  </Label>
+                  <Input
+                    value={value}
+                    onChange={(e) => setStatsEdits((prev) => ({ ...prev, [key]: e.target.value }))}
+                  />
+                </div>
+              ))}
+              {Object.keys(statsValues).length === 0 && (
+                <p className="text-sm text-gray-500 col-span-2 text-center py-4">
+                  Belum ada statistik. Data akan muncul setelah pertama kali disimpan.
+                </p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Institution Tab */}
+      {activeTab === 'institution' && (
+        <Card>
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-base">Data Kelembagaan</CardTitle>
+              <Button
+                size="sm"
+                className="bg-emerald-700 hover:bg-emerald-800 text-white"
+                onClick={() => saveInstitutionMutation.mutate()}
+                disabled={saveInstitutionMutation.isPending}
+              >
+                {saveInstitutionMutation.isPending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
+                Simpan
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {Object.entries(institutionValues).map(([key, { value, label }]) => (
+                <div key={key} className="space-y-1">
+                  <Label className="text-xs text-gray-500">{label || key.replace(/_/g, ' ')}</Label>
+                  <Input
+                    value={value}
+                    onChange={(e) => setInstitutionEdits((prev) => ({
+                      ...prev,
+                      [key]: { ...prev[key], value: e.target.value },
+                    }))}
+                  />
+                </div>
+              ))}
+              {Object.keys(institutionValues).length === 0 && (
+                <p className="text-sm text-gray-500 col-span-2 text-center py-4">
+                  Belum ada data lembaga. Data akan muncul setelah pertama kali disimpan.
+                </p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  )
+}
+
+// --- Main AdminPanel Component ---
+
+export default function AdminPanel() {
+  const { adminName, setAdminLoggedIn, setAdminMode } = useAppStore()
+  const [activeSection, setActiveSection] = useState<AdminSection>('dashboard')
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+
+  // Check authentication
+  const { data: authData, isLoading: authLoading } = useQuery({
+    queryKey: ['admin', 'check'],
+    queryFn: async () => {
+      const res = await fetch('/api/admin/check')
+      return res.json()
+    },
+  })
+
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (!authLoading && authData && !(authData as { authenticated?: boolean }).authenticated) {
+      setAdminLoggedIn(false)
+      setAdminMode(false)
+    }
+  }, [authData, authLoading, setAdminLoggedIn, setAdminMode])
+
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/admin/logout', { method: 'POST' })
+    } catch {
+      // ignore
+    }
+    setAdminLoggedIn(false)
+    setAdminMode(false)
+    toast.success('Berhasil logout')
+  }
+
+  const handleNavigate = (section: string) => {
+    setActiveSection(section as AdminSection)
+    setSidebarOpen(false)
+  }
+
+  // Get breadcrumb
+  const getBreadcrumb = () => {
+    const item = navItems.find((n) => n.id === activeSection)
+    return item?.label || 'Dashboard'
+  }
+
+  // Render content
+  const renderContent = () => {
+    if (activeSection === 'dashboard') {
+      return <AdminDashboard onNavigate={handleNavigate} />
+    }
+    if (activeSection === 'ppdb') {
+      return <PPDBManager />
+    }
+    if (activeSection === 'contact-messages') {
+      return <ContactMessagesManager />
+    }
+    if (activeSection === 'suggestions') {
+      return <SuggestionsManager />
+    }
+    if (activeSection === 'settings') {
+      return <SettingsManager />
+    }
+    const config = entityConfigs[activeSection]
+    if (config) {
+      return (
+        <CRUDManager
+          title={config.title}
+          apiPath={config.apiPath}
+          columns={config.columns}
+          formFields={config.formFields}
+          itemName={config.itemName}
+          canCreate={config.canCreate}
+          canDelete={config.canDelete}
+          canEdit={config.canEdit}
+        />
+      )
+    }
+    return <AdminDashboard onNavigate={handleNavigate} />
+  }
+
+  // Group nav items
+  const groupedNav: { group: string; items: NavItem[] }[] = []
+  let currentGroup = '__none__'
+  navItems.forEach((item) => {
+    const group = item.group || ''
+    if (group !== currentGroup) {
+      groupedNav.push({ group, items: [item] })
+      currentGroup = group
+    } else {
+      groupedNav[groupedNav.length - 1].items.push(item)
+    }
+  })
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto text-emerald-600" />
+          <p className="mt-2 text-gray-500">Memverifikasi...</p>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen flex bg-gray-50">
+      {/* Sidebar Overlay (mobile) */}
+      <AnimatePresence>
+        {sidebarOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Sidebar */}
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-gradient-to-b from-emerald-800 to-emerald-900 text-white transform transition-transform duration-300 lg:translate-x-0 lg:static lg:z-auto ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <div className="flex flex-col h-full">
+          {/* Logo */}
+          <div className="p-4 border-b border-emerald-700">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-amber-500 flex items-center justify-center text-emerald-900 font-bold text-lg shadow">
+                  M
+                </div>
+                <div>
+                  <p className="font-bold text-sm leading-tight">MDTA Miftahul Ulum</p>
+                  <p className="text-emerald-300 text-xs">Admin Panel</p>
+                </div>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="lg:hidden text-emerald-200 hover:text-white hover:bg-emerald-700 h-8 w-8"
+                onClick={() => setSidebarOpen(false)}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+
+          {/* Navigation */}
+          <ScrollArea className="flex-1 py-2">
+            <div className="px-3">
+              {groupedNav.map((group) => (
+                <div key={group.group || 'main'} className="mb-2">
+                  {group.group && (
+                    <p className="text-emerald-400 text-[10px] font-semibold uppercase tracking-wider px-3 py-2 mt-2">
+                      {group.group}
+                    </p>
+                  )}
+                  {group.items.map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => handleNavigate(item.id)}
+                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
+                        activeSection === item.id
+                          ? 'bg-emerald-700 text-white font-medium'
+                          : 'text-emerald-200 hover:bg-emerald-700/50 hover:text-white'
+                      }`}
+                    >
+                      {item.icon}
+                      <span>{item.label}</span>
+                    </button>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </ScrollArea>
+
+          {/* User & Logout */}
+          <div className="p-4 border-t border-emerald-700">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 min-w-0">
+                <div className="w-8 h-8 rounded-full bg-amber-500 flex items-center justify-center text-emerald-900 font-bold text-sm shrink-0">
+                  {(adminName || 'A').charAt(0).toUpperCase()}
+                </div>
+                <div className="min-w-0">
+                  <p className="text-sm font-medium truncate">{adminName || 'Admin'}</p>
+                  <p className="text-xs text-emerald-400">Administrator</p>
+                </div>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-emerald-300 hover:text-white hover:bg-emerald-700 h-8 w-8 shrink-0"
+                onClick={handleLogout}
+                title="Logout"
+              >
+                <LogOut className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Top Bar */}
+        <header className="sticky top-0 z-30 bg-white border-b shadow-sm">
+          <div className="flex items-center justify-between h-14 px-4">
+            <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="lg:hidden h-8 w-8"
+                onClick={() => setSidebarOpen(true)}
+              >
+                <Menu className="h-5 w-5" />
+              </Button>
+              <div className="flex items-center gap-2 text-sm text-gray-500">
+                <LayoutDashboard className="h-4 w-4" />
+                <span>Admin</span>
+                <ChevronRight className="h-3 w-3" />
+                <span className="text-gray-900 font-medium">{getBreadcrumb()}</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="hidden sm:flex items-center gap-2 text-sm text-gray-500">
+                <div className="w-7 h-7 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold text-xs">
+                  {(adminName || 'A').charAt(0).toUpperCase()}
+                </div>
+                <span>{adminName || 'Admin'}</span>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleLogout}
+                className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+              >
+                <LogOut className="h-4 w-4 mr-1" />
+                <span className="hidden sm:inline">Keluar</span>
+              </Button>
+            </div>
+          </div>
+        </header>
+
+        {/* Page Content */}
+        <main className="flex-1 p-4 md:p-6 overflow-auto">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeSection}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+            >
+              {renderContent()}
+            </motion.div>
+          </AnimatePresence>
+        </main>
+      </div>
+    </div>
+  )
+}
