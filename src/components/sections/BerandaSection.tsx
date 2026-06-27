@@ -187,8 +187,7 @@ export default function BerandaSection() {
                   </Button>
                   <Button
                     onClick={() => { setCurrentPage('profil'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
-                    variant="outline"
-                    className="border-white text-white hover:bg-white hover:text-emerald-900 px-6"
+                    className="border-2 border-white text-white bg-white/10 hover:bg-white hover:text-emerald-900 font-semibold px-6 backdrop-blur-sm"
                     size="lg"
                   >
                     Tentang Kami
