@@ -79,7 +79,7 @@ export default function Header() {
               onClick={() => handleNav('beranda')}
               className="flex items-center gap-3 group"
             >
-              <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg overflow-hidden shadow-md group-hover:scale-105 transition-transform bg-white/10 p-0.5">
+              <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg overflow-hidden shadow-md group-hover:scale-105 transition-transform">
                 <img src="/images/logo-madin-warna.png" alt="Logo MDTA Miftahul Ulum 01" className="w-full h-full object-contain" />
               </div>
               <div className="flex flex-col">
@@ -163,7 +163,7 @@ export default function Header() {
                   <SheetTitle className="sr-only">Menu Navigasi</SheetTitle>
                   <div className="flex items-center justify-between p-4 border-b border-emerald-700">
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-md overflow-hidden bg-white/10 p-0.5">
+                      <div className="w-8 h-8 rounded-lg overflow-hidden">
                         <img src="/images/logo-madin-warna.png" alt="Logo" className="w-full h-full object-contain" />
                       </div>
                       <span className="font-bold text-sm">MDTA Miftahul Ulum 01</span>

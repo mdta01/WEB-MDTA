@@ -94,6 +94,14 @@ export default function BerandaSection() {
   const { setCurrentPage } = useAppStore()
   const [testimonialIdx, setTestimonialIdx] = useState(0)
 
+  const { data: settingsData } = useQuery({
+    queryKey: ['settings'],
+    queryFn: () => fetch('/api/settings').then(r => r.json()),
+  })
+
+  const settings = Array.isArray(settingsData) ? settingsData : (settingsData?.settings || [])
+  const getSetting = (key: string) => settings.find((s: { key: string }) => s.key === key)?.value || ''
+
   const { data: statsData, isLoading: statsLoading } = useQuery({
     queryKey: ['statistics'],
     queryFn: () => fetch('/api/statistics').then(r => r.json()),
@@ -208,12 +216,26 @@ export default function BerandaSection() {
         >
           <Card className="overflow-hidden border-0 shadow-lg">
             <div className="grid md:grid-cols-3 gap-0">
-              <div className="bg-gradient-to-br from-emerald-600 to-emerald-800 p-8 flex flex-col items-center justify-center text-white">
-                <div className="w-24 h-24 rounded-xl overflow-hidden mb-4 border-2 border-amber-400 bg-white/10 p-1">
-                  <img src="/images/logo-madin-warna.png" alt="Logo MDTA" className="w-full h-full object-contain" />
+              <div className="bg-gradient-to-br from-emerald-600 to-emerald-800 p-8 flex flex-col items-center justify-center text-white relative overflow-hidden">
+                {/* Decorative pattern */}
+                <div className="absolute inset-0 opacity-5">
+                  <div className="absolute inset-0" style={{
+                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='white'%3E%3Cpath d='M20 0L40 20L20 40L0 20z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+                  }} />
                 </div>
-                <h3 className="font-bold text-lg text-center">Kepala Madrasah</h3>
-                <p className="text-emerald-200 text-sm mt-1">Ustadz Ahmad Fauzi, S.Pd.I</p>
+                <div className="relative">
+                  <div className="w-28 h-28 rounded-full overflow-hidden mb-4 border-4 border-amber-400 shadow-lg">
+                    <img 
+                      src={getSetting('madrasah_principal_photo') || '/images/kepala-madrasah.png'} 
+                      alt="Kepala Madrasah" 
+                      className="w-full h-full object-cover" 
+                    />
+                  </div>
+                </div>
+                <h3 className="font-bold text-lg text-center relative">Kepala Madrasah</h3>
+                <p className="text-amber-300 text-sm mt-1 font-medium relative">
+                  {getSetting('madrasah_principals_name') || getSetting('madrasah_principal_name') || 'Kepala Madrasah'}
+                </p>
               </div>
               <div className="md:col-span-2 p-8">
                 <h3 className="font-bold text-emerald-800 text-lg mb-3 flex items-center gap-2">
@@ -221,12 +243,9 @@ export default function BerandaSection() {
                   Sambutan Kepala Madrasah
                 </h3>
                 <p className="text-gray-600 leading-relaxed text-sm">
-                  Assalamualaikum Warahmatullahi Wabarakatuh. Puji syukur kehadirat Allah SWT yang telah memberikan rahmat dan karunia-Nya. 
-                  MDTA Miftahul Ulum 01 berkomitmen untuk memberikan pendidikan Islam yang terbaik bagi putra-putri Anda. 
-                  Dengan kurikulum yang berpusat pada Al-Quran dan As-Sunnah, kami berharap dapat mencetak generasi yang berilmu, 
-                  berakhlak mulia, dan bermanfaat bagi agama, bangsa, dan negara. Selamat datang di keluarga besar Miftahul Ulum 01.
+                  {getSetting('madrasah_welcome') || "Assalamu'alaikum Warahmatullahi Wabarakatuh. Puji syukur kehadirat Allah SWT yang telah memberikan rahmat dan karunia-Nya. MDTA Miftahul Ulum 01 berkomitmen untuk memberikan pendidikan Islam yang terbaik bagi putra-putri Anda. Dengan kurikulum yang berpusat pada Al-Quran dan As-Sunnah, kami berharap dapat mencetak generasi yang berilmu, berakhlak mulia, dan bermanfaat bagi agama, bangsa, dan negara. Selamat datang di keluarga besar Miftahul Ulum 01."}
                 </p>
-                <p className="text-emerald-700 font-semibold mt-4 text-sm">Wassalamualaikum Warahmatullahi Wabarakatuh</p>
+                <p className="text-emerald-700 font-semibold mt-4 text-sm">Wassalamu'alaikum Warahmatullahi Wabarakatuh</p>
               </div>
             </div>
           </Card>
