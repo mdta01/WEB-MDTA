@@ -1,0 +1,329 @@
+     1→     1→import { PrismaClient } from '@prisma/client'
+     2→     2→import { hash } from './seed-utils'
+     3→     3→
+     4→     4→const prisma = new PrismaClient()
+     5→     5→
+     6→     6→async function main() {
+     7→     7→  console.log('Seeding database...')
+     8→     8→
+     9→     9→  // Clean all data first (order matters due to foreign keys)
+    10→    10→  console.log('Cleaning existing data...')
+    11→    11→  await prisma.suggestion.deleteMany()
+    12→    12→  await prisma.contactMessage.deleteMany()
+    13→    13→  await prisma.pPDBRegistration.deleteMany()
+    14→    14→  await prisma.paymentInfo.deleteMany()
+    15→    15→  await prisma.schedule.deleteMany()
+    16→    16→  await prisma.dakwah.deleteMany()
+    17→    17→  await prisma.download.deleteMany()
+    18→    18→  await prisma.fAQ.deleteMany()
+    19→    19→  await prisma.testimonial.deleteMany()
+    20→    20→  await prisma.alumni.deleteMany()
+    21→    21→  await prisma.gallery.deleteMany()
+    22→    22→  await prisma.achievement.deleteMany()
+    23→    23→  await prisma.news.deleteMany()
+    24→    24→  await prisma.event.deleteMany()
+    25→    25→  await prisma.program.deleteMany()
+    26→    26→  await prisma.teacher.deleteMany()
+    27→    27→  await prisma.student.deleteMany()
+    28→    28→  await prisma.announcement.deleteMany()
+    29→    29→  await prisma.institutionData.deleteMany()
+    30→    30→  await prisma.statistic.deleteMany()
+    31→    31→  await prisma.siteSetting.deleteMany()
+    32→    32→  await prisma.admin.deleteMany()
+    33→    33→  console.log('Data cleaned.')
+    34→    34→
+    35→    35→  // Create Admin
+    36→    36→  await prisma.admin.upsert({
+    37→    37→    where: { username: 'mdta01' },
+    38→    38→    update: {},
+    39→    39→    create: {
+    40→    40→      username: 'mdta01',
+    41→    41→      password: await hash('mdta@01'),
+    42→    42→      name: 'Administrator',
+    43→    43→      email: 'admin@mdta-miftahululum01.com',
+    44→    44→      role: 'superadmin',
+    45→    45→    },
+    46→    46→  })
+    47→    47→
+    48→    48→  // Site Settings
+    49→    49→  const settings = [
+    50→    50→    { key: 'madrasah_name', value: 'MDTA Miftahul Ulum 01', label: 'Nama Madrasah' },
+    51→    51→    { key: 'madrasah_subtitle', value: 'Madrasah Diniyah Takmiliyah Awaliyah', label: 'Subjudul Madrasah' },
+    52→    52→    { key: 'madrasah_description', value: 'Mencetak generasi Muslim yang berilmu, berakhlak mulia, dan berprestasi melalui pendidikan Islam yang berkualitas dan menyeluruh.', label: 'Deskripsi Madrasah' },
+    53→    53→    { key: 'madrasah_address', value: 'Jl. Raya Desa Miftahul Ulum No. 01, Kec. Cikarang, Kab. Bekasi, Jawa Barat 17530', label: 'Alamat' },
+    54→    54→    { key: 'madrasah_phone', value: '081234567890', label: 'Telepon/WhatsApp' },
+    55→    55→    { key: 'madrasah_email', value: 'info@mdta-miftahululum01.com', label: 'Email' },
+    56→    56→    { key: 'madrasah_facebook', value: 'https://facebook.com/mdtamiftahululum01', label: 'Facebook' },
+    57→    57→    { key: 'madrasah_instagram', value: 'https://instagram.com/mdtamiftahululum01', label: 'Instagram' },
+    58→    58→    { key: 'madrasah_youtube', value: 'https://youtube.com/@mdtamiftahululum01', label: 'YouTube' },
+    59→    59→    { key: 'madrasah_tiktok', value: 'https://tiktok.com/@mdtamiftahululum01', label: 'TikTok' },
+    60→    60→    { key: 'madrasah_welcome', value: 'Assalamu\'alaikum Warahmatullahi Wabarakatuh. Selamat datang di website resmi MDTA Miftahul Ulum 01. Semoga website ini dapat menjadi sarana informasi dan komunikasi yang bermanfaat bagi seluruh jamaah madrasah.', label: 'Sambutan Kepala Madrasah' },
+    61→    61→    { key: 'madrasah_vision', value: 'Terwujudnya generasi Muslim yang berilmu, berakhlak mulia, dan berprestasi', label: 'Visi' },
+    62→    62→    { key: 'madrasah_mission', value: '1. Menyelenggarakan pendidikan agama Islam yang berkualitas\n2. Membentuk santri yang berakhlakul karimah\n3. Mengembangkan potensi dan prestasi santri\n4. Mencetak generasi yang cinta Al-Quran dan As-Sunnah\n5. Membangun karakter santri yang mandiri dan bertanggung jawab', label: 'Misi' },
+    63→    63→    { key: 'madrasah_goals', value: '1. Menghasilkan lulusan yang hafal Al-Quran minimal 3 Juz\n2. Menumbuhkan semangat belajar dan berprestasi\n3. Membentuk santri yang berakhlakul karimah\n4. Menjalin kerjasama yang baik dengan orang tua dan masyarakat', label: 'Tujuan' },
+    64→    64→    { key: 'madrasah_history', value: 'MDTA Miftahul Ulum 01 didirikan pada tahun 1998 oleh KH. Abdul Rahman bersama tokoh masyarakat setempat dengan tujuan memberikan pendidikan agama Islam yang berkualitas bagi anak-anak di wilayah Cikarang dan sekitarnya. Bermula dari sebuah musholla kecil dengan hanya 15 santri, madrasah ini terus berkembang hingga kini memiliki ratusan santri aktif dengan fasilitas yang terus diperbaiki. Nama "Miftahul Ulum" yang berarti "Kunci Ilmu" dipilih dengan harapan madrasah ini menjadi pintu gerbang ilmu pengetahuan, khususnya ilmu agama Islam, bagi generasi mendatang.', label: 'Sejarah' },
+    65→    65→    { key: 'madrasah_history_year', value: '1998', label: 'Tahun Berdiri' },
+    66→    66→    { key: 'madrasah_principals_name', value: 'Ustadz H. Muhammad Syafii, S.Pd.I', label: 'Nama Kepala Madrasah' },
+    67→    67→    { key: 'madrasah_principal_photo', value: '/images/kepala-madrasah.png', label: 'Foto Kepala Madrasah' },
+    68→    68→    { key: 'madrasah_yayasan', value: 'Yayasan Pendidikan Islam Miftahul Ulum', label: 'Naungan Yayasan' },
+    69→    69→    { key: 'madrasah_nsdt', value: '311232010012', label: 'Nomor Statistik (NSDT)' },
+    70→    70→    { key: 'madrasah_sk', value: 'SK Pendirian No. 456/Kes/1998', label: 'SK Pendirian' },
+    71→    71→    { key: 'madrasah_izin', value: 'Izin Operasional No. 789/OP/2005', label: 'Izin Operasional' },
+    72→    72→    { key: 'madrasah_akreditasi', value: 'Terakreditasi A', label: 'Akreditasi' },
+    73→    73→    { key: 'madrasah_service_hours', value: 'Senin - Sabtu: 07.00 - 12.00 WIB', label: 'Jam Pelayanan' },
+    74→    74→    { key: 'madrasah_maps', value: '-6.3082,107.1732', label: 'Koordinat Google Maps' },
+    75→    75→    { key: 'madrasah_maps_embed_url', value: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3965.0!2d106.6!3d-6.3!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNsKwMTgnMDAuMCJTIDEwNsKwMzYnMDAuMCJF!5e0!3m2!1sid!2sid!4v1', label: 'URL Embed Google Maps' },
+    76→    76→    { key: 'madrasah_logo', value: '/images/logo-madin-warna.png', label: 'Logo URL' },
+    77→    77→    { key: 'madrasah_hero_image', value: '/images/hero-madrasah.png', label: 'Gambar Hero' },
+    78→    78→    { key: 'madrasah_footer_description', value: 'Mencetak generasi Muslim yang berilmu, berakhlak mulia, dan berprestasi melalui pendidikan Islam yang berkualitas.', label: 'Deskripsi Footer' },
+    79→    79→    { key: 'madrasah_copyright', value: 'Mencetak Generasi Muslim yang Berilmu & Berakhlak Mulia', label: 'Teks Copyright' },
+    80→    80→    { key: 'madrasah_whatsapp_number', value: '6281234567890', label: 'Nomor WhatsApp (Format Internasional)' },
+    81→    81→    { key: 'madrasah_whatsapp_message', value: 'Assalamualaikum, saya ingin bertanya tentang MDTA Miftahul Ulum 01', label: 'Pesan Default WhatsApp' },
+    82→    82→    { key: 'madrasah_struktur_organisasi', value: JSON.stringify([
+    83→    83→      { role: 'Kepala Madrasah', name: 'Ustadz H. Muhammad Syafii, S.Pd.I', level: 1 },
+    84→    84→      { role: 'Wakil Kepala Madrasah', name: 'Ustadzah Hj. Siti Aisyah, S.Ag', level: 2 },
+    85→    85→      { role: 'Sekretaris', name: 'Ustadz Ahmad Fauzi, S.Pd', level: 3 },
+    86→    86→      { role: 'Bendahara', name: 'Ustadzah Zulfa Husna, S.Ag', level: 3 },
+    87→    87→      { role: 'Kurikulum', name: 'Ustadzah Nurhasanah, S.Pd.I', level: 3 },
+    88→    88→      { role: 'Kesantrian', name: 'Ustadz Rahman Hakim, S.Ag', level: 3 },
+    89→    89→    ]), label: 'Struktur Organisasi (JSON)' },
+    90→    90→    { key: 'ppdb_status', value: 'open', label: 'Status PPDB' },
+    91→    91→    { key: 'ppdb_info', value: 'Pendaftaran Santri Baru Tahun Ajaran 2025/2026 telah dibuka! Segera daftarkan putra-putri Anda.', label: 'Info PPDB' },
+    92→    92→    { key: 'ppdb_requirements', value: 'Mengisi formulir pendaftaran secara lengkap\nFotokopi Akta Kelahiran\nFotokopi Kartu Keluarga\nPas Foto 3x4 (4 lembar)\nFotokopi KTP Orang Tua/Wali\nSurat Keterangan Lulus (bagi pindahan)', label: 'Persyaratan PPDB' },
+    93→    93→    { key: 'ppdb_contact', value: 'Panitia PPDB MDTA Miftahul Ulum 01|081234567890', label: 'Kontak PPDB (nama|nomor)' },
+    94→    94→    { key: 'wali_santri_meeting_schedule', value: 'Pertemuan Awal Tahun Ajaran|Januari 2025|09:00 - 12:00 WIB\nRapat Tengah Semester|Juni 2025|09:00 - 12:00 WIB\nPenerimaan Rapor|Desember 2025|08:00 - 12:00 WIB', label: 'Jadwal Pertemuan Wali Santri (judul|tanggal|waktu)' },
+    95→    95→  ]
+    96→    96→
+    97→    97→  for (const s of settings) {
+    98→    98→    await prisma.siteSetting.upsert({
+    99→    99→      where: { key: s.key },
+   100→   100→      update: { value: s.value, label: s.label },
+   101→   101→      create: s,
+   102→   102→    })
+   103→   103→  }
+   104→   104→
+   105→   105→  // Statistics
+   106→   106→  const stats = [
+   107→   107→    { key: 'santri_aktif', value: '245', label: 'Jumlah Santri Aktif' },
+   108→   108→    { key: 'guru_aktif', value: '18', label: 'Jumlah Guru & Tenaga Pendidik' },
+   109→   109→    { key: 'alumni', value: '1250', label: 'Total Alumni' },
+   110→   110→    { key: 'prestasi', value: '85', label: 'Total Prestasi' },
+   111→   111→  ]
+   112→   112→
+   113→   113→  for (const s of stats) {
+   114→   114→    await prisma.statistic.upsert({
+   115→   115→      where: { key: s.key },
+   116→   116→      update: { value: s.value, label: s.label },
+   117→   117→      create: s,
+   118→   118→    })
+   119→   119→  }
+   120→   120→
+   121→   121→  // Announcements
+   122→   122→  const announcements = [
+   123→   123→    { title: 'Pendaftaran Santri Baru 2025/2026', content: 'Pendaftaran santri baru untuk tahun ajaran 2025/2026 telah dibuka. Silakan mendaftar melalui formulir online atau datang langsung ke madrasah.', type: 'ppdb', isActive: true, priority: 1 },
+   124→   124→    { title: 'Ujian Akhir Semester Genap', content: 'Ujian Akhir Semester Genap akan dilaksanakan pada tanggal 15-25 Ramadhan 1446 H. Persiapkan diri dengan baik.', type: 'exam', isActive: true, priority: 2 },
+   125→   125→    { title: 'Libur Hari Raya Idul Fitri 1446 H', content: 'Libur Hari Raya Idul Fitri 1446 H mulai tanggal 1-10 Syawal 1446 H. Selamat Hari Raya Idul Fitri, Mohon Maaf Lahir dan Batin.', type: 'holiday', isActive: true, priority: 3 },
+   126→   126→    { title: 'Lomba Hafalan Al-Quran Tingkat Kecamatan', content: 'Alhamdulillah, MDTA Miftahul Ulum 01 akan mengirimkan 5 perwakilan santri untuk mengikuti Lomba Hafalan Al-Quran Tingkat Kecamatan.', type: 'event', isActive: true, priority: 4 },
+   127→   127→    { title: 'Rapat Wali Santri', content: 'Rapat wali santri akan dilaksanakan pada hari Minggu, 15 Sya\'ban 1446 H pukul 09.00 WIB di Aula Madrasah.', type: 'general', isActive: true, priority: 5 },
+   128→   128→  ]
+   129→   129→
+   130→   130→  for (const a of announcements) {
+   131→   131→    await prisma.announcement.create({ data: a })
+   132→   132→  }
+   133→   133→
+   134→   134→  // Teachers
+   135→   135→  const teachers = [
+   136→   136→    { name: 'Ustadz H. Muhammad Syafii, S.Pd.I', position: 'Kepala Madrasah', subject: 'Al-Quran & Hadits', order: 1 },
+   137→   137→    { name: 'Ustadzah Hj. Siti Aisyah, S.Ag', position: 'Wakil Kepala Madrasah', subject: 'Fiqih', order: 2 },
+   138→   138→    { name: 'Ustadz Ahmad Fauzi, S.Pd', position: 'Sekretaris', subject: 'Aqidah Akhlak', order: 3 },
+   139→   139→    { name: 'Ustadzah Nurhasanah, S.Pd.I', position: 'Guru Senior', subject: 'Al-Quran', order: 4 },
+   140→   140→    { name: 'Ustadz Rahman Hakim, S.Ag', position: 'Guru', subject: 'Hadits', order: 5 },
+   141→   141→    { name: 'Ustadzah Fatimah Az-Zahra, S.Pd', position: 'Guru', subject: 'Fiqih', order: 6 },
+   142→   142→    { name: 'Ustadz Muhammad Ihsan, S.Pd.I', position: 'Guru', subject: 'Bahasa Arab', order: 7 },
+   143→   143→    { name: 'Ustadzah Siti Khadijah, S.Ag', position: 'Guru', subject: 'SKI', order: 8 },
+   144→   144→    { name: 'Ustadz Abdullah Syafii, S.Pd', position: 'Guru', subject: 'Tajwid', order: 9 },
+   145→   145→    { name: 'Ustadzah Rohmatun Nisa, S.Pd.I', position: 'Guru', subject: 'Aqidah Akhlak', order: 10 },
+   146→   146→    { name: 'Ustadz M. Ridwan, S.Pd', position: 'Guru', subject: 'Bahasa Arab', order: 11 },
+   147→   147→    { name: 'Ustadzah Zulfa Husna, S.Ag', position: 'Bendahara', subject: 'Fiqih', order: 12 },
+   148→   148→    { name: 'Ustadz Haris Maulana', position: 'Administrasi', subject: '-', order: 13 },
+   149→   149→    { name: 'Ustadzah Rina Oktaviani', position: 'Pustakawan', subject: '-', order: 14 },
+   150→   150→    { name: 'Ustadz Dedi Supriadi', position: 'Penjaga Keamanan', subject: '-', order: 15 },
+   151→   151→  ]
+   152→   152→
+   153→   153→  for (const t of teachers) {
+   154→   154→    await prisma.teacher.create({ data: t })
+   155→   155→  }
+   156→   156→
+   157→   157→  // Programs
+   158→   158→  const programs = [
+   159→   159→    { title: 'Kelas 1 - 3 (Ibtidaiyah)', description: 'Pendidikan dasar tingkat awal dengan fokus pada pengenalan huruf hijaiyah, tajwid dasar, dan hafalan juz 30', category: 'kelas', icon: 'BookOpen', order: 1 },
+   160→   160→    { title: 'Kelas 4 - 6 (Tsanawiyah)', description: 'Pendidikan tingkat lanjut dengan materi yang lebih mendalam termasuk tafsir, hadits, dan fiqih ibadah', category: 'kelas', icon: 'GraduationCap', order: 2 },
+   161→   161→    { title: 'Hafalan Al-Quran 30 Juz', description: 'Program unggulan tahfidz Al-Quran dengan target hafalan 30 juz selama masa studi', category: 'unggulan', icon: 'BookMarked', order: 3 },
+   162→   162→    { title: 'Kurikulum Kementerian Agama', description: 'Menggunakan kurikulum resmi Kemenag yang telah disesuaikan dengan kebutuhan lokal madrasah', category: 'kurikulum', icon: 'FileText', order: 4 },
+   163→   163→    { title: 'Kurikulum Tahfidz', description: 'Kurikulum khusus tahfidz dengan metode talaqqi dan muraja\'ah yang terstruktur', category: 'kurikulum', icon: 'ScrollText', order: 5 },
+   164→   164→    { title: 'Pramuka', description: 'Kegiatan kepanduan untuk membentuk karakter, kedisiplinan, dan jiwa kepemimpinan santri', category: 'ekstrakurikuler', icon: 'Flag', order: 6 },
+   165→   165→    { title: 'Kaligrafi Arab', description: 'Pelatihan seni kaligrafi Arab (khat) untuk mengembangkan kreativitas dan kecintaan terhadap bahasa Al-Quran', category: 'ekstrakurikuler', icon: 'PenTool', order: 7 },
+   166→   166→    { title: 'Hadroh & Rebana', description: 'Ekstrakurikuler musik Islami untuk mengembangkan bakat seni dan dakwah melalui alat musik hadroh dan rebana', category: 'ekstrakurikuler', icon: 'Music', order: 8 },
+   167→   167→    { title: 'Pencak Silat', description: 'Latihan bela diri pencak silat untuk menjaga kesehatan dan ketangkasan santri', category: 'ekstrakurikuler', icon: 'Swords', order: 9 },
+   168→   168→    { title: 'English Club', description: 'Program pengembangan kemampuan bahasa Inggris untuk santri agar mampu berkomunikasi secara internasional', category: 'ekstrakurikuler', icon: 'Globe', order: 10 },
+   169→   169→  ]
+   170→   170→
+   171→   171→  for (const p of programs) {
+   172→   172→    await prisma.program.create({ data: p })
+   173→   173→  }
+   174→   174→
+   175→   175→  // News
+   176→   176→  const news = [
+   177→   177→    { title: 'Peringatan Isra Mi\'raj Nabi Muhammad SAW 1446 H', content: 'MDTA Miftahul Ulum 01 mengadakan peringatan Isra Mi\'raj Nabi Muhammad SAW 1446 H dengan penuh khidmat. Acara dihadiri oleh seluruh santri, guru, dan wali santri. Ustadz H. Muhammad Syafii, S.Pd.I menyampaikan ceramah tentang pentingnya mengambil hikmah dari peristiwa Isra Mi\'raj.\n\nKegiatan ini juga diisi dengan pembacaan shalawat Nabi dan doa bersama. Semoga dengan memperingati Isra Mi\'raj, kita semua semakin meningkatkan iman dan taqwa kepada Allah SWT.', excerpt: 'MDTA Miftahul Ulum 01 mengadakan peringatan Isra Mi\'raj Nabi Muhammad SAW 1446 H dengan penuh khidmat.', category: 'phbi', isPublished: true },
+   178→   178→    { title: 'Santri MDTA Raih Juara 1 Lomba Hafalan Al-Quran', content: 'Alhamdulillah, santri MDTA Miftahul Ulum 01 berhasil meraih Juara 1 dalam Lomba Hafalan Al-Quran Tingkat Kecamatan Cikarang. Muhammad Rizki, santri kelas 6, berhasil mengalahkan 30 peserta dari berbagai madrasah.\n\nKepala Madrasah menyampaikan apresiasi atas prestasi yang diraih dan berharap ini menjadi motivasi bagi santri lainnya untuk terus meningkatkan hafalan Al-Quran.', excerpt: 'Muhammad Rizki, santri kelas 6, berhasil meraih Juara 1 Lomba Hafalan Al-Quran Tingkat Kecamatan.', category: 'prestasi', isPublished: true },
+   179→   179→    { title: 'Kegiatan Rutin Belajar Mengajar Berjalan Lancar', content: 'Alhamdulillah, kegiatan belajar mengajar di MDTA Miftahul Ulum 01 berjalan dengan lancar dan kondusif. Seluruh santri aktif mengikuti pembelajaran dengan antusias.\n\nKepala Madrasah menyampaikan bahwa pihak madrasah terus berupaya meningkatkan kualitas pembelajaran dengan berbagai inovasi metode pengajaran.', excerpt: 'Kegiatan belajar mengajar di MDTA Miftahul Ulum 01 berjalan dengan lancar dan kondusif.', category: 'kegiatan', isPublished: true },
+   180→   180→    { title: 'Lomba Cerdas Cermat Antar Madrasah', content: 'MDTA Miftahul Ulum 01 mengikuti Lomba Cerdas Cermat Antar Madrasah Tingkat Kabupaten Bekasi. Tim yang terdiri dari 4 santri terpilih ini telah mempersiapkan diri dengan baik.\n\nKami mohon doa dari seluruh jamaah agar tim MDTA Miftahul Ulum 01 dapat meraih hasil terbaik.', excerpt: 'MDTA Miftahul Ulum 01 mengikuti Lomba Cerdas Cermat Antar Madrasah Tingkat Kabupaten Bekasi.', category: 'lomba', isPublished: true },
+   181→   181→    { title: 'Kajian Bulanan: Adab Mencari Ilmu', content: 'Kajian bulanan kali ini mengangkat tema "Adab Mencari Ilmu" yang disampaikan oleh Ustadz H. Ahmad Dahlan, Lc. Kajian dihadiri oleh kurang lebih 200 jamaah.\n\nDalam kajiannya, Ustadz Ahmad Dahlan menekankan pentingnya adab dalam menuntut ilmu, sebagaimana sabda Nabi SAW: "Barangsiapa yang menempuh suatu jalan untuk mencari ilmu, maka Allah akan memudahkan baginya jalan menuju surga."', excerpt: 'Kajian bulanan mengangkat tema "Adab Mencari Ilmu" yang disampaikan oleh Ustadz H. Ahmad Dahlan, Lc.', category: 'keagamaan', isPublished: true },
+   182→   182→  ]
+   183→   183→
+   184→   184→  for (const n of news) {
+   185→   185→    await prisma.news.create({ data: n })
+   186→   186→  }
+   187→   187→
+   188→   188→  // Achievements
+   189→   189→  const achievements = [
+   190→   190→    { title: 'Juara 1 Lomba Hafalan Al-Quran', description: 'Lomba Hafalan Al-Quran Tingkat Kecamatan', achiever: 'Muhammad Rizki', category: 'santri', level: 'kecamatan', year: '2025' },
+   191→   191→    { title: 'Juara 2 Lomba Cerdas Cermat', description: 'Lomba Cerdas Cermat Antar Madrasah', achiever: 'Tim MDTA', category: 'santri', level: 'kabupaten', year: '2025' },
+   192→   192→    { title: 'Juara 1 Kaligrafi Arab', description: 'Lomba Kaligrafi Arab Tingkat Kabupaten', achiever: 'Aisyah Putri', category: 'santri', level: 'kabupaten', year: '2024' },
+   193→   193→    { title: 'Juara 3 Pidato Bilingual', description: 'Lomba Pidato Bahasa Arab dan Inggris', achiever: 'Ahmad Hafiz', category: 'santri', level: 'provinsi', year: '2024' },
+   194→   194→    { title: 'Guru Teladan Tingkat Kecamatan', description: 'Penghargaan Guru Teladan', achiever: 'Ustadzah Nurhasanah, S.Pd.I', category: 'guru', level: 'kecamatan', year: '2025' },
+   195→   195→    { title: 'Juara 1 Hadroh', description: 'Lomba Hadroh Tingkat Kabupaten', achiever: 'Tim Hadroh MDTA', category: 'santri', level: 'kabupaten', year: '2024' },
+   196→   196→    { title: 'Juara 2 Pencak Silat', description: 'Kejuaraan Pencak Silat Pelajar', achiever: 'Rafi Pratama', category: 'santri', level: 'kabupaten', year: '2024' },
+   197→   197→    { title: 'Piagam Penghargaan Madrasah Terbaik', description: 'Penghargaan dari Kemenag Kabupaten Bekasi', achiever: 'MDTA Miftahul Ulum 01', category: 'guru', level: 'kabupaten', year: '2023' },
+   198→   198→  ]
+   199→   199→
+   200→   200→  for (const a of achievements) {
+   201→   201→    await prisma.achievement.create({ data: a })
+   202→   202→  }
+   203→   203→
+   204→   204→  // Testimonials
+   205→   205→  const testimonials = [
+   206→   206→    { name: 'H. Supriadi', role: 'wali_santri', content: 'Alhamdulillah, anak saya menjadi lebih rajin beribadah dan hafal Al-Quran sejak belajar di MDTA Miftahul Ulum 01. Guru-gurunya sangat sabar dan telaten dalam mendidik.' },
+   207→   207→    { name: 'Hj. Sri Mulyani', role: 'wali_santri', content: 'Madrasah ini benar-benar membentuk karakter anak saya menjadi lebih baik. Lingkungan yang Islami membuat anak merasa nyaman dan semangat belajar.' },
+   208→   208→    { name: 'Ahmad Fauzan, S.Pd', role: 'alumni', content: 'Saya sangat bersyukur pernah belajar di MDTA Miftahul Ulum 01. Ilmu agama yang saya dapatkan menjadi bekal yang sangat berharga dalam kehidupan saya.' },
+   209→   209→    { name: 'Siti Rahmawati', role: 'alumni', content: 'Kenangan indah selama belajar di MDTA Miftahul Ulum 01 tidak akan pernah terlupakan. Guru-guru yang menyayangi dan teman-teman yang saling mendukung.' },
+   210→   210→    { name: 'H. Dedi Mulyadi', role: 'wali_santri', content: 'Program tahfidz di madrasah ini luar biasa. Anak saya sudah hafal 10 juz dalam 3 tahun. Terima kasih kepada seluruh guru yang telah mendampingi.' },
+   211→   211→  ]
+   212→   212→
+   213→   213→  for (const t of testimonials) {
+   214→   214→    await prisma.testimonial.create({ data: t })
+   215→   215→  }
+   216→   216→
+   217→   217→  // FAQ
+   218→   218→  const faqs = [
+   219→   219→    { question: 'Berapa biaya pendidikan di MDTA Miftahul Ulum 01?', answer: 'Biaya pendidikan di MDTA Miftahul Ulum 01 sangat terjangkau. Biaya pendaftaran Rp 150.000, SPP bulanan Rp 100.000, dan biaya seragam Rp 200.000. Madrasah juga menyediakan keringanan bagi santri yang kurang mampu.', order: 1 },
+   220→   220→    { question: 'Kapan pendaftaran santri baru dibuka?', answer: 'Pendaftaran santri baru biasanya dibuka pada bulan Maret-Juni setiap tahunnya. Untuk tahun ajaran 2025/2026, pendaftaran sudah dibuka sejak Maret 2025. Informasi lebih lanjut bisa menghubungi panitia PPDB.', order: 2 },
+   221→   221→    { question: 'Apa saja program unggulan yang tersedia?', answer: 'Program unggulan MDTA Miftahul Ulum 01 meliputi: Program Tahfidz Al-Quran 30 Juz, Program Bahasa Arab Aktif, dan Program Pengembangan Bakat dan Prestasi. Selain itu juga ada ekstrakurikuler Pramuka, Kaligrafi, Hadroh, Pencak Silat, dan English Club.', order: 3 },
+   222→   222→    { question: 'Bagaimana cara mendaftar sebagai santri baru?', answer: 'Pendaftaran bisa dilakukan secara online melalui formulir di website ini atau datang langsung ke sekretariat madrasah pada jam pelayanan (Senin-Sabtu, 07.00-12.00 WIB). Persyaratan: fotokopi akta kelahiran, fotokopi KK, pas foto 3x4 (4 lembar), dan fotokopi rapor terakhir.', order: 4 },
+   223→   223→    { question: 'Apakah ada asrama untuk santri?', answer: 'Saat ini MDTA Miftahul Ulum 01 belum menyediakan asrama. Namun, madrasah sedang merencanakan pembangunan asrama untuk memfasilitasi santri yang bertempat tinggal jauh.', order: 5 },
+   224→   224→    { question: 'Jam belajar di madrasah berapa?', answer: 'Kegiatan belajar mengajar dilaksanakan Senin-Sabtu pukul 07.00-12.00 WIB. Kegiatan ekstrakurikuler dilaksanakan pada hari Sabtu siang setelah jam pelajaran berakhir.', order: 6 },
+   225→   225→  ]
+   226→   226→
+   227→   227→  for (const f of faqs) {
+   228→   228→    await prisma.fAQ.create({ data: f })
+   229→   229→  }
+   230→   230→
+   231→   231→  // Gallery
+   232→   232→  const galleries = [
+   233→   233→    { title: 'Peringatan Isra Mi\'raj 1446 H', image: '/images/gallery/isra-miraj.jpg', category: 'acara', year: '2025', type: 'foto' },
+   234→   234→    { title: 'Kegiatan Belajar Mengajar', image: '/images/gallery/kbm.jpg', category: 'kegiatan', year: '2025', type: 'foto' },
+   235→   235→    { title: 'Lomba Hafalan Al-Quran', image: '/images/gallery/lomba-hafalan.jpg', category: 'acara', year: '2025', type: 'foto' },
+   236→   236→    { title: 'Pramuka Jumat Bersih', image: '/images/gallery/pramuka.jpg', category: 'kegiatan', year: '2025', type: 'foto' },
+   237→   237→    { title: 'Wisuda Santri Tahunan', image: '/images/gallery/wisuda.jpg', category: 'tahunan', year: '2024', type: 'foto' },
+   238→   238→    { title: 'Kegiatan Hadroh', image: '/images/gallery/hadroh.jpg', category: 'kegiatan', year: '2025', type: 'foto' },
+   239→   239→    { title: 'Peringatan Maulid Nabi', image: '/images/gallery/maulid.jpg', category: 'acara', year: '2024', type: 'foto' },
+   240→   240→    { title: 'Kaligrafi Santri', image: '/images/gallery/kaligrafi.jpg', category: 'kegiatan', year: '2025', type: 'foto' },
+   241→   241→  ]
+   242→   242→
+   243→   243→  for (const g of galleries) {
+   244→   244→    await prisma.gallery.create({ data: g })
+   245→   245→  }
+   246→   246→
+   247→   247→  // Downloads
+   248→   248→  const downloads = [
+   249→   249→    { title: 'Formulir Pendaftaran Santri Baru', fileUrl: '/files/formulir-ppdb.pdf', category: 'formulir' },
+   250→   250→    { title: 'Kalender Akademik 2025/2026', fileUrl: '/files/kalender-akademik.pdf', category: 'kalender' },
+   251→   251→    { title: 'Tata Tertib Santri', fileUrl: '/files/tata-tertib.pdf', category: 'tata_tertib' },
+   252→   252→    { title: 'Jadwal Pelajaran Semester Genap', fileUrl: '/files/jadwal-pelajaran.pdf', category: 'jadwal' },
+   253→   253→    { title: 'Surat Edaran PPDB 2025/2026', fileUrl: '/files/surat-edaran-ppdb.pdf', category: 'surat_edaran' },
+   254→   254→    { title: 'Profil Madrasah', fileUrl: '/files/profil-madrasah.pdf', category: 'lainnya' },
+   255→   255→  ]
+   256→   256→
+   257→   257→  for (const d of downloads) {
+   258→   258→    await prisma.download.create({ data: d })
+   259→   259→  }
+   260→   260→
+   261→   261→  // Alumni
+   262→   262→  const alumni = [
+   263→   263→    { name: 'Ahmad Fauzan, S.Pd', year: '2015', testimony: 'Ilmu agama yang saya dapatkan di MDTA Miftahul Ulum 01 menjadi bekal yang sangat berharga. Sekarang saya menjadi guru di madrasah lain.', currentActivity: 'Guru MI di Bekasi' },
+   264→   264→    { name: 'Siti Rahmawati', year: '2016', testimony: 'Saya sangat bersyukur pernah belajar di sini. Lingkungan yang Islami membentuk karakter saya.', currentActivity: 'Mahasiswi UIN Jakarta' },
+   265→   265→    { name: 'Muhammad Ilham', year: '2017', testimony: 'Program tahfidz di madrasah ini sangat bagus. Saya bisa hafal 15 juz selama belajar di sini.', currentActivity: 'Pengusaha Muslim' },
+   266→   266→    { name: 'Nurul Hidayah, S.Pd.I', year: '2014', testimony: 'MDTA Miftahul Ulum 01 adalah tempat terbaik untuk belajar agama. Guru-gurunya sangat berdedikasi.', currentActivity: 'Dosen STAI Bekasi' },
+   267→   267→    { name: 'Rizki Amalia', year: '2018', testimony: 'Kenangan indah selama di madrasah tidak akan terlupakan. Semoga madrasah terus maju.', currentActivity: 'Karyawan Swasta' },
+   268→   268→  ]
+   269→   269→
+   270→   270→  for (const a of alumni) {
+   271→   271→    await prisma.alumni.create({ data: a })
+   272→   272→  }
+   273→   273→
+   274→   274→  // Dakwah
+   275→   275→  const dakwahs = [
+   276→   276→    { title: 'Keutamaan Membaca Al-Quran', content: 'Al-Quran adalah kitab suci umat Islam yang diturunkan kepada Nabi Muhammad SAW melalui Malaikat Jibril. Membaca Al-Quran memiliki banyak keutamaan, di antaranya:\n\n1. Mendapat pahala yang berlipat ganda\n2. Mendapat syafaat di hari kiamat\n3. Diangkat derajatnya di surga\n4. Hatinya menjadi tenang dan damai\n5. Dilindungi dari gangguan setan\n\nRasulullah SAW bersabda: "Bacalah Al-Quran, karena ia akan datang pada hari kiamat sebagai pemberi syafaat bagi para pembacanya." (HR. Muslim)', category: 'artikel', author: 'Ustadz H. Muhammad Syafii, S.Pd.I' },
+   277→   277→    { title: 'Adab Berpuasa Ramadhan', content: 'Puasa Ramadhan adalah ibadah yang wajib dilaksanakan oleh setiap Muslim yang mukallaf. Namun, puasa tidak hanya menahan diri dari makan dan minum, tetapi juga menjaga adab dan akhlak.\n\nAdab berpuasa yang perlu diperhatikan:\n1. Niat puasa setiap malam\n2. Menyegerakan berbuka puasa\n3. Sahur sebelum fajar\n4. Memperbanyak sedekah\n5. Memperbanyak membaca Al-Quran\n6. Menjaga lisan dari ghibah dan umpatan\n7. Memperbanyak doa dan dzikir', category: 'kultum', author: 'Ustadz Rahman Hakim, S.Ag' },
+   278→   278→    { title: 'Kajian: Tadabbur Al-Quran Juz 30', content: 'Kajian bulanan kali ini membahas tentang tadabbur (perenungan) ayat-ayat Al-Quran Juz 30. Juz 30 berisi surat-surat pendek yang sering kita baca dalam shalat.\n\nMari kita telaah bersama makna dan hikmah dari setiap surat agar ibadah kita lebih khusyuk dan bermakna.', category: 'kajian', author: 'Ustadz H. Ahmad Dahlan, Lc' },
+   279→   279→    { title: 'Pentingnya Shalat Berjamaah', content: 'Shalat berjamaah memiliki keutamaan yang sangat besar dalam Islam. Rasulullah SAW bersabda bahwa shalat berjamaah lebih utama 27 derajat dibandingkan shalat sendirian.\n\nManfaat shalat berjamaah:\n1. Melatih kedisiplinan\n2. Mempererat ukhuwah Islamiyah\n3. Mendapat pahala yang berlipat\n4. Menjadi simbol persatuan umat\n5. Menghindarkan dari kemalasan', category: 'materi', author: 'Ustadz Abdullah Syafii, S.Pd' },
+   280→   280→  ]
+   281→   281→
+   282→   282→  for (const d of dakwahs) {
+   283→   283→    await prisma.dakwah.create({ data: d })
+   284→   284→  }
+   285→   285→
+   286→   286→  // Schedules
+   287→   287→  const schedules = [
+   288→   288→    { title: 'Jadwal Senin', day: 'Senin', timeStart: '07:00', timeEnd: '07:30', subject: 'Upacara & Muroja\'ah', teacher: 'Ustadz H. M. Syafii', class: 'Semua Kelas' },
+   289→   289→    { title: 'Jadwal Senin', day: 'Senin', timeStart: '07:30', timeEnd: '08:30', subject: 'Al-Quran & Tajwid', teacher: 'Ustadzah Nurhasanah', class: 'Kelas 1-3' },
+   290→   290→    { title: 'Jadwal Senin', day: 'Senin', timeStart: '07:30', timeEnd: '08:30', subject: 'Fiqih Ibadah', teacher: 'Ustadzah Fatimah', class: 'Kelas 4-6' },
+   291→   291→    { title: 'Jadwal Senin', day: 'Senin', timeStart: '08:30', timeEnd: '09:30', subject: 'Aqidah Akhlak', teacher: 'Ustadzah Nurhasanah', class: 'Kelas 1-3' },
+   292→   292→    { title: 'Jadwal Senin', day: 'Senin', timeStart: '08:30', timeEnd: '09:30', subject: 'Hadits', teacher: 'Ustadz Rahman Hakim', class: 'Kelas 4-6' },
+   293→   293→    { title: 'Jadwal Selasa', day: 'Selasa', timeStart: '07:00', timeEnd: '08:00', subject: 'Bahasa Arab', teacher: 'Ustadz M. Ihsan', class: 'Semua Kelas' },
+   294→   294→    { title: 'Jadwal Selasa', day: 'Selasa', timeStart: '08:00', timeEnd: '09:30', subject: 'Al-Quran & Hafalan', teacher: 'Ustadzah Nurhasanah', class: 'Semua Kelas' },
+   295→   295→    { title: 'Jadwal Rabu', day: 'Rabu', timeStart: '07:00', timeEnd: '08:00', subject: 'SKI', teacher: 'Ustadzah Siti Khadijah', class: 'Semua Kelas' },
+   296→   296→    { title: 'Jadwal Rabu', day: 'Rabu', timeStart: '08:00', timeEnd: '09:30', subject: 'Fiqih', teacher: 'Ustadzah Fatimah', class: 'Semua Kelas' },
+   297→   297→    { title: 'Jadwal Kamis', day: 'Kamis', timeStart: '07:00', timeEnd: '08:00', subject: 'Tajwid', teacher: 'Ustadz Abdullah Syafii', class: 'Semua Kelas' },
+   298→   298→    { title: 'Jadwal Jumat', day: 'Jumat', timeStart: '07:00', timeEnd: '08:00', subject: 'Aqidah Akhlak', teacher: 'Ustadzah Rohmatun Nisa', class: 'Semua Kelas' },
+   299→   299→    { title: 'Jadwal Sabtu', day: 'Sabtu', timeStart: '07:00', timeEnd: '09:00', subject: 'Ekskul (Pramuka/Hadroh/Kaligrafi)', teacher: 'Semua Guru', class: 'Semua Kelas' },
+   300→   300→  ]
+   301→   301→
+   302→   302→  for (const s of schedules) {
+   303→   303→    await prisma.schedule.create({ data: s })
+   304→   304→  }
+   305→   305→
+   306→   306→  // Payment Info
+   307→   307→  const payments = [
+   308→   308→    { title: 'SPP Bulanan', amount: 'Rp 100.000', description: 'Sumbangan Pembinaan Pendidikan bulanan', isActive: true },
+   309→   309→    { title: 'Biaya Pendaftaran Santri Baru', amount: 'Rp 150.000', description: 'Dibayarkan satu kali saat pendaftaran', isActive: true },
+   310→   310→    { title: 'Seragam Madrasah', amount: 'Rp 200.000', description: 'Termasuk baju koko, peci, dan seragam olahraga', isActive: true },
+   311→   311→    { title: 'Buku Paket Pelajaran', amount: 'Rp 150.000', description: 'Dibayarkan satu kali di awal tahun ajaran', isActive: true },
+   312→   312→  ]
+   313→   313→
+   314→   314→  for (const p of payments) {
+   315→   315→    await prisma.paymentInfo.create({ data: p })
+   316→   316→  }
+   317→   317→
+   318→   318→  console.log('Seeding completed!')
+   319→   319→}
+   320→   320→
+   321→   321→main()
+   322→   322→  .catch((e) => {
+   323→   323→    console.error(e)
+   324→   324→    process.exit(1)
+   325→   325→  })
+   326→   326→  .finally(async () => {
+   327→   327→    await prisma.$disconnect()
+   328→   328→  })
+   329→   329→

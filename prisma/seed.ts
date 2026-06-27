@@ -29,15 +29,16 @@ async function main() {
   await prisma.institutionData.deleteMany()
   await prisma.statistic.deleteMany()
   await prisma.siteSetting.deleteMany()
+  await prisma.admin.deleteMany()
   console.log('Data cleaned.')
 
   // Create Admin
   await prisma.admin.upsert({
-    where: { username: 'mdta_mu01_superadmin' },
+    where: { username: 'mdta01' },
     update: {},
     create: {
-      username: 'mdta_mu01_superadmin',
-      password: await hash('MdtaMU01@2025!Sec'),
+      username: 'mdta01',
+      password: await hash('mdta@01'),
       name: 'Administrator',
       email: 'admin@mdta-miftahululum01.com',
       role: 'superadmin',

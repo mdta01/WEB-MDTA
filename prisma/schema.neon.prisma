@@ -1,0 +1,256 @@
+// ============================================
+// Neon PostgreSQL Schema - READY FOR MIGRATION
+// ============================================
+// Copy this file to prisma/schema.prisma when migrating to Neon
+// Then run: npx prisma db push
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Admin {
+  id        String   @id @default(cuid())
+  username  String   @unique @db.VarChar(50)
+  password  String   @db.VarChar(128)
+  name      String   @db.VarChar(100)
+  email     String?  @db.VarChar(255)
+  role      String   @default("admin") @db.VarChar(20)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SiteSetting {
+  id    String @id @default(cuid())
+  key   String @unique @db.VarChar(100)
+  value String @db.Text
+  label String? @db.VarChar(255)
+}
+
+model Announcement {
+  id        String   @id @default(cuid())
+  title     String   @db.VarChar(255)
+  content   String   @db.Text
+  type      String   @default("general") @db.VarChar(20)
+  isActive  Boolean  @default(true)
+  priority  Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model News {
+  id          String   @id @default(cuid())
+  title       String   @db.VarChar(255)
+  content     String   @db.Text
+  excerpt     String?  @db.Text
+  image       String?  @db.VarChar(500)
+  category    String   @default("kegiatan") @db.VarChar(30)
+  isPublished Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Teacher {
+  id        String   @id @default(cuid())
+  name      String   @db.VarChar(100)
+  position  String   @db.VarChar(100)
+  subject   String?  @db.VarChar(100)
+  image     String?  @db.VarChar(500)
+  phone     String?  @db.VarChar(20)
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Student {
+  id        String   @id @default(cuid())
+  name      String   @db.VarChar(100)
+  class     String   @db.VarChar(20)
+  nis       String?  @db.VarChar(20)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Achievement {
+  id          String   @id @default(cuid())
+  title       String   @db.VarChar(255)
+  description String?  @db.Text
+  achiever    String   @db.VarChar(100)
+  category    String   @default("santri") @db.VarChar(20)
+  level       String?  @db.VarChar(30)
+  year        String   @db.VarChar(4)
+  image       String?  @db.VarChar(500)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Gallery {
+  id        String   @id @default(cuid())
+  title     String   @db.VarChar(255)
+  image     String   @db.VarChar(500)
+  category  String   @default("kegiatan") @db.VarChar(30)
+  year      String?  @db.VarChar(4)
+  type      String   @default("foto") @db.VarChar(10)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Program {
+  id          String   @id @default(cuid())
+  title       String   @db.VarChar(255)
+  description String   @db.Text
+  category    String   @default("unggulan") @db.VarChar(30)
+  icon        String?  @db.VarChar(50)
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  title       String   @db.VarChar(255)
+  description String?  @db.Text
+  date        DateTime
+  location    String?  @db.VarChar(255)
+  image       String?  @db.VarChar(500)
+  category    String   @default("kegiatan") @db.VarChar(30)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Testimonial {
+  id        String   @id @default(cuid())
+  name      String   @db.VarChar(100)
+  role      String   @db.VarChar(30)
+  content   String   @db.Text
+  image     String?  @db.VarChar(500)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model FAQ {
+  id        String   @id @default(cuid())
+  question  String   @db.VarChar(500)
+  answer    String   @db.Text
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Download {
+  id        String   @id @default(cuid())
+  title     String   @db.VarChar(255)
+  fileUrl   String   @db.VarChar(500)
+  category  String   @default("formulir") @db.VarChar(30)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PPDBRegistration {
+  id              String   @id @default(cuid())
+  name            String   @db.VarChar(100)
+  birthPlace      String   @db.VarChar(100)
+  birthDate       DateTime
+  parentName      String   @db.VarChar(100)
+  parentPhone     String   @db.VarChar(20)
+  address         String?  @db.Text
+  previousSchool  String?  @db.VarChar(255)
+  status          String   @default("pending") @db.VarChar(20)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Alumni {
+  id              String   @id @default(cuid())
+  name            String   @db.VarChar(100)
+  year            String   @db.VarChar(4)
+  testimony       String?  @db.Text
+  image           String?  @db.VarChar(500)
+  currentActivity String?  @db.VarChar(255)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String   @db.VarChar(100)
+  email     String?  @db.VarChar(255)
+  phone     String?  @db.VarChar(20)
+  subject   String?  @db.VarChar(255)
+  message   String   @db.Text
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Dakwah {
+  id          String   @id @default(cuid())
+  title       String   @db.VarChar(255)
+  content     String   @db.Text
+  category    String   @default("artikel") @db.VarChar(30)
+  author      String?  @db.VarChar(100)
+  videoUrl    String?  @db.VarChar(500)
+  image       String?  @db.VarChar(500)
+  isPublished Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model InstitutionData {
+  id    String @id @default(cuid())
+  key   String @unique @db.VarChar(100)
+  value String @db.Text
+  label String @db.VarChar(255)
+}
+
+model Schedule {
+  id        String   @id @default(cuid())
+  title     String   @db.VarChar(255)
+  day       String   @db.VarChar(20)
+  timeStart String   @db.VarChar(10)
+  timeEnd   String   @db.VarChar(10)
+  subject   String?  @db.VarChar(100)
+  teacher   String?  @db.VarChar(100)
+  class     String?  @db.VarChar(50)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PaymentInfo {
+  id          String   @id @default(cuid())
+  title       String   @db.VarChar(255)
+  amount      String   @db.VarChar(50)
+  description String?  @db.Text
+  dueDate     DateTime?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Suggestion {
+  id        String   @id @default(cuid())
+  name      String   @db.VarChar(100)
+  email     String?  @db.VarChar(255)
+  type      String   @default("saran") @db.VarChar(20)
+  message   String   @db.Text
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Statistic {
+  id    String @id @default(cuid())
+  key   String @unique @db.VarChar(100)
+  value String @db.VarChar(50)
+  label String @db.VarChar(255)
+}
