@@ -63,6 +63,9 @@ local-*
 # Worklog
 worklog.md
 
+# Tool results
+tool-results/
+
 # Screenshots
 screenshot-*.png
 
