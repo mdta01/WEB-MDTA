@@ -53,6 +53,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import CRUDManager, { type FormFieldConfig, type ColumnConfig } from './CRUDManager'
+import { ImageUpload } from './ImageUpload'
 import AdminDashboard from './AdminDashboard'
 
 // --- Types ---
@@ -146,7 +147,7 @@ const entityConfigs: Record<string, EntityConfig> = {
       ]},
       { name: 'isPublished', label: 'Dipublikasi', type: 'switch' },
       { name: 'excerpt', label: 'Ringkasan', type: 'textarea', placeholder: 'Ringkasan singkat berita', colSpan: 2 },
-      { name: 'image', label: 'URL Gambar', type: 'text', placeholder: 'https://...', colSpan: 2 },
+      { name: 'image', label: 'Gambar Berita', type: 'image', uploadFolder: 'mdta/news', aspectRatio: 'video', placeholder: 'https://...', colSpan: 2, hint: 'Upload gambar berita (rasio 16:9 disarankan)' },
       { name: 'content', label: 'Konten', type: 'textarea', required: true, placeholder: 'Isi berita lengkap', colSpan: 2 },
     ],
   },
@@ -191,7 +192,7 @@ const entityConfigs: Record<string, EntityConfig> = {
       { name: 'phone', label: 'No. Telepon', type: 'text', placeholder: '08xxx' },
       { name: 'order', label: 'Urutan', type: 'number', placeholder: '0' },
       { name: 'isActive', label: 'Aktif', type: 'switch' },
-      { name: 'image', label: 'URL Foto', type: 'text', placeholder: 'https://...', colSpan: 2 },
+      { name: 'image', label: 'Foto Guru', type: 'image', uploadFolder: 'mdta/teachers', aspectRatio: 'portrait', placeholder: 'https://...', colSpan: 2, hint: 'Upload foto guru (rasio 3:4 disarankan)' },
     ],
   },
   students: {
@@ -260,7 +261,7 @@ const entityConfigs: Record<string, EntityConfig> = {
         { label: 'Nasional', value: 'nasional' },
       ]},
       { name: 'year', label: 'Tahun', type: 'text', required: true, placeholder: '2024' },
-      { name: 'image', label: 'URL Gambar', type: 'text', placeholder: 'https://...', colSpan: 2 },
+      { name: 'image', label: 'Foto Prestasi', type: 'image', uploadFolder: 'mdta/achievements', aspectRatio: 'video', placeholder: 'https://...', colSpan: 2, hint: 'Upload foto prestasi/sertifikat' },
       { name: 'description', label: 'Deskripsi', type: 'textarea', placeholder: 'Deskripsi prestasi', colSpan: 2 },
     ],
   },
@@ -276,7 +277,7 @@ const entityConfigs: Record<string, EntityConfig> = {
     ],
     formFields: [
       { name: 'title', label: 'Judul', type: 'text', required: true, placeholder: 'Judul galeri' },
-      { name: 'image', label: 'URL Gambar/Video', type: 'text', required: true, placeholder: 'https://...' },
+      { name: 'image', label: 'Gambar Galeri', type: 'image', required: true, uploadFolder: 'mdta/gallery', aspectRatio: 'square', placeholder: 'https://...', hint: 'Upload foto galeri (wajib)' },
       { name: 'category', label: 'Kategori', type: 'select', options: [
         { label: 'Kegiatan', value: 'kegiatan' },
         { label: 'Acara', value: 'acara' },
@@ -309,7 +310,7 @@ const entityConfigs: Record<string, EntityConfig> = {
         { label: 'Lomba', value: 'lomba' },
       ]},
       { name: 'location', label: 'Lokasi', type: 'text', placeholder: 'Lokasi acara', colSpan: 2 },
-      { name: 'image', label: 'URL Gambar', type: 'text', placeholder: 'https://...', colSpan: 2 },
+      { name: 'image', label: 'Gambar Event', type: 'image', uploadFolder: 'mdta/events', aspectRatio: 'video', placeholder: 'https://...', colSpan: 2, hint: 'Upload gambar event/kegiatan' },
       { name: 'description', label: 'Deskripsi', type: 'textarea', placeholder: 'Deskripsi event', colSpan: 2 },
     ],
   },
@@ -329,7 +330,7 @@ const entityConfigs: Record<string, EntityConfig> = {
         { label: 'Alumni', value: 'alumni' },
       ]},
       { name: 'isActive', label: 'Aktif', type: 'switch' },
-      { name: 'image', label: 'URL Foto', type: 'text', placeholder: 'https://...' },
+      { name: 'image', label: 'Foto Testimoni', type: 'image', uploadFolder: 'mdta/testimonials', aspectRatio: 'square', placeholder: 'https://...', hint: 'Upload foto penulis testimoni' },
       { name: 'content', label: 'Testimoni', type: 'textarea', required: true, placeholder: 'Isi testimoni', colSpan: 2 },
     ],
   },
@@ -393,7 +394,7 @@ const entityConfigs: Record<string, EntityConfig> = {
       { name: 'isPublished', label: 'Dipublikasi', type: 'switch' },
       { name: 'author', label: 'Penulis', type: 'text', placeholder: 'Nama penulis/ustadz' },
       { name: 'videoUrl', label: 'URL Video', type: 'text', placeholder: 'https://youtube.com/...', colSpan: 2 },
-      { name: 'image', label: 'URL Gambar', type: 'text', placeholder: 'https://...', colSpan: 2 },
+      { name: 'image', label: 'Gambar Dakwah', type: 'image', uploadFolder: 'mdta/dakwah', aspectRatio: 'video', placeholder: 'https://...', colSpan: 2, hint: 'Upload gambar artikel/video dakwah' },
       { name: 'content', label: 'Konten', type: 'textarea', required: true, placeholder: 'Isi dakwah', colSpan: 2 },
     ],
   },
@@ -410,7 +411,7 @@ const entityConfigs: Record<string, EntityConfig> = {
       { name: 'name', label: 'Nama', type: 'text', required: true, placeholder: 'Nama lengkap alumni' },
       { name: 'year', label: 'Tahun Lulus', type: 'text', required: true, placeholder: '2024' },
       { name: 'currentActivity', label: 'Aktivitas Saat Ini', type: 'text', placeholder: 'Kuliah/Bekerja/dll' },
-      { name: 'image', label: 'URL Foto', type: 'text', placeholder: 'https://...' },
+      { name: 'image', label: 'Foto Alumni', type: 'image', uploadFolder: 'mdta/alumni', aspectRatio: 'square', placeholder: 'https://...', hint: 'Upload foto alumni' },
       { name: 'testimony', label: 'Testimoni', type: 'textarea', placeholder: 'Testimoni alumni', colSpan: 2 },
     ],
   },
@@ -1177,34 +1178,20 @@ function SettingsManager() {
             </div>
           </CardHeader>
           <CardContent>
-            {/* Image Settings - Special UI with preview */}
+            {/* Image Settings - Cloudinary Upload */}
             {(['madrasah_principal_photo', 'madrasah_hero_image', 'madrasah_logo'] as const).map((imgKey) => 
               settingsValues[imgKey] !== undefined && (
                 <div key={imgKey} className="mb-4 p-4 border border-amber-200 bg-amber-50 rounded-lg">
-                  <div className="flex items-start gap-4">
-                    <div className="w-20 h-20 rounded-lg overflow-hidden border-2 border-amber-400 shadow-md flex-shrink-0 bg-white">
-                      <img 
-                        src={settingsValues[imgKey] || '/images/kepala-madrasah.png'} 
-                        alt={`Preview ${imgKey}`}
-                        className="w-full h-full object-cover"
-                        onError={(e) => { (e.target as HTMLImageElement).src = '/images/kepala-madrasah.png' }}
-                      />
-                    </div>
-                    <div className="flex-1 space-y-2">
-                      <Label className="text-sm font-semibold text-amber-800 flex items-center gap-2">
-                        <ImageIcon className="h-4 w-4" />
-                        {imgKey === 'madrasah_principal_photo' ? 'Foto Kepala Madrasah' : 
-                         imgKey === 'madrasah_hero_image' ? 'Gambar Hero Beranda' : 'Logo Madrasah'}
-                      </Label>
-                      <p className="text-xs text-gray-500">Masukkan URL gambar. Gunakan path relatif (contoh: /images/foto.png) atau URL lengkap.</p>
-                      <Input
-                        value={settingsValues[imgKey] || ''}
-                        onChange={(e) => setSettingsEdits((prev) => ({ ...prev, [imgKey]: e.target.value }))}
-                        placeholder="/images/..."
-                        className="bg-white"
-                      />
-                    </div>
-                  </div>
+                  <ImageUpload
+                    value={settingsValues[imgKey] || ''}
+                    onChange={(url) => setSettingsEdits((prev) => ({ ...prev, [imgKey]: url }))}
+                    folder={`mdta/settings/${imgKey.replace('madrasah_', '').replace('_photo', '').replace('_image', '')}`}
+                    label={imgKey === 'madrasah_principal_photo' ? 'Foto Kepala Madrasah' : 
+                           imgKey === 'madrasah_hero_image' ? 'Gambar Hero Beranda' : 'Logo Madrasah'}
+                    placeholder="/images/... atau upload baru"
+                    aspectRatio={imgKey === 'madrasah_logo' ? 'square' : imgKey === 'madrasah_hero_image' ? 'wide' : 'portrait'}
+                    hint="Upload gambar baru atau klik 'Mode URL' untuk memasukkan URL/path manual"
+                  />
                 </div>
               )
             )}

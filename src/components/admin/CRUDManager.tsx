@@ -48,10 +48,11 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { Card, CardContent } from '@/components/ui/card'
+import { ImageUpload } from '@/components/admin/ImageUpload'
 
 // --- Types ---
 
-export type FieldType = 'text' | 'textarea' | 'number' | 'select' | 'switch' | 'date'
+export type FieldType = 'text' | 'textarea' | 'number' | 'select' | 'switch' | 'date' | 'image'
 
 export interface FormFieldConfig {
   name: string
@@ -62,6 +63,10 @@ export interface FormFieldConfig {
   required?: boolean
   defaultValue?: string | number | boolean
   colSpan?: number // 1 or 2 for grid layout
+  // Image-specific options
+  uploadFolder?: string // Cloudinary folder, e.g. 'mdta/news'
+  aspectRatio?: 'square' | 'video' | 'portrait' | 'wide'
+  hint?: string
 }
 
 export interface ColumnConfig {
@@ -572,6 +577,16 @@ export default function CRUDManager({
                       </SelectContent>
                     </Select>
                   </div>
+                ) : field.type === 'image' ? (
+                  <ImageUpload
+                    value={String(formData[field.name] ?? '')}
+                    onChange={(url) => handleFormChange(field.name, url)}
+                    folder={field.uploadFolder || 'mdta/misc'}
+                    label={field.label}
+                    placeholder={field.placeholder || 'https://res.cloudinary.com/...'}
+                    aspectRatio={field.aspectRatio || 'square'}
+                    hint={field.hint}
+                  />
                 ) : field.type === 'textarea' ? (
                   <div className="space-y-2">
                     <Label htmlFor={`field-${field.name}`}>{field.label}</Label>
@@ -669,11 +684,15 @@ export default function CRUDManager({
                   {field.label}
                 </span>
                 <span className="text-sm text-gray-900">
-                  {field.type === 'switch'
-                    ? (viewItem[field.name] ? 'Ya' : 'Tidak')
-                    : field.type === 'select' && field.options
-                      ? (field.options.find((o) => o.value === viewItem[field.name])?.label ?? String(viewItem[field.name] ?? '-'))
-                      : formatCellValue(viewItem[field.name])}
+                  {field.type === 'image'
+                    ? (viewItem[field.name]
+                      ? <img src={String(viewItem[field.name])} alt={field.label} className="max-h-24 rounded border" />
+                      : <span className="text-gray-400">-</span>)
+                    : field.type === 'switch'
+                      ? (viewItem[field.name] ? 'Ya' : 'Tidak')
+                      : field.type === 'select' && field.options
+                        ? (field.options.find((o) => o.value === viewItem[field.name])?.label ?? String(viewItem[field.name] ?? '-'))
+                        : formatCellValue(viewItem[field.name])}
                 </span>
               </div>
             ))}
