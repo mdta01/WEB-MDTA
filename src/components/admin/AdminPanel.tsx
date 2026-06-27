@@ -10,7 +10,6 @@ import {
   ChevronRight, Shield, Loader2, Save, DollarSign, Clock, Star,
 } from 'lucide-react'
 import { toast } from 'sonner'
-import { useAppStore } from '@/store/useAppStore'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -1277,8 +1276,12 @@ function SettingsManager() {
 
 // --- Main AdminPanel Component ---
 
-export default function AdminPanel() {
-  const { adminName, setAdminLoggedIn, setAdminMode } = useAppStore()
+interface AdminPanelProps {
+  adminName?: string
+  onLogout?: () => void
+}
+
+export default function AdminPanel({ adminName: adminNameProp, onLogout }: AdminPanelProps) {
   const [activeSection, setActiveSection] = useState<AdminSection>('dashboard')
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
@@ -1294,10 +1297,12 @@ export default function AdminPanel() {
   // Redirect if not authenticated
   useEffect(() => {
     if (!authLoading && authData && !(authData as { authenticated?: boolean }).authenticated) {
-      setAdminLoggedIn(false)
-      setAdminMode(false)
+      // Not authenticated, redirect to login
+      window.location.href = '/admin'
     }
-  }, [authData, authLoading, setAdminLoggedIn, setAdminMode])
+  }, [authData, authLoading])
+
+  const adminName = adminNameProp || 'Admin'
 
   const handleLogout = async () => {
     try {
@@ -1305,9 +1310,11 @@ export default function AdminPanel() {
     } catch {
       // ignore
     }
-    setAdminLoggedIn(false)
-    setAdminMode(false)
-    toast.success('Berhasil logout')
+    if (onLogout) {
+      onLogout()
+    } else {
+      window.location.href = '/admin'
+    }
   }
 
   const handleNavigate = (section: string) => {
@@ -1456,7 +1463,7 @@ export default function AdminPanel() {
 
           {/* User & Logout */}
           <div className="p-4 border-t border-emerald-700">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2 min-w-0">
                 <div className="w-8 h-8 rounded-full bg-amber-500 flex items-center justify-center text-emerald-900 font-bold text-sm shrink-0">
                   {(adminName || 'A').charAt(0).toUpperCase()}
@@ -1476,6 +1483,12 @@ export default function AdminPanel() {
                 <LogOut className="h-4 w-4" />
               </Button>
             </div>
+            <a
+              href="/"
+              className="flex items-center gap-2 text-xs text-emerald-300 hover:text-amber-400 transition-colors"
+            >
+              ← Kembali ke Website
+            </a>
           </div>
         </div>
       </aside>
@@ -1502,6 +1515,16 @@ export default function AdminPanel() {
               </div>
             </div>
             <div className="flex items-center gap-3">
+              <a href="/" target="_blank" rel="noopener noreferrer">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 border-emerald-200"
+                >
+                  <span className="hidden sm:inline">Lihat Website</span>
+                  <span className="sm:hidden">Website</span>
+                </Button>
+              </a>
               <div className="hidden sm:flex items-center gap-2 text-sm text-gray-500">
                 <div className="w-7 h-7 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold text-xs">
                   {(adminName || 'A').charAt(0).toUpperCase()}

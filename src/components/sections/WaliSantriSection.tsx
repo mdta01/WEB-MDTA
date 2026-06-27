@@ -21,7 +21,7 @@ import { toast } from 'sonner'
 import { useAppStore } from '@/store/useAppStore'
 
 export default function WaliSantriSection() {
-  const { setCurrentPage, setAdminMode, isAdminLoggedIn } = useAppStore()
+  const { setCurrentPage } = useAppStore()
   const [suggestionForm, setSuggestionForm] = useState({
     name: '', email: '', type: 'saran', message: '',
   })
@@ -268,15 +268,16 @@ export default function WaliSantriSection() {
                 <ExternalLink className="h-8 w-8 text-emerald-600 mx-auto mb-3" />
                 <h4 className="font-bold text-emerald-800 mb-2">Akses Admin</h4>
                 <p className="text-sm text-gray-500 mb-4">
-                  Klik ikon gembok di header untuk mengakses panel admin madrasah
+                  Klik tombol di bawah untuk mengakses panel admin madrasah
                 </p>
-                <Button
-                  variant="outline"
-                  onClick={() => setAdminMode(true)}
-                  className="border-emerald-300 text-emerald-700 hover:bg-emerald-100"
-                >
-                  Buka Panel Admin
-                </Button>
+                <a href="/admin">
+                  <Button
+                    variant="outline"
+                    className="border-emerald-300 text-emerald-700 hover:bg-emerald-100"
+                  >
+                    Buka Panel Admin
+                  </Button>
+                </a>
               </CardContent>
             </Card>
           </motion.div>

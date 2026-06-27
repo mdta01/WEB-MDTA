@@ -24,8 +24,6 @@ import WaliSantriSection from '@/components/sections/WaliSantriSection'
 import KontakSection from '@/components/sections/KontakSection'
 import FAQSection from '@/components/sections/FAQSection'
 import SearchSection from '@/components/sections/SearchSection'
-import AdminPanel from '@/components/admin/AdminPanel'
-import AdminLogin from '@/components/admin/AdminLogin'
 import { Toaster } from '@/components/ui/sonner'
 
 function SectionRenderer() {
@@ -65,48 +63,6 @@ function SectionRenderer() {
   )
 }
 
-function PublicWebsite({ onAdminLoginOpen }: { onAdminLoginOpen: () => void }) {
-  return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
-      <Header onAdminLoginOpen={onAdminLoginOpen} />
-      <LiveAnnouncement />
-      <main className="flex-1 container mx-auto px-4 py-8">
-        <SectionRenderer />
-      </main>
-      <Footer />
-      <WhatsAppButton />
-    </div>
-  )
-}
-
-function AppContent() {
-  const { isAdminMode, isAdminLoggedIn } = useAppStore()
-  const [adminLoginOpen, setAdminLoginOpen] = useState(false)
-
-  const handleAdminLoginOpen = () => {
-    setAdminLoginOpen(true)
-  }
-
-  // If in admin mode and logged in, show admin panel
-  if (isAdminMode && isAdminLoggedIn) {
-    return (
-      <>
-        <AdminPanel />
-        <Toaster position="top-right" richColors />
-      </>
-    )
-  }
-
-  // Show public website with admin login capability
-  return (
-    <>
-      <PublicWebsite onAdminLoginOpen={handleAdminLoginOpen} />
-      <AdminLogin open={adminLoginOpen} onOpenChange={setAdminLoginOpen} />
-      <Toaster position="top-right" richColors />
-    </>
-  )
-}
-
 export default function Home() {
   const [queryClient] = useState(
     () =>
@@ -122,7 +78,16 @@ export default function Home() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AppContent />
+      <div className="min-h-screen flex flex-col bg-gray-50">
+        <Header />
+        <LiveAnnouncement />
+        <main className="flex-1 container mx-auto px-4 py-8">
+          <SectionRenderer />
+        </main>
+        <Footer />
+        <WhatsAppButton />
+      </div>
+      <Toaster position="top-right" richColors />
     </QueryClientProvider>
   )
 }
