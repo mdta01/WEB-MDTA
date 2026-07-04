@@ -76,12 +76,21 @@ export default function Header() {
               onClick={() => handleNav('beranda')}
               className="flex items-center gap-3 group"
             >
-              <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg overflow-hidden shadow-lg ring-1 ring-white/30 bg-white/95 group-hover:scale-105 transition-transform">
+              <div className="w-10 h-10 md:w-12 md:h-12 group-hover:scale-105 transition-transform flex items-center justify-center">
                 <img
                   src={madrasahLogo}
                   alt={`Logo ${madrasahName}`}
                   className="w-full h-full object-contain"
-                  style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))' }}
+                  style={{
+                    filter: [
+                      // White halo — mengikuti kontur logo (bukan kotak)
+                      'drop-shadow(0 0 2px rgba(255,255,255,0.95))',
+                      'drop-shadow(0 0 3px rgba(255,255,255,0.9))',
+                      'drop-shadow(0 0 4px rgba(255,255,255,0.85))',
+                      // Dark shadow untuk depth
+                      'drop-shadow(0 2px 4px rgba(0,0,0,0.45))',
+                    ].join(' '),
+                  }}
                 />
               </div>
               <div className="flex flex-col">
@@ -154,12 +163,19 @@ export default function Header() {
                   <SheetTitle className="sr-only">Menu Navigasi</SheetTitle>
                   <div className="flex items-center justify-between p-4 border-b border-emerald-700">
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-lg overflow-hidden shadow-md ring-1 ring-white/30 bg-white/95">
+                      <div className="w-8 h-8 flex items-center justify-center">
                         <img
                           src={madrasahLogo}
                           alt="Logo"
                           className="w-full h-full object-contain"
-                          style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))' }}
+                          style={{
+                            filter: [
+                              'drop-shadow(0 0 2px rgba(255,255,255,0.95))',
+                              'drop-shadow(0 0 3px rgba(255,255,255,0.9))',
+                              'drop-shadow(0 0 4px rgba(255,255,255,0.85))',
+                              'drop-shadow(0 2px 4px rgba(0,0,0,0.45))',
+                            ].join(' '),
+                          }}
                         />
                       </div>
                       <span className="font-bold text-sm uppercase tracking-wide">{madrasahName}</span>
