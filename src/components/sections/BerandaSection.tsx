@@ -15,14 +15,41 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Dialog, DialogContent, DialogTitle, DialogClose } from '@/components/ui/dialog'
 import { useAppStore } from '@/store/useAppStore'
 
-// Read a value only on the client (returns null on server) to avoid hydration mismatch
-// for time-dependent data like dates.
-function useClientValue<T>(getValue: () => T): T | null {
-  return useSyncExternalStore(
-    () => () => {}, // no subscription needed — value is read once on mount
-    getValue, // client snapshot
-    () => null // server snapshot (null avoids hydration mismatch)
-  )
+// External date store — client-only, refreshes every minute for realtime calendar.
+// Uses useSyncExternalStore to avoid hydration mismatch (server returns null).
+let currentDate: Date | null = null
+const dateSubscribers = new Set<() => void>()
+let dateInterval: ReturnType<typeof setInterval> | null = null
+
+function subscribeDate(callback: () => void): () => void {
+  dateSubscribers.add(callback)
+  if (dateInterval === null && typeof window !== 'undefined') {
+    currentDate = new Date()
+    dateInterval = setInterval(() => {
+      currentDate = new Date()
+      dateSubscribers.forEach((cb) => cb())
+    }, 60_000)
+  }
+  return () => {
+    dateSubscribers.delete(callback)
+    if (dateSubscribers.size === 0 && dateInterval) {
+      clearInterval(dateInterval)
+      dateInterval = null
+      currentDate = null
+    }
+  }
+}
+
+function getDateSnapshot(): Date | null {
+  return currentDate
+}
+
+function getServerDateSnapshot(): Date | null {
+  return null
+}
+
+function useCurrentDate(): Date | null {
+  return useSyncExternalStore(subscribeDate, getDateSnapshot, getServerDateSnapshot)
 }
 
 function AnimatedCounter({ target, duration = 2000 }: { target: number; duration?: number }) {
@@ -80,12 +107,21 @@ function StatCard({ icon: Icon, label, value, color, delay }: {
   )
 }
 
-// Approximate Hijri date calculation
-function getHijriDate(): string {
-  const now = new Date()
+// Approximate Hijri date calculation (returns structured data for calendar display)
+type HijriInfo = {
+  day: number
+  month: number // 1-12
+  monthName: string
+  year: number
+  fullString: string
+}
+
+const hijriMonths = ['Muharram', 'Safar', 'Rabi\'ul Awal', 'Rabi\'ul Akhir', 'Jumadil Awal', 'Jumadil Akhir', 'Rajab', 'Sya\'ban', 'Ramadhan', 'Syawal', 'Dzulqa\'dah', 'Dzulhijjah']
+
+function getHijriInfo(date = new Date()): HijriInfo {
   // Simple approximation: 1 Islamic year ≈ 354.36667 days
   // Epoch: July 16, 622 CE (Julian)
-  const jd = Math.floor(now.getTime() / 86400000) + 2440587.5
+  const jd = Math.floor(date.getTime() / 86400000) + 2440587.5
   const l = Math.floor(jd - 1948439.5 + 10632)
   const n = Math.floor((l - 1) / 10631)
   const lPrime = l - 10631 * n + 354
@@ -94,11 +130,90 @@ function getHijriDate(): string {
   const m = Math.floor((24 * lDPrime) / 709)
   const d = lDPrime - Math.floor((709 * m) / 24)
   const y = 30 * n + j - 30
-  
-  const hijriMonths = ['Muharram', 'Safar', 'Rabi\'ul Awal', 'Rabi\'ul Akhir', 'Jumadil Awal', 'Jumadil Akhir', 'Rajab', 'Sya\'ban', 'Ramadhan', 'Syawal', 'Dzulqa\'dah', 'Dzulhijjah']
-  const month = hijriMonths[m - 1] || 'Muharram'
-  
-  return `${d} ${month} ${y} H`
+
+  const monthName = hijriMonths[m - 1] || 'Muharram'
+  return {
+    day: d,
+    month: m,
+    monthName,
+    year: y,
+    fullString: `${d} ${monthName} ${y} H`,
+  }
+}
+
+// Indonesian Islamic holidays by Hijri date (day, month)
+// month: 1=Muharram ... 12=Dzulhijjah
+const islamicHolidays: { day: number; month: number; name: string; emoji: string }[] = [
+  { day: 1, month: 1, name: 'Tahun Baru Hijriyah', emoji: '🌙' },
+  { day: 10, month: 1, name: 'Hari Asyura', emoji: '🕯️' },
+  { day: 12, month: 3, name: 'Maulid Nabi Muhammad ﷺ', emoji: '🕌' },
+  { day: 27, month: 7, name: 'Isra Mi\'raj Nabi ﷺ', emoji: '✨' },
+  { day: 15, month: 8, name: 'Nisfu Sya\'ban', emoji: '🌟' },
+  { day: 1, month: 9, name: 'Awal Ramadhan', emoji: '🌙' },
+  { day: 27, month: 9, name: 'Lailatul Qadr (perkiraan)', emoji: '🤲' },
+  { day: 1, month: 10, name: 'Idul Fitri', emoji: '🎉' },
+  { day: 2, month: 10, name: 'Hari Raya Idul Fitri', emoji: '🎉' },
+  { day: 9, month: 12, name: 'Hari Arafah', emoji: '🕋' },
+  { day: 10, month: 12, name: 'Idul Adha', emoji: '🐑' },
+  { day: 11, month: 12, name: 'Hari Raya Idul Adha', emoji: '🐑' },
+  { day: 12, month: 12, name: 'Hari Raya Idul Adha', emoji: '🐑' },
+  { day: 13, month: 12, name: 'Hari Tasyrik', emoji: '🐑' },
+]
+
+function getIslamicHoliday(hijri: HijriInfo): { name: string; emoji: string } | null {
+  const match = islamicHolidays.find(
+    (h) => h.day === hijri.day && h.month === hijri.month
+  )
+  return match ? { name: match.name, emoji: match.emoji } : null
+}
+
+// Special masehi (Gregorian) holidays in Indonesia (fixed dates)
+const masehiHolidays: { day: number; month: number; name: string; emoji: string }[] = [
+  { day: 1, month: 1, name: 'Tahun Baru Masehi', emoji: '🎊' },
+  { day: 17, month: 8, name: 'Hari Kemerdekaan RI', emoji: '🇮🇩' },
+  { day: 1, month: 5, name: 'Hari Buruh Internasional', emoji: 'workers' },
+  { day: 1, month: 6, name: 'Hari Lahir Pancasila', emoji: '🇮🇩' },
+  { day: 2, month: 10, name: 'Hari Batik Nasional', emoji: '🎨' },
+  { day: 28, month: 10, name: 'Hari Sumpah Pemuda', emoji: '🇮🇩' },
+  { day: 10, month: 11, name: 'Hari Pahlawan', emoji: '🎖️' },
+  { day: 25, month: 12, name: 'Hari Natal', emoji: '🎄' },
+]
+
+type MasehiInfo = {
+  weekday: string
+  day: number
+  month: number
+  monthName: string
+  year: number
+  fullString: string
+  isWeekend: boolean
+}
+
+const masehiMonthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']
+const weekdayNames = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']
+
+function getMasehiInfo(date = new Date()): MasehiInfo {
+  const weekday = weekdayNames[date.getDay()]
+  const day = date.getDate()
+  const month = date.getMonth() + 1
+  const monthName = masehiMonthNames[date.getMonth()]
+  const year = date.getFullYear()
+  return {
+    weekday,
+    day,
+    month,
+    monthName,
+    year,
+    fullString: `${weekday}, ${day} ${monthName} ${year}`,
+    isWeekend: date.getDay() === 0 || date.getDay() === 6,
+  }
+}
+
+function getMasehiHoliday(info: MasehiInfo): { name: string; emoji: string } | null {
+  const match = masehiHolidays.find(
+    (h) => h.day === info.day && h.month === info.month
+  )
+  return match ? { name: match.name, emoji: match.emoji } : null
 }
 
 export default function BerandaSection() {
@@ -107,11 +222,13 @@ export default function BerandaSection() {
   const [selectedNews, setSelectedNews] = useState<{
     id: string; title: string; content: string; excerpt?: string; category: string; createdAt: string; image?: string
   } | null>(null)
-  // Read dates on client only to avoid hydration mismatch (server vs client timezone/day)
-  const masehiDate = useClientValue(() =>
-    new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
-  )
-  const hijriDate = useClientValue(() => getHijriDate())
+
+  // Calendar date — client-only (useSyncExternalStore) with realtime minute refresh
+  const now = useCurrentDate()
+  const masehiInfo = now ? getMasehiInfo(now) : null
+  const hijriInfo = now ? getHijriInfo(now) : null
+  const islamicHoliday = hijriInfo ? getIslamicHoliday(hijriInfo) : null
+  const masehiHoliday = masehiInfo ? getMasehiHoliday(masehiInfo) : null
 
   const { data: settingsData, isLoading: settingsLoading } = useQuery({
     queryKey: ['settings'],
@@ -351,25 +468,118 @@ export default function BerandaSection() {
         )}
       </section>
 
-      {/* Kalender Hijriyah & Masehi */}
+      {/* Kalender Hijriyah & Masehi — Professional Calendar Cards */}
       <section className="container mx-auto px-4">
         <div className="grid md:grid-cols-2 gap-6">
-          <Card className="border-0 shadow-md overflow-hidden">
-            <div className="bg-gradient-to-br from-emerald-700 to-emerald-900 p-6 text-white text-center">
-              <Calendar className="h-8 w-8 mx-auto mb-2 text-amber-400" />
-              <h3 className="text-lg font-bold mb-1">Kalender Hijriyah</h3>
-              <p className="text-2xl font-bold text-amber-400" id="hijri-date">
-                {hijriDate ?? '\u00A0'}
-              </p>
+          {/* Kalender Hijriyah */}
+          <Card className="border-0 shadow-lg overflow-hidden">
+            <div className="bg-gradient-to-br from-emerald-700 via-emerald-800 to-emerald-900 text-white relative">
+              {/* Islamic pattern overlay */}
+              <div className="absolute inset-0 opacity-[0.06] pointer-events-none" aria-hidden style={{
+                backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='white'%3E%3Cpath d='M20 0L40 20L20 40L0 20z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+              }} />
+              {/* Header strip */}
+              <div className="flex items-center justify-between px-5 py-3 bg-emerald-950/40 border-b border-amber-400/20 relative">
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4 text-amber-400" />
+                  <h3 className="text-sm font-bold tracking-wider uppercase">Kalender Hijriyah</h3>
+                </div>
+                <span className="text-[10px] text-amber-300/80 font-semibold tracking-wide">﷽</span>
+              </div>
+              {/* Body */}
+              <div className="flex items-stretch gap-4 p-5 relative">
+                {/* Date box */}
+                <div className="flex flex-col items-center justify-center bg-amber-400 text-emerald-900 rounded-xl px-5 py-4 shadow-lg min-w-[90px]">
+                  <span className="text-4xl font-extrabold leading-none">
+                    {hijriInfo?.day ?? '–'}
+                  </span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider mt-1 opacity-80">
+                    {hijriInfo?.monthName?.split(' ')[0] ?? 'Bulan'}
+                  </span>
+                </div>
+                {/* Info */}
+                <div className="flex-1 flex flex-col justify-center min-w-0">
+                  <p className="text-xs text-amber-300/90 uppercase tracking-wider mb-1">Tanggal</p>
+                  <p className="text-lg font-bold leading-tight">
+                    {hijriInfo ? `${hijriInfo.monthName} ${hijriInfo.year} H` : '\u00A0'}
+                  </p>
+                  <div className="flex items-center gap-2 mt-2 text-emerald-100/80 text-xs">
+                    <Calendar className="h-3 w-3" />
+                    <span>{masehiInfo?.weekday ?? '\u00A0'}</span>
+                  </div>
+                </div>
+              </div>
+              {/* Holiday badge */}
+              {islamicHoliday && (
+                <div className="px-5 pb-4 relative">
+                  <div className="bg-amber-400/20 border border-amber-400/40 rounded-lg px-3 py-2 flex items-center gap-2 backdrop-blur-sm">
+                    <span className="text-xl">{islamicHoliday.emoji}</span>
+                    <div className="min-w-0">
+                      <p className="text-[10px] text-amber-300 uppercase tracking-wider font-semibold">Hari Besar Islam</p>
+                      <p className="text-sm font-bold text-amber-100 truncate">{islamicHoliday.name}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </Card>
-          <Card className="border-0 shadow-md overflow-hidden">
-            <div className="bg-gradient-to-br from-amber-600 to-amber-800 p-6 text-white text-center">
-              <Calendar className="h-8 w-8 mx-auto mb-2 text-emerald-300" />
-              <h3 className="text-lg font-bold mb-1">Kalender Masehi</h3>
-              <p className="text-2xl font-bold text-emerald-200">
-                {masehiDate ?? '\u00A0'}
-              </p>
+
+          {/* Kalender Masehi */}
+          <Card className="border-0 shadow-lg overflow-hidden">
+            <div className="bg-gradient-to-br from-amber-600 via-amber-700 to-amber-800 text-white relative">
+              {/* Decorative pattern */}
+              <div className="absolute inset-0 opacity-[0.05] pointer-events-none" aria-hidden style={{
+                backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='white'%3E%3Cpath d='M20 0L40 20L20 40L0 20z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+              }} />
+              {/* Header strip */}
+              <div className="flex items-center justify-between px-5 py-3 bg-amber-950/30 border-b border-emerald-400/20 relative">
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4 text-emerald-200" />
+                  <h3 className="text-sm font-bold tracking-wider uppercase">Kalender Masehi</h3>
+                </div>
+                <span className="text-[10px] text-emerald-200/80 font-semibold tracking-wide">📅</span>
+              </div>
+              {/* Body */}
+              <div className="flex items-stretch gap-4 p-5 relative">
+                {/* Date box */}
+                <div className="flex flex-col items-center justify-center bg-emerald-600 text-white rounded-xl px-5 py-4 shadow-lg min-w-[90px]">
+                  <span className="text-[10px] font-bold uppercase tracking-wider opacity-80 mb-1">
+                    {masehiInfo?.weekday?.substring(0, 3) ?? 'Hari'}
+                  </span>
+                  <span className="text-4xl font-extrabold leading-none">
+                    {masehiInfo?.day ?? '–'}
+                  </span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider mt-1 opacity-80">
+                    {masehiInfo?.monthName ?? 'Bulan'}
+                  </span>
+                </div>
+                {/* Info */}
+                <div className="flex-1 flex flex-col justify-center min-w-0">
+                  <p className="text-xs text-emerald-100/90 uppercase tracking-wider mb-1">Tanggal</p>
+                  <p className="text-lg font-bold leading-tight">
+                    {masehiInfo ? `${masehiInfo.monthName} ${masehiInfo.year}` : '\u00A0'}
+                  </p>
+                  <div className="flex items-center gap-2 mt-2 text-emerald-50/80 text-xs">
+                    <Calendar className="h-3 w-3" />
+                    <span>
+                      {masehiInfo?.weekday ?? '\u00A0'}
+                      {masehiInfo?.isWeekend && <span className="ml-2 text-amber-200">• Akhir pekan</span>}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              {/* Holiday badge */}
+              {masehiHoliday && (
+                <div className="px-5 pb-4 relative">
+                  <div className="bg-emerald-600/30 border border-emerald-300/40 rounded-lg px-3 py-2 flex items-center gap-2 backdrop-blur-sm">
+                    <span className="text-xl">{masehiHoliday.emoji}</span>
+                    <div className="min-w-0">
+                      <p className="text-[10px] text-emerald-100 uppercase tracking-wider font-semibold">Hari Besar Nasional</p>
+                      <p className="text-sm font-bold text-emerald-50 truncate">{masehiHoliday.name}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </Card>
         </div>
