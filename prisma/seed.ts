@@ -48,7 +48,7 @@ async function main() {
   // Site Settings
   const settings = [
     { key: 'madrasah_name', value: 'MDTA Miftahul Ulum 01', label: 'Nama Madrasah' },
-    { key: 'madrasah_subtitle', value: 'Tawangsari, Pujon', label: 'Subjudul Madrasah' },
+    { key: 'madrasah_subtitle', value: 'Madrasah Diniyah Takmiliyah Awwaliyah', label: 'Subjudul Madrasah' },
     { key: 'madrasah_description', value: 'Mencetak generasi Muslim yang berilmu, berakhlak mulia, dan berprestasi melalui pendidikan Islam yang berkualitas dan menyeluruh.', label: 'Deskripsi Madrasah' },
     { key: 'madrasah_address', value: 'Jl. Raya Desa Miftahul Ulum No. 01, Kec. Cikarang, Kab. Bekasi, Jawa Barat 17530', label: 'Alamat' },
     { key: 'madrasah_phone', value: '081234567890', label: 'Telepon/WhatsApp' },

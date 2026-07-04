@@ -237,7 +237,7 @@ export default function BerandaSection() {
                 <span className="h-px w-12 md:w-20 bg-gradient-to-l from-transparent to-amber-400" />
               </div>
 
-              {/* Address (subtitle) */}
+              {/* Address (hardcoded for hero — different from header subtitle) */}
               <p className="text-amber-300 text-lg md:text-xl mb-4 font-medium tracking-wide">
                 Tawangsari, Pujon
               </p>
