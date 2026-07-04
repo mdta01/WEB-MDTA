@@ -173,37 +173,24 @@ export default function BerandaSection() {
     <div className="space-y-16">
       {/* Hero Section */}
       <section className="relative overflow-hidden">
-        <div className="bg-gradient-to-br from-emerald-800 via-emerald-900 to-emerald-950 text-white">
+        <div className="bg-gradient-to-b from-emerald-800 via-emerald-800 to-emerald-900 text-white">
           {/* Hero background image - only render after settings load to avoid flashing fallback image */}
           <div className="absolute inset-0">
             {!settingsLoading && (
               <img
                 src={getSetting('madrasah_hero_image') || '/images/hero-madrasah.png'}
                 alt="MDTA Miftahul Ulum 01"
-                className="w-full h-full object-cover opacity-30"
+                className="w-full h-full object-cover opacity-20"
               />
             )}
-            {/* Radial vignette + bottom fade for depth */}
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(6,78,59,0.65)_100%)]" />
-            <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-emerald-950 to-transparent" />
+            {/* Soft radial overlay for depth (subtle, matches section ambiance) */}
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(6,95,70,0.0)_0%,rgba(6,78,59,0.4)_100%)]" />
           </div>
 
-          {/* Decorative top border (islamic pattern strip) */}
-          <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-400" />
-
-          {/* Decorative corner ornaments */}
-          <div className="absolute top-6 left-6 opacity-20 hidden md:block" aria-hidden>
-            <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
-              <path d="M40 4 L48 32 L76 40 L48 48 L40 76 L32 48 L4 40 L32 32 Z" stroke="#fbbf24" strokeWidth="1.5" fill="none"/>
-              <circle cx="40" cy="40" r="6" stroke="#fbbf24" strokeWidth="1" fill="none"/>
-            </svg>
-          </div>
-          <div className="absolute top-6 right-6 opacity-20 hidden md:block" aria-hidden>
-            <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
-              <path d="M40 4 L48 32 L76 40 L48 48 L40 76 L32 48 L4 40 L32 32 Z" stroke="#fbbf24" strokeWidth="1.5" fill="none"/>
-              <circle cx="40" cy="40" r="6" stroke="#fbbf24" strokeWidth="1" fill="none"/>
-            </svg>
-          </div>
+          {/* Subtle Islamic pattern overlay (very low opacity, harmonious) */}
+          <div className="absolute inset-0 opacity-[0.04] pointer-events-none" aria-hidden style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23fbbf24' fill-opacity='1'%3E%3Cpath d='M30 0L60 30L30 60L0 30z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          }} />
 
           {/* Centered hero content */}
           <div className="container mx-auto px-4 py-20 md:py-28 relative">
@@ -218,32 +205,32 @@ export default function BerandaSection() {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.6, delay: 0.1 }}
-                className="inline-flex items-center gap-2 bg-amber-500/15 border border-amber-400/40 text-amber-300 px-5 py-2 rounded-full text-base md:text-lg mb-6 backdrop-blur-sm"
+                className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-400/30 text-amber-200 px-5 py-2 rounded-full text-base md:text-lg mb-6"
               >
-                <span className="text-2xl leading-none">✦</span>
+                <span className="text-lg leading-none opacity-70">✦</span>
                 <span className="font-arabic">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم</span>
-                <span className="text-2xl leading-none">✦</span>
+                <span className="text-lg leading-none opacity-70">✦</span>
               </motion.div>
 
               {/* Madrasah name */}
-              <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight drop-shadow-lg uppercase tracking-wide">
+              <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight drop-shadow-md uppercase tracking-wide">
                 {getSetting('madrasah_name') || 'MDTA Miftahul Ulum 01'}
               </h1>
 
               {/* Decorative divider */}
               <div className="flex items-center gap-3 mb-5" aria-hidden>
-                <span className="h-px w-12 md:w-20 bg-gradient-to-r from-transparent to-amber-400" />
-                <MapPin className="h-5 w-5 text-amber-400" />
-                <span className="h-px w-12 md:w-20 bg-gradient-to-l from-transparent to-amber-400" />
+                <span className="h-px w-12 md:w-20 bg-gradient-to-r from-transparent to-amber-400/70" />
+                <MapPin className="h-4 w-4 text-amber-300" />
+                <span className="h-px w-12 md:w-20 bg-gradient-to-l from-transparent to-amber-400/70" />
               </div>
 
               {/* Address (hardcoded for hero — different from header subtitle) */}
-              <p className="text-amber-300 text-lg md:text-xl mb-4 font-medium tracking-wide">
+              <p className="text-amber-200 text-base md:text-lg mb-4 font-medium tracking-wide">
                 Tawangsari, Pujon
               </p>
 
               {/* Description */}
-              <p className="text-emerald-100/90 text-sm md:text-base mb-8 max-w-2xl leading-relaxed">
+              <p className="text-emerald-50/80 text-sm md:text-base mb-8 max-w-2xl leading-relaxed">
                 {getSetting('madrasah_description') || 'Mencetak generasi Muslim yang berilmu, berakhlak mulia, dan berprestasi melalui pendidikan Islam yang berkualitas dan menyeluruh.'}
               </p>
 
@@ -251,7 +238,7 @@ export default function BerandaSection() {
               <div className="flex flex-wrap gap-3 justify-center">
                 <Button
                   onClick={() => { setCurrentPage('ppdb'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
-                  className="bg-amber-500 hover:bg-amber-600 text-emerald-900 font-bold px-7 shadow-lg shadow-amber-500/20 hover:shadow-amber-500/40 transition-shadow"
+                  className="bg-amber-500 hover:bg-amber-600 text-emerald-900 font-bold px-7 shadow-md hover:shadow-lg transition-shadow"
                   size="lg"
                 >
                   Daftar PPDB
@@ -259,7 +246,7 @@ export default function BerandaSection() {
                 </Button>
                 <Button
                   onClick={() => { setCurrentPage('profil'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
-                  className="border-2 border-white/80 text-white bg-white/10 hover:bg-white hover:text-emerald-900 font-semibold px-7 backdrop-blur-sm transition-colors"
+                  className="border border-white/30 text-white bg-white/5 hover:bg-white/10 hover:border-white/50 font-semibold px-7 transition-colors"
                   size="lg"
                 >
                   Tentang Kami
@@ -268,8 +255,17 @@ export default function BerandaSection() {
             </motion.div>
           </div>
 
-          {/* Decorative bottom border (mirror) */}
-          <div className="absolute bottom-0 inset-x-0 h-1.5 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-400" />
+          {/* Smooth wave transition to next section (cream/white below) */}
+          <div className="absolute bottom-0 inset-x-0 leading-none pointer-events-none" aria-hidden>
+            <svg
+              viewBox="0 0 1440 60"
+              preserveAspectRatio="none"
+              className="w-full h-[40px] md:h-[60px]"
+              fill="#ffffff"
+            >
+              <path d="M0,32 C240,60 480,60 720,40 C960,20 1200,20 1440,40 L1440,60 L0,60 Z" />
+            </svg>
+          </div>
         </div>
       </section>
 
