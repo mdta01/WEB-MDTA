@@ -226,7 +226,7 @@ export default function BerandaSection() {
               </motion.div>
 
               {/* Madrasah name */}
-              <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight drop-shadow-lg">
+              <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight drop-shadow-lg uppercase tracking-wide">
                 {getSetting('madrasah_name') || 'MDTA Miftahul Ulum 01'}
               </h1>
 
