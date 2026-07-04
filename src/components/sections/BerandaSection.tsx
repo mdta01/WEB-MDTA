@@ -682,58 +682,6 @@ export default function BerandaSection() {
         </div>
       </section>
 
-      {/* Testimonials */}
-      {testimonials.length > 0 && (
-        <section className="bg-emerald-50 py-12">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl md:text-3xl font-bold text-emerald-800">Testimoni</h2>
-              <div className="w-20 h-1 bg-amber-500 mx-auto mt-2 rounded-full" />
-            </div>
-            <div className="max-w-2xl mx-auto">
-              <Card className="border-0 shadow-lg">
-                <CardContent className="p-8 text-center">
-                  <Quote className="h-10 w-10 text-amber-400 mx-auto mb-4" />
-                  <p className="text-gray-600 italic leading-relaxed mb-6">
-                    &ldquo;{testimonials[testimonialIdx]?.content}&rdquo;
-                  </p>
-                  <div className="flex items-center justify-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-emerald-600 flex items-center justify-center text-white font-bold">
-                      {testimonials[testimonialIdx]?.name?.charAt(0) || 'W'}
-                    </div>
-                    <div className="text-left">
-                      <p className="font-semibold text-emerald-800 text-sm">{testimonials[testimonialIdx]?.name}</p>
-                      <p className="text-gray-500 text-xs">{testimonials[testimonialIdx]?.role}</p>
-                    </div>
-                  </div>
-                  {testimonials.length > 1 && (
-                    <div className="flex justify-center gap-2 mt-6">
-                      <Button variant="outline" size="icon" onClick={prevTestimonial} className="h-8 w-8">
-                        <ChevronLeft className="h-4 w-4" />
-                      </Button>
-                      <div className="flex items-center gap-1">
-                        {testimonials.map((_: unknown, i: number) => (
-                          <button
-                            key={i}
-                            onClick={() => setTestimonialIdx(i)}
-                            className={`w-2 h-2 rounded-full transition-colors ${
-                              i === testimonialIdx ? 'bg-amber-500' : 'bg-emerald-200'
-                            }`}
-                          />
-                        ))}
-                      </div>
-                      <Button variant="outline" size="icon" onClick={nextTestimonial} className="h-8 w-8">
-                        <ChevronRight className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </section>
-      )}
-
       {/* Latest News */}
       <section className="container mx-auto px-4">
         <div className="flex items-center justify-between mb-6">
@@ -840,6 +788,58 @@ export default function BerandaSection() {
           </DialogContent>
         </Dialog>
       </section>
+
+      {/* Testimonials */}
+      {testimonials.length > 0 && (
+        <section className="bg-emerald-50 py-12">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl md:text-3xl font-bold text-emerald-800">Testimoni</h2>
+              <div className="w-20 h-1 bg-amber-500 mx-auto mt-2 rounded-full" />
+            </div>
+            <div className="max-w-2xl mx-auto">
+              <Card className="border-0 shadow-lg">
+                <CardContent className="p-8 text-center">
+                  <Quote className="h-10 w-10 text-amber-400 mx-auto mb-4" />
+                  <p className="text-gray-600 italic leading-relaxed mb-6">
+                    &ldquo;{testimonials[testimonialIdx]?.content}&rdquo;
+                  </p>
+                  <div className="flex items-center justify-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-emerald-600 flex items-center justify-center text-white font-bold">
+                      {testimonials[testimonialIdx]?.name?.charAt(0) || 'W'}
+                    </div>
+                    <div className="text-left">
+                      <p className="font-semibold text-emerald-800 text-sm">{testimonials[testimonialIdx]?.name}</p>
+                      <p className="text-gray-500 text-xs">{testimonials[testimonialIdx]?.role}</p>
+                    </div>
+                  </div>
+                  {testimonials.length > 1 && (
+                    <div className="flex justify-center gap-2 mt-6">
+                      <Button variant="outline" size="icon" onClick={prevTestimonial} className="h-8 w-8">
+                        <ChevronLeft className="h-4 w-4" />
+                      </Button>
+                      <div className="flex items-center gap-1">
+                        {testimonials.map((_: unknown, i: number) => (
+                          <button
+                            key={i}
+                            onClick={() => setTestimonialIdx(i)}
+                            className={`w-2 h-2 rounded-full transition-colors ${
+                              i === testimonialIdx ? 'bg-amber-500' : 'bg-emerald-200'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                      <Button variant="outline" size="icon" onClick={nextTestimonial} className="h-8 w-8">
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Upcoming Events */}
       {events.length > 0 && (
