@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Dialog, DialogContent, DialogTitle, DialogClose } from '@/components/ui/dialog'
+import { CalendarModal } from '@/components/sections/CalendarModal'
 import { useAppStore } from '@/store/useAppStore'
 
 // External date store — client-only, refreshes every minute for realtime calendar.
@@ -279,6 +280,7 @@ export default function BerandaSection() {
   const [selectedNews, setSelectedNews] = useState<{
     id: string; title: string; content: string; excerpt?: string; category: string; createdAt: string; image?: string
   } | null>(null)
+  const [calendarModal, setCalendarModal] = useState<{ open: boolean; type: 'masehi' | 'hijri' }>({ open: false, type: 'masehi' })
 
   // Calendar date — client-only (useSyncExternalStore) with realtime minute refresh
   const now = useCurrentDate()
@@ -540,7 +542,10 @@ export default function BerandaSection() {
       <section className="container mx-auto px-4">
         <div className="grid md:grid-cols-2 gap-6">
           {/* Kalender Hijriyah */}
-          <Card className="border-0 shadow-lg overflow-hidden">
+          <Card
+            className="border-0 shadow-lg overflow-hidden cursor-pointer hover:shadow-xl transition-shadow"
+            onClick={() => setCalendarModal({ open: true, type: 'hijri' })}
+          >
             <div className="bg-gradient-to-br from-emerald-700 via-emerald-800 to-emerald-900 text-white relative">
               {/* Islamic pattern overlay */}
               <div className="absolute inset-0 opacity-[0.06] pointer-events-none" aria-hidden style={{
@@ -593,7 +598,10 @@ export default function BerandaSection() {
           </Card>
 
           {/* Kalender Masehi */}
-          <Card className="border-0 shadow-lg overflow-hidden">
+          <Card
+            className="border-0 shadow-lg overflow-hidden cursor-pointer hover:shadow-xl transition-shadow"
+            onClick={() => setCalendarModal({ open: true, type: 'masehi' })}
+          >
             <div className="bg-gradient-to-br from-amber-600 via-amber-700 to-amber-800 text-white relative">
               {/* Decorative pattern */}
               <div className="absolute inset-0 opacity-[0.05] pointer-events-none" aria-hidden style={{
@@ -859,6 +867,13 @@ export default function BerandaSection() {
           </div>
         </section>
       )}
+
+      {/* Calendar Modal — opened when user clicks calendar cards */}
+      <CalendarModal
+        open={calendarModal.open}
+        onClose={() => setCalendarModal((prev) => ({ ...prev, open: false }))}
+        initialType={calendarModal.type}
+      />
     </div>
   )
 }
