@@ -1179,19 +1179,42 @@ function SettingsManager() {
           </CardHeader>
           <CardContent>
             {/* Image Settings - Cloudinary Upload */}
-            {(['madrasah_principal_photo', 'madrasah_hero_image', 'madrasah_logo'] as const).map((imgKey) => 
+            {(['madrasah_principal_photo', 'madrasah_hero_image', 'madrasah_logo'] as const).map((imgKey) =>
               settingsValues[imgKey] !== undefined && (
-                <div key={imgKey} className="mb-4 p-4 border border-amber-200 bg-amber-50 rounded-lg">
-                  <ImageUpload
-                    value={settingsValues[imgKey] || ''}
-                    onChange={(url) => setSettingsEdits((prev) => ({ ...prev, [imgKey]: url }))}
-                    folder={`mdta/settings/${imgKey.replace('madrasah_', '').replace('_photo', '').replace('_image', '')}`}
-                    label={imgKey === 'madrasah_principal_photo' ? 'Foto Kepala Madrasah' : 
-                           imgKey === 'madrasah_hero_image' ? 'Gambar Hero Beranda' : 'Logo Madrasah'}
-                    placeholder="/images/... atau upload baru"
-                    aspectRatio={imgKey === 'madrasah_logo' ? 'square' : imgKey === 'madrasah_hero_image' ? 'wide' : 'portrait'}
-                    hint="Upload gambar baru atau klik 'Mode URL' untuk memasukkan URL/path manual"
-                  />
+                <div key={imgKey} className="mb-4 p-4 border border-amber-200 bg-amber-50 rounded-lg flex flex-col sm:flex-row sm:items-start gap-4">
+                  <div className="shrink-0">
+                    <ImageUpload
+                      value={settingsValues[imgKey] || ''}
+                      onChange={(url) => setSettingsEdits((prev) => ({ ...prev, [imgKey]: url }))}
+                      folder={`mdta/settings/${imgKey.replace('madrasah_', '').replace('_photo', '').replace('_image', '')}`}
+                      label={imgKey === 'madrasah_principal_photo' ? 'Foto Kepala' :
+                             imgKey === 'madrasah_hero_image' ? 'Hero' : 'Logo'}
+                      placeholder="/images/... atau upload baru"
+                      aspectRatio={imgKey === 'madrasah_logo' ? 'square' : imgKey === 'madrasah_hero_image' ? 'wide' : 'portrait'}
+                      hint="Upload atau klik 'Mode URL'"
+                      maxWidth={
+                        imgKey === 'madrasah_principal_photo' ? 'w-32 sm:w-36' :
+                        imgKey === 'madrasah_logo' ? 'w-24 sm:w-28' :
+                        'w-full sm:w-64'
+                      }
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0 space-y-1">
+                    <p className="text-sm font-semibold text-amber-900">
+                      {imgKey === 'madrasah_principal_photo' ? 'Foto Kepala Madrasah' :
+                       imgKey === 'madrasah_hero_image' ? 'Gambar Hero Beranda' : 'Logo Madrasah'}
+                    </p>
+                    <p className="text-xs text-amber-700/80">
+                      {imgKey === 'madrasah_principal_photo'
+                        ? 'Foto profil kepala madrasah. Rasio 3:4 (portrait) disarankan.'
+                        : imgKey === 'madrasah_hero_image'
+                        ? 'Gambar latar belakang section hero di halaman beranda. Rasio 16:9 (wide) disarankan.'
+                        : 'Logo madrasah. Format persegi (1:1) dengan latar transparan (PNG/SVG) disarankan.'}
+                    </p>
+                    <p className="text-[11px] text-amber-600/70 mt-2">
+                      Format: JPEG, PNG, WebP, GIF, SVG. Maksimal 10 MB.
+                    </p>
+                  </div>
                 </div>
               )
             )}

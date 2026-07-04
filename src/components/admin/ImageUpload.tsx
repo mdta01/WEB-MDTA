@@ -14,6 +14,8 @@ interface ImageUploadProps {
   placeholder?: string
   aspectRatio?: 'square' | 'video' | 'portrait' | 'wide'
   hint?: string
+  /** Max width CSS class for the upload/preview area, e.g. 'max-w-[200px]'. Default: full width. */
+  maxWidth?: string
 }
 
 export function ImageUpload({
@@ -24,6 +26,7 @@ export function ImageUpload({
   placeholder = 'https://res.cloudinary.com/...',
   aspectRatio = 'square',
   hint,
+  maxWidth,
 }: ImageUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
@@ -149,42 +152,44 @@ export function ImageUpload({
           placeholder={placeholder}
           disabled={uploading}
         />
-      ) : hasImage ? (
-        <div className={`relative w-full ${aspectClass} rounded-lg overflow-hidden border bg-muted group`}>
-          <img
-            src={value}
-            alt="Preview"
-            className="w-full h-full object-cover"
-            onError={() => setImgError(true)}
-          />
-          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
-            <Button
-              type="button"
-              size="sm"
-              variant="secondary"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={uploading}
-            >
-              <UploadCloud className="h-4 w-4 mr-1" /> Ganti
-            </Button>
-            <Button
-              type="button"
-              size="sm"
-              variant="destructive"
-              onClick={handleClear}
-              disabled={uploading}
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-          {uploading && (
-            <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-              <Loader2 className="h-6 w-6 animate-spin text-white" />
-            </div>
-          )}
-        </div>
       ) : (
-        <div
+        <div className={maxWidth}>
+          {hasImage ? (
+          <div className={`relative w-full ${aspectClass} rounded-lg overflow-hidden border bg-muted group`}>
+            <img
+              src={value}
+              alt="Preview"
+              className="w-full h-full object-cover"
+              onError={() => setImgError(true)}
+            />
+            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
+              <Button
+                type="button"
+                size="sm"
+                variant="secondary"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploading}
+              >
+                <UploadCloud className="h-4 w-4 mr-1" /> Ganti
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant="destructive"
+                onClick={handleClear}
+                disabled={uploading}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+            {uploading && (
+              <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                <Loader2 className="h-6 w-6 animate-spin text-white" />
+              </div>
+            )}
+          </div>
+          ) : (
+          <div
           onClick={() => fileInputRef.current?.click()}
           onDrop={handleDrop}
           onDragOver={handleDragOver}
@@ -218,6 +223,8 @@ export function ImageUpload({
               <p className="text-[10px] text-muted-foreground/70">JPEG, PNG, WebP, GIF (maks 10MB)</p>
             </>
           )}
+        </div>
+        )}
         </div>
       )}
 

@@ -67,6 +67,7 @@ export interface FormFieldConfig {
   uploadFolder?: string // Cloudinary folder, e.g. 'mdta/news'
   aspectRatio?: 'square' | 'video' | 'portrait' | 'wide'
   hint?: string
+  maxWidth?: string // CSS max-width class for the upload area, e.g. 'max-w-[200px]'
 }
 
 export interface ColumnConfig {
@@ -586,6 +587,7 @@ export default function CRUDManager({
                     placeholder={field.placeholder || 'https://res.cloudinary.com/...'}
                     aspectRatio={field.aspectRatio || 'square'}
                     hint={field.hint}
+                    maxWidth={field.maxWidth}
                   />
                 ) : field.type === 'textarea' ? (
                   <div className="space-y-2">
