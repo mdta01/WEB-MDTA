@@ -13,10 +13,8 @@ import { Button } from '@/components/ui/button'
 const categories = [
   { value: '', label: 'Semua' },
   { value: 'kegiatan', label: 'Kegiatan' },
-  { value: 'phbi', label: 'PHBI' },
-  { value: 'akademik', label: 'Akademik' },
-  { value: 'lomba', label: 'Lomba' },
-  { value: 'wisuda', label: 'Wisuda' },
+  { value: 'acara', label: 'Acara' },
+  { value: 'tahunan', label: 'Tahunan' },
 ]
 
 const gradientVariants = [

@@ -12,9 +12,10 @@ import { Button } from '@/components/ui/button'
 const categories = [
   { value: '', label: 'Semua' },
   { value: 'formulir', label: 'Formulir' },
+  { value: 'kalender', label: 'Kalender' },
+  { value: 'tata_tertib', label: 'Tata Tertib' },
   { value: 'jadwal', label: 'Jadwal' },
-  { value: 'materi', label: 'Materi' },
-  { value: 'surat', label: 'Surat' },
+  { value: 'surat_edaran', label: 'Surat Edaran' },
   { value: 'lainnya', label: 'Lainnya' },
 ]
 
