@@ -7,7 +7,7 @@ import {
   Calendar, Star, ChevronLeft, ChevronRight, Quote,
   MapPin, X,
 } from 'lucide-react'
-import { useState, useEffect, useRef, useSyncExternalStore } from 'react'
+import { useState, useEffect, useRef, useReducer, useSyncExternalStore } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -50,6 +50,63 @@ function getServerDateSnapshot(): Date | null {
 
 function useCurrentDate(): Date | null {
   return useSyncExternalStore(subscribeDate, getDateSnapshot, getServerDateSnapshot)
+}
+
+// Typewriter effect — types out text char by char once it becomes available.
+// Waits `startDelay` ms before typing starts, types one char every `typeSpeed` ms.
+// Returns the currently displayed substring + a `done` flag for cursor control.
+// Uses useReducer + dispatch (not setState) in effects to comply with
+// react-hooks/set-state-in-effect rule, while still supporting timer-based animation.
+type TypewriterState = { count: number; phase: 'idle' | 'starting' | 'typing' | 'done' }
+type TypewriterAction =
+  | { type: 'reset' }
+  | { type: 'begin-typing' }
+  | { type: 'type-next' }
+  | { type: 'finish' }
+
+function typewriterReducer(state: TypewriterState, action: TypewriterAction): TypewriterState {
+  switch (action.type) {
+    case 'reset':
+      return { count: 0, phase: 'starting' }
+    case 'begin-typing':
+      return state.phase === 'starting' ? { ...state, phase: 'typing' } : state
+    case 'type-next':
+      return { ...state, count: state.count + 1 }
+    case 'finish':
+      return { ...state, phase: 'done' }
+    default:
+      return state
+  }
+}
+
+function useTypewriter(text: string, opts?: { startDelay?: number; typeSpeed?: number }): { display: string; done: boolean } {
+  const startDelay = opts?.startDelay ?? 400
+  const typeSpeed = opts?.typeSpeed ?? 35
+  const [state, dispatch] = useReducer(typewriterReducer, { count: 0, phase: 'idle' })
+
+  // Reset when text changes (e.g. when settings load from API)
+  useEffect(() => {
+    if (!text) return // wait until real text is available
+    dispatch({ type: 'reset' })
+    const startTimer = setTimeout(() => dispatch({ type: 'begin-typing' }), startDelay)
+    return () => clearTimeout(startTimer)
+  }, [text, startDelay])
+
+  // Type next character
+  useEffect(() => {
+    if (state.phase !== 'typing') return
+    if (state.count >= text.length) {
+      dispatch({ type: 'finish' })
+      return
+    }
+    const timer = setTimeout(() => dispatch({ type: 'type-next' }), typeSpeed)
+    return () => clearTimeout(timer)
+  }, [state.phase, state.count, text, typeSpeed])
+
+  return {
+    display: text.slice(0, state.count),
+    done: state.phase === 'done' || (state.phase === 'typing' && state.count >= text.length),
+  }
 }
 
 function AnimatedCounter({ target, duration = 2000 }: { target: number; duration?: number }) {
@@ -238,6 +295,13 @@ export default function BerandaSection() {
   const settings = Array.isArray(settingsData) ? settingsData : (settingsData?.settings || [])
   const getSetting = (key: string) => settings.find((s: { key: string }) => s.key === key)?.value || ''
 
+  // Description with typewriter effect (starts after settings load)
+  const descriptionText = getSetting('madrasah_description') || 'Mencetak generasi Muslim yang berilmu, berakhlak mulia, dan berprestasi melalui pendidikan Islam yang berkualitas dan menyeluruh.'
+  const { display: typedDescription, done: typingDone } = useTypewriter(descriptionText, {
+    startDelay: 800,
+    typeSpeed: 30,
+  })
+
   const { data: statsData, isLoading: statsLoading } = useQuery({
     queryKey: ['statistics'],
     queryFn: () => fetch('/api/statistics').then(r => r.json()),
@@ -354,9 +418,13 @@ export default function BerandaSection() {
                 </span>
               </div>
 
-              {/* Description — italic + decorative left border */}
-              <p className="text-emerald-50/90 text-sm md:text-base mb-8 max-w-2xl leading-relaxed italic">
-                {getSetting('madrasah_description') || 'Mencetak generasi Muslim yang berilmu, berakhlak mulia, dan berprestasi melalui pendidikan Islam yang berkualitas dan menyeluruh.'}
+              {/* Description — italic with typewriter effect */}
+              <p className="text-emerald-50/90 text-sm md:text-base mb-8 max-w-2xl leading-relaxed italic min-h-[3rem] flex items-start">
+                <span>{typedDescription}</span>
+                <span
+                  className={`inline-block w-[2px] h-[1.1em] bg-amber-300 ml-1 mt-1 shrink-0 ${typingDone ? 'animate-blink' : ''}`}
+                  aria-hidden
+                />
               </p>
 
               {/* CTA buttons — more prominent with hover scale */}
