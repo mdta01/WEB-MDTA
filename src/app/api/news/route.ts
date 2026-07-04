@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
 
     const news = await db.news.findMany({
       where,
-      orderBy: { createdAt: 'desc' },
+      orderBy: [{ updatedAt: 'desc' }, { createdAt: 'desc' }],
     })
     return NextResponse.json(news)
   } catch (error) {
