@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 import {
   BookOpen, Users, Award, GraduationCap, ArrowRight,
   Calendar, Star, ChevronLeft, ChevronRight, Quote,
-  MapPin, X,
+  MapPin, X, Eye,
 } from 'lucide-react'
 import { useState, useEffect, useRef, useReducer, useSyncExternalStore } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
@@ -540,10 +540,19 @@ export default function BerandaSection() {
 
       {/* Kalender Hijriyah & Masehi — Professional Calendar Cards */}
       <section className="container mx-auto px-4">
+        <div className="text-center mb-6">
+          <h2 className="text-2xl md:text-3xl font-bold text-emerald-800">Kalender</h2>
+          <div className="w-20 h-1 bg-amber-500 mx-auto mt-2 rounded-full" />
+          <p className="text-xs text-gray-500 mt-3 flex items-center justify-center gap-1.5">
+            <Eye className="h-3.5 w-3.5 text-emerald-600" />
+            Klik kartu kalender untuk melihat kalender lengkap &amp; hari besar Islam
+          </p>
+        </div>
+
         <div className="grid md:grid-cols-2 gap-6">
           {/* Kalender Hijriyah */}
           <Card
-            className="border-0 shadow-lg overflow-hidden cursor-pointer hover:shadow-xl transition-shadow"
+            className="border-0 shadow-lg overflow-hidden cursor-pointer hover:shadow-xl hover:-translate-y-0.5 transition-all group"
             onClick={() => setCalendarModal({ open: true, type: 'hijri' })}
           >
             <div className="bg-gradient-to-br from-emerald-700 via-emerald-800 to-emerald-900 text-white relative">
@@ -557,23 +566,23 @@ export default function BerandaSection() {
                   <Calendar className="h-4 w-4 text-amber-400" />
                   <h3 className="text-sm font-bold tracking-wider uppercase">Kalender Hijriyah</h3>
                 </div>
-                <span className="text-[10px] text-amber-300/80 font-semibold tracking-wide">﷽</span>
+                <span className="text-base leading-none" aria-hidden>﷽</span>
               </div>
               {/* Body */}
               <div className="flex items-stretch gap-4 p-5 relative">
                 {/* Date box */}
-                <div className="flex flex-col items-center justify-center bg-amber-400 text-emerald-900 rounded-xl px-5 py-4 shadow-lg min-w-[90px]">
+                <div className="flex flex-col items-center justify-center bg-amber-400 text-emerald-900 rounded-xl px-5 py-4 shadow-lg min-w-[96px]">
                   <span className="text-4xl font-extrabold leading-none">
                     {hijriInfo?.day ?? '–'}
                   </span>
-                  <span className="text-[10px] font-bold uppercase tracking-wider mt-1 opacity-80">
+                  <span className="text-[10px] font-bold uppercase tracking-wider mt-1.5 opacity-80">
                     {hijriInfo?.monthName?.split(' ')[0] ?? 'Bulan'}
                   </span>
                 </div>
                 {/* Info */}
                 <div className="flex-1 flex flex-col justify-center min-w-0">
-                  <p className="text-xs text-amber-300/90 uppercase tracking-wider mb-1">Tanggal</p>
-                  <p className="text-lg font-bold leading-tight">
+                  <p className="text-[10px] text-amber-300/90 uppercase tracking-widest mb-1 font-semibold">Penanggalan Islam</p>
+                  <p className="text-base md:text-lg font-bold leading-tight">
                     {hijriInfo ? `${hijriInfo.monthName} ${hijriInfo.year} H` : '\u00A0'}
                   </p>
                   <div className="flex items-center gap-2 mt-2 text-emerald-100/80 text-xs">
@@ -584,7 +593,7 @@ export default function BerandaSection() {
               </div>
               {/* Holiday badge */}
               {islamicHoliday && (
-                <div className="px-5 pb-4 relative">
+                <div className="px-5 pb-3 relative">
                   <div className="bg-amber-400/20 border border-amber-400/40 rounded-lg px-3 py-2 flex items-center gap-2 backdrop-blur-sm">
                     <span className="text-xl">{islamicHoliday.emoji}</span>
                     <div className="min-w-0">
@@ -594,12 +603,18 @@ export default function BerandaSection() {
                   </div>
                 </div>
               )}
+              {/* Footer hint */}
+              <div className="px-5 py-2.5 bg-emerald-950/30 border-t border-amber-400/20 flex items-center justify-center gap-1.5 text-[11px] text-amber-200/80 group-hover:text-amber-100 transition-colors">
+                <Eye className="h-3 w-3" />
+                <span className="font-medium">Lihat kalender lengkap &amp; hari besar Islam</span>
+                <ChevronRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
+              </div>
             </div>
           </Card>
 
           {/* Kalender Masehi */}
           <Card
-            className="border-0 shadow-lg overflow-hidden cursor-pointer hover:shadow-xl transition-shadow"
+            className="border-0 shadow-lg overflow-hidden cursor-pointer hover:shadow-xl hover:-translate-y-0.5 transition-all group"
             onClick={() => setCalendarModal({ open: true, type: 'masehi' })}
           >
             <div className="bg-gradient-to-br from-amber-600 via-amber-700 to-amber-800 text-white relative">
@@ -613,26 +628,26 @@ export default function BerandaSection() {
                   <Calendar className="h-4 w-4 text-emerald-200" />
                   <h3 className="text-sm font-bold tracking-wider uppercase">Kalender Masehi</h3>
                 </div>
-                <span className="text-[10px] text-emerald-200/80 font-semibold tracking-wide">📅</span>
+                <span className="text-base" aria-hidden>📅</span>
               </div>
               {/* Body */}
               <div className="flex items-stretch gap-4 p-5 relative">
                 {/* Date box */}
-                <div className="flex flex-col items-center justify-center bg-emerald-600 text-white rounded-xl px-5 py-4 shadow-lg min-w-[90px]">
-                  <span className="text-[10px] font-bold uppercase tracking-wider opacity-80 mb-1">
+                <div className="flex flex-col items-center justify-center bg-emerald-600 text-white rounded-xl px-5 py-4 shadow-lg min-w-[96px]">
+                  <span className="text-[10px] font-bold uppercase tracking-wider opacity-80 mb-1.5">
                     {masehiInfo?.weekday?.substring(0, 3) ?? 'Hari'}
                   </span>
                   <span className="text-4xl font-extrabold leading-none">
                     {masehiInfo?.day ?? '–'}
                   </span>
-                  <span className="text-[10px] font-bold uppercase tracking-wider mt-1 opacity-80">
+                  <span className="text-[10px] font-bold uppercase tracking-wider mt-1.5 opacity-80">
                     {masehiInfo?.monthName ?? 'Bulan'}
                   </span>
                 </div>
                 {/* Info */}
                 <div className="flex-1 flex flex-col justify-center min-w-0">
-                  <p className="text-xs text-emerald-100/90 uppercase tracking-wider mb-1">Tanggal</p>
-                  <p className="text-lg font-bold leading-tight">
+                  <p className="text-[10px] text-emerald-100/90 uppercase tracking-widest mb-1 font-semibold">Penanggalan Masehi</p>
+                  <p className="text-base md:text-lg font-bold leading-tight">
                     {masehiInfo ? `${masehiInfo.monthName} ${masehiInfo.year}` : '\u00A0'}
                   </p>
                   <div className="flex items-center gap-2 mt-2 text-emerald-50/80 text-xs">
@@ -646,7 +661,7 @@ export default function BerandaSection() {
               </div>
               {/* Holiday badge */}
               {masehiHoliday && (
-                <div className="px-5 pb-4 relative">
+                <div className="px-5 pb-3 relative">
                   <div className="bg-emerald-600/30 border border-emerald-300/40 rounded-lg px-3 py-2 flex items-center gap-2 backdrop-blur-sm">
                     <span className="text-xl">{masehiHoliday.emoji}</span>
                     <div className="min-w-0">
@@ -656,6 +671,12 @@ export default function BerandaSection() {
                   </div>
                 </div>
               )}
+              {/* Footer hint */}
+              <div className="px-5 py-2.5 bg-amber-950/30 border-t border-emerald-400/20 flex items-center justify-center gap-1.5 text-[11px] text-emerald-100/80 group-hover:text-emerald-50 transition-colors">
+                <Eye className="h-3 w-3" />
+                <span className="font-medium">Lihat kalender lengkap &amp; hari besar nasional</span>
+                <ChevronRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
+              </div>
             </div>
           </Card>
         </div>
