@@ -109,7 +109,7 @@ export default function BerandaSection() {
   )
   const hijriDate = useClientValue(() => getHijriDate())
 
-  const { data: settingsData } = useQuery({
+  const { data: settingsData, isLoading: settingsLoading } = useQuery({
     queryKey: ['settings'],
     queryFn: () => fetch('/api/settings').then(r => r.json()),
   })
@@ -170,13 +170,15 @@ export default function BerandaSection() {
       {/* Hero Section */}
       <section className="relative overflow-hidden">
         <div className="bg-gradient-to-br from-emerald-800 via-emerald-900 to-emerald-950 text-white">
-          {/* Hero background image */}
+          {/* Hero background image - only render after settings load to avoid flashing fallback image */}
           <div className="absolute inset-0">
-            <img 
-              src={getSetting('madrasah_hero_image') || '/images/hero-madrasah.png'} 
-              alt="MDTA Miftahul Ulum 01" 
-              className="w-full h-full object-cover opacity-30"
-            />
+            {!settingsLoading && (
+              <img
+                src={getSetting('madrasah_hero_image') || '/images/hero-madrasah.png'}
+                alt="MDTA Miftahul Ulum 01"
+                className="w-full h-full object-cover opacity-30"
+              />
+            )}
             <div className="absolute inset-0 bg-gradient-to-r from-emerald-900/90 via-emerald-900/70 to-emerald-900/50" />
           </div>
 
@@ -239,12 +241,16 @@ export default function BerandaSection() {
                   }} />
                 </div>
                 <div className="relative">
-                  <div className="w-32 h-32 md:w-36 md:h-36 rounded-full overflow-hidden mb-4 border-4 border-amber-400 shadow-xl ring-4 ring-white/20">
-                    <img 
-                      src={getSetting('madrasah_principal_photo') || '/images/kepala-madrasah.png'} 
-                      alt="Kepala Madrasah" 
-                      className="w-full h-full object-cover" 
-                    />
+                  <div className="w-32 h-32 md:w-36 md:h-36 rounded-full overflow-hidden mb-4 border-4 border-amber-400 shadow-xl ring-4 ring-white/20 bg-white/10">
+                    {settingsLoading ? (
+                      <div className="w-full h-full bg-white/20 animate-pulse" />
+                    ) : (
+                      <img
+                        src={getSetting('madrasah_principal_photo') || '/images/kepala-madrasah.png'}
+                        alt="Kepala Madrasah"
+                        className="w-full h-full object-cover"
+                      />
+                    )}
                   </div>
                 </div>
                 <h3 className="font-bold text-lg text-center relative">Kepala Madrasah</h3>
