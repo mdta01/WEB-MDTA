@@ -80,7 +80,7 @@ export default function Header() {
                 <img src={madrasahLogo} alt={`Logo ${madrasahName}`} className="w-full h-full object-contain" />
               </div>
               <div className="flex flex-col">
-                <span className="font-bold text-sm md:text-lg leading-tight">{madrasahName}</span>
+                <span className="font-bold text-sm md:text-lg leading-tight uppercase tracking-wide">{madrasahName}</span>
                 <span className="text-emerald-200 text-[10px] md:text-xs hidden sm:block">
                   {madrasahSubtitle}
                 </span>
@@ -152,7 +152,7 @@ export default function Header() {
                       <div className="w-8 h-8 rounded-lg overflow-hidden">
                         <img src={madrasahLogo} alt="Logo" className="w-full h-full object-contain" />
                       </div>
-                      <span className="font-bold text-sm">{madrasahName}</span>
+                      <span className="font-bold text-sm uppercase tracking-wide">{madrasahName}</span>
                     </div>
                   </div>
                   <div className="overflow-y-auto max-h-[calc(100vh-64px)] py-2">
