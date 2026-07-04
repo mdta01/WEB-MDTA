@@ -93,7 +93,7 @@ export function NotificationPermission() {
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 2, type: 'spring', stiffness: 200, damping: 15 }}
         onClick={() => setShowPrompt(true)}
-        className="fixed bottom-4 right-4 z-40 w-12 h-12 rounded-full bg-emerald-700 text-white shadow-lg hover:bg-emerald-800 hover:scale-110 transition-all flex items-center justify-center"
+        className="fixed bottom-24 right-6 z-40 w-12 h-12 rounded-full bg-emerald-700 text-white shadow-lg hover:bg-emerald-800 hover:scale-110 transition-all flex items-center justify-center"
         aria-label="Aktifkan notifikasi"
         title="Aktifkan notifikasi"
       >
@@ -110,7 +110,7 @@ export function NotificationPermission() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.25 }}
-            className="fixed bottom-20 right-4 z-50 w-[calc(100vw-2rem)] sm:w-80 bg-white rounded-2xl shadow-2xl border border-emerald-100 overflow-hidden"
+            className="fixed bottom-40 right-6 z-50 w-[calc(100vw-2rem)] sm:w-80 bg-white rounded-2xl shadow-2xl border border-emerald-100 overflow-hidden"
           >
             {/* Header */}
             <div className="bg-gradient-to-r from-emerald-700 to-emerald-800 p-4 text-white relative">
