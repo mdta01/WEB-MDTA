@@ -200,45 +200,53 @@ export default function BerandaSection() {
               transition={{ duration: 0.7 }}
               className="max-w-3xl mx-auto text-center flex flex-col items-center"
             >
-              {/* Bismillah badge */}
+              {/* Bismillah badge — glow + larger arabic */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.6, delay: 0.1 }}
-                className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-400/30 text-amber-200 px-5 py-2 rounded-full text-base md:text-lg mb-6"
+                className="inline-flex items-center gap-3 bg-amber-500/15 border border-amber-400/40 text-amber-100 px-6 py-2.5 rounded-full mb-7 shadow-[0_0_30px_-5px_rgba(251,191,36,0.4)] backdrop-blur-sm"
               >
-                <span className="text-lg leading-none opacity-70">✦</span>
-                <span className="font-arabic">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم</span>
-                <span className="text-lg leading-none opacity-70">✦</span>
+                <span className="text-base leading-none text-amber-300/80">✦</span>
+                <span className="font-arabic text-lg md:text-xl tracking-wide" style={{ textShadow: '0 0 12px rgba(251,191,36,0.5)' }}>
+                  بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
+                </span>
+                <span className="text-base leading-none text-amber-300/80">✦</span>
               </motion.div>
 
-              {/* Madrasah name */}
-              <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight drop-shadow-md uppercase tracking-wide">
+              {/* Madrasah name — gradient text, larger, prominent */}
+              <h1
+                className="text-4xl md:text-6xl lg:text-7xl font-extrabold mb-5 leading-[1.1] uppercase tracking-wide bg-gradient-to-b from-white via-amber-50 to-amber-200 bg-clip-text text-transparent"
+                style={{ filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.4))' }}
+              >
                 {getSetting('madrasah_name') || 'MDTA Miftahul Ulum 01'}
               </h1>
 
               {/* Decorative divider */}
-              <div className="flex items-center gap-3 mb-5" aria-hidden>
-                <span className="h-px w-12 md:w-20 bg-gradient-to-r from-transparent to-amber-400/70" />
-                <MapPin className="h-4 w-4 text-amber-300" />
-                <span className="h-px w-12 md:w-20 bg-gradient-to-l from-transparent to-amber-400/70" />
+              <div className="flex items-center gap-3 mb-6" aria-hidden>
+                <span className="h-px w-16 md:w-24 bg-gradient-to-r from-transparent to-amber-400/80" />
+                <span className="text-amber-400 text-sm">◆</span>
+                <span className="h-px w-16 md:w-24 bg-gradient-to-l from-transparent to-amber-400/80" />
               </div>
 
-              {/* Address (hardcoded for hero — different from header subtitle) */}
-              <p className="text-amber-200 text-base md:text-lg mb-4 font-medium tracking-wide">
-                Tawangsari, Pujon
-              </p>
+              {/* Address — badge-style with MapPin icon */}
+              <div className="inline-flex items-center gap-2 bg-emerald-700/40 border border-emerald-400/30 text-amber-100 px-5 py-2 rounded-full mb-5 backdrop-blur-sm">
+                <MapPin className="h-4 w-4 text-amber-300" />
+                <span className="text-sm md:text-base font-semibold tracking-wide">
+                  Tawangsari, Pujon
+                </span>
+              </div>
 
-              {/* Description */}
-              <p className="text-emerald-50/80 text-sm md:text-base mb-8 max-w-2xl leading-relaxed">
+              {/* Description — italic + decorative left border */}
+              <p className="text-emerald-50/90 text-sm md:text-base mb-8 max-w-2xl leading-relaxed italic">
                 {getSetting('madrasah_description') || 'Mencetak generasi Muslim yang berilmu, berakhlak mulia, dan berprestasi melalui pendidikan Islam yang berkualitas dan menyeluruh.'}
               </p>
 
-              {/* CTA buttons */}
+              {/* CTA buttons — more prominent with hover scale */}
               <div className="flex flex-wrap gap-3 justify-center">
                 <Button
                   onClick={() => { setCurrentPage('ppdb'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
-                  className="bg-amber-500 hover:bg-amber-600 text-emerald-900 font-bold px-7 shadow-md hover:shadow-lg transition-shadow"
+                  className="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-emerald-900 font-bold px-8 shadow-lg shadow-amber-500/30 hover:shadow-amber-500/50 hover:scale-105 transition-all"
                   size="lg"
                 >
                   Daftar PPDB
@@ -246,7 +254,7 @@ export default function BerandaSection() {
                 </Button>
                 <Button
                   onClick={() => { setCurrentPage('profil'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
-                  className="border border-white/30 text-white bg-white/5 hover:bg-white/10 hover:border-white/50 font-semibold px-7 transition-colors"
+                  className="border-2 border-amber-300/40 text-amber-50 bg-white/5 hover:bg-amber-400/10 hover:border-amber-300/70 font-semibold px-8 backdrop-blur-sm hover:scale-105 transition-all"
                   size="lg"
                 >
                   Tentang Kami
