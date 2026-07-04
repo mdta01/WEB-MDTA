@@ -1,14 +1,20 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
-import { motion } from 'framer-motion'
-import { Image as ImageIcon, Play, X } from 'lucide-react'
-import { useState } from 'react'
-import { Card } from '@/components/ui/card'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Image as ImageIcon, Play, X, ChevronLeft, ChevronRight, Calendar, ZoomIn } from 'lucide-react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Dialog, DialogContent, DialogTitle, DialogClose } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
+
+type GalleryItem = {
+  id: string
+  title: string
+  image: string
+  category: string
+  year?: string
+  type: string
+}
 
 const categories = [
   { value: '', label: 'Semua' },
@@ -16,6 +22,12 @@ const categories = [
   { value: 'acara', label: 'Acara' },
   { value: 'tahunan', label: 'Tahunan' },
 ]
+
+const categoryColors: Record<string, string> = {
+  kegiatan: 'bg-emerald-600 text-white',
+  acara: 'bg-amber-600 text-white',
+  tahunan: 'bg-teal-600 text-white',
+}
 
 const gradientVariants = [
   'from-emerald-400 to-teal-600',
@@ -28,75 +40,176 @@ const gradientVariants = [
 
 export default function GaleriSection() {
   const [selectedCategory, setSelectedCategory] = useState('')
-  const [selectedImage, setSelectedImage] = useState<{
-    id: string; title: string; image: string; category: string; year?: string; type: string
-  } | null>(null)
+  const [selectedYear, setSelectedYear] = useState('')
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
 
   const { data, isLoading } = useQuery({
-    queryKey: ['gallery', selectedCategory],
-    queryFn: () => fetch(`/api/gallery${selectedCategory ? `?category=${selectedCategory}` : ''}`).then(r => r.json()),
+    queryKey: ['gallery'],
+    queryFn: () => fetch('/api/gallery').then(r => r.json()),
   })
 
-  const gallery = Array.isArray(data) ? data : (data?.gallery || [])
+  const allGallery: GalleryItem[] = Array.isArray(data) ? data : (data?.gallery || [])
+
+  // Auto-populate years from gallery data (sorted desc)
+  const availableYears = useMemo(() => {
+    const yearSet = new Set<string>()
+    allGallery.forEach((item) => {
+      if (item.year) yearSet.add(item.year)
+    })
+    return Array.from(yearSet).sort((a, b) => Number(b) - Number(a))
+  }, [allGallery])
+
+  // Clamp selectedYear in render (not in effect) in case data shrinks
+  const safeSelectedYear = selectedYear && availableYears.includes(selectedYear) ? selectedYear : ''
+
+  // Filtered gallery (client-side by category + year)
+  const filteredGallery = useMemo(() => {
+    return allGallery.filter((item) => {
+      if (selectedCategory && item.category !== selectedCategory) return false
+      if (safeSelectedYear && item.year !== safeSelectedYear) return false
+      return true
+    })
+  }, [allGallery, selectedCategory, safeSelectedYear])
+
+  // Lightbox navigation
+  const goNext = useCallback(() => {
+    setLightboxIndex((idx) => (idx === null ? null : (idx + 1) % filteredGallery.length))
+  }, [filteredGallery.length])
+
+  const goPrev = useCallback(() => {
+    setLightboxIndex((idx) => (idx === null ? null : (idx - 1 + filteredGallery.length) % filteredGallery.length))
+  }, [filteredGallery.length])
+
+  // Keyboard navigation
+  useEffect(() => {
+    if (lightboxIndex === null) return
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowRight') goNext()
+      else if (e.key === 'ArrowLeft') goPrev()
+      else if (e.key === 'Escape') setLightboxIndex(null)
+    }
+    window.addEventListener('keydown', handleKey)
+    // Lock body scroll when lightbox open
+    document.body.style.overflow = 'hidden'
+    return () => {
+      window.removeEventListener('keydown', handleKey)
+      document.body.style.overflow = ''
+    }
+  }, [lightboxIndex, goNext, goPrev])
+
+  const closeLightbox = () => setLightboxIndex(null)
 
   return (
     <div className="space-y-8">
+      {/* Header */}
       <div className="text-center mb-8">
         <h2 className="text-2xl md:text-3xl font-bold text-emerald-800">Galeri</h2>
         <div className="w-20 h-1 bg-amber-500 mx-auto mt-2 rounded-full" />
+        {filteredGallery.length > 0 && (
+          <p className="text-sm text-gray-500 mt-3">
+            {filteredGallery.length} foto
+          </p>
+        )}
       </div>
 
-      {/* Category Filter */}
-      <div className="flex flex-wrap gap-2 justify-center">
-        {categories.map((cat) => (
-          <button
-            key={cat.value}
-            onClick={() => setSelectedCategory(cat.value)}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-              selectedCategory === cat.value
-                ? 'bg-emerald-700 text-white'
-                : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
-            }`}
-          >
-            {cat.label}
-          </button>
-        ))}
+      {/* Filters — Category + Year */}
+      <div className="space-y-3">
+        {/* Category */}
+        <div className="flex flex-wrap gap-2 justify-center">
+          {categories.map((cat) => (
+            <button
+              key={cat.value}
+              onClick={() => setSelectedCategory(cat.value)}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                selectedCategory === cat.value
+                  ? 'bg-emerald-700 text-white shadow-md'
+                  : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+              }`}
+            >
+              {cat.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Year filter (auto-populated from data) */}
+        {availableYears.length > 0 && (
+          <div className="flex flex-wrap gap-2 justify-center items-center">
+            <span className="text-xs text-gray-500 font-medium flex items-center gap-1 mr-1">
+              <Calendar className="h-3 w-3" /> Tahun:
+            </span>
+            <button
+              onClick={() => setSelectedYear('')}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                safeSelectedYear === ''
+                  ? 'bg-amber-500 text-white shadow-md'
+                  : 'bg-amber-50 text-amber-700 hover:bg-amber-100'
+              }`}
+            >
+              Semua
+            </button>
+            {availableYears.map((year) => (
+              <button
+                key={year}
+                onClick={() => setSelectedYear(year)}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                  safeSelectedYear === year
+                    ? 'bg-amber-500 text-white shadow-md'
+                    : 'bg-amber-50 text-amber-700 hover:bg-amber-100'
+                }`}
+              >
+                {year}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* Gallery Grid */}
+      {/* Gallery Masonry Grid */}
       {isLoading ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
             <Skeleton key={i} className="aspect-square rounded-xl" />
           ))}
         </div>
-      ) : gallery.length > 0 ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {gallery.map((item: { id: string; title: string; image: string; category: string; year?: string; type: string }, idx: number) => (
+      ) : filteredGallery.length > 0 ? (
+        <div className="columns-2 md:columns-3 lg:columns-4 gap-4 [column-fill:_balance]">
+          {filteredGallery.map((item, idx) => (
             <motion.div
               key={item.id}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: idx * 0.05 }}
-              className="cursor-pointer group"
-              onClick={() => setSelectedImage(item)}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: Math.min(idx * 0.04, 0.4) }}
+              className="break-inside-avoid mb-4 cursor-pointer group"
+              onClick={() => setLightboxIndex(idx)}
             >
-              <div className="relative aspect-square rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow">
+              <div className="relative rounded-xl overflow-hidden shadow-md hover:shadow-2xl transition-shadow duration-300 bg-gray-100">
                 {item.type === 'video' ? (
-                  <div className={`w-full h-full bg-gradient-to-br ${gradientVariants[idx % gradientVariants.length]} flex items-center justify-center`}>
+                  <div className={`aspect-video bg-gradient-to-br ${gradientVariants[idx % gradientVariants.length]} flex items-center justify-center`}>
                     <Play className="h-12 w-12 text-white/70" />
                   </div>
                 ) : (
                   <img
                     src={item.image}
                     alt={item.title}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    loading="lazy"
+                    className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="absolute bottom-3 left-3 right-3">
-                    <p className="text-white text-sm font-medium line-clamp-2">{item.title}</p>
-                    <Badge className="mt-1 text-xs bg-emerald-600 text-white">{item.category}</Badge>
+                {/* Hover overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+                  <p className="text-white text-sm font-medium line-clamp-2 mb-2">{item.title}</p>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${categoryColors[item.category] || 'bg-gray-600 text-white'}`}>
+                      {item.category}
+                    </span>
+                    {item.year && (
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/20 text-white font-medium backdrop-blur-sm">
+                        {item.year}
+                      </span>
+                    )}
+                  </div>
+                  <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                    <ZoomIn className="h-4 w-4 text-white" />
                   </div>
                 </div>
               </div>
@@ -104,49 +217,109 @@ export default function GaleriSection() {
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {Array.from({ length: 8 }).map((_, idx) => (
-            <div
-              key={idx}
-              className={`aspect-square rounded-xl bg-gradient-to-br ${gradientVariants[idx % gradientVariants.length]} flex items-center justify-center cursor-pointer hover:shadow-lg transition-shadow`}
-            >
-              <ImageIcon className="h-10 w-10 text-white/50" />
-            </div>
-          ))}
+        <div className="text-center py-16">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-emerald-50 mb-4">
+            <ImageIcon className="h-10 w-10 text-emerald-300" />
+          </div>
+          <p className="text-gray-500">Belum ada foto untuk filter ini</p>
         </div>
       )}
 
-      {/* Image Detail Dialog */}
-      <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
-        <DialogContent className="max-w-3xl p-0 overflow-hidden">
-          <DialogTitle className="sr-only">{selectedImage?.title || 'Galeri'}</DialogTitle>
-          {selectedImage && (
-            <div>
-              <div className="relative">
-                <img
-                  src={selectedImage.image}
-                  alt={selectedImage.title}
-                  className="w-full h-auto max-h-[70vh] object-contain bg-black"
-                />
-                <DialogClose asChild>
-                  <Button variant="ghost" size="icon" className="absolute right-2 top-2 bg-black/50 text-white hover:bg-black/70">
-                    <X className="h-4 w-4" />
-                  </Button>
-                </DialogClose>
-              </div>
-              <div className="p-4">
-                <h3 className="font-semibold text-emerald-800">{selectedImage.title}</h3>
-                <div className="flex gap-2 mt-2">
-                  <Badge className="bg-emerald-100 text-emerald-700 text-xs">{selectedImage.category}</Badge>
-                  {selectedImage.year && (
-                    <Badge variant="outline" className="text-xs">{selectedImage.year}</Badge>
+      {/* Premium Lightbox with swipe + keyboard nav */}
+      <AnimatePresence>
+        {lightboxIndex !== null && filteredGallery[lightboxIndex] && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center"
+            onClick={closeLightbox}
+          >
+            {/* Close button */}
+            <button
+              onClick={closeLightbox}
+              className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors"
+              aria-label="Tutup"
+            >
+              <X className="h-5 w-5" />
+            </button>
+
+            {/* Counter */}
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 bg-white/10 backdrop-blur-sm text-white text-sm px-4 py-1.5 rounded-full">
+              {lightboxIndex + 1} / {filteredGallery.length}
+            </div>
+
+            {/* Prev button (desktop) */}
+            {filteredGallery.length > 1 && (
+              <button
+                onClick={(e) => { e.stopPropagation(); goPrev() }}
+                className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors"
+                aria-label="Sebelumnya"
+              >
+                <ChevronLeft className="h-6 w-6" />
+              </button>
+            )}
+
+            {/* Next button (desktop) */}
+            {filteredGallery.length > 1 && (
+              <button
+                onClick={(e) => { e.stopPropagation(); goNext() }}
+                className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors"
+                aria-label="Berikutnya"
+              >
+                <ChevronRight className="h-6 w-6" />
+              </button>
+            )}
+
+            {/* Image with swipe (framer-motion drag) */}
+            <motion.div
+              key={filteredGallery[lightboxIndex].id}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.25 }}
+              drag={filteredGallery.length > 1 ? 'x' : false}
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.6}
+              onDragEnd={(event, info) => {
+                // Swipe threshold: 100px horizontal
+                if (info.offset.x < -100) goNext()
+                else if (info.offset.x > 100) goPrev()
+              }}
+              onClick={(e) => e.stopPropagation()}
+              className="max-w-[90vw] max-h-[85vh] flex flex-col items-center"
+            >
+              <img
+                src={filteredGallery[lightboxIndex].image}
+                alt={filteredGallery[lightboxIndex].title}
+                className="max-w-full max-h-[75vh] object-contain rounded-lg"
+                draggable={false}
+              />
+              {/* Caption */}
+              <div className="mt-4 text-center px-4 max-w-2xl">
+                <h3 className="text-white font-semibold text-lg mb-2">{filteredGallery[lightboxIndex].title}</h3>
+                <div className="flex items-center justify-center gap-2 flex-wrap">
+                  <span className={`text-xs px-3 py-1 rounded-full font-medium ${categoryColors[filteredGallery[lightboxIndex].category] || 'bg-gray-600 text-white'}`}>
+                    {filteredGallery[lightboxIndex].category}
+                  </span>
+                  {filteredGallery[lightboxIndex].year && (
+                    <span className="text-xs px-3 py-1 rounded-full bg-white/10 text-white font-medium backdrop-blur-sm flex items-center gap-1">
+                      <Calendar className="h-3 w-3" />
+                      {filteredGallery[lightboxIndex].year}
+                    </span>
                   )}
                 </div>
+                {filteredGallery.length > 1 && (
+                  <p className="text-white/50 text-xs mt-3">
+                    Geser untuk navigasi • ← → untuk panah • ESC untuk tutup
+                  </p>
+                )}
               </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

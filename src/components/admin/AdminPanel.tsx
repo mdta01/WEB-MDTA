@@ -287,7 +287,7 @@ const entityConfigs: Record<string, EntityConfig> = {
         { label: 'Foto', value: 'foto' },
         { label: 'Video', value: 'video' },
       ]},
-      { name: 'year', label: 'Tahun', type: 'text', placeholder: '2024' },
+      { name: 'year', label: 'Tahun', type: 'text', placeholder: '2024', defaultValue: new Date().getFullYear().toString() },
     ],
   },
   events: {
