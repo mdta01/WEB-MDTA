@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import {
-  Menu, Search, ChevronDown, Phone,
+  Menu, Search, ChevronDown,
 } from 'lucide-react'
 import { useAppStore, type PageSection } from '@/store/useAppStore'
 import { Button } from '@/components/ui/button'
@@ -67,22 +67,6 @@ export default function Header() {
         scrolled ? 'shadow-lg' : ''
       }`}
     >
-      {/* Top bar */}
-      <div className="bg-emerald-900 text-emerald-100 text-xs py-1.5 hidden md:block">
-        <div className="container mx-auto px-4 flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <span className="flex items-center gap-1">
-              <Phone className="h-3 w-3" />
-              {getSetting('madrasah_phone') || '(021) 123-4567'}
-            </span>
-            <span>{getSetting('madrasah_email') || 'info@miftahululum01.sch.id'}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-emerald-300">{madrasahName}</span>
-          </div>
-        </div>
-      </div>
-
       {/* Main header */}
       <div className="bg-gradient-to-r from-emerald-800 to-emerald-900 text-white">
         <div className="container mx-auto px-4">
