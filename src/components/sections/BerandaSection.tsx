@@ -183,48 +183,93 @@ export default function BerandaSection() {
                 className="w-full h-full object-cover opacity-30"
               />
             )}
-            <div className="absolute inset-0 bg-gradient-to-r from-emerald-900/90 via-emerald-900/70 to-emerald-900/50" />
+            {/* Radial vignette + bottom fade for depth */}
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(6,78,59,0.65)_100%)]" />
+            <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-emerald-950 to-transparent" />
           </div>
 
-          <div className="container mx-auto px-4 py-16 md:py-24 relative">
-            <div className="max-w-3xl">
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7 }}
-              >
-                <Badge className="bg-amber-500 text-emerald-900 hover:bg-amber-400 mb-4 font-semibold">
-                  بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
-                </Badge>
-                <h1 className="text-3xl md:text-5xl font-bold mb-4 leading-tight">
-                  {getSetting('madrasah_name') || 'MDTA Miftahul Ulum 01'}
-                </h1>
-                <p className="text-emerald-200 text-lg md:text-xl mb-2">
-                  {getSetting('madrasah_subtitle') || 'Madrasah Diniyah Takmiliyah Awaliyah'}
-                </p>
-                <p className="text-emerald-300 text-sm md:text-base mb-8 max-w-xl leading-relaxed">
-                  {getSetting('madrasah_description') || 'Mencetak generasi Muslim yang berilmu, berakhlak mulia, dan berprestasi melalui pendidikan Islam yang berkualitas dan menyeluruh.'}
-                </p>
-                <div className="flex flex-wrap gap-3">
-                  <Button
-                    onClick={() => { setCurrentPage('ppdb'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
-                    className="bg-amber-500 hover:bg-amber-600 text-emerald-900 font-bold px-6"
-                    size="lg"
-                  >
-                    Daftar PPDB
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                  <Button
-                    onClick={() => { setCurrentPage('profil'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
-                    className="border-2 border-white text-white bg-white/10 hover:bg-white hover:text-emerald-900 font-semibold px-6 backdrop-blur-sm"
-                    size="lg"
-                  >
-                    Tentang Kami
-                  </Button>
-                </div>
-              </motion.div>
-            </div>
+          {/* Decorative top border (islamic pattern strip) */}
+          <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-400" />
+
+          {/* Decorative corner ornaments */}
+          <div className="absolute top-6 left-6 opacity-20 hidden md:block" aria-hidden>
+            <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+              <path d="M40 4 L48 32 L76 40 L48 48 L40 76 L32 48 L4 40 L32 32 Z" stroke="#fbbf24" strokeWidth="1.5" fill="none"/>
+              <circle cx="40" cy="40" r="6" stroke="#fbbf24" strokeWidth="1" fill="none"/>
+            </svg>
           </div>
+          <div className="absolute top-6 right-6 opacity-20 hidden md:block" aria-hidden>
+            <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+              <path d="M40 4 L48 32 L76 40 L48 48 L40 76 L32 48 L4 40 L32 32 Z" stroke="#fbbf24" strokeWidth="1.5" fill="none"/>
+              <circle cx="40" cy="40" r="6" stroke="#fbbf24" strokeWidth="1" fill="none"/>
+            </svg>
+          </div>
+
+          {/* Centered hero content */}
+          <div className="container mx-auto px-4 py-20 md:py-28 relative">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7 }}
+              className="max-w-3xl mx-auto text-center flex flex-col items-center"
+            >
+              {/* Bismillah badge */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                className="inline-flex items-center gap-2 bg-amber-500/15 border border-amber-400/40 text-amber-300 px-5 py-2 rounded-full text-base md:text-lg mb-6 backdrop-blur-sm"
+              >
+                <span className="text-2xl leading-none">✦</span>
+                <span className="font-arabic">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم</span>
+                <span className="text-2xl leading-none">✦</span>
+              </motion.div>
+
+              {/* Madrasah name */}
+              <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight drop-shadow-lg">
+                {getSetting('madrasah_name') || 'MDTA Miftahul Ulum 01'}
+              </h1>
+
+              {/* Decorative divider */}
+              <div className="flex items-center gap-3 mb-5" aria-hidden>
+                <span className="h-px w-12 md:w-20 bg-gradient-to-r from-transparent to-amber-400" />
+                <MapPin className="h-5 w-5 text-amber-400" />
+                <span className="h-px w-12 md:w-20 bg-gradient-to-l from-transparent to-amber-400" />
+              </div>
+
+              {/* Address (subtitle) */}
+              <p className="text-amber-300 text-lg md:text-xl mb-4 font-medium tracking-wide">
+                Tawangsari, Pujon
+              </p>
+
+              {/* Description */}
+              <p className="text-emerald-100/90 text-sm md:text-base mb-8 max-w-2xl leading-relaxed">
+                {getSetting('madrasah_description') || 'Mencetak generasi Muslim yang berilmu, berakhlak mulia, dan berprestasi melalui pendidikan Islam yang berkualitas dan menyeluruh.'}
+              </p>
+
+              {/* CTA buttons */}
+              <div className="flex flex-wrap gap-3 justify-center">
+                <Button
+                  onClick={() => { setCurrentPage('ppdb'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+                  className="bg-amber-500 hover:bg-amber-600 text-emerald-900 font-bold px-7 shadow-lg shadow-amber-500/20 hover:shadow-amber-500/40 transition-shadow"
+                  size="lg"
+                >
+                  Daftar PPDB
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+                <Button
+                  onClick={() => { setCurrentPage('profil'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+                  className="border-2 border-white/80 text-white bg-white/10 hover:bg-white hover:text-emerald-900 font-semibold px-7 backdrop-blur-sm transition-colors"
+                  size="lg"
+                >
+                  Tentang Kami
+                </Button>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Decorative bottom border (mirror) */}
+          <div className="absolute bottom-0 inset-x-0 h-1.5 bg-gradient-to-r from-amber-400 via-amber-500 to-amber-400" />
         </div>
       </section>
 
