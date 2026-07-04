@@ -76,8 +76,13 @@ export default function Header() {
               onClick={() => handleNav('beranda')}
               className="flex items-center gap-3 group"
             >
-              <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg overflow-hidden shadow-md group-hover:scale-105 transition-transform">
-                <img src={madrasahLogo} alt={`Logo ${madrasahName}`} className="w-full h-full object-contain" />
+              <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg overflow-hidden shadow-lg ring-1 ring-white/30 bg-white/95 group-hover:scale-105 transition-transform">
+                <img
+                  src={madrasahLogo}
+                  alt={`Logo ${madrasahName}`}
+                  className="w-full h-full object-contain"
+                  style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))' }}
+                />
               </div>
               <div className="flex flex-col">
                 <span className="font-bold text-sm md:text-lg leading-tight uppercase tracking-wide">{madrasahName}</span>
@@ -149,8 +154,13 @@ export default function Header() {
                   <SheetTitle className="sr-only">Menu Navigasi</SheetTitle>
                   <div className="flex items-center justify-between p-4 border-b border-emerald-700">
                     <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-lg overflow-hidden">
-                        <img src={madrasahLogo} alt="Logo" className="w-full h-full object-contain" />
+                      <div className="w-8 h-8 rounded-lg overflow-hidden shadow-md ring-1 ring-white/30 bg-white/95">
+                        <img
+                          src={madrasahLogo}
+                          alt="Logo"
+                          className="w-full h-full object-contain"
+                          style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))' }}
+                        />
                       </div>
                       <span className="font-bold text-sm uppercase tracking-wide">{madrasahName}</span>
                     </div>
