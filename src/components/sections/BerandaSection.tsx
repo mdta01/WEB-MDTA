@@ -383,24 +383,24 @@ export default function BerandaSection() {
               transition={{ duration: 0.7 }}
               className="max-w-3xl mx-auto text-center flex flex-col items-center"
             >
-              {/* Bismillah badge — glow + larger arabic */}
+              {/* Bismillah badge — subtle, smaller */}
               <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
+                initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.6, delay: 0.1 }}
-                className="inline-flex items-center gap-3 bg-amber-500/15 border border-amber-400/40 text-amber-100 px-6 py-2.5 rounded-full mb-7 shadow-[0_0_30px_-5px_rgba(251,191,36,0.4)] backdrop-blur-sm"
+                className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-400/25 text-amber-200/90 px-4 py-1.5 rounded-full mb-6"
               >
-                <span className="text-base leading-none text-amber-300/80">✦</span>
-                <span className="font-arabic text-lg md:text-xl tracking-wide" style={{ textShadow: '0 0 12px rgba(251,191,36,0.5)' }}>
+                <span className="text-xs leading-none text-amber-300/60">✦</span>
+                <span className="font-arabic text-sm md:text-base tracking-wide">
                   بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
                 </span>
-                <span className="text-base leading-none text-amber-300/80">✦</span>
+                <span className="text-xs leading-none text-amber-300/60">✦</span>
               </motion.div>
 
-              {/* Madrasah name — gradient text, larger, prominent */}
+              {/* Madrasah name — gradient text, slightly smaller */}
               <h1
-                className="text-4xl md:text-6xl lg:text-7xl font-extrabold mb-5 leading-[1.1] uppercase tracking-wide bg-gradient-to-b from-white via-amber-50 to-amber-200 bg-clip-text text-transparent"
-                style={{ filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.4))' }}
+                className="text-2xl md:text-4xl lg:text-5xl font-bold mb-4 leading-[1.15] uppercase tracking-wide bg-gradient-to-b from-white via-amber-50 to-amber-200 bg-clip-text text-transparent"
+                style={{ filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.35))' }}
               >
                 {getSetting('madrasah_name') || 'MDTA Miftahul Ulum 01'}
               </h1>
