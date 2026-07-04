@@ -2,11 +2,10 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
-import { BookOpen, Eye, Target, Users, Award, GraduationCap, Phone } from 'lucide-react'
+import { BookOpen, Eye, Target, Users, Award, Phone, UserCircle2 } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 
 export default function ProfilSection() {
   const { data: settingsData } = useQuery({
@@ -216,47 +215,88 @@ export default function ProfilSection() {
         </Card>
       </section>
 
-      {/* Data Guru */}
+      {/* Data Guru — Premium Teacher Cards */}
       <section>
         <div className="text-center mb-8">
           <h2 className="text-2xl md:text-3xl font-bold text-emerald-800">Tenaga Pengajar</h2>
           <div className="w-20 h-1 bg-amber-500 mx-auto mt-2 rounded-full" />
+          <p className="text-sm text-gray-500 mt-3">
+            {teachers.length > 0
+              ? `${teachers.filter((t: { isActive?: boolean }) => t.isActive !== false).length} guru pengajar`
+              : ''}
+          </p>
         </div>
         {teachersLoading ? (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
             {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-              <Card key={i} className="p-4 text-center border-0">
-                <Skeleton className="w-16 h-16 rounded-full mx-auto mb-3" />
-                <Skeleton className="h-4 w-24 mx-auto mb-2" />
-                <Skeleton className="h-3 w-20 mx-auto" />
+              <Card key={i} className="overflow-hidden border-0">
+                <Skeleton className="aspect-[3/4] w-full" />
+                <div className="p-4 space-y-2">
+                  <Skeleton className="h-4 w-3/4 mx-auto" />
+                  <Skeleton className="h-3 w-1/2 mx-auto" />
+                </div>
               </Card>
             ))}
           </div>
         ) : teachers.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-            {teachers.map((teacher: { id: string; name: string; position: string; subject?: string; image?: string }, idx: number) => (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+            {teachers.map((teacher: { id: string; name: string; position: string; subject?: string; image?: string; phone?: string }, idx: number) => (
               <motion.div
                 key={teacher.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.05 }}
+                transition={{ delay: Math.min(idx * 0.05, 0.4) }}
               >
-                <Card className="text-center p-4 md:p-6 border-0 shadow-md hover:shadow-lg transition-shadow group">
-                  <Avatar className="w-16 h-16 mx-auto mb-3">
+                <Card className="overflow-hidden border-0 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all group">
+                  {/* Photo area with gradient overlay */}
+                  <div className="relative aspect-[3/4] overflow-hidden bg-gradient-to-br from-emerald-100 to-emerald-200">
                     {teacher.image ? (
-                      <img src={teacher.image} alt={teacher.name} className="w-full h-full object-cover" />
+                      <img
+                        src={teacher.image}
+                        alt={teacher.name}
+                        loading="lazy"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
                     ) : (
-                      <AvatarFallback className="bg-emerald-600 text-white text-xl font-bold">
-                        {teacher.name.charAt(0)}
-                      </AvatarFallback>
+                      // Fallback: gradient + initial letter
+                      <div className="w-full h-full bg-gradient-to-br from-emerald-600 to-emerald-800 flex items-center justify-center">
+                        <span className="text-5xl md:text-6xl font-extrabold text-white/90">
+                          {teacher.name.charAt(0).toUpperCase()}
+                        </span>
+                      </div>
                     )}
-                  </Avatar>
-                  <h4 className="font-semibold text-emerald-800 text-sm">{teacher.name}</h4>
-                  <Badge variant="secondary" className="mt-1 text-xs bg-emerald-50 text-emerald-700">
-                    {teacher.position}
-                  </Badge>
-                  {teacher.subject && (
-                    <p className="text-xs text-gray-400 mt-1">{teacher.subject}</p>
+                    {/* Gradient overlay at bottom for text readability on hover */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-emerald-950/80 via-emerald-950/10 to-transparent opacity-60 group-hover:opacity-90 transition-opacity" />
+                    {/* Position badge (top-left) */}
+                    <div className="absolute top-3 left-3">
+                      <span className="inline-block bg-amber-500 text-emerald-900 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-md">
+                        {teacher.position}
+                      </span>
+                    </div>
+                    {/* Name + subject overlay (bottom) */}
+                    <div className="absolute bottom-0 inset-x-0 p-4 text-white">
+                      <h4 className="font-bold text-sm md:text-base leading-tight group-hover:text-amber-300 transition-colors">
+                        {teacher.name}
+                      </h4>
+                      {teacher.subject && (
+                        <p className="text-[11px] text-emerald-100/90 mt-0.5 flex items-center gap-1">
+                          <BookOpen className="h-3 w-3 shrink-0" />
+                          <span className="truncate">{teacher.subject}</span>
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  {/* Footer with phone (if available) */}
+                  {teacher.phone && (
+                    <div className="p-3 bg-emerald-50 border-t border-emerald-100">
+                      <a
+                        href={`tel:${teacher.phone}`}
+                        className="flex items-center justify-center gap-1.5 text-xs text-emerald-700 hover:text-emerald-900 font-medium transition-colors"
+                      >
+                        <Phone className="h-3 w-3" />
+                        <span>{teacher.phone}</span>
+                      </a>
+                    </div>
                   )}
                 </Card>
               </motion.div>
@@ -264,7 +304,7 @@ export default function ProfilSection() {
           </div>
         ) : (
           <Card className="p-8 text-center border-0">
-            <Users className="h-12 w-12 text-emerald-200 mx-auto mb-3" />
+            <UserCircle2 className="h-12 w-12 text-emerald-200 mx-auto mb-3" />
             <p className="text-gray-500">Data guru belum tersedia</p>
           </Card>
         )}
