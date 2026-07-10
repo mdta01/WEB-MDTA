@@ -102,7 +102,24 @@ export default function ProgramSection() {
   })
 
   const programs = Array.isArray(programsData) ? programsData : (programsData?.programs || [])
-  const schedules = Array.isArray(schedulesData) ? schedulesData : (schedulesData?.schedules || [])
+  const schedulesRaw = Array.isArray(schedulesData) ? schedulesData : (schedulesData?.schedules || [])
+
+  // Sort schedules by day order: Sabtu, Ahad/Minggu, Senin, Selasa, Rabu, Kamis (Jumat = libur, tidak ada KBM)
+  const dayOrder: Record<string, number> = {
+    'Sabtu': 1,
+    'Ahad': 2, 'Minggu': 2,
+    'Senin': 3,
+    'Selasa': 4,
+    'Rabu': 5,
+    'Kamis': 6,
+    'Jumat': 7, // libur — biasanya tidak ada, tapi kalau ada taruh di akhir
+  }
+  const schedules = [...schedulesRaw].sort((a: { day: string }, b: { day: string }) => {
+    const aOrder = dayOrder[a.day] ?? 99
+    const bOrder = dayOrder[b.day] ?? 99
+    if (aOrder !== bOrder) return aOrder - bOrder
+    return 0
+  })
 
   const kelasPrograms = programs.filter((p: { category: string }) => p.category === 'kelas')
   const kurikulumPrograms = programs.filter((p: { category: string }) => p.category === 'kurikulum')
@@ -149,6 +166,14 @@ export default function ProgramSection() {
             Jadwal KBM
           </h3>
           <div className="w-20 h-1 bg-amber-500 mx-auto mt-2 rounded-full" />
+          <p className="text-sm text-gray-600 mt-3">
+            Hari belajar: <span className="font-semibold text-emerald-700">Sabtu – Kamis</span>
+            <span className="mx-2 text-gray-400">•</span>
+            <span className="inline-flex items-center gap-1 text-red-600 font-medium">
+              <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
+              Jumat Libur
+            </span>
+          </p>
         </div>
         <Card className="border-0 shadow-lg overflow-hidden">
           <div className="overflow-x-auto">
@@ -172,15 +197,38 @@ export default function ProgramSection() {
                     </TableRow>
                   ))
                 ) : schedules.length > 0 ? (
-                  schedules.map((schedule: { id: string; day: string; timeStart: string; timeEnd: string; subject?: string; teacher?: string; class?: string }) => (
-                    <TableRow key={schedule.id} className="hover:bg-emerald-50">
-                      <TableCell className="font-medium text-emerald-800">{schedule.day}</TableCell>
-                      <TableCell>{schedule.timeStart} - {schedule.timeEnd}</TableCell>
-                      <TableCell>{schedule.subject || '-'}</TableCell>
-                      <TableCell>{schedule.teacher || '-'}</TableCell>
-                      <TableCell><Badge variant="secondary" className="bg-emerald-50 text-emerald-700 text-xs">{schedule.class || '-'}</Badge></TableCell>
-                    </TableRow>
-                  ))
+                  schedules.map((schedule: { id: string; day: string; timeStart: string; timeEnd: string; subject?: string; teacher?: string; class?: string }) => {
+                    const isFriday = schedule.day === 'Jumat'
+                    return (
+                      <TableRow
+                        key={schedule.id}
+                        className={isFriday
+                          ? 'bg-red-50 hover:bg-red-100'
+                          : 'hover:bg-emerald-50'
+                        }
+                      >
+                        <TableCell className="font-medium">
+                          <span className={isFriday ? 'text-red-600' : 'text-emerald-800'}>
+                            {schedule.day}
+                          </span>
+                          {isFriday && (
+                            <Badge variant="secondary" className="ml-2 text-[10px] bg-red-100 text-red-700">Libur</Badge>
+                          )}
+                        </TableCell>
+                        <TableCell className={isFriday ? 'text-red-500' : ''}>{schedule.timeStart} - {schedule.timeEnd}</TableCell>
+                        <TableCell className={isFriday ? 'text-red-500' : ''}>{schedule.subject || '-'}</TableCell>
+                        <TableCell className={isFriday ? 'text-red-500' : ''}>{schedule.teacher || '-'}</TableCell>
+                        <TableCell>
+                          <Badge variant="secondary" className={isFriday
+                            ? 'bg-red-100 text-red-700 text-xs'
+                            : 'bg-emerald-50 text-emerald-700 text-xs'
+                          }>
+                            {schedule.class || '-'}
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })
                 ) : (
                   <TableRow>
                     <TableCell colSpan={5} className="text-center text-gray-400 py-8">

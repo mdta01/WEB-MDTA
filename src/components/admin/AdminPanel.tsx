@@ -429,12 +429,13 @@ const entityConfigs: Record<string, EntityConfig> = {
     formFields: [
       { name: 'title', label: 'Mata Pelajaran', type: 'text', required: true, placeholder: 'Nama mata pelajaran' },
       { name: 'day', label: 'Hari', type: 'select', required: true, options: [
+        { label: 'Sabtu', value: 'Sabtu' },
+        { label: 'Ahad/Minggu', value: 'Ahad' },
         { label: 'Senin', value: 'Senin' },
         { label: 'Selasa', value: 'Selasa' },
         { label: 'Rabu', value: 'Rabu' },
         { label: 'Kamis', value: 'Kamis' },
-        { label: 'Jumat', value: 'Jumat' },
-        { label: 'Sabtu', value: 'Sabtu' },
+        { label: 'Jumat (Libur)', value: 'Jumat' },
       ]},
       { name: 'timeStart', label: 'Jam Mulai', type: 'text', required: true, placeholder: '07:00' },
       { name: 'timeEnd', label: 'Jam Selesai', type: 'text', required: true, placeholder: '08:30' },
