@@ -8,6 +8,7 @@ import {
   BookOpen, Trophy, ImageIcon, Calendar, MessageSquare, FileText,
   Download, Mail, Lightbulb, Settings, LogOut, Menu, X,
   ChevronRight, Shield, Loader2, Save, DollarSign, Clock, Star,
+  UserCheck, UserX, UserPlus, Eye, Filter, ClipboardList, Phone, MapPin,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -106,7 +107,7 @@ const navItems: NavItem[] = [
   { id: 'testimonials', label: 'Kelola Testimoni', icon: <Star className="h-4 w-4" />, group: 'Lainnya' },
   { id: 'alumni', label: 'Kelola Alumni', icon: <GraduationCap className="h-4 w-4" />, group: 'Lainnya' },
   { id: 'payments', label: 'Kelola Pembayaran', icon: <DollarSign className="h-4 w-4" />, group: 'Lainnya' },
-  { id: 'ppdb', label: 'Kelola PPDB', icon: <Shield className="h-4 w-4" />, group: 'Pendaftaran' },
+  { id: 'ppdb', label: 'Pendaftaran', icon: <ClipboardList className="h-4 w-4" />, group: 'Pendaftaran' },
   { id: 'contact-messages', label: 'Pesan Kontak', icon: <Mail className="h-4 w-4" />, group: 'Pesan' },
   { id: 'suggestions', label: 'Kritik & Saran', icon: <Lightbulb className="h-4 w-4" />, group: 'Pesan' },
   { id: 'settings', label: 'Pengaturan Website', icon: <Settings className="h-4 w-4" />, group: 'Sistem' },
@@ -470,7 +471,11 @@ function PPDBManager() {
   const queryClient = useQueryClient()
   const [selectedReg, setSelectedReg] = useState<Record<string, unknown> | null>(null)
   const [newStatus, setNewStatus] = useState('')
+  const [statusFilter, setStatusFilter] = useState<string>('all')
+  const [detailReg, setDetailReg] = useState<Record<string, unknown> | null>(null)
+  const [activeTab, setActiveTab] = useState<'pendaftar' | 'settings'>('pendaftar')
 
+  // Fetch pendaftar
   const { data, isLoading } = useQuery({
     queryKey: ['admin', 'ppdb'],
     queryFn: async () => {
@@ -479,6 +484,26 @@ function PPDBManager() {
       return res.json()
     },
   })
+
+  // Fetch PPDB settings (sync dengan publik)
+  const { data: settingsData } = useQuery({
+    queryKey: ['settings'],
+    queryFn: () => fetch('/api/settings').then(r => r.json()),
+  })
+  const settings = Array.isArray(settingsData) ? settingsData : (settingsData?.settings || [])
+  const getSetting = (key: string) => settings.find((s: { key: string }) => s.key === key)?.value || ''
+
+  // PPDB settings: derive base values from settings, track user edits separately
+  const ppdbBase = {
+    ppdb_status: getSetting('ppdb_status') || 'open',
+    ppdb_info: getSetting('ppdb_info') || '',
+    ppdb_requirements: getSetting('ppdb_requirements') || '',
+    ppdb_contact: getSetting('ppdb_contact') || '',
+  }
+  const [ppdbOverrides, setPpdbOverrides] = useState<Record<string, string>>({})
+  // Merge: user overrides take precedence over base values
+  const ppdbEdits = { ...ppdbBase, ...ppdbOverrides }
+  const setPpdbEdit = (key: string, value: string) => setPpdbOverrides(prev => ({ ...prev, [key]: value }))
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
@@ -500,89 +525,379 @@ function PPDBManager() {
     },
   })
 
+  const saveSettingsMutation = useMutation({
+    mutationFn: async (edits: Record<string, string>) => {
+      const res = await fetch('/api/admin/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ settings: Object.entries(edits).map(([key, value]) => ({ key, value })) }),
+      })
+      if (!res.ok) throw new Error('Gagal menyimpan pengaturan')
+      return res.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['settings'] })
+      setPpdbOverrides({}) // clear overrides after save (base will refresh from server)
+      toast.success('Pengaturan PPDB berhasil disimpan')
+    },
+    onError: () => {
+      toast.error('Gagal menyimpan pengaturan')
+    },
+  })
+
   const items: Record<string, unknown>[] = Array.isArray(data) ? data : []
+
+  // Statistik
+  const stats = useMemo(() => {
+    const total = items.length
+    const pending = items.filter(i => i.status === 'pending').length
+    const accepted = items.filter(i => i.status === 'accepted').length
+    const rejected = items.filter(i => i.status === 'rejected').length
+    return { total, pending, accepted, rejected }
+  }, [items])
+
+  // Filter by status
+  const filteredItems = useMemo(() => {
+    if (statusFilter === 'all') return items
+    return items.filter(i => i.status === statusFilter)
+  }, [items, statusFilter])
+
+  // Export CSV
+  const handleExportCSV = () => {
+    if (filteredItems.length === 0) {
+      toast.error('Tidak ada data untuk diexport')
+      return
+    }
+    const headers = ['Nama', 'Tempat Lahir', 'Tanggal Lahir', 'Nama Orang Tua', 'No. HP', 'Alamat', 'Sekolah Asal', 'Status', 'Tanggal Daftar']
+    const rows = filteredItems.map(reg => [
+      reg.name as string,
+      reg.birthPlace as string,
+      reg.birthDate ? new Date(reg.birthDate as string).toLocaleDateString('id-ID') : '-',
+      reg.parentName as string,
+      reg.parentPhone as string,
+      (reg.address as string) || '-',
+      (reg.previousSchool as string) || '-',
+      reg.status === 'accepted' ? 'Diterima' : reg.status === 'rejected' ? 'Ditolak' : 'Menunggu',
+      reg.createdAt ? new Date(reg.createdAt as string).toLocaleDateString('id-ID') : '-',
+    ])
+    const csv = [headers, ...rows]
+      .map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+      .join('\n')
+    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `ppdb-export-${new Date().toISOString().slice(0, 10)}.csv`
+    link.click()
+    URL.revokeObjectURL(url)
+    toast.success(`Exported ${filteredItems.length} pendaftar ke CSV`)
+  }
 
   return (
     <div className="space-y-4">
-      <div>
-        <h2 className="text-xl font-bold text-gray-900">Kelola PPDB</h2>
-        <p className="text-sm text-gray-500">Kelola pendaftaran santri baru</p>
-      </div>
-
-      <div className="border rounded-lg bg-white overflow-hidden">
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-gray-50">
-                <TableHead>#</TableHead>
-                <TableHead>Nama</TableHead>
-                <TableHead>Tempat Lahir</TableHead>
-                <TableHead>Nama Orang Tua</TableHead>
-                <TableHead>No. HP Ortu</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Tanggal Daftar</TableHead>
-                <TableHead className="text-center">Aksi</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {isLoading ? (
-                <TableRow>
-                  <TableCell colSpan={8} className="text-center py-12">
-                    <Loader2 className="h-6 w-6 animate-spin mx-auto text-emerald-600" />
-                  </TableCell>
-                </TableRow>
-              ) : items.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={8} className="text-center py-12 text-gray-500">
-                    Belum ada pendaftaran
-                  </TableCell>
-                </TableRow>
-              ) : (
-                items.map((reg, idx) => (
-                  <TableRow key={reg.id as string}>
-                    <TableCell className="text-gray-400 text-xs">{idx + 1}</TableCell>
-                    <TableCell className="font-medium">{reg.name as string}</TableCell>
-                    <TableCell>{reg.birthPlace as string}</TableCell>
-                    <TableCell>{reg.parentName as string}</TableCell>
-                    <TableCell>{reg.parentPhone as string}</TableCell>
-                    <TableCell>
-                      <Badge
-                        className={
-                          reg.status === 'accepted'
-                            ? 'bg-emerald-100 text-emerald-800'
-                            : reg.status === 'rejected'
-                            ? 'bg-red-100 text-red-800'
-                            : 'bg-amber-100 text-amber-800'
-                        }
-                      >
-                        {reg.status === 'accepted' ? 'Diterima' : reg.status === 'rejected' ? 'Ditolak' : 'Menunggu'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-xs">
-                      {reg.createdAt ? new Date(reg.createdAt as string).toLocaleDateString('id-ID') : '-'}
-                    </TableCell>
-                    <TableCell className="text-center">
-                      <div className="flex items-center justify-center gap-1">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50"
-                          onClick={() => {
-                            setSelectedReg(reg)
-                            setNewStatus(reg.status as string)
-                          }}
-                        >
-                          Ubah Status
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+            <ClipboardList className="h-5 w-5 text-emerald-600" />
+            Pendaftaran Santri Baru (PPDB)
+          </h2>
+          <p className="text-sm text-gray-500">Kelola pendaftaran & pengaturan PPDB</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExportCSV}
+            disabled={filteredItems.length === 0}
+            className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 border-emerald-200"
+          >
+            <Download className="h-4 w-4 mr-1" />
+            Export CSV
+          </Button>
         </div>
       </div>
+
+      {/* Tab switcher */}
+      <div className="flex gap-2 border-b">
+        <button
+          onClick={() => setActiveTab('pendaftar')}
+          className={`px-4 py-2 text-sm font-medium transition-colors relative ${
+            activeTab === 'pendaftar'
+              ? 'text-emerald-700'
+              : 'text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          <Users className="h-4 w-4 inline mr-1" />
+          Pendaftar
+          <span className="ml-1.5 text-xs bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full">
+            {stats.total}
+          </span>
+          {activeTab === 'pendaftar' && (
+            <span className="absolute bottom-0 inset-x-0 h-0.5 bg-emerald-600" />
+          )}
+        </button>
+        <button
+          onClick={() => setActiveTab('settings')}
+          className={`px-4 py-2 text-sm font-medium transition-colors relative ${
+            activeTab === 'settings'
+              ? 'text-emerald-700'
+              : 'text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          <Settings className="h-4 w-4 inline mr-1" />
+          Pengaturan PPDB
+          {activeTab === 'settings' && (
+            <span className="absolute bottom-0 inset-x-0 h-0.5 bg-emerald-600" />
+          )}
+        </button>
+      </div>
+
+      {/* Tab: Pendaftar */}
+      {activeTab === 'pendaftar' && (
+        <>
+          {/* Statistik cards */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="bg-white rounded-lg border p-4 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center shrink-0">
+                <UserPlus className="h-5 w-5 text-emerald-700" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-2xl font-bold text-gray-900 leading-none">{stats.total}</p>
+                <p className="text-xs text-gray-500 mt-1">Total Pendaftar</p>
+              </div>
+            </div>
+            <div className="bg-white rounded-lg border p-4 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center shrink-0">
+                <Clock className="h-5 w-5 text-amber-700" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-2xl font-bold text-gray-900 leading-none">{stats.pending}</p>
+                <p className="text-xs text-gray-500 mt-1">Menunggu</p>
+              </div>
+            </div>
+            <div className="bg-white rounded-lg border p-4 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center shrink-0">
+                <UserCheck className="h-5 w-5 text-emerald-700" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-2xl font-bold text-gray-900 leading-none">{stats.accepted}</p>
+                <p className="text-xs text-gray-500 mt-1">Diterima</p>
+              </div>
+            </div>
+            <div className="bg-white rounded-lg border p-4 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-red-100 flex items-center justify-center shrink-0">
+                <UserX className="h-5 w-5 text-red-700" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-2xl font-bold text-gray-900 leading-none">{stats.rejected}</p>
+                <p className="text-xs text-gray-500 mt-1">Ditolak</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Filter */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <Filter className="h-4 w-4 text-gray-400" />
+            <span className="text-sm text-gray-500">Filter:</span>
+            {[
+              { value: 'all', label: 'Semua', count: stats.total },
+              { value: 'pending', label: 'Menunggu', count: stats.pending },
+              { value: 'accepted', label: 'Diterima', count: stats.accepted },
+              { value: 'rejected', label: 'Ditolak', count: stats.rejected },
+            ].map(f => (
+              <button
+                key={f.value}
+                onClick={() => setStatusFilter(f.value)}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                  statusFilter === f.value
+                    ? 'bg-emerald-700 text-white'
+                    : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+                }`}
+              >
+                {f.label} ({f.count})
+              </button>
+            ))}
+          </div>
+
+          {/* Table */}
+          <div className="border rounded-lg bg-white overflow-hidden">
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-gray-50">
+                    <TableHead>#</TableHead>
+                    <TableHead>Nama</TableHead>
+                    <TableHead>Orang Tua</TableHead>
+                    <TableHead>No. HP</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Tgl Daftar</TableHead>
+                    <TableHead className="text-center">Aksi</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {isLoading ? (
+                    <TableRow>
+                      <TableCell colSpan={7} className="text-center py-12">
+                        <Loader2 className="h-6 w-6 animate-spin mx-auto text-emerald-600" />
+                      </TableCell>
+                    </TableRow>
+                  ) : filteredItems.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={7} className="text-center py-12 text-gray-500">
+                        {items.length === 0 ? 'Belum ada pendaftaran' : 'Tidak ada pendaftar untuk filter ini'}
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    filteredItems.map((reg, idx) => (
+                      <TableRow key={reg.id as string} className="hover:bg-emerald-50/50">
+                        <TableCell className="text-gray-400 text-xs">{idx + 1}</TableCell>
+                        <TableCell className="font-medium">{reg.name as string}</TableCell>
+                        <TableCell>{reg.parentName as string}</TableCell>
+                        <TableCell>
+                          <a href={`tel:${reg.parentPhone as string}`} className="text-emerald-700 hover:underline flex items-center gap-1">
+                            <Phone className="h-3 w-3" />
+                            {reg.parentPhone as string}
+                          </a>
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            className={
+                              reg.status === 'accepted'
+                                ? 'bg-emerald-100 text-emerald-800'
+                                : reg.status === 'rejected'
+                                ? 'bg-red-100 text-red-800'
+                                : 'bg-amber-100 text-amber-800'
+                            }
+                          >
+                            {reg.status === 'accepted' ? 'Diterima' : reg.status === 'rejected' ? 'Ditolak' : 'Menunggu'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-xs">
+                          {reg.createdAt ? new Date(reg.createdAt as string).toLocaleDateString('id-ID') : '-'}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <div className="flex items-center justify-center gap-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 h-8"
+                              onClick={() => setDetailReg(reg)}
+                              title="Lihat detail"
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50 h-8"
+                              onClick={() => {
+                                setSelectedReg(reg)
+                                setNewStatus(reg.status as string)
+                              }}
+                              title="Ubah status"
+                            >
+                              Ubah Status
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Tab: Settings PPDB (sync dengan publik) */}
+      {activeTab === 'settings' && (
+        <div className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base flex items-center gap-2">
+                <Settings className="h-4 w-4 text-emerald-600" />
+                Pengaturan PPDB
+              </CardTitle>
+              <p className="text-xs text-gray-500">
+                Pengaturan ini akan otomatis sinkron dengan halaman PPDB publik.
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Status PPDB */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Status PPDB</Label>
+                <Select
+                  value={ppdbEdits.ppdb_status || 'open'}
+                  onValueChange={(val) => setPpdbEdit('ppdb_status', val)}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="open">🟢 Dibuka</SelectItem>
+                    <SelectItem value="closed">🔴 Ditutup</SelectItem>
+                    <SelectItem value="soon">🟡 Segera Dibuka</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-gray-500">
+                  Menentukan apakah form pendaftaran di halaman publik aktif atau tidak.
+                </p>
+              </div>
+
+              {/* Info PPDB */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Info PPDB</Label>
+                <Textarea
+                  value={ppdbEdits.ppdb_info || ''}
+                  onChange={(e) => setPpdbEdit('ppdb_info', e.target.value)}
+                  placeholder="Informasi umum PPDB (tahun ajaran, jadwal, dll)"
+                  rows={3}
+                />
+              </div>
+
+              {/* Persyaratan */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Persyaratan</Label>
+                <Textarea
+                  value={ppdbEdits.ppdb_requirements || ''}
+                  onChange={(e) => setPpdbEdit('ppdb_requirements', e.target.value)}
+                  placeholder="Satu persyaratan per baris"
+                  rows={5}
+                />
+                <p className="text-xs text-gray-500">
+                  Tulis satu persyaratan per baris. Akan tampil sebagai list di halaman publik.
+                </p>
+              </div>
+
+              {/* Kontak PPDB */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Kontak PPDB</Label>
+                <Textarea
+                  value={ppdbEdits.ppdb_contact || ''}
+                  onChange={(e) => setPpdbEdit('ppdb_contact', e.target.value)}
+                  placeholder="Satu kontak per baris (Nama - No. HP)"
+                  rows={3}
+                />
+                <p className="text-xs text-gray-500">
+                  Format: &quot;Nama - No. HP&quot; per baris. Akan tampil sebagai list kontak di halaman publik.
+                </p>
+              </div>
+
+              <div className="flex justify-end pt-2">
+                <Button
+                  className="bg-emerald-700 hover:bg-emerald-800 text-white"
+                  onClick={() => saveSettingsMutation.mutate(ppdbEdits)}
+                  disabled={saveSettingsMutation.isPending}
+                >
+                  {saveSettingsMutation.isPending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
+                  Simpan Pengaturan
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       {/* Status Update Dialog */}
       <Dialog open={!!selectedReg} onOpenChange={(open) => { if (!open) setSelectedReg(null) }}>
@@ -631,6 +946,90 @@ function PPDBManager() {
             >
               {updateMutation.isPending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
               Simpan
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Detail Dialog — view full pendaftar info */}
+      <Dialog open={!!detailReg} onOpenChange={(open) => { if (!open) setDetailReg(null) }}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Eye className="h-5 w-5 text-emerald-600" />
+              Detail Pendaftar
+            </DialogTitle>
+            <DialogDescription>
+              Informasi lengkap pendaftar
+            </DialogDescription>
+          </DialogHeader>
+          {detailReg && (
+            <div className="space-y-3 py-2">
+              <div className="bg-gradient-to-br from-emerald-50 to-amber-50 rounded-lg p-4 border border-emerald-100">
+                <p className="font-bold text-lg text-emerald-900">{detailReg.name as string}</p>
+                <Badge
+                  className="mt-1.5"
+                  variant="secondary"
+                >
+                  {detailReg.status === 'accepted' ? '✅ Diterima' : detailReg.status === 'rejected' ? '❌ Ditolak' : '⏳ Menunggu'}
+                </Badge>
+              </div>
+              <div className="space-y-2 text-sm">
+                <div className="flex gap-2">
+                  <span className="text-gray-500 w-32 shrink-0">Tempat Lahir:</span>
+                  <span className="font-medium">{detailReg.birthPlace as string}</span>
+                </div>
+                <div className="flex gap-2">
+                  <span className="text-gray-500 w-32 shrink-0">Tanggal Lahir:</span>
+                  <span className="font-medium">
+                    {detailReg.birthDate ? new Date(detailReg.birthDate as string).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-'}
+                  </span>
+                </div>
+                <div className="flex gap-2">
+                  <span className="text-gray-500 w-32 shrink-0">Nama Orang Tua:</span>
+                  <span className="font-medium">{detailReg.parentName as string}</span>
+                </div>
+                <div className="flex gap-2">
+                  <span className="text-gray-500 w-32 shrink-0">No. HP Ortu:</span>
+                  <a href={`tel:${detailReg.parentPhone as string}`} className="font-medium text-emerald-700 hover:underline flex items-center gap-1">
+                    <Phone className="h-3 w-3" />
+                    {detailReg.parentPhone as string}
+                  </a>
+                </div>
+                {detailReg.address && (
+                  <div className="flex gap-2">
+                    <span className="text-gray-500 w-32 shrink-0">Alamat:</span>
+                    <span className="font-medium">{detailReg.address as string}</span>
+                  </div>
+                )}
+                {detailReg.previousSchool && (
+                  <div className="flex gap-2">
+                    <span className="text-gray-500 w-32 shrink-0">Sekolah Asal:</span>
+                    <span className="font-medium">{detailReg.previousSchool as string}</span>
+                  </div>
+                )}
+                <div className="flex gap-2">
+                  <span className="text-gray-500 w-32 shrink-0">Tanggal Daftar:</span>
+                  <span className="font-medium">
+                    {detailReg.createdAt ? new Date(detailReg.createdAt as string).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-'}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setDetailReg(null)}>Tutup</Button>
+            <Button
+              className="bg-emerald-700 hover:bg-emerald-800 text-white"
+              onClick={() => {
+                if (detailReg) {
+                  setSelectedReg(detailReg)
+                  setNewStatus(detailReg.status as string)
+                  setDetailReg(null)
+                }
+              }}
+            >
+              Ubah Status
             </Button>
           </DialogFooter>
         </DialogContent>

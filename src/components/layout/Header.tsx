@@ -36,7 +36,7 @@ const navGroups: { group: string; items: NavItem[] }[] = [
   {
     group: 'Layanan',
     items: [
-      { label: 'PPDB', page: 'ppdb', icon: GraduationCap },
+      { label: 'Pendaftaran (PPDB)', page: 'ppdb', icon: GraduationCap },
       { label: 'Wali Santri', page: 'wali-santri', icon: Users },
       { label: 'Alumni', page: 'alumni', icon: Users },
       { label: 'FAQ', page: 'faq', icon: HelpCircle },
