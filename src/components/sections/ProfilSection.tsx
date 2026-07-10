@@ -6,6 +6,7 @@ import { BookOpen, Eye, Target, Users, Award, Phone, UserCircle2 } from 'lucide-
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
+import { MarkdownRenderer } from '@/components/sections/MarkdownRenderer'
 
 export default function ProfilSection() {
   const { data: settingsData } = useQuery({
@@ -74,15 +75,7 @@ export default function ProfilSection() {
               </div>
               <div className="md:col-span-3 p-8">
                 {history ? (
-                  history.split('\n').filter((p: string) => p.trim()).length > 1 ? (
-                    history.split('\n').filter((p: string) => p.trim()).map((paragraph: string, idx: number) => (
-                      <p key={idx} className="text-gray-600 leading-relaxed mb-4 last:mb-0">
-                        {paragraph.trim()}
-                      </p>
-                    ))
-                  ) : (
-                    <p className="text-gray-600 leading-relaxed">{history}</p>
-                  )
+                  <MarkdownRenderer content={history} className="text-sm" />
                 ) : (
                   <p className="text-gray-400 italic">Sejarah madrasah belum tersedia.</p>
                 )}
@@ -107,7 +100,7 @@ export default function ProfilSection() {
                 </div>
                 <h3 className="text-xl font-bold text-emerald-800 mb-3">Visi</h3>
                 {vision ? (
-                  <p className="text-gray-600 text-sm leading-relaxed">{vision}</p>
+                  <MarkdownRenderer content={vision} className="text-sm" />
                 ) : (
                   <p className="text-gray-400 italic text-sm">Visi belum tersedia.</p>
                 )}
@@ -122,15 +115,8 @@ export default function ProfilSection() {
                   <Target className="h-7 w-7 text-white" />
                 </div>
                 <h3 className="text-xl font-bold text-emerald-800 mb-3">Misi</h3>
-                {missionItems.length > 0 ? (
-                  <ul className="text-gray-600 text-sm leading-relaxed space-y-2">
-                    {missionItems.map((item, idx) => (
-                      <li key={idx} className="flex items-start gap-2">
-                        <span className="text-amber-500 mt-1">•</span>
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
+                {missionItems.length > 0 || getSetting('madrasah_mission') ? (
+                  <MarkdownRenderer content={getSetting('madrasah_mission')} className="text-sm" />
                 ) : (
                   <p className="text-gray-400 italic text-sm">Misi belum tersedia.</p>
                 )}
@@ -145,15 +131,8 @@ export default function ProfilSection() {
                   <Award className="h-7 w-7 text-white" />
                 </div>
                 <h3 className="text-xl font-bold text-emerald-800 mb-3">Tujuan</h3>
-                {goalItems.length > 0 ? (
-                  <ul className="text-gray-600 text-sm leading-relaxed space-y-2">
-                    {goalItems.map((item, idx) => (
-                      <li key={idx} className="flex items-start gap-2">
-                        <span className="text-amber-500 mt-1">•</span>
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
+                {goalItems.length > 0 || getSetting('madrasah_goals') ? (
+                  <MarkdownRenderer content={getSetting('madrasah_goals')} className="text-sm" />
                 ) : (
                   <p className="text-gray-400 italic text-sm">Tujuan belum tersedia.</p>
                 )}

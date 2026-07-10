@@ -50,10 +50,11 @@ import {
 import { Card, CardContent } from '@/components/ui/card'
 import { ImageUpload } from '@/components/admin/ImageUpload'
 import { FileUpload } from '@/components/admin/FileUpload'
+import { RichTextEditor } from '@/components/admin/RichTextEditor'
 
 // --- Types ---
 
-export type FieldType = 'text' | 'textarea' | 'number' | 'select' | 'switch' | 'date' | 'image' | 'pdf'
+export type FieldType = 'text' | 'textarea' | 'number' | 'select' | 'switch' | 'date' | 'image' | 'pdf' | 'richtext'
 
 export interface FormFieldConfig {
   name: string
@@ -598,6 +599,13 @@ export default function CRUDManager({
                     label={field.label}
                     placeholder={field.placeholder || 'https://res.cloudinary.com/...'}
                     hint={field.hint}
+                  />
+                ) : field.type === 'richtext' ? (
+                  <RichTextEditor
+                    value={String(formData[field.name] ?? '')}
+                    onChange={(val) => handleFormChange(field.name, val)}
+                    label={field.label}
+                    placeholder={field.placeholder || 'Tulis konten dengan format...'}
                   />
                 ) : field.type === 'textarea' ? (
                   <div className="space-y-2">

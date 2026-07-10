@@ -8,6 +8,7 @@ import {
 } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { MarkdownRenderer } from '@/components/sections/MarkdownRenderer'
 import { Skeleton } from '@/components/ui/skeleton'
 
 const typeConfig: Record<string, { icon: React.ElementType; color: string; label: string }> = {
@@ -75,7 +76,9 @@ export default function PengumumanSection() {
                             <Badge className="text-xs bg-red-100 text-red-700">Prioritas</Badge>
                           )}
                         </div>
-                        <p className="text-gray-600 text-sm whitespace-pre-wrap">{item.content}</p>
+                        <div className="text-gray-600 text-sm">
+                          <MarkdownRenderer content={item.content} />
+                        </div>
                         <div className="flex items-center gap-1 mt-2 text-xs text-gray-400">
                           <Clock className="h-3 w-3" />
                           {new Date(item.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}

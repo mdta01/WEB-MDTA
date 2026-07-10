@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Dialog, DialogContent, DialogTitle, DialogClose } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
+import { MarkdownRenderer } from '@/components/sections/MarkdownRenderer'
 
 const categories = [
   { value: '', label: 'Semua' },
@@ -239,8 +240,8 @@ export default function BeritaSection() {
                   <img src={selectedNews.image} alt={selectedNews.title} className="w-full h-auto" />
                 </div>
               )}
-              <div className="mt-4 text-gray-600 leading-relaxed whitespace-pre-wrap">
-                {selectedNews.content}
+              <div className="mt-4">
+                <MarkdownRenderer content={selectedNews.content} />
               </div>
             </>
           )}

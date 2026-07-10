@@ -14,6 +14,7 @@ import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Dialog, DialogContent, DialogTitle, DialogClose } from '@/components/ui/dialog'
 import { CalendarModal } from '@/components/sections/CalendarModal'
+import { MarkdownRenderer } from '@/components/sections/MarkdownRenderer'
 import { useAppStore } from '@/store/useAppStore'
 
 // External date store — client-only, refreshes every minute for realtime calendar.
@@ -513,9 +514,11 @@ export default function BerandaSection() {
                   <Quote className="h-5 w-5 text-amber-500" />
                   Sambutan Kepala Madrasah
                 </h3>
-                <p className="text-gray-600 leading-relaxed text-sm">
-                  {getSetting('madrasah_welcome') || "Assalamu'alaikum Warahmatullahi Wabarakatuh. Puji syukur kehadirat Allah SWT yang telah memberikan rahmat dan karunia-Nya. MDTA Miftahul Ulum 01 berkomitmen untuk memberikan pendidikan Islam yang terbaik bagi putra-putri Anda. Dengan kurikulum yang berpusat pada Al-Quran dan As-Sunnah, kami berharap dapat mencetak generasi yang berilmu, berakhlak mulia, dan bermanfaat bagi agama, bangsa, dan negara. Selamat datang di keluarga besar Miftahul Ulum 01."}
-                </p>
+                <div className="text-gray-600 text-sm">
+                  <MarkdownRenderer
+                    content={getSetting('madrasah_welcome') || "Assalamu'alaikum Warahmatullahi Wabarakatuh. Puji syukur kehadirat Allah SWT yang telah memberikan rahmat dan karunia-Nya. MDTA Miftahul Ulum 01 berkomitmen untuk memberikan pendidikan Islam yang terbaik bagi putra-putri Anda. Dengan kurikulum yang berpusat pada Al-Quran dan As-Sunnah, kami berharap dapat mencetak generasi yang berilmu, berakhlak mulia, dan bermanfaat bagi agama, bangsa, dan negara. Selamat datang di keluarga besar Miftahul Ulum 01."}
+                  />
+                </div>
                 <p className="text-emerald-700 font-semibold mt-4 text-sm">Wassalamu'alaikum Warahmatullahi Wabarakatuh</p>
               </div>
             </div>
@@ -646,8 +649,8 @@ export default function BerandaSection() {
                     <img src={selectedNews.image} alt={selectedNews.title} className="w-full h-auto" />
                   </div>
                 )}
-                <div className="mt-4 text-gray-600 leading-relaxed whitespace-pre-wrap">
-                  {selectedNews.content}
+                <div className="mt-4">
+                  <MarkdownRenderer content={selectedNews.content} />
                 </div>
               </>
             )}
@@ -787,8 +790,8 @@ export default function BerandaSection() {
                     <iframe src={selectedDakwah.videoUrl} className="w-full h-full" allowFullScreen />
                   </div>
                 )}
-                <div className="mt-4 text-gray-600 leading-relaxed whitespace-pre-wrap">
-                  {selectedDakwah.content}
+                <div className="mt-4">
+                  <MarkdownRenderer content={selectedDakwah.content} />
                 </div>
               </>
             )}

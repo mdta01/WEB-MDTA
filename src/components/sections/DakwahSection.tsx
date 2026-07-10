@@ -10,6 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Dialog, DialogContent, DialogTitle, DialogClose } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { MarkdownRenderer } from '@/components/sections/MarkdownRenderer'
 
 const categoryTabs = [
   { value: 'artikel', label: 'Artikel', icon: FileText },
@@ -177,8 +178,8 @@ export default function DakwahSection() {
                   <iframe src={selectedItem.videoUrl} className="w-full h-full" allowFullScreen />
                 </div>
               )}
-              <div className="mt-4 text-gray-600 leading-relaxed whitespace-pre-wrap">
-                {selectedItem.content}
+              <div className="mt-4">
+                <MarkdownRenderer content={selectedItem.content} />
               </div>
             </>
           )}

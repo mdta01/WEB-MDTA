@@ -56,6 +56,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import CRUDManager, { type FormFieldConfig, type ColumnConfig } from './CRUDManager'
 import { ImageUpload } from './ImageUpload'
+import { RichTextEditor } from './RichTextEditor'
 import AdminDashboard from './AdminDashboard'
 
 // --- Types ---
@@ -152,7 +153,7 @@ const entityConfigs: Record<string, EntityConfig> = {
       { name: 'isPublished', label: 'Dipublikasi', type: 'switch' },
       { name: 'excerpt', label: 'Ringkasan', type: 'textarea', placeholder: 'Ringkasan singkat berita', colSpan: 2 },
       { name: 'image', label: 'Gambar Berita', type: 'image', uploadFolder: 'mdta/news', aspectRatio: 'video', placeholder: 'https://...', colSpan: 2, hint: 'Upload gambar berita (rasio 16:9 disarankan)' },
-      { name: 'content', label: 'Konten', type: 'textarea', required: true, placeholder: 'Isi berita lengkap', colSpan: 2 },
+      { name: 'content', label: 'Konten', type: 'richtext', required: true, placeholder: 'Tulis berita lengkap dengan format...', colSpan: 2 },
     ],
   },
   announcements: {
@@ -177,7 +178,7 @@ const entityConfigs: Record<string, EntityConfig> = {
       ]},
       { name: 'priority', label: 'Prioritas', type: 'number', placeholder: '0' },
       { name: 'isActive', label: 'Aktif', type: 'switch' },
-      { name: 'content', label: 'Konten', type: 'textarea', required: true, placeholder: 'Isi pengumuman', colSpan: 2 },
+      { name: 'content', label: 'Konten', type: 'richtext', required: true, placeholder: 'Tulis pengumuman dengan format...', colSpan: 2 },
     ],
   },
   teachers: {
@@ -411,7 +412,7 @@ const entityConfigs: Record<string, EntityConfig> = {
       { name: 'author', label: 'Penulis', type: 'text', placeholder: 'Nama penulis/ustadz' },
       { name: 'videoUrl', label: 'URL Video', type: 'text', placeholder: 'https://youtube.com/...', colSpan: 2 },
       { name: 'image', label: 'Gambar Dakwah', type: 'image', uploadFolder: 'mdta/dakwah', aspectRatio: 'video', placeholder: 'https://...', colSpan: 2, hint: 'Upload gambar artikel/video dakwah' },
-      { name: 'content', label: 'Konten', type: 'textarea', required: true, placeholder: 'Isi dakwah', colSpan: 2 },
+      { name: 'content', label: 'Konten', type: 'richtext', required: true, placeholder: 'Tulis dakwah dengan format...', colSpan: 2 },
     ],
   },
   alumni: {
@@ -2319,6 +2320,7 @@ function SettingsManager() {
             {(() => {
               const imageKeys = ['madrasah_principal_photo', 'madrasah_hero_image', 'madrasah_logo']
               const longTextKeys = ['madrasah_history', 'madrasah_welcome', 'madrasah_mission', 'madrasah_goals', 'madrasah_struktur_organisasi', 'ppdb_requirements', 'wali_santri_meeting_schedule']
+              const richtextKeys = ['madrasah_welcome', 'madrasah_history', 'madrasah_vision', 'madrasah_mission', 'madrasah_goals']
               const filteredEntries = Object.entries(settingsValues).filter(([key]) => !imageKeys.includes(key))
               
               const groups: Record<string, string[]> = {
@@ -2350,7 +2352,15 @@ function SettingsManager() {
                               <Label className="text-xs text-gray-500">
                                 {settingsLabels[key] || key.replace(/_/g, ' ').replace(/madrasah/g, '').trim() || key}
                               </Label>
-                              {longTextKeys.includes(key) ? (
+                              {richtextKeys.includes(key) ? (
+                                <div className="mt-1">
+                                  <RichTextEditor
+                                    value={value}
+                                    onChange={(val) => setSettingsEdits((prev) => ({ ...prev, [key]: val }))}
+                                    label=""
+                                  />
+                                </div>
+                              ) : longTextKeys.includes(key) ? (
                                 <Textarea
                                   value={value}
                                   onChange={(e) => setSettingsEdits((prev) => ({ ...prev, [key]: e.target.value }))}
