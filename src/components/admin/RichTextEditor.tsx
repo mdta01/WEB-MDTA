@@ -14,9 +14,6 @@ import {
   ListsToggle,
   CreateLink,
   linkPlugin,
-  alignmentPlugin,
-  directionPlugin,
-  diffSourcePlugin,
 } from '@mdxeditor/editor'
 import '@mdxeditor/editor/style.css'
 
@@ -35,7 +32,7 @@ export function RichTextEditor({
 }: RichTextEditorProps) {
   return (
     <div className="space-y-2">
-      {label && (
+      {label && label !== '' && (
         <label className="text-sm font-medium text-foreground">{label}</label>
       )}
       <div className="border border-gray-200 rounded-lg overflow-hidden focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-100 transition-all">
@@ -51,9 +48,6 @@ export function RichTextEditor({
             thematicBreakPlugin(),
             markdownShortcutPlugin(),
             linkPlugin(),
-            alignmentPlugin(),
-            directionPlugin(),
-            diffSourcePlugin(),
             toolbarPlugin({
               toolbarContents: () => (
                 <>
