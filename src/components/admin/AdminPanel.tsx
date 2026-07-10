@@ -9,6 +9,7 @@ import {
   Download, Mail, Lightbulb, Settings, LogOut, Menu, X,
   ChevronRight, Shield, Loader2, Save, DollarSign, Clock, Star,
   UserCheck, UserX, UserPlus, Eye, Filter, ClipboardList, Phone, MapPin,
+  Plus, Pencil, Trash2,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -77,6 +78,7 @@ type AdminSection =
   | 'schedules'
   | 'payments'
   | 'ppdb'
+  | 'wali-santri'
   | 'contact-messages'
   | 'suggestions'
   | 'settings'
@@ -108,6 +110,7 @@ const navItems: NavItem[] = [
   { id: 'alumni', label: 'Kelola Alumni', icon: <GraduationCap className="h-4 w-4" />, group: 'Lainnya' },
   { id: 'payments', label: 'Kelola Pembayaran', icon: <DollarSign className="h-4 w-4" />, group: 'Lainnya' },
   { id: 'ppdb', label: 'Pendaftaran', icon: <ClipboardList className="h-4 w-4" />, group: 'Pendaftaran' },
+  { id: 'wali-santri', label: 'Wali Santri', icon: <Users className="h-4 w-4" />, group: 'Pendaftaran' },
   { id: 'contact-messages', label: 'Pesan Kontak', icon: <Mail className="h-4 w-4" />, group: 'Pesan' },
   { id: 'suggestions', label: 'Kritik & Saran', icon: <Lightbulb className="h-4 w-4" />, group: 'Pesan' },
   { id: 'settings', label: 'Pengaturan Website', icon: <Settings className="h-4 w-4" />, group: 'Sistem' },
@@ -170,6 +173,7 @@ const entityConfigs: Record<string, EntityConfig> = {
         { label: 'Libur', value: 'holiday' },
         { label: 'Acara', value: 'event' },
         { label: 'PPDB', value: 'ppdb' },
+        { label: 'Wali Santri', value: 'wali_santri' },
       ]},
       { name: 'priority', label: 'Prioritas', type: 'number', placeholder: '0' },
       { name: 'isActive', label: 'Aktif', type: 'switch' },
@@ -1038,6 +1042,453 @@ function PPDBManager() {
   )
 }
 
+function WaliSantriManager() {
+  const queryClient = useQueryClient()
+  const [activeTab, setActiveTab] = useState<'meetings' | 'announcements'>('meetings')
+  const [meetingForm, setMeetingForm] = useState<{
+    id?: string
+    title: string
+    date: string
+    time: string
+    location: string
+    description: string
+    isActive: boolean
+  } | null>(null)
+  const [deleteMeeting, setDeleteMeeting] = useState<Record<string, unknown> | null>(null)
+  const [announcementForm, setAnnouncementForm] = useState<{
+    id?: string
+    title: string
+    content: string
+    priority: number
+    isActive: boolean
+  } | null>(null)
+  const [deleteAnnouncement, setDeleteAnnouncement] = useState<Record<string, unknown> | null>(null)
+
+  // Fetch meetings (admin)
+  const { data: meetingsData, isLoading: meetingsLoading } = useQuery({
+    queryKey: ['admin', 'wali-santri-meetings'],
+    queryFn: async () => {
+      const res = await fetch('/api/admin/wali-santri/meetings')
+      if (!res.ok) return []
+      return res.json()
+    },
+  })
+  const meetings: Record<string, unknown>[] = Array.isArray(meetingsData) ? meetingsData : []
+
+  // Fetch announcements (filter type='wali_santri' from admin announcements)
+  const { data: announcementsData, isLoading: announcementsLoading } = useQuery({
+    queryKey: ['admin', 'announcements'],
+    queryFn: async () => {
+      const res = await fetch('/api/admin/announcements')
+      if (!res.ok) return []
+      return res.json()
+    },
+  })
+  const allAnnouncements: Record<string, unknown>[] = Array.isArray(announcementsData) ? announcementsData : (announcementsData?.announcements || [])
+  const waliAnnouncements = allAnnouncements.filter((a) => a.type === 'wali_santri')
+
+  // Meeting mutations
+  const saveMeetingMutation = useMutation({
+    mutationFn: async (data: Record<string, unknown>) => {
+      const isEdit = !!data.id
+      const url = isEdit ? `/api/admin/wali-santri/meetings/${data.id}` : '/api/admin/wali-santri/meetings'
+      const method = isEdit ? 'PUT' : 'POST'
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      })
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        throw new Error((err as { error?: string }).error || 'Gagal menyimpan')
+      }
+      return res.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'wali-santri-meetings'] })
+      queryClient.invalidateQueries({ queryKey: ['wali-santri-meetings'] })
+      toast.success('Jadwal pertemuan berhasil disimpan')
+      setMeetingForm(null)
+    },
+    onError: (err: Error) => toast.error(err.message),
+  })
+
+  const deleteMeetingMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const res = await fetch(`/api/admin/wali-santri/meetings/${id}`, { method: 'DELETE' })
+      if (!res.ok) throw new Error('Gagal menghapus')
+      return res.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'wali-santri-meetings'] })
+      queryClient.invalidateQueries({ queryKey: ['wali-santri-meetings'] })
+      toast.success('Jadwal pertemuan berhasil dihapus')
+      setDeleteMeeting(null)
+    },
+    onError: () => toast.error('Gagal menghapus'),
+  })
+
+  // Announcement mutations (reuse existing /api/admin/announcements)
+  const saveAnnouncementMutation = useMutation({
+    mutationFn: async (data: Record<string, unknown>) => {
+      const isEdit = !!data.id
+      const url = isEdit ? `/api/admin/announcements/${data.id}` : '/api/admin/announcements'
+      const method = isEdit ? 'PUT' : 'POST'
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...data, type: 'wali_santri' }),
+      })
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        throw new Error((err as { error?: string }).error || 'Gagal menyimpan')
+      }
+      return res.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'announcements'] })
+      queryClient.invalidateQueries({ queryKey: ['announcements'] })
+      queryClient.invalidateQueries({ queryKey: ['wali-santri-announcements'] })
+      toast.success('Pengumuman wali santri berhasil disimpan')
+      setAnnouncementForm(null)
+    },
+    onError: (err: Error) => toast.error(err.message),
+  })
+
+  const deleteAnnouncementMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const res = await fetch(`/api/admin/announcements/${id}`, { method: 'DELETE' })
+      if (!res.ok) throw new Error('Gagal menghapus')
+      return res.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'announcements'] })
+      queryClient.invalidateQueries({ queryKey: ['announcements'] })
+      queryClient.invalidateQueries({ queryKey: ['wali-santri-announcements'] })
+      toast.success('Pengumuman berhasil dihapus')
+      setDeleteAnnouncement(null)
+    },
+    onError: () => toast.error('Gagal menghapus'),
+  })
+
+  const openCreateMeeting = () => {
+    setMeetingForm({ title: '', date: '', time: '', location: '', description: '', isActive: true })
+  }
+  const openEditMeeting = (m: Record<string, unknown>) => {
+    setMeetingForm({
+      id: m.id as string,
+      title: m.title as string,
+      date: m.date ? new Date(m.date as string).toISOString().slice(0, 10) : '',
+      time: m.time as string,
+      location: (m.location as string) || '',
+      description: (m.description as string) || '',
+      isActive: m.isActive !== false,
+    })
+  }
+
+  const openCreateAnnouncement = () => {
+    setAnnouncementForm({ title: '', content: '', priority: 0, isActive: true })
+  }
+  const openEditAnnouncement = (a: Record<string, unknown>) => {
+    setAnnouncementForm({
+      id: a.id as string,
+      title: a.title as string,
+      content: a.content as string,
+      priority: (a.priority as number) || 0,
+      isActive: a.isActive !== false,
+    })
+  }
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+          <Users className="h-5 w-5 text-emerald-600" />
+          Wali Santri
+        </h2>
+        <p className="text-sm text-gray-500">Kelola jadwal pertemuan & pengumuman untuk wali santri</p>
+      </div>
+
+      {/* Tab switcher */}
+      <div className="flex gap-2 border-b">
+        <button
+          onClick={() => setActiveTab('meetings')}
+          className={`px-4 py-2 text-sm font-medium transition-colors relative ${
+            activeTab === 'meetings' ? 'text-emerald-700' : 'text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          <Calendar className="h-4 w-4 inline mr-1" />
+          Jadwal Pertemuan
+          <span className="ml-1.5 text-xs bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full">
+            {meetings.length}
+          </span>
+          {activeTab === 'meetings' && <span className="absolute bottom-0 inset-x-0 h-0.5 bg-emerald-600" />}
+        </button>
+        <button
+          onClick={() => setActiveTab('announcements')}
+          className={`px-4 py-2 text-sm font-medium transition-colors relative ${
+            activeTab === 'announcements' ? 'text-emerald-700' : 'text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          <Megaphone className="h-4 w-4 inline mr-1" />
+          Pengumuman
+          <span className="ml-1.5 text-xs bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full">
+            {waliAnnouncements.length}
+          </span>
+          {activeTab === 'announcements' && <span className="absolute bottom-0 inset-x-0 h-0.5 bg-emerald-600" />}
+        </button>
+      </div>
+
+      {/* Tab: Meetings */}
+      {activeTab === 'meetings' && (
+        <div className="space-y-4">
+          <div className="flex justify-end">
+            <Button onClick={openCreateMeeting} className="bg-emerald-700 hover:bg-emerald-800 text-white">
+              <Plus className="h-4 w-4 mr-1" /> Tambah Pertemuan
+            </Button>
+          </div>
+          <div className="border rounded-lg bg-white overflow-hidden">
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-gray-50">
+                    <TableHead>Judul</TableHead>
+                    <TableHead>Tanggal</TableHead>
+                    <TableHead>Waktu</TableHead>
+                    <TableHead>Lokasi</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="text-center">Aksi</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {meetingsLoading ? (
+                    <TableRow><TableCell colSpan={6} className="text-center py-8"><Loader2 className="h-5 w-5 animate-spin mx-auto text-emerald-600" /></TableCell></TableRow>
+                  ) : meetings.length === 0 ? (
+                    <TableRow><TableCell colSpan={6} className="text-center py-8 text-gray-500">Belum ada jadwal pertemuan</TableCell></TableRow>
+                  ) : (
+                    meetings.map((m) => (
+                      <TableRow key={m.id as string} className="hover:bg-emerald-50/50">
+                        <TableCell className="font-medium text-emerald-800">{m.title as string}</TableCell>
+                        <TableCell className="text-sm">{m.date ? new Date(m.date as string).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-'}</TableCell>
+                        <TableCell className="text-sm">{m.time as string}</TableCell>
+                        <TableCell className="text-sm text-gray-500">{(m.location as string) || '-'}</TableCell>
+                        <TableCell>
+                          <Badge className={m.isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-100 text-gray-600'}>
+                            {m.isActive ? 'Aktif' : 'Nonaktif'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <div className="flex items-center justify-center gap-1">
+                            <Button variant="ghost" size="sm" className="text-emerald-600 hover:bg-emerald-50 h-8" onClick={() => openEditMeeting(m)}>
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                            <Button variant="ghost" size="sm" className="text-red-600 hover:bg-red-50 h-8" onClick={() => setDeleteMeeting(m)}>
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Tab: Announcements */}
+      {activeTab === 'announcements' && (
+        <div className="space-y-4">
+          <div className="flex justify-end">
+            <Button onClick={openCreateAnnouncement} className="bg-emerald-700 hover:bg-emerald-800 text-white">
+              <Plus className="h-4 w-4 mr-1" /> Tambah Pengumuman
+            </Button>
+          </div>
+          <div className="border rounded-lg bg-white overflow-hidden">
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-gray-50">
+                    <TableHead>Judul</TableHead>
+                    <TableHead>Prioritas</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Tanggal</TableHead>
+                    <TableHead className="text-center">Aksi</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {announcementsLoading ? (
+                    <TableRow><TableCell colSpan={5} className="text-center py-8"><Loader2 className="h-5 w-5 animate-spin mx-auto text-emerald-600" /></TableCell></TableRow>
+                  ) : waliAnnouncements.length === 0 ? (
+                    <TableRow><TableCell colSpan={5} className="text-center py-8 text-gray-500">Belum ada pengumuman wali santri</TableCell></TableRow>
+                  ) : (
+                    waliAnnouncements.map((a) => (
+                      <TableRow key={a.id as string} className="hover:bg-emerald-50/50">
+                        <TableCell className="font-medium text-emerald-800">{a.title as string}</TableCell>
+                        <TableCell className="text-sm">{(a.priority as number) || 0}</TableCell>
+                        <TableCell>
+                          <Badge className={a.isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-100 text-gray-600'}>
+                            {a.isActive ? 'Aktif' : 'Nonaktif'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-sm">{a.createdAt ? new Date(a.createdAt as string).toLocaleDateString('id-ID') : '-'}</TableCell>
+                        <TableCell className="text-center">
+                          <div className="flex items-center justify-center gap-1">
+                            <Button variant="ghost" size="sm" className="text-emerald-600 hover:bg-emerald-50 h-8" onClick={() => openEditAnnouncement(a)}>
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                            <Button variant="ghost" size="sm" className="text-red-600 hover:bg-red-50 h-8" onClick={() => setDeleteAnnouncement(a)}>
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Meeting Form Dialog */}
+      <Dialog open={!!meetingForm} onOpenChange={(open) => { if (!open) setMeetingForm(null) }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{meetingForm?.id ? 'Edit Pertemuan' : 'Tambah Pertemuan'}</DialogTitle>
+            <DialogDescription>Jadwal pertemuan wali santri</DialogDescription>
+          </DialogHeader>
+          {meetingForm && (
+            <div className="space-y-3 py-2">
+              <div className="space-y-1.5">
+                <Label className="text-sm">Judul *</Label>
+                <Input value={meetingForm.title} onChange={(e) => setMeetingForm({ ...meetingForm, title: e.target.value })} placeholder="Pertemuan Wali Santri Semester..." />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label className="text-sm">Tanggal *</Label>
+                  <Input type="date" value={meetingForm.date} onChange={(e) => setMeetingForm({ ...meetingForm, date: e.target.value })} />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-sm">Waktu *</Label>
+                  <Input value={meetingForm.time} onChange={(e) => setMeetingForm({ ...meetingForm, time: e.target.value })} placeholder="09:00 - 11:00" />
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-sm">Lokasi</Label>
+                <Input value={meetingForm.location} onChange={(e) => setMeetingForm({ ...meetingForm, location: e.target.value })} placeholder="Aula Madrasah" />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-sm">Deskripsi</Label>
+                <Textarea value={meetingForm.description} onChange={(e) => setMeetingForm({ ...meetingForm, description: e.target.value })} rows={3} placeholder="Agenda pertemuan..." />
+              </div>
+              <div className="flex items-center justify-between rounded-lg border p-3">
+                <Label htmlFor="meeting-active" className="cursor-pointer">Aktif (tampil di publik)</Label>
+                <Switch id="meeting-active" checked={meetingForm.isActive} onCheckedChange={(checked) => setMeetingForm({ ...meetingForm, isActive: checked })} />
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setMeetingForm(null)}>Batal</Button>
+            <Button
+              className="bg-emerald-700 hover:bg-emerald-800 text-white"
+              disabled={saveMeetingMutation.isPending}
+              onClick={() => meetingForm && saveMeetingMutation.mutate(meetingForm)}
+            >
+              {saveMeetingMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              Simpan
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Announcement Form Dialog */}
+      <Dialog open={!!announcementForm} onOpenChange={(open) => { if (!open) setAnnouncementForm(null) }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{announcementForm?.id ? 'Edit Pengumuman' : 'Tambah Pengumuman'}</DialogTitle>
+            <DialogDescription>Pengumuman khusus untuk wali santri</DialogDescription>
+          </DialogHeader>
+          {announcementForm && (
+            <div className="space-y-3 py-2">
+              <div className="space-y-1.5">
+                <Label className="text-sm">Judul *</Label>
+                <Input value={announcementForm.title} onChange={(e) => setAnnouncementForm({ ...announcementForm, title: e.target.value })} placeholder="Pengumuman untuk wali santri..." />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-sm">Konten *</Label>
+                <Textarea value={announcementForm.content} onChange={(e) => setAnnouncementForm({ ...announcementForm, content: e.target.value })} rows={4} placeholder="Isi pengumuman..." />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label className="text-sm">Prioritas</Label>
+                  <Input type="number" value={announcementForm.priority} onChange={(e) => setAnnouncementForm({ ...announcementForm, priority: Number(e.target.value) })} placeholder="0" />
+                </div>
+                <div className="flex items-center justify-between rounded-lg border p-3 mt-5">
+                  <Label htmlFor="ann-active" className="cursor-pointer text-sm">Aktif</Label>
+                  <Switch id="ann-active" checked={announcementForm.isActive} onCheckedChange={(checked) => setAnnouncementForm({ ...announcementForm, isActive: checked })} />
+                </div>
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setAnnouncementForm(null)}>Batal</Button>
+            <Button
+              className="bg-emerald-700 hover:bg-emerald-800 text-white"
+              disabled={saveAnnouncementMutation.isPending}
+              onClick={() => announcementForm && saveAnnouncementMutation.mutate(announcementForm)}
+            >
+              {saveAnnouncementMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              Simpan
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmations */}
+      <AlertDialog open={!!deleteMeeting} onOpenChange={(open) => { if (!open) setDeleteMeeting(null) }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Hapus Jadwal Pertemuan?</AlertDialogTitle>
+            <AlertDialogDescription>{deleteMeeting?.title as string}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Batal</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-red-600 hover:bg-red-700 text-white"
+              onClick={() => deleteMeeting && deleteMeetingMutation.mutate(deleteMeeting.id as string)}
+            >
+              {deleteMeetingMutation.isPending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
+              Hapus
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={!!deleteAnnouncement} onOpenChange={(open) => { if (!open) setDeleteAnnouncement(null) }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Hapus Pengumuman?</AlertDialogTitle>
+            <AlertDialogDescription>{deleteAnnouncement?.title as string}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Batal</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-red-600 hover:bg-red-700 text-white"
+              onClick={() => deleteAnnouncement && deleteAnnouncementMutation.mutate(deleteAnnouncement.id as string)}
+            >
+              {deleteAnnouncementMutation.isPending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
+              Hapus
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+  )
+}
+
 function ContactMessagesManager() {
   const queryClient = useQueryClient()
   const [selectedMsg, setSelectedMsg] = useState<Record<string, unknown> | null>(null)
@@ -1836,6 +2287,9 @@ export default function AdminPanel({ adminName: adminNameProp, onLogout }: Admin
     }
     if (activeSection === 'ppdb') {
       return <PPDBManager />
+    }
+    if (activeSection === 'wali-santri') {
+      return <WaliSantriManager />
     }
     if (activeSection === 'contact-messages') {
       return <ContactMessagesManager />

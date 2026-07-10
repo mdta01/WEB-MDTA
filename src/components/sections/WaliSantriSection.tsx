@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
 import {
   CreditCard, Bell, Calendar, MessageSquare,
-  Send, Clock, AlertCircle,
+  Send, Clock, AlertCircle, MapPin,
 } from 'lucide-react'
 import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
@@ -14,9 +14,6 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
-import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from '@/components/ui/table'
 import { toast } from 'sonner'
 import { useAppStore } from '@/store/useAppStore'
 
@@ -32,28 +29,21 @@ export default function WaliSantriSection() {
     queryFn: () => fetch('/api/payments').then(r => r.json()),
   })
 
-  const { data: announcementsData } = useQuery({
-    queryKey: ['announcements'],
-    queryFn: () => fetch('/api/announcements').then(r => r.json()),
+  // Pengumuman khusus wali santri (type='wali_santri') — sync realtime via API
+  const { data: announcementsData, isLoading: announcementsLoading } = useQuery({
+    queryKey: ['wali-santri-announcements'],
+    queryFn: () => fetch('/api/wali-santri/announcements').then(r => r.json()),
   })
 
-  const { data: settingsData } = useQuery({
-    queryKey: ['settings'],
-    queryFn: () => fetch('/api/settings').then(r => r.json()),
+  // Jadwal pertemuan wali santri — sync realtime via API
+  const { data: meetingsData, isLoading: meetingsLoading } = useQuery({
+    queryKey: ['wali-santri-meetings'],
+    queryFn: () => fetch('/api/wali-santri/meetings').then(r => r.json()),
   })
-
-  const settings = Array.isArray(settingsData) ? settingsData : (settingsData?.settings || [])
-  const getSetting = (key: string) => settings.find((s: { key: string }) => s.key === key)?.value || ''
 
   const payments = Array.isArray(paymentsData) ? paymentsData : (paymentsData?.payments || [])
-  const announcements = ((Array.isArray(announcementsData) ? announcementsData : (announcementsData?.announcements || []))).slice(0, 5)
-
-  const meetingSchedule = getSetting('wali_santri_meeting_schedule')
-    ? getSetting('wali_santri_meeting_schedule').split('\n').filter(Boolean).map(line => {
-        const [title, date, time] = line.split('|')
-        return { title: title?.trim() || '', date: date?.trim() || '', time: time?.trim() || '' }
-      })
-    : []
+  const announcements = Array.isArray(announcementsData) ? announcementsData : (announcementsData?.announcements || [])
+  const meetings = Array.isArray(meetingsData) ? meetingsData : (meetingsData?.meetings || [])
 
   const handleSuggestionSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -141,13 +131,20 @@ export default function WaliSantriSection() {
                   <Bell className="h-5 w-5 text-amber-500" />
                   Pengumuman untuk Wali Santri
                 </h3>
-                {announcements.length > 0 ? (
+                {announcementsLoading ? (
+                  <div className="space-y-3">
+                    {[1, 2, 3].map(i => <Skeleton key={i} className="h-16 w-full" />)}
+                  </div>
+                ) : announcements.length > 0 ? (
                   <div className="space-y-3 max-h-64 overflow-y-auto">
-                    {announcements.map((a: { id: string; title: string; type: string; createdAt: string }) => (
+                    {announcements.map((a: { id: string; title: string; content?: string; type: string; createdAt: string }) => (
                       <div key={a.id} className="flex items-start gap-3 p-3 bg-amber-50 rounded-lg">
                         <AlertCircle className="h-4 w-4 text-amber-500 mt-0.5 shrink-0" />
-                        <div>
+                        <div className="min-w-0">
                           <p className="text-sm font-medium text-emerald-800">{a.title}</p>
+                          {a.content && (
+                            <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">{a.content}</p>
+                          )}
                           <p className="text-xs text-gray-400 mt-1">
                             {new Date(a.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
                           </p>
@@ -156,7 +153,7 @@ export default function WaliSantriSection() {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-gray-400 text-sm">Belum ada pengumuman</p>
+                  <p className="text-gray-400 text-sm">Belum ada pengumuman untuk wali santri</p>
                 )}
               </CardContent>
             </Card>
@@ -171,14 +168,33 @@ export default function WaliSantriSection() {
                   Jadwal Pertemuan Wali Santri
                 </h3>
                 <div className="space-y-3">
-                  {meetingSchedule.length > 0 ? (
-                    meetingSchedule.map((item, idx) => (
-                      <div key={idx} className="p-3 bg-emerald-50 rounded-lg">
-                        <p className="font-medium text-sm text-emerald-800">{item.title}</p>
-                        <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
-                          <span>{item.date}</span>
-                          <span>{item.time}</span>
+                  {meetingsLoading ? (
+                    <div className="space-y-3">
+                      {[1, 2].map(i => <Skeleton key={i} className="h-20 w-full" />)}
+                    </div>
+                  ) : meetings.length > 0 ? (
+                    meetings.map((m: { id: string; title: string; date: string; time: string; location?: string; description?: string }) => (
+                      <div key={m.id} className="p-3 bg-emerald-50 rounded-lg border-l-4 border-amber-400">
+                        <p className="font-medium text-sm text-emerald-800">{m.title}</p>
+                        <div className="flex flex-wrap items-center gap-3 mt-1.5 text-xs text-gray-600">
+                          <span className="flex items-center gap-1">
+                            <Calendar className="h-3 w-3 text-amber-500" />
+                            {new Date(m.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Clock className="h-3 w-3 text-amber-500" />
+                            {m.time}
+                          </span>
+                          {m.location && (
+                            <span className="flex items-center gap-1">
+                              <MapPin className="h-3 w-3 text-amber-500" />
+                              {m.location}
+                            </span>
+                          )}
                         </div>
+                        {m.description && (
+                          <p className="text-xs text-gray-500 mt-2 line-clamp-2">{m.description}</p>
+                        )}
                       </div>
                     ))
                   ) : (
