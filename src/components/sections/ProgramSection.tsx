@@ -5,14 +5,12 @@ import { motion } from 'framer-motion'
 import {
   BookOpen, Star, Trophy, Music, Clock,
   GraduationCap, Palette, Swords, BookHeart,
+  CalendarDays, User,
 } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
-import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from '@/components/ui/table'
 
 const iconMap: Record<string, React.ElementType> = {
   'quran': BookHeart,
@@ -121,6 +119,19 @@ export default function ProgramSection() {
     return 0
   })
 
+  // Group schedules by day for card-based layout
+  const groupedSchedules: { day: string; items: typeof schedules }[] = []
+  const dayGroupMap: Record<string, typeof schedules> = {}
+  schedules.forEach((s: { day: string }) => {
+    if (!dayGroupMap[s.day]) dayGroupMap[s.day] = []
+    dayGroupMap[s.day].push(s)
+  })
+  Object.entries(dayGroupMap)
+    .sort(([a], [b]) => (dayOrder[a] ?? 99) - (dayOrder[b] ?? 99))
+    .forEach(([day, items]) => {
+      groupedSchedules.push({ day, items })
+    })
+
   const kelasPrograms = programs.filter((p: { category: string }) => p.category === 'kelas')
   const kurikulumPrograms = programs.filter((p: { category: string }) => p.category === 'kurikulum')
   const unggulanPrograms = programs.filter((p: { category: string }) => p.category === 'unggulan')
@@ -158,7 +169,7 @@ export default function ProgramSection() {
         </TabsContent>
       </Tabs>
 
-      {/* Jadwal KBM */}
+      {/* Jadwal KBM — Card-based layout per hari */}
       <section className="mt-12">
         <div className="text-center mb-6">
           <h3 className="text-xl md:text-2xl font-bold text-emerald-800 flex items-center justify-center gap-2">
@@ -175,71 +186,95 @@ export default function ProgramSection() {
             </span>
           </p>
         </div>
-        <Card className="border-0 shadow-lg overflow-hidden">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-emerald-700 hover:bg-emerald-700">
-                  <TableHead className="text-white font-semibold">Hari</TableHead>
-                  <TableHead className="text-white font-semibold">Waktu</TableHead>
-                  <TableHead className="text-white font-semibold">Mata Pelajaran</TableHead>
-                  <TableHead className="text-white font-semibold">Guru</TableHead>
-                  <TableHead className="text-white font-semibold">Kelas</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {schedulesLoading ? (
-                  [1, 2, 3, 4, 5].map(i => (
-                    <TableRow key={i}>
-                      {[1, 2, 3, 4, 5].map(j => (
-                        <TableCell key={j}><Skeleton className="h-4 w-20" /></TableCell>
-                      ))}
-                    </TableRow>
-                  ))
-                ) : schedules.length > 0 ? (
-                  schedules.map((schedule: { id: string; day: string; timeStart: string; timeEnd: string; subject?: string; teacher?: string; class?: string }) => {
-                    const isFriday = schedule.day === 'Jumat'
-                    return (
-                      <TableRow
-                        key={schedule.id}
-                        className={isFriday
-                          ? 'bg-red-50 hover:bg-red-100'
-                          : 'hover:bg-emerald-50'
-                        }
-                      >
-                        <TableCell className="font-medium">
-                          <span className={isFriday ? 'text-red-600' : 'text-emerald-800'}>
-                            {schedule.day}
-                          </span>
-                          {isFriday && (
-                            <Badge variant="secondary" className="ml-2 text-[10px] bg-red-100 text-red-700">Libur</Badge>
-                          )}
-                        </TableCell>
-                        <TableCell className={isFriday ? 'text-red-500' : ''}>{schedule.timeStart} - {schedule.timeEnd}</TableCell>
-                        <TableCell className={isFriday ? 'text-red-500' : ''}>{schedule.subject || '-'}</TableCell>
-                        <TableCell className={isFriday ? 'text-red-500' : ''}>{schedule.teacher || '-'}</TableCell>
-                        <TableCell>
-                          <Badge variant="secondary" className={isFriday
-                            ? 'bg-red-100 text-red-700 text-xs'
-                            : 'bg-emerald-50 text-emerald-700 text-xs'
-                          }>
-                            {schedule.class || '-'}
-                          </Badge>
-                        </TableCell>
-                      </TableRow>
-                    )
-                  })
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={5} className="text-center text-gray-400 py-8">
-                      Jadwal belum tersedia
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
+
+        {schedulesLoading ? (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[1, 2, 3, 4, 5, 6].map(i => (
+              <Card key={i} className="border-0 shadow-md overflow-hidden">
+                <Skeleton className="h-12 w-full" />
+                <div className="p-4 space-y-3">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-4 w-2/3" />
+                </div>
+              </Card>
+            ))}
           </div>
-        </Card>
+        ) : schedules.length > 0 ? (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {groupedSchedules.map(({ day, items: daySchedules }) => {
+              const isFriday = day === 'Jumat'
+              return (
+                <motion.div
+                  key={day}
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <Card className={`border-0 shadow-md overflow-hidden h-full ${isFriday ? 'ring-1 ring-red-200' : ''}`}>
+                    {/* Day header */}
+                    <div className={`px-4 py-3 flex items-center justify-between ${
+                      isFriday
+                        ? 'bg-gradient-to-r from-red-500 to-red-600'
+                        : 'bg-gradient-to-r from-emerald-700 to-emerald-800'
+                    }`}>
+                      <div className="flex items-center gap-2 text-white">
+                        <CalendarDays className="h-4 w-4" />
+                        <span className="font-bold text-sm">{day}</span>
+                      </div>
+                      <span className="text-white/80 text-xs">
+                        {isFriday ? '🔴 Libur' : `${daySchedules.length} pelajaran`}
+                      </span>
+                    </div>
+
+                    {/* Day content */}
+                    {isFriday ? (
+                      <div className="p-6 text-center bg-red-50">
+                        <p className="text-sm text-red-600 font-medium">
+                          🕌 Hari Jumat adalah hari libur KBM
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="divide-y divide-gray-100">
+                        {daySchedules.map((s: { id: string; timeStart: string; timeEnd: string; subject?: string; teacher?: string; class?: string; title?: string }) => (
+                          <div key={s.id} className="p-3 hover:bg-emerald-50/50 transition-colors">
+                            {/* Time */}
+                            <div className="flex items-center gap-1.5 text-xs text-amber-600 font-semibold mb-1.5">
+                              <Clock className="h-3 w-3 shrink-0" />
+                              <span>{s.timeStart} – {s.timeEnd}</span>
+                              {s.class && (
+                                <Badge variant="secondary" className="ml-auto text-[10px] bg-emerald-50 text-emerald-700 px-1.5 py-0">
+                                  {s.class}
+                                </Badge>
+                              )}
+                            </div>
+                            {/* Subject + teacher */}
+                            <div className="space-y-0.5">
+                              <p className="text-sm font-medium text-emerald-800 leading-tight">
+                                {s.subject || s.title || '—'}
+                              </p>
+                              {s.teacher && (
+                                <p className="text-xs text-gray-500 flex items-center gap-1">
+                                  <User className="h-3 w-3 shrink-0" />
+                                  <span className="truncate">{s.teacher}</span>
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </Card>
+                </motion.div>
+              )
+            })}
+          </div>
+        ) : (
+          <Card className="p-8 text-center border-0 shadow-md">
+            <CalendarDays className="h-12 w-12 text-emerald-200 mx-auto mb-3" />
+            <p className="text-gray-500">Jadwal belum tersedia</p>
+          </Card>
+        )}
       </section>
     </div>
   )
