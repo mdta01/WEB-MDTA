@@ -477,7 +477,19 @@ function PPDBManager() {
   const [newStatus, setNewStatus] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [detailReg, setDetailReg] = useState<Record<string, unknown> | null>(null)
-  const [activeTab, setActiveTab] = useState<'pendaftar' | 'settings'>('pendaftar')
+  const [activeTab, setActiveTab] = useState<'pendaftar' | 'jadwal' | 'settings'>('pendaftar')
+  // PPDB schedule form + delete state
+  const [scheduleForm, setScheduleForm] = useState<{
+    id?: string
+    title: string
+    startDate: string
+    endDate: string
+    location: string
+    description: string
+    order: number
+    isActive: boolean
+  } | null>(null)
+  const [deleteSchedule, setDeleteSchedule] = useState<Record<string, unknown> | null>(null)
 
   // Fetch pendaftar
   const { data, isLoading } = useQuery({
@@ -548,6 +560,74 @@ function PPDBManager() {
       toast.error('Gagal menyimpan pengaturan')
     },
   })
+
+  // Fetch PPDB schedules (admin)
+  const { data: schedulesData, isLoading: schedulesLoading } = useQuery({
+    queryKey: ['admin', 'ppdb-schedules'],
+    queryFn: async () => {
+      const res = await fetch('/api/admin/ppdb/schedules')
+      if (!res.ok) return []
+      return res.json()
+    },
+  })
+  const schedules: Record<string, unknown>[] = Array.isArray(schedulesData) ? schedulesData : []
+
+  // Schedule mutations
+  const saveScheduleMutation = useMutation({
+    mutationFn: async (data: Record<string, unknown>) => {
+      const isEdit = !!data.id
+      const url = isEdit ? `/api/admin/ppdb/schedules/${data.id}` : '/api/admin/ppdb/schedules'
+      const method = isEdit ? 'PUT' : 'POST'
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      })
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        throw new Error((err as { error?: string }).error || 'Gagal menyimpan')
+      }
+      return res.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'ppdb-schedules'] })
+      queryClient.invalidateQueries({ queryKey: ['ppdb-schedules'] })
+      toast.success('Jadwal pendaftaran berhasil disimpan')
+      setScheduleForm(null)
+    },
+    onError: (err: Error) => toast.error(err.message),
+  })
+
+  const deleteScheduleMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const res = await fetch(`/api/admin/ppdb/schedules/${id}`, { method: 'DELETE' })
+      if (!res.ok) throw new Error('Gagal menghapus')
+      return res.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'ppdb-schedules'] })
+      queryClient.invalidateQueries({ queryKey: ['ppdb-schedules'] })
+      toast.success('Jadwal pendaftaran berhasil dihapus')
+      setDeleteSchedule(null)
+    },
+    onError: () => toast.error('Gagal menghapus'),
+  })
+
+  const openCreateSchedule = () => {
+    setScheduleForm({ title: '', startDate: '', endDate: '', location: '', description: '', order: 0, isActive: true })
+  }
+  const openEditSchedule = (s: Record<string, unknown>) => {
+    setScheduleForm({
+      id: s.id as string,
+      title: s.title as string,
+      startDate: s.startDate ? new Date(s.startDate as string).toISOString().slice(0, 10) : '',
+      endDate: s.endDate ? new Date(s.endDate as string).toISOString().slice(0, 10) : '',
+      location: (s.location as string) || '',
+      description: (s.description as string) || '',
+      order: (s.order as number) || 0,
+      isActive: s.isActive !== false,
+    })
+  }
 
   const items: Record<string, unknown>[] = Array.isArray(data) ? data : []
 
@@ -637,6 +717,23 @@ function PPDBManager() {
             {stats.total}
           </span>
           {activeTab === 'pendaftar' && (
+            <span className="absolute bottom-0 inset-x-0 h-0.5 bg-emerald-600" />
+          )}
+        </button>
+        <button
+          onClick={() => setActiveTab('jadwal')}
+          className={`px-4 py-2 text-sm font-medium transition-colors relative ${
+            activeTab === 'jadwal'
+              ? 'text-emerald-700'
+              : 'text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          <Calendar className="h-4 w-4 inline mr-1" />
+          Jadwal Pendaftaran
+          <span className="ml-1.5 text-xs bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full">
+            {schedules.length}
+          </span>
+          {activeTab === 'jadwal' && (
             <span className="absolute bottom-0 inset-x-0 h-0.5 bg-emerald-600" />
           )}
         </button>
@@ -813,6 +910,143 @@ function PPDBManager() {
           </div>
         </>
       )}
+
+      {/* Tab: Jadwal Pendaftaran */}
+      {activeTab === 'jadwal' && (
+        <div className="space-y-4">
+          <div className="flex justify-end">
+            <Button onClick={openCreateSchedule} className="bg-emerald-700 hover:bg-emerald-800 text-white">
+              <Plus className="h-4 w-4 mr-1" /> Tambah Jadwal
+            </Button>
+          </div>
+          <div className="border rounded-lg bg-white overflow-hidden">
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-gray-50">
+                    <TableHead>Urutan</TableHead>
+                    <TableHead>Judul</TableHead>
+                    <TableHead>Tanggal Mulai</TableHead>
+                    <TableHead>Tanggal Selesai</TableHead>
+                    <TableHead>Lokasi</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="text-center">Aksi</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {schedulesLoading ? (
+                    <TableRow><TableCell colSpan={7} className="text-center py-8"><Loader2 className="h-5 w-5 animate-spin mx-auto text-emerald-600" /></TableCell></TableRow>
+                  ) : schedules.length === 0 ? (
+                    <TableRow><TableCell colSpan={7} className="text-center py-8 text-gray-500">Belum ada jadwal pendaftaran</TableCell></TableRow>
+                  ) : (
+                    schedules.map((s) => (
+                      <TableRow key={s.id as string} className="hover:bg-emerald-50/50">
+                        <TableCell className="text-sm text-gray-500">{(s.order as number) || 0}</TableCell>
+                        <TableCell className="font-medium text-emerald-800">{s.title as string}</TableCell>
+                        <TableCell className="text-sm">{s.startDate ? new Date(s.startDate as string).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : '-'}</TableCell>
+                        <TableCell className="text-sm">{s.endDate ? new Date(s.endDate as string).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : '-'}</TableCell>
+                        <TableCell className="text-sm text-gray-500">{(s.location as string) || '-'}</TableCell>
+                        <TableCell>
+                          <Badge className={s.isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-100 text-gray-600'}>
+                            {s.isActive ? 'Aktif' : 'Nonaktif'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <div className="flex items-center justify-center gap-1">
+                            <Button variant="ghost" size="sm" className="text-emerald-600 hover:bg-emerald-50 h-8" onClick={() => openEditSchedule(s)}>
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                            <Button variant="ghost" size="sm" className="text-red-600 hover:bg-red-50 h-8" onClick={() => setDeleteSchedule(s)}>
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Schedule Form Dialog */}
+      <Dialog open={!!scheduleForm} onOpenChange={(open) => { if (!open) setScheduleForm(null) }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{scheduleForm?.id ? 'Edit Jadwal' : 'Tambah Jadwal'}</DialogTitle>
+            <DialogDescription>Jadwal tahapan pendaftaran PPDB</DialogDescription>
+          </DialogHeader>
+          {scheduleForm && (
+            <div className="space-y-3 py-2">
+              <div className="space-y-1.5">
+                <Label className="text-sm">Judul *</Label>
+                <Input value={scheduleForm.title} onChange={(e) => setScheduleForm({ ...scheduleForm, title: e.target.value })} placeholder="Pendaftaran Tahap 1 / Tes Seleksi / Daftar Ulang..." />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label className="text-sm">Tanggal Mulai *</Label>
+                  <Input type="date" value={scheduleForm.startDate} onChange={(e) => setScheduleForm({ ...scheduleForm, startDate: e.target.value })} />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-sm">Tanggal Selesai</Label>
+                  <Input type="date" value={scheduleForm.endDate} onChange={(e) => setScheduleForm({ ...scheduleForm, endDate: e.target.value })} />
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-sm">Lokasi</Label>
+                <Input value={scheduleForm.location} onChange={(e) => setScheduleForm({ ...scheduleForm, location: e.target.value })} placeholder="Madrasah MDTA Miftahul Ulum 01" />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-sm">Deskripsi</Label>
+                <Textarea value={scheduleForm.description} onChange={(e) => setScheduleForm({ ...scheduleForm, description: e.target.value })} rows={3} placeholder="Keterangan jadwal..." />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label className="text-sm">Urutan</Label>
+                  <Input type="number" value={scheduleForm.order} onChange={(e) => setScheduleForm({ ...scheduleForm, order: Number(e.target.value) })} placeholder="0" />
+                </div>
+                <div className="flex items-center justify-between rounded-lg border p-3 mt-5">
+                  <Label htmlFor="sched-active" className="cursor-pointer text-sm">Aktif</Label>
+                  <Switch id="sched-active" checked={scheduleForm.isActive} onCheckedChange={(checked) => setScheduleForm({ ...scheduleForm, isActive: checked })} />
+                </div>
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setScheduleForm(null)}>Batal</Button>
+            <Button
+              className="bg-emerald-700 hover:bg-emerald-800 text-white"
+              disabled={saveScheduleMutation.isPending}
+              onClick={() => scheduleForm && saveScheduleMutation.mutate(scheduleForm)}
+            >
+              {saveScheduleMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              Simpan
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Schedule Confirmation */}
+      <AlertDialog open={!!deleteSchedule} onOpenChange={(open) => { if (!open) setDeleteSchedule(null) }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Hapus Jadwal Pendaftaran?</AlertDialogTitle>
+            <AlertDialogDescription>{deleteSchedule?.title as string}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Batal</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-red-600 hover:bg-red-700 text-white"
+              onClick={() => deleteSchedule && deleteScheduleMutation.mutate(deleteSchedule.id as string)}
+            >
+              {deleteScheduleMutation.isPending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
+              Hapus
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Tab: Settings PPDB (sync dengan publik) */}
       {activeTab === 'settings' && (

@@ -182,6 +182,19 @@ model PPDBRegistration {
   updatedAt       DateTime @updatedAt
 }
 
+model PPDBSchedule {
+  id          String   @id @default(cuid())
+  title       String   @db.VarChar(255)
+  startDate   DateTime
+  endDate     DateTime?
+  location    String?  @db.VarChar(255)
+  description String?  @db.Text
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
 model Alumni {
   id              String   @id @default(cuid())
   name            String   @db.VarChar(100)

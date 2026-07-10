@@ -49,6 +49,13 @@ export default function PPDBSection() {
   const events = Array.isArray(eventsData) ? eventsData : (eventsData?.events || [])
   const ppdbEvents = events.filter((e: { category: string }) => e.category === 'ppdb')
 
+  // Fetch PPDB schedules (jadwal pendaftaran) — sync realtime via API
+  const { data: ppdbSchedulesData, isLoading: ppdbSchedulesLoading } = useQuery({
+    queryKey: ['ppdb-schedules'],
+    queryFn: () => fetch('/api/ppdb/schedules').then(r => r.json()),
+  })
+  const ppdbSchedules = Array.isArray(ppdbSchedulesData) ? ppdbSchedulesData : (ppdbSchedulesData?.schedules || [])
+
   // Parse requirements from settings (newline-separated)
   const requirements = getSetting('ppdb_requirements')
     ? getSetting('ppdb_requirements').split('\n').map((line: string) => line.trim()).filter((line: string) => line.length > 0)
@@ -190,7 +197,7 @@ export default function PPDBSection() {
             </Card>
           </motion.div>
 
-          {/* Jadwal Pendaftaran */}
+          {/* Jadwal Pendaftaran — from PPDBSchedule API (sync realtime) */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
             <Card className="border-0 shadow-md">
               <CardContent className="p-6">
@@ -198,28 +205,51 @@ export default function PPDBSection() {
                   <Calendar className="h-5 w-5 text-amber-500" />
                   Jadwal Pendaftaran
                 </h3>
-                {ppdbEvents.length > 0 ? (
-                  <div className="grid md:grid-cols-3 gap-4">
-                    {ppdbEvents.map((event: { id: string; title: string; date: string; location?: string | null }, idx: number) => {
+                {ppdbSchedulesLoading ? (
+                  <div className="space-y-3">
+                    {[1, 2, 3].map(i => (
+                      <div key={i} className="border-l-4 border-amber-300 pl-4 py-2">
+                        <div className="h-4 w-1/2 bg-gray-200 rounded animate-pulse mb-2" />
+                        <div className="h-3 w-1/3 bg-gray-200 rounded animate-pulse" />
+                      </div>
+                    ))}
+                  </div>
+                ) : ppdbSchedules.length > 0 ? (
+                  <div className="space-y-3">
+                    {ppdbSchedules.map((s: { id: string; title: string; startDate: string; endDate?: string | null; location?: string | null; description?: string | null; order?: number }, idx: number) => {
                       const colors = [
-                        'bg-emerald-50 border-emerald-200',
-                        'bg-amber-50 border-amber-200',
-                        'bg-teal-50 border-teal-200',
+                        'border-emerald-400 bg-emerald-50',
+                        'border-amber-400 bg-amber-50',
+                        'border-teal-400 bg-teal-50',
+                        'border-purple-400 bg-purple-50',
                       ]
-                      const formattedDate = new Date(event.date).toLocaleDateString('id-ID', {
-                        day: 'numeric',
-                        month: 'long',
-                        year: 'numeric',
-                      })
+                      const start = new Date(s.startDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
+                      const end = s.endDate ? new Date(s.endDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : null
                       return (
-                        <div key={event.id} className={`${colors[idx % 3]} border rounded-xl p-4 text-center`}>
-                          <p className="font-semibold text-sm text-emerald-800">{event.title}</p>
-                          <p className="text-gray-600 text-sm mt-1">{formattedDate}</p>
-                          {event.location && (
-                            <p className="text-gray-500 text-xs mt-1 flex items-center justify-center gap-1">
-                              <MapPin className="h-3 w-3" /> {event.location}
-                            </p>
-                          )}
+                        <div key={s.id} className={`${colors[idx % 4]} border-l-4 rounded-r-lg p-4`}>
+                          <div className="flex items-start gap-3">
+                            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white flex items-center justify-center text-xs font-bold text-emerald-700 border border-emerald-200">
+                              {typeof s.order === 'number' ? s.order : idx + 1}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-semibold text-sm text-emerald-800">{s.title}</p>
+                              <div className="flex flex-wrap items-center gap-3 mt-1 text-xs text-gray-600">
+                                <span className="flex items-center gap-1">
+                                  <Calendar className="h-3 w-3 text-amber-500" />
+                                  {start}{end ? ` — ${end}` : ''}
+                                </span>
+                                {s.location && (
+                                  <span className="flex items-center gap-1">
+                                    <MapPin className="h-3 w-3 text-amber-500" />
+                                    {s.location}
+                                  </span>
+                                )}
+                              </div>
+                              {s.description && (
+                                <p className="text-xs text-gray-500 mt-2">{s.description}</p>
+                              )}
+                            </div>
+                          </div>
                         </div>
                       )
                     })}
