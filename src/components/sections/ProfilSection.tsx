@@ -232,8 +232,9 @@ export default function ProfilSection() {
               <Card key={i} className="overflow-hidden border-0">
                 <Skeleton className="aspect-[3/4] w-full" />
                 <div className="p-4 space-y-2">
-                  <Skeleton className="h-4 w-3/4 mx-auto" />
                   <Skeleton className="h-3 w-1/2 mx-auto" />
+                  <Skeleton className="h-4 w-3/4 mx-auto" />
+                  <Skeleton className="h-3 w-2/3 mx-auto" />
                 </div>
               </Card>
             ))}
@@ -247,8 +248,8 @@ export default function ProfilSection() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: Math.min(idx * 0.05, 0.4) }}
               >
-                <Card className="overflow-hidden border-0 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all group">
-                  {/* Photo area with gradient overlay */}
+                <Card className="overflow-hidden border-0 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all group flex flex-col h-full">
+                  {/* Photo area (clean, no overlay text) */}
                   <div className="relative aspect-[3/4] overflow-hidden bg-gradient-to-br from-emerald-100 to-emerald-200">
                     {teacher.image ? (
                       <img
@@ -265,30 +266,32 @@ export default function ProfilSection() {
                         </span>
                       </div>
                     )}
-                    {/* Gradient overlay at bottom for text readability on hover */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-emerald-950/80 via-emerald-950/10 to-transparent opacity-60 group-hover:opacity-90 transition-opacity" />
-                    {/* Position badge (top-left) */}
-                    <div className="absolute top-3 left-3">
-                      <span className="inline-block bg-amber-500 text-emerald-900 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-md">
-                        {teacher.position}
-                      </span>
-                    </div>
-                    {/* Name + subject overlay (bottom) */}
-                    <div className="absolute bottom-0 inset-x-0 p-4 text-white">
-                      <h4 className="font-bold text-sm md:text-base leading-tight group-hover:text-amber-300 transition-colors">
-                        {teacher.name}
-                      </h4>
-                      {teacher.subject && (
-                        <p className="text-[11px] text-emerald-100/90 mt-0.5 flex items-center gap-1">
-                          <BookOpen className="h-3 w-3 shrink-0" />
-                          <span className="truncate">{teacher.subject}</span>
-                        </p>
-                      )}
-                    </div>
+                    {/* Subtle bottom gradient for depth (no text) */}
+                    <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-emerald-950/40 to-transparent" />
                   </div>
+
+                  {/* Info section below photo: jabatan → nama → mata pelajaran */}
+                  <div className="flex-1 flex flex-col items-center text-center p-4 pt-3 bg-white">
+                    {/* Jabatan */}
+                    <span className="inline-block bg-amber-100 text-amber-800 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full mb-2">
+                      {teacher.position}
+                    </span>
+                    {/* Nama guru */}
+                    <h4 className="font-bold text-emerald-800 text-sm md:text-base leading-tight">
+                      {teacher.name}
+                    </h4>
+                    {/* Mata pelajaran */}
+                    {teacher.subject && (
+                      <p className="text-xs text-gray-500 mt-1 flex items-center justify-center gap-1">
+                        <BookOpen className="h-3 w-3 shrink-0 text-emerald-500" />
+                        <span className="truncate">{teacher.subject}</span>
+                      </p>
+                    )}
+                  </div>
+
                   {/* Footer with phone (if available) */}
                   {teacher.phone && (
-                    <div className="p-3 bg-emerald-50 border-t border-emerald-100">
+                    <div className="px-4 py-2.5 bg-emerald-50 border-t border-emerald-100">
                       <a
                         href={`tel:${teacher.phone}`}
                         className="flex items-center justify-center gap-1.5 text-xs text-emerald-700 hover:text-emerald-900 font-medium transition-colors"
