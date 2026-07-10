@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 import {
   BookOpen, Users, Award, GraduationCap, ArrowRight,
   Calendar, Star, ChevronLeft, ChevronRight, Quote,
-  MapPin, X, Eye,
+  MapPin, X, Eye, BookHeart, User,
 } from 'lucide-react'
 import { useState, useEffect, useRef, useReducer, useSyncExternalStore } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
@@ -280,6 +280,9 @@ export default function BerandaSection() {
   const [selectedNews, setSelectedNews] = useState<{
     id: string; title: string; content: string; excerpt?: string; category: string; createdAt: string; image?: string
   } | null>(null)
+  const [selectedDakwah, setSelectedDakwah] = useState<{
+    id: string; title: string; content: string; category: string; author?: string; videoUrl?: string; createdAt: string
+  } | null>(null)
   const [calendarModal, setCalendarModal] = useState<{ open: boolean; type: 'masehi' | 'hijri' }>({ open: false, type: 'masehi' })
 
   // Calendar date — client-only (useSyncExternalStore) with realtime minute refresh
@@ -324,6 +327,12 @@ export default function BerandaSection() {
     queryFn: () => fetch('/api/events').then(r => r.json()),
   })
 
+  // Dakwah & kajian terbaru (sort by updatedAt desc — paling update di atas)
+  const { data: dakwahData, isLoading: dakwahLoading } = useQuery({
+    queryKey: ['dakwah-latest'],
+    queryFn: () => fetch('/api/dakwah').then(r => r.json()),
+  })
+
   const statistics = Array.isArray(statsData) ? statsData : (statsData?.statistics || [])
   const getStat = (key: string) => {
     const s = statistics.find((st: { key: string }) => st.key === key)
@@ -333,6 +342,7 @@ export default function BerandaSection() {
   const testimonials = Array.isArray(testimonialsData) ? testimonialsData : (testimonialsData?.testimonials || [])
   const news = ((Array.isArray(newsData) ? newsData : (newsData?.news || []))).slice(0, 3)
   const events = ((Array.isArray(eventsData) ? eventsData : (eventsData?.events || []))).slice(0, 3)
+  const dakwahList = ((Array.isArray(dakwahData) ? dakwahData : (dakwahData?.dakwah || []))).slice(0, 3)
 
   const statsCards = [
     { icon: GraduationCap, label: 'Santri Aktif', value: getStat('santri_aktif') || 0, color: 'bg-emerald-600', delay: 0 },
@@ -638,6 +648,132 @@ export default function BerandaSection() {
                 )}
                 <div className="mt-4 text-gray-600 leading-relaxed whitespace-pre-wrap">
                   {selectedNews.content}
+                </div>
+              </>
+            )}
+          </DialogContent>
+        </Dialog>
+      </section>
+
+      {/* Dakwah & Kajian Terbaru */}
+      <section className="container mx-auto px-4">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-2xl md:text-3xl font-bold text-emerald-800 flex items-center gap-2">
+              <BookHeart className="h-7 w-7 text-amber-500" />
+              Dakwah & Kajian
+            </h2>
+            <div className="w-20 h-1 bg-amber-500 mt-2 rounded-full" />
+          </div>
+          <Button
+            variant="ghost"
+            onClick={() => { setCurrentPage('dakwah'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+            className="text-emerald-600 hover:text-emerald-800"
+          >
+            Selengkapnya <ArrowRight className="ml-1 h-4 w-4" />
+          </Button>
+        </div>
+        {dakwahLoading ? (
+          <div className="grid md:grid-cols-3 gap-6">
+            {[1, 2, 3].map(i => (
+              <Card key={i} className="overflow-hidden border-0">
+                <Skeleton className="h-32 w-full" />
+                <div className="p-4 space-y-2">
+                  <Skeleton className="h-4 w-20" />
+                  <Skeleton className="h-5 w-3/4" />
+                  <Skeleton className="h-4 w-full" />
+                </div>
+              </Card>
+            ))}
+          </div>
+        ) : dakwahList.length > 0 ? (
+          <div className="grid md:grid-cols-3 gap-6">
+            {dakwahList.map((item: { id: string; title: string; content: string; category: string; author?: string; image?: string; videoUrl?: string; createdAt: string }, idx: number) => (
+              <motion.div
+                key={item.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.1 }}
+              >
+                <Card
+                  className="overflow-hidden border-0 shadow-md hover:shadow-lg transition-shadow group cursor-pointer h-full flex flex-col"
+                  onClick={() => setSelectedDakwah(item)}
+                >
+                  {/* Image or gradient header */}
+                  <div className="h-32 bg-gradient-to-br from-emerald-500 to-teal-700 relative overflow-hidden">
+                    {item.image ? (
+                      <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <BookHeart className="h-12 w-12 text-white/60" />
+                      </div>
+                    )}
+                    <Badge className="absolute top-3 left-3 bg-amber-500 text-emerald-900 text-xs capitalize">
+                      {item.category}
+                    </Badge>
+                  </div>
+                  <CardContent className="p-4 flex-1 flex flex-col">
+                    <h3 className="font-semibold text-emerald-800 line-clamp-2 mb-2 group-hover:text-emerald-600 transition-colors">
+                      {item.title}
+                    </h3>
+                    <p className="text-sm text-gray-500 line-clamp-2 mb-3 flex-1">
+                      {item.content.substring(0, 120)}...
+                    </p>
+                    <div className="flex items-center justify-between text-xs text-gray-400 mt-auto">
+                      <span className="flex items-center gap-1">
+                        <User className="h-3 w-3" />
+                        {item.author || 'Tim Dakwah'}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Calendar className="h-3 w-3" />
+                        {new Date(item.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                      </span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        ) : (
+          <Card className="p-8 text-center border-0">
+            <BookHeart className="h-12 w-12 text-emerald-200 mx-auto mb-3" />
+            <p className="text-gray-500">Belum ada konten dakwah</p>
+          </Card>
+        )}
+
+        {/* Dakwah Detail Dialog */}
+        <Dialog open={!!selectedDakwah} onOpenChange={() => setSelectedDakwah(null)}>
+          <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+            <DialogClose asChild>
+              <Button variant="ghost" size="icon" className="absolute right-4 top-4 z-10">
+                <X className="h-4 w-4" />
+              </Button>
+            </DialogClose>
+            {selectedDakwah && (
+              <>
+                <DialogTitle className="text-xl font-bold text-emerald-800 pr-8">
+                  {selectedDakwah.title}
+                </DialogTitle>
+                <div className="flex items-center gap-3 mt-2">
+                  <Badge className="bg-amber-100 text-amber-800 capitalize">
+                    {selectedDakwah.category}
+                  </Badge>
+                  <span className="text-xs text-gray-400 flex items-center gap-1">
+                    <User className="h-3 w-3" />
+                    {selectedDakwah.author || 'Tim Dakwah'}
+                  </span>
+                  <span className="text-xs text-gray-400 flex items-center gap-1">
+                    <Calendar className="h-3 w-3" />
+                    {new Date(selectedDakwah.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+                  </span>
+                </div>
+                {selectedDakwah.videoUrl && (
+                  <div className="mt-4 rounded-lg overflow-hidden aspect-video bg-black">
+                    <iframe src={selectedDakwah.videoUrl} className="w-full h-full" allowFullScreen />
+                  </div>
+                )}
+                <div className="mt-4 text-gray-600 leading-relaxed whitespace-pre-wrap">
+                  {selectedDakwah.content}
                 </div>
               </>
             )}

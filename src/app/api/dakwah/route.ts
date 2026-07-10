@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
 
     const dakwah = await db.dakwah.findMany({
       where,
-      orderBy: { createdAt: 'desc' },
+      orderBy: [{ updatedAt: 'desc' }, { createdAt: 'desc' }],
     })
     return NextResponse.json(dakwah)
   } catch (error) {
