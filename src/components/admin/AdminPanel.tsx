@@ -362,7 +362,18 @@ const entityConfigs: Record<string, EntityConfig> = {
     columns: [
       { key: 'title', label: 'Judul' },
       { key: 'category', label: 'Kategori' },
-      { key: 'fileUrl', label: 'File URL' },
+      { key: 'fileUrl', label: 'File', render: (value: unknown) => {
+        const url = String(value || '')
+        if (!url) return <span className="text-gray-400">-</span>
+        const fileName = url.split('/').pop()?.split('?')[0] || 'file.pdf'
+        return (
+          <a href={url} target="_blank" rel="noopener noreferrer" download
+            className="inline-flex items-center gap-1 text-xs text-emerald-600 hover:text-emerald-800 hover:underline max-w-[180px] truncate">
+            <FileText className="h-3 w-3 shrink-0 text-red-600" />
+            <span className="truncate">{fileName}</span>
+          </a>
+        )
+      }},
     ],
     formFields: [
       { name: 'title', label: 'Judul', type: 'text', required: true, placeholder: 'Judul file download' },
@@ -374,7 +385,7 @@ const entityConfigs: Record<string, EntityConfig> = {
         { label: 'Surat Edaran', value: 'surat_edaran' },
         { label: 'Lainnya', value: 'lainnya' },
       ]},
-      { name: 'fileUrl', label: 'URL File', type: 'text', required: true, placeholder: 'https://...', colSpan: 2 },
+      { name: 'fileUrl', label: 'File PDF', type: 'pdf', required: true, uploadFolder: 'mdta/downloads', placeholder: 'https://res.cloudinary.com/...', colSpan: 2, hint: 'Upload file PDF (maks 25 MB) — atau klik "Mode URL" untuk input manual' },
     ],
   },
   dakwah: {

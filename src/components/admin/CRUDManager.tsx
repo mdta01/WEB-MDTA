@@ -49,10 +49,11 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Card, CardContent } from '@/components/ui/card'
 import { ImageUpload } from '@/components/admin/ImageUpload'
+import { FileUpload } from '@/components/admin/FileUpload'
 
 // --- Types ---
 
-export type FieldType = 'text' | 'textarea' | 'number' | 'select' | 'switch' | 'date' | 'image'
+export type FieldType = 'text' | 'textarea' | 'number' | 'select' | 'switch' | 'date' | 'image' | 'pdf'
 
 export interface FormFieldConfig {
   name: string
@@ -588,6 +589,15 @@ export default function CRUDManager({
                     aspectRatio={field.aspectRatio || 'square'}
                     hint={field.hint}
                     maxWidth={field.maxWidth}
+                  />
+                ) : field.type === 'pdf' ? (
+                  <FileUpload
+                    value={String(formData[field.name] ?? '')}
+                    onChange={(url) => handleFormChange(field.name, url)}
+                    folder={field.uploadFolder || 'mdta/downloads'}
+                    label={field.label}
+                    placeholder={field.placeholder || 'https://res.cloudinary.com/...'}
+                    hint={field.hint}
                   />
                 ) : field.type === 'textarea' ? (
                   <div className="space-y-2">

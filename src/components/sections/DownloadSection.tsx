@@ -133,7 +133,13 @@ export default function DownloadSection() {
                           </div>
                         </div>
                         <Button size="sm" variant="outline" className="shrink-0 text-emerald-600 hover:bg-emerald-50" asChild>
-                          <a href={item.fileUrl} target="_blank" rel="noopener noreferrer">
+                          <a
+                            href={item.fileUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            download
+                            title={`Download ${item.title}`}
+                          >
                             <Download className="h-4 w-4" />
                           </a>
                         </Button>
