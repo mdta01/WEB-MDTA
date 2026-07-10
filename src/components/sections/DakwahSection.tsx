@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
-import { BookOpen, Mic, BookHeart, FileText, X, User, Calendar } from 'lucide-react'
+import { BookOpen, Mic, BookHeart, FileText, X, User, Calendar, Play } from 'lucide-react'
 import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -28,7 +28,7 @@ const categoryColors: Record<string, string> = {
 export default function DakwahSection() {
   const [activeTab, setActiveTab] = useState('artikel')
   const [selectedItem, setSelectedItem] = useState<{
-    id: string; title: string; content: string; category: string; author?: string; videoUrl?: string; createdAt: string
+    id: string; title: string; content: string; category: string; author?: string; image?: string; videoUrl?: string; createdAt: string
   } | null>(null)
 
   const { data, isLoading } = useQuery({
@@ -74,7 +74,7 @@ export default function DakwahSection() {
           </div>
         ) : dakwah.length > 0 ? (
           <div className="grid md:grid-cols-2 gap-6">
-            {dakwah.map((item: { id: string; title: string; content: string; category: string; author?: string; videoUrl?: string; createdAt: string }, idx: number) => (
+            {dakwah.map((item: { id: string; title: string; content: string; category: string; author?: string; image?: string; videoUrl?: string; createdAt: string }, idx: number) => (
               <motion.div
                 key={item.id}
                 initial={{ opacity: 0, y: 20 }}
@@ -82,13 +82,38 @@ export default function DakwahSection() {
                 transition={{ delay: idx * 0.05 }}
               >
                 <Card
-                  className="border-0 shadow-md hover:shadow-lg transition-shadow cursor-pointer group h-full"
+                  className="border-0 shadow-md hover:shadow-lg transition-shadow cursor-pointer group h-full overflow-hidden"
                   onClick={() => setSelectedItem(item)}
                 >
+                  {/* Image / Video thumbnail */}
+                  {(item.image || item.videoUrl) && (
+                    <div className="h-40 bg-gradient-to-br from-emerald-400 to-teal-600 relative overflow-hidden">
+                      {item.image ? (
+                        <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <BookHeart className="h-12 w-12 text-white/50" />
+                        </div>
+                      )}
+                      {/* Video play indicator */}
+                      {item.videoUrl && (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="w-12 h-12 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center group-hover:bg-black/70 transition-colors">
+                            <Play className="h-5 w-5 text-white ml-0.5" fill="white" />
+                          </div>
+                        </div>
+                      )}
+                      <Badge className={`absolute top-3 left-3 text-xs ${categoryColors[item.category] || 'bg-gray-100 text-gray-700'}`}>
+                        {item.category}
+                      </Badge>
+                    </div>
+                  )}
                   <CardContent className="p-5">
-                    <Badge className={`text-xs mb-3 ${categoryColors[item.category] || 'bg-gray-100 text-gray-700'}`}>
-                      {item.category}
-                    </Badge>
+                    {!item.image && !item.videoUrl && (
+                      <Badge className={`text-xs mb-3 ${categoryColors[item.category] || 'bg-gray-100 text-gray-700'}`}>
+                        {item.category}
+                      </Badge>
+                    )}
                     <h4 className="font-semibold text-emerald-800 mb-2 group-hover:text-emerald-600 transition-colors line-clamp-2">
                       {item.title}
                     </h4>
@@ -140,6 +165,13 @@ export default function DakwahSection() {
                   {new Date(selectedItem.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
                 </span>
               </div>
+              {/* Image (if no video, show image; if video exists, show video embed instead) */}
+              {selectedItem.image && !selectedItem.videoUrl && (
+                <div className="mt-4 rounded-lg overflow-hidden">
+                  <img src={selectedItem.image} alt={selectedItem.title} className="w-full h-auto" />
+                </div>
+              )}
+              {/* Video embed */}
               {selectedItem.videoUrl && (
                 <div className="mt-4 rounded-lg overflow-hidden aspect-video bg-black">
                   <iframe src={selectedItem.videoUrl} className="w-full h-full" allowFullScreen />

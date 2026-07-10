@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 import {
   BookOpen, Users, Award, GraduationCap, ArrowRight,
   Calendar, Star, ChevronLeft, ChevronRight, Quote,
-  MapPin, X, Eye, BookHeart, User,
+  MapPin, X, Eye, BookHeart, User, Play,
 } from 'lucide-react'
 import { useState, useEffect, useRef, useReducer, useSyncExternalStore } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
@@ -708,6 +708,14 @@ export default function BerandaSection() {
                         <BookHeart className="h-12 w-12 text-white/60" />
                       </div>
                     )}
+                    {/* Video play indicator */}
+                    {item.videoUrl && (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-10 h-10 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center group-hover:bg-black/70 transition-colors">
+                          <Play className="h-4 w-4 text-white ml-0.5" fill="white" />
+                        </div>
+                      </div>
+                    )}
                     <Badge className="absolute top-3 left-3 bg-amber-500 text-emerald-900 text-xs capitalize">
                       {item.category}
                     </Badge>
@@ -767,6 +775,13 @@ export default function BerandaSection() {
                     {new Date(selectedDakwah.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
                   </span>
                 </div>
+                {/* Image (if no video) */}
+                {selectedDakwah.image && !selectedDakwah.videoUrl && (
+                  <div className="mt-4 rounded-lg overflow-hidden">
+                    <img src={selectedDakwah.image} alt={selectedDakwah.title} className="w-full h-auto" />
+                  </div>
+                )}
+                {/* Video embed */}
                 {selectedDakwah.videoUrl && (
                   <div className="mt-4 rounded-lg overflow-hidden aspect-video bg-black">
                     <iframe src={selectedDakwah.videoUrl} className="w-full h-full" allowFullScreen />
