@@ -19,7 +19,6 @@ import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import {
   Select,
   SelectContent,
@@ -2603,13 +2602,13 @@ export default function AdminPanel({ adminName: adminNameProp, onLogout }: Admin
 
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-gradient-to-b from-emerald-800 to-emerald-900 text-white transform transition-transform duration-300 lg:translate-x-0 lg:static lg:z-auto ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-gradient-to-b from-emerald-800 to-emerald-900 text-white transform transition-transform duration-300 lg:translate-x-0 lg:sticky lg:top-0 lg:h-screen lg:z-auto ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         <div className="flex flex-col h-full">
-          {/* Logo */}
-          <div className="p-4 border-b border-emerald-700">
+          {/* Logo — fixed at top, tidak scroll */}
+          <div className="p-4 border-b border-emerald-700 shrink-0">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg overflow-hidden shadow">
@@ -2631,8 +2630,8 @@ export default function AdminPanel({ adminName: adminNameProp, onLogout }: Admin
             </div>
           </div>
 
-          {/* Navigation */}
-          <ScrollArea className="flex-1 py-2">
+          {/* Navigation — scroll sendiri, tidak ikut halaman */}
+          <div className="flex-1 overflow-y-auto py-2 min-h-0">
             <div className="px-3">
               {groupedNav.map((group) => (
                 <div key={group.group || 'main'} className="mb-2">
@@ -2658,10 +2657,10 @@ export default function AdminPanel({ adminName: adminNameProp, onLogout }: Admin
                 </div>
               ))}
             </div>
-          </ScrollArea>
+          </div>
 
-          {/* User & Logout */}
-          <div className="p-4 border-t border-emerald-700">
+          {/* User & Logout — fixed at bottom, tidak scroll */}
+          <div className="p-4 border-t border-emerald-700 shrink-0">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2 min-w-0">
                 <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0">
