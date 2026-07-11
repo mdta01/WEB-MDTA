@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 import {
   BookOpen, Users, Award, GraduationCap, ArrowRight,
   Calendar, Star, ChevronLeft, ChevronRight, Quote,
-  MapPin, X, Eye, BookHeart, User, Play,
+  MapPin, X, Eye, BookHeart, User, Play, ExternalLink,
 } from 'lucide-react'
 import { useState, useEffect, useRef, useReducer, useSyncExternalStore } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
@@ -423,13 +423,40 @@ export default function BerandaSection() {
                 <span className="h-px w-16 md:w-24 bg-gradient-to-l from-transparent to-amber-400/80" />
               </div>
 
-              {/* Address — badge-style with MapPin icon */}
-              <div className="inline-flex items-center gap-2 bg-emerald-700/40 border border-emerald-400/30 text-amber-100 px-5 py-2 rounded-full mb-5 backdrop-blur-sm">
-                <MapPin className="h-4 w-4 text-amber-300" />
-                <span className="text-sm md:text-base font-semibold tracking-wide">
-                  Tawangsari, Pujon
-                </span>
-              </div>
+              {/* Address — badge-style with MapPin icon, clickable ke Google Maps jika GPS tersedia */}
+              {(() => {
+                const gpsLat = getSetting('madrasah_gps_lat')
+                const gpsLng = getSetting('madrasah_gps_lng')
+                const mapsUrl = gpsLat && gpsLng
+                  ? `https://www.google.com/maps/search/?api=1&query=${gpsLat},${gpsLng}`
+                  : null
+                const badgeClass = 'inline-flex items-center gap-2 bg-emerald-700/40 border border-emerald-400/30 text-amber-100 px-5 py-2 rounded-full mb-5 backdrop-blur-sm transition-all'
+                if (mapsUrl) {
+                  return (
+                    <a
+                      href={mapsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`${badgeClass} hover:bg-emerald-700/60 hover:border-amber-400/50 hover:scale-105 cursor-pointer`}
+                      title="Klik untuk melihat lokasi di Google Maps"
+                    >
+                      <MapPin className="h-4 w-4 text-amber-300" />
+                      <span className="text-sm md:text-base font-semibold tracking-wide">
+                        Tawangsari, Pujon
+                      </span>
+                      <ExternalLink className="h-3 w-3 text-amber-300/70 ml-1" />
+                    </a>
+                  )
+                }
+                return (
+                  <div className={badgeClass}>
+                    <MapPin className="h-4 w-4 text-amber-300" />
+                    <span className="text-sm md:text-base font-semibold tracking-wide">
+                      Tawangsari, Pujon
+                    </span>
+                  </div>
+                )
+              })()}
 
               {/* Description — italic with typewriter effect */}
               <p className="text-emerald-50/90 text-sm md:text-base mb-8 max-w-2xl leading-relaxed italic min-h-[3rem] flex items-start">

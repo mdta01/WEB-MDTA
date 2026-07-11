@@ -8,6 +8,7 @@ import {
   Clock, Star, CheckCircle, AlertCircle, Loader2,
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { GPSLocationSetup } from '@/components/admin/GPSLocationSetup'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 
@@ -481,6 +482,9 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
           </div>
         </CardContent>
       </Card>
+
+      {/* GPS Location Setup */}
+      <GPSLocationSetup />
     </div>
   )
 }

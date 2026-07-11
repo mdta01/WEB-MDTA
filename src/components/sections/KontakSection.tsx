@@ -156,20 +156,50 @@ export default function KontakSection() {
           </Card>
         </motion.div>
 
-        {/* Map */}
+        {/* Map — dari GPS coords yang diset admin */}
         <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>
           <Card className="border-0 shadow-lg overflow-hidden h-full">
             <div className="h-full min-h-[400px] bg-gray-100">
-              <iframe
-                src={getSetting('madrasah_maps_embed_url') || 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3965.0!2d106.6!3d-6.3!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNsKwMTgnMDAuMCJTIDEwNsKwMzYnMDAuMCJF!5e0!3m2!1sid!2sid!4v1'}
-                width="100%"
-                height="100%"
-                style={{ border: 0, minHeight: '400px' }}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title="Lokasi MDTA Miftahul Ulum 01"
-              />
+              {(() => {
+                const gpsLat = getSetting('madrasah_gps_lat')
+                const gpsLng = getSetting('madrasah_gps_lng')
+                // Priority: GPS coords > manual embed URL > default
+                if (gpsLat && gpsLng) {
+                  return (
+                    <iframe
+                      src={`https://maps.google.com/maps?q=${gpsLat},${gpsLng}&z=15&output=embed`}
+                      width="100%"
+                      height="100%"
+                      style={{ border: 0, minHeight: '400px' }}
+                      allowFullScreen
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                      title="Lokasi MDTA Miftahul Ulum 01"
+                    />
+                  )
+                }
+                const embedUrl = getSetting('madrasah_maps_embed_url')
+                if (embedUrl) {
+                  return (
+                    <iframe
+                      src={embedUrl}
+                      width="100%"
+                      height="100%"
+                      style={{ border: 0, minHeight: '400px' }}
+                      allowFullScreen
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                      title="Lokasi MDTA Miftahul Ulum 01"
+                    />
+                  )
+                }
+                return (
+                  <div className="h-full min-h-[400px] flex items-center justify-center text-gray-400 flex-col gap-2">
+                    <MapPin className="h-12 w-12 text-gray-300" />
+                    <p className="text-sm">Peta belum tersedia. Admin belum setup GPS.</p>
+                  </div>
+                )
+              })()}
             </div>
           </Card>
         </motion.div>
