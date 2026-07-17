@@ -54,13 +54,22 @@ export function NotificationPermission() {
       toast.success('Notifikasi diaktifkan!', {
         description: 'Anda akan mendapat notifikasi saat admin memperbarui konten.',
       })
-      // Show a test notification so user knows it works
+      // Subscribe to Web Push (background notifications via service worker)
       setTimeout(() => {
-        import('@/lib/notification').then(({ showNotification }) => {
+        import('@/lib/notification').then(({ showNotification, subscribeToPushNotifications }) => {
+          // Show test notification
           showNotification({
             title: 'Notifikasi Aktif',
             body: 'Anda akan menerima update terbaru dari MDTA Miftahul Ulum 01.',
             tag: 'mdta-test',
+          })
+          // Subscribe to push (enables background notifications)
+          subscribeToPushNotifications().then((ok) => {
+            if (ok) {
+              toast.success('Push notification aktif', {
+                description: 'Notifikasi akan tampil bahkan saat browser ditutup.',
+              })
+            }
           })
         })
       }, 500)

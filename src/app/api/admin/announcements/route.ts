@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { isAdminAuthenticated } from '@/lib/auth'
+import { broadcastPushNotification } from '@/lib/webpush'
 
 export async function GET() {
   try {
@@ -41,6 +42,14 @@ export async function POST(request: NextRequest) {
         isActive: isActive !== undefined ? isActive : true,
         priority: priority || 0,
       },
+    })
+
+    // Send push notification
+    await broadcastPushNotification({
+      title: 'Pengumuman Baru',
+      body: title.length > 80 ? title.substring(0, 80) + '...' : title,
+      url: '/?page=pengumuman',
+      tag: `mdta-ann-${announcement.id}`,
     })
 
     return NextResponse.json(announcement, { status: 201 })

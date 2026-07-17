@@ -262,6 +262,13 @@ model PaymentInfo {
   updatedAt   DateTime @updatedAt
 }
 
+model PushSubscription {
+  id        String   @id @default(cuid())
+  endpoint  String   @unique
+  keys      String   @db.Text  // JSON: { p256dh, auth }
+  createdAt DateTime @default(now())
+}
+
 model Suggestion {
   id        String   @id @default(cuid())
   name      String   @db.VarChar(100)

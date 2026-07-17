@@ -1,4 +1,4 @@
-// Browser notification utilities — permission request + display helpers.
+// Browser notification utilities — permission request + push subscription + display helpers.
 
 const STORAGE_KEY = 'mdta_notif_last_seen'
 const PERMISSION_DISMISSED_KEY = 'mdta_notif_dismissed'
@@ -59,10 +59,8 @@ export function showNotification(payload: NotifPayload): boolean {
       badge: '/images/logo-madin-warna.png',
     })
 
-    // Auto-close after 8 seconds
     setTimeout(() => notif.close(), 8000)
 
-    // Click notification → focus window
     notif.onclick = () => {
       window.focus()
       notif.close()
@@ -73,4 +71,71 @@ export function showNotification(payload: NotifPayload): boolean {
     console.error('Failed to show notification:', error)
     return false
   }
+}
+
+// ===== Web Push API (background notifications) =====
+
+/**
+ * Register service worker and subscribe to push notifications.
+ * Called after user grants notification permission.
+ */
+export async function subscribeToPushNotifications(): Promise<boolean> {
+  if (typeof window === 'undefined') return false
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return false
+
+  try {
+    // Register service worker
+    const registration = await navigator.serviceWorker.register('/sw.js')
+    await navigator.serviceWorker.ready
+
+    // Check if already subscribed
+    let subscription = await registration.pushManager.getSubscription()
+    if (subscription) {
+      // Re-send to server in case it was lost
+      await sendSubscriptionToServer(subscription)
+      return true
+    }
+
+    // Get VAPID public key from server
+    const vapidResponse = await fetch('/api/notifications/vapid-public-key')
+    if (!vapidResponse.ok) return false
+    const { publicKey } = await vapidResponse.json()
+    if (!publicKey) return false
+
+    // Convert VAPID key to Uint8Array
+    const convertedKey = urlBase64ToUint8Array(publicKey)
+
+    // Subscribe
+    subscription = await registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: convertedKey,
+    })
+
+    // Send subscription to server
+    await sendSubscriptionToServer(subscription)
+    return true
+  } catch (error) {
+    console.error('[Push] Subscribe failed:', error)
+    return false
+  }
+}
+
+async function sendSubscriptionToServer(subscription: PushSubscription): Promise<void> {
+  const subData = subscription.toJSON()
+  await fetch('/api/notifications/subscribe', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(subData),
+  })
+}
+
+function urlBase64ToUint8Array(base64String: string): Uint8Array {
+  const padding = '='.repeat((4 - (base64String.length % 4)) % 4)
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/')
+  const rawData = atob(base64)
+  const outputArray = new Uint8Array(rawData.length)
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i)
+  }
+  return outputArray
 }

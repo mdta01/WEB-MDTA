@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { isAdminAuthenticated } from '@/lib/auth'
+import { broadcastPushNotification } from '@/lib/webpush'
 
 export async function GET() {
   try {
@@ -43,6 +44,14 @@ export async function POST(request: NextRequest) {
         image: image || null,
         isPublished: isPublished !== undefined ? isPublished : true,
       },
+    })
+
+    // Send push notification
+    await broadcastPushNotification({
+      title: 'Dakwah & Kajian Baru',
+      body: title.length > 80 ? title.substring(0, 80) + '...' : title,
+      url: '/?page=dakwah',
+      tag: `mdta-dakwah-${dakwah.id}`,
     })
 
     return NextResponse.json(dakwah, { status: 201 })
