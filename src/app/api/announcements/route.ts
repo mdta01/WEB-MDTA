@@ -9,7 +9,7 @@ export async function GET() {
         isActive: true,
         type: { not: 'wali_santri' },
       },
-      orderBy: { priority: 'desc' },
+      orderBy: [{ priority: 'asc' }, { createdAt: 'desc' }],
     })
     return NextResponse.json(announcements)
   } catch (error) {

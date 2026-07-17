@@ -120,6 +120,12 @@ export default function ProgramSection() {
   })
 
   // Group schedules by day for card-based layout
+  // Within each day, sort by class number (Kelas 1 → Kelas 6)
+  const extractClassNumber = (classStr: string | undefined | null): number => {
+    if (!classStr) return 99
+    const match = classStr.match(/(\d+)/)
+    return match ? parseInt(match[1], 10) : 99
+  }
   const groupedSchedules: { day: string; items: typeof schedules }[] = []
   const dayGroupMap: Record<string, typeof schedules> = {}
   schedules.forEach((s: { day: string }) => {
@@ -129,7 +135,11 @@ export default function ProgramSection() {
   Object.entries(dayGroupMap)
     .sort(([a], [b]) => (dayOrder[a] ?? 99) - (dayOrder[b] ?? 99))
     .forEach(([day, items]) => {
-      groupedSchedules.push({ day, items })
+      // Sort items within each day by class number (Kelas 1, 2, 3, ...)
+      const sortedItems = [...items].sort((a: { class?: string }, b: { class?: string }) => {
+        return extractClassNumber(a.class) - extractClassNumber(b.class)
+      })
+      groupedSchedules.push({ day, items: sortedItems })
     })
 
   const kelasPrograms = programs.filter((p: { category: string }) => p.category === 'kelas')

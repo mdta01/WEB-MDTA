@@ -9,7 +9,7 @@ export async function GET() {
   try {
     const announcements = await db.announcement.findMany({
       where: { isActive: true, type: 'wali_santri' },
-      orderBy: [{ priority: 'desc' }, { createdAt: 'desc' }],
+      orderBy: [{ priority: 'asc' }, { createdAt: 'desc' }],
     })
     return NextResponse.json(announcements)
   } catch (error) {
