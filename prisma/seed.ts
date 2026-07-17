@@ -91,6 +91,7 @@ async function main() {
     { key: 'ppdb_info', value: 'Pendaftaran Santri Baru Tahun Ajaran 2025/2026 telah dibuka! Segera daftarkan putra-putri Anda.', label: 'Info PPDB' },
     { key: 'ppdb_requirements', value: 'Mengisi formulir pendaftaran secara lengkap\nFotokopi Akta Kelahiran\nFotokopi Kartu Keluarga\nPas Foto 3x4 (4 lembar)\nFotokopi KTP Orang Tua/Wali\nSurat Keterangan Lulus (bagi pindahan)', label: 'Persyaratan PPDB' },
     { key: 'ppdb_contact', value: 'Panitia PPDB MDTA Miftahul Ulum 01|081234567890', label: 'Kontak PPDB (nama|nomor)' },
+    { key: 'ppdb_panitia_phone', value: '081234567890', label: 'Nomor WhatsApp Utama Panitia PPDB' },
     { key: 'wali_santri_meeting_schedule', value: 'Pertemuan Awal Tahun Ajaran|Januari 2025|09:00 - 12:00 WIB\nRapat Tengah Semester|Juni 2025|09:00 - 12:00 WIB\nPenerimaan Rapor|Desember 2025|08:00 - 12:00 WIB', label: 'Jadwal Pertemuan Wali Santri (judul|tanggal|waktu)' },
   ]
 

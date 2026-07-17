@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
-import { Download, FileText, FileSpreadsheet, FileImage, File } from 'lucide-react'
+import { Download, FileText, FileSpreadsheet, FileImage, File, Eye } from 'lucide-react'
 import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -132,17 +132,31 @@ export default function DownloadSection() {
                             </span>
                           </div>
                         </div>
-                        <Button size="sm" variant="outline" className="shrink-0 text-emerald-600 hover:bg-emerald-50" asChild>
-                          <a
-                            href={item.fileUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            download
-                            title={`Download ${item.title}`}
-                          >
-                            <Download className="h-4 w-4" />
-                          </a>
-                        </Button>
+                        <div className="flex items-center gap-2 shrink-0">
+                          {/* View — buka di tab baru, preview inline (PDF akan tampil di browser) */}
+                          <Button size="sm" variant="outline" className="text-emerald-600 hover:bg-emerald-50" asChild>
+                            <a
+                              href={item.fileUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              title={`Lihat ${item.title}`}
+                            >
+                              <Eye className="h-4 w-4" />
+                            </a>
+                          </Button>
+                          {/* Download — paksa download via flag attachment Cloudinary */}
+                          <Button size="sm" variant="outline" className="text-emerald-600 hover:bg-emerald-50" asChild>
+                            <a
+                              href={`${item.fileUrl}${item.fileUrl.includes('?') ? '&' : '?'}fl=attachment`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              download
+                              title={`Download ${item.title}`}
+                            >
+                              <Download className="h-4 w-4" />
+                            </a>
+                          </Button>
+                        </div>
                       </CardContent>
                     </Card>
                   </motion.div>

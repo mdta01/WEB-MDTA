@@ -526,6 +526,7 @@ function PPDBManager() {
     ppdb_info: getSetting('ppdb_info') || '',
     ppdb_requirements: getSetting('ppdb_requirements') || '',
     ppdb_contact: getSetting('ppdb_contact') || '',
+    ppdb_panitia_phone: getSetting('ppdb_panitia_phone') || '',
   }
   const [ppdbOverrides, setPpdbOverrides] = useState<Record<string, string>>({})
   // Merge: user overrides take precedence over base values
@@ -1130,6 +1131,19 @@ function PPDBManager() {
                 />
                 <p className="text-xs text-gray-500">
                   Format: &quot;Nama - No. HP&quot; per baris. Akan tampil sebagai list kontak di halaman publik.
+                </p>
+              </div>
+
+              {/* Nomor WhatsApp Utama Panitia */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Nomor WhatsApp Utama Panitia</Label>
+                <Input
+                  value={ppdbEdits.ppdb_panitia_phone || ''}
+                  onChange={(e) => setPpdbEdit('ppdb_panitia_phone', e.target.value)}
+                  placeholder="08xxxxxxxxxx atau 62xxxxxxxxxxx"
+                />
+                <p className="text-xs text-gray-500">
+                  Nomor ini akan tampil sebagai tombol &quot;Chat WhatsApp Panitia&quot; utama di halaman PPDB. Format bebas (0/62/+62), otomatis dinormalisasi.
                 </p>
               </div>
 
@@ -2327,7 +2341,7 @@ function SettingsManager() {
                 'Kontak & Sosial Media': ['madrasah_address', 'madrasah_phone', 'madrasah_email', 'madrasah_service_hours', 'madrasah_facebook', 'madrasah_instagram', 'madrasah_youtube', 'madrasah_tiktok', 'madrasah_whatsapp_number', 'madrasah_whatsapp_message'],
                 'Profil Madrasah': ['madrasah_welcome', 'madrasah_welcome_closing', 'madrasah_vision', 'madrasah_mission', 'madrasah_goals', 'madrasah_history', 'madrasah_struktur_organisasi', 'madrasah_principals_name'],
                 'Kelembagaan': ['madrasah_yayasan', 'madrasah_nsdt', 'madrasah_sk', 'madrasah_izin', 'madrasah_akreditasi', 'madrasah_maps', 'madrasah_maps_embed_url'],
-                'PPDB': ['ppdb_status', 'ppdb_info', 'ppdb_requirements', 'ppdb_contact'],
+                'PPDB': ['ppdb_status', 'ppdb_info', 'ppdb_requirements', 'ppdb_contact', 'ppdb_panitia_phone'],
                 'Wali Santri': ['wali_santri_meeting_schedule'],
               }
 

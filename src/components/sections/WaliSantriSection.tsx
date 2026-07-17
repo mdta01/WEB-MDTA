@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
 import {
   CreditCard, Bell, Calendar, MessageSquare,
-  Send, Clock, AlertCircle, MapPin,
+  Send, Clock, AlertCircle, MapPin, X,
 } from 'lucide-react'
 import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
@@ -14,6 +14,8 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Dialog, DialogContent, DialogTitle, DialogClose } from '@/components/ui/dialog'
+import { MarkdownRenderer } from '@/components/sections/MarkdownRenderer'
 import { toast } from 'sonner'
 import { useAppStore } from '@/store/useAppStore'
 
@@ -23,6 +25,7 @@ export default function WaliSantriSection() {
     name: '', email: '', type: 'saran', message: '',
   })
   const [submitting, setSubmitting] = useState(false)
+  const [selectedAnnouncement, setSelectedAnnouncement] = useState<{ id: string; title: string; content?: string; type: string; createdAt: string } | null>(null)
 
   const { data: paymentsData, isLoading: paymentsLoading } = useQuery({
     queryKey: ['payments'],
@@ -138,9 +141,14 @@ export default function WaliSantriSection() {
                 ) : announcements.length > 0 ? (
                   <div className="space-y-3 max-h-64 overflow-y-auto">
                     {announcements.map((a: { id: string; title: string; content?: string; type: string; createdAt: string }) => (
-                      <div key={a.id} className="flex items-start gap-3 p-3 bg-amber-50 rounded-lg">
+                      <button
+                        key={a.id}
+                        type="button"
+                        onClick={() => setSelectedAnnouncement(a)}
+                        className="w-full text-left flex items-start gap-3 p-3 bg-amber-50 hover:bg-amber-100 rounded-lg transition-colors cursor-pointer"
+                      >
                         <AlertCircle className="h-4 w-4 text-amber-500 mt-0.5 shrink-0" />
-                        <div className="min-w-0">
+                        <div className="min-w-0 flex-1">
                           <p className="text-sm font-medium text-emerald-800">{a.title}</p>
                           {a.content && (
                             <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">{a.content}</p>
@@ -148,8 +156,13 @@ export default function WaliSantriSection() {
                           <p className="text-xs text-gray-400 mt-1">
                             {new Date(a.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
                           </p>
+                          {a.content && a.content.length > 120 && (
+                            <span className="inline-block mt-1 text-xs text-emerald-600 font-semibold hover:underline">
+                              Baca selengkapnya →
+                            </span>
+                          )}
                         </div>
-                      </div>
+                      </button>
                     ))}
                   </div>
                 ) : (
@@ -278,6 +291,38 @@ export default function WaliSantriSection() {
 
         </div>
       </div>
+
+      {/* Announcement Detail Dialog — buka pengumuman penuh dengan MarkdownRenderer */}
+      <Dialog open={!!selectedAnnouncement} onOpenChange={() => setSelectedAnnouncement(null)}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogClose asChild>
+            <Button variant="ghost" size="icon" className="absolute right-4 top-4 z-10">
+              <X className="h-4 w-4" />
+            </Button>
+          </DialogClose>
+          {selectedAnnouncement && (
+            <>
+              <DialogTitle className="text-xl font-bold text-emerald-800 pr-8">
+                {selectedAnnouncement.title}
+              </DialogTitle>
+              <div className="flex items-center gap-3 mt-2">
+                <Badge className="bg-amber-100 text-amber-800 capitalize">
+                  {selectedAnnouncement.type || 'pengumuman'}
+                </Badge>
+                <span className="text-xs text-gray-400 flex items-center gap-1">
+                  <Calendar className="h-3 w-3" />
+                  {new Date(selectedAnnouncement.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+                </span>
+              </div>
+              <div className="mt-4">
+                {selectedAnnouncement.content
+                  ? <MarkdownRenderer content={selectedAnnouncement.content} />
+                  : <p className="text-sm text-gray-400 italic">Tidak ada isi pengumuman.</p>}
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

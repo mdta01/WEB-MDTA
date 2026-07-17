@@ -48,8 +48,8 @@ export async function POST(request: NextRequest) {
 
     // Send push notification
     await broadcastPushNotification({
-      title: 'Dakwah & Kajian Baru',
-      body: title.length > 80 ? title.substring(0, 80) + '...' : title,
+      title: '📖 [INFO DAKWAH] ' + (title.length > 50 ? title.substring(0, 50) + '...' : title),
+      body: title,
       url: '/?page=dakwah',
       tag: `mdta-dakwah-${dakwah.id}`,
     })

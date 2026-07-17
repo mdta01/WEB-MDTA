@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
 import {
   GraduationCap, ClipboardList, CreditCard, Calendar, Phone,
-  CheckCircle, AlertCircle, Send, User, MapPin,
+  CheckCircle, AlertCircle, Send, User, MapPin, MessageCircle,
 } from 'lucide-react'
 import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
@@ -68,6 +68,31 @@ export default function PPDBSection() {
         return { name: parts[0]?.trim() || '', phone: parts[1]?.trim() || '' }
       })
     : []
+
+  // Nomor WhatsApp utama panitia (setting terpisah, opsional)
+  const panitiaPhone = getSetting('ppdb_panitia_phone') || ''
+
+  // Format nomor HP ke format WhatsApp (62XXXXXXXXXXX)
+  // - Hapus karakter non-digit (spasi, dash, dll)
+  // - Ganti leading 0 dengan 62
+  // - Hapus leading +62 / 62 jika ada, lalu tambahkan 62
+  function formatWhatsAppNumber(raw: string): string {
+    let digits = (raw || '').replace(/\D/g, '')
+    if (digits.startsWith('62')) {
+      // already international format
+    } else if (digits.startsWith('0')) {
+      digits = '62' + digits.slice(1)
+    } else {
+      digits = '62' + digits
+    }
+    return digits
+  }
+
+  function buildWhatsAppUrl(raw: string, message: string): string {
+    return `https://wa.me/${formatWhatsAppNumber(raw)}?text=${encodeURIComponent(message)}`
+  }
+
+  const defaultWaMessage = 'Assalamualaikum, saya ingin bertanya tentang pendaftaran PPDB di MDTA Miftahul Ulum 01'
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }))
@@ -334,12 +359,42 @@ export default function PPDBSection() {
                 <Phone className="h-8 w-8 text-emerald-600 mx-auto mb-3" />
                 <h4 className="font-bold text-emerald-800 mb-2">Hubungi Panitia PPDB</h4>
                 <p className="text-sm text-gray-600 mb-3">Untuk informasi lebih lanjut, silakan hubungi:</p>
+
+                {/* Primary WhatsApp button — pakai ppdb_panitia_phone jika diisi admin */}
+                {panitiaPhone && (
+                  <Button
+                    asChild
+                    className="bg-green-500 hover:bg-green-600 text-white font-bold mb-4"
+                  >
+                    <a
+                      href={buildWhatsAppUrl(panitiaPhone, defaultWaMessage)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <MessageCircle className="h-4 w-4 mr-2" />
+                      Chat WhatsApp Panitia
+                    </a>
+                  </Button>
+                )}
+
                 {contacts.length > 0 ? (
-                  <div className="space-y-1 text-sm text-emerald-700">
+                  <div className="space-y-2 text-sm text-emerald-700">
                     {contacts.map((contact, idx) => (
-                      <p key={idx}>
-                        {contact.name}{contact.phone ? `: ${contact.phone}` : ''}
-                      </p>
+                      <div key={idx} className="flex items-center justify-center gap-2 flex-wrap">
+                        <span className="font-medium">{contact.name}</span>
+                        {contact.phone && (
+                          <a
+                            href={buildWhatsAppUrl(contact.phone, defaultWaMessage)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 bg-green-100 hover:bg-green-200 text-green-700 px-3 py-1 rounded-full text-xs font-semibold transition-colors"
+                            title={`Chat WhatsApp ${contact.name}`}
+                          >
+                            <MessageCircle className="h-3 w-3" />
+                            {contact.phone}
+                          </a>
+                        )}
+                      </div>
                     ))}
                   </div>
                 ) : (

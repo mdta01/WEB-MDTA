@@ -44,11 +44,14 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    // Send push notification
+    // Send push notification — prefix depends on type
+    const isWaliSantri = (type || 'general') === 'wali_santri'
     await broadcastPushNotification({
-      title: 'Pengumuman Baru',
-      body: title.length > 80 ? title.substring(0, 80) + '...' : title,
-      url: '/?page=pengumuman',
+      title: isWaliSantri
+        ? '👨‍👩 [PENGUMUMAN WALI SANTRI] ' + (title.length > 40 ? title.substring(0, 40) + '...' : title)
+        : '📢 [PENGUMUMAN] ' + (title.length > 60 ? title.substring(0, 60) + '...' : title),
+      body: title,
+      url: isWaliSantri ? '/?page=wali-santri' : '/?page=pengumuman',
       tag: `mdta-ann-${announcement.id}`,
     })
 

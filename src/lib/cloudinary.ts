@@ -87,8 +87,9 @@ export async function uploadFileToCloudinary(
         folder,
         public_id: finalPublicId,
         resource_type: 'raw',
-        // Preserve original filename as attachment (force download instead of inline display)
-        flags: 'attachment',
+        // Inline display (preview in browser) — jangan paksa download.
+        // Untuk PDF, ini memungkinkan preview langsung di tab browser.
+        flags: 'inline',
       },
       (error, result) => {
         if (error) {

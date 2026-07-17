@@ -16,6 +16,17 @@ import { Dialog, DialogContent, DialogTitle, DialogClose } from '@/components/ui
 import { CalendarModal } from '@/components/sections/CalendarModal'
 import { MarkdownRenderer } from '@/components/sections/MarkdownRenderer'
 import { useAppStore } from '@/store/useAppStore'
+import { gregorianToHijri, hijriMonthNames, masehiMonthNames } from '@/lib/hijri'
+
+// Format a Date as "15 Juli 2026 (1 Muharram 1448 H)" — Masehi + Hijri
+function formatMasehiHijri(date: Date): string {
+  const day = date.getDate()
+  const masehiMonth = masehiMonthNames[date.getMonth()]
+  const masehiYear = date.getFullYear()
+  const h = gregorianToHijri(date)
+  const hijriMonth = hijriMonthNames[h.month - 1] || 'Muharram'
+  return `${day} ${masehiMonth} ${masehiYear} (${h.day} ${hijriMonth} ${h.year} H)`
+}
 
 // External date store — client-only, refreshes every minute for realtime calendar.
 // Uses useSyncExternalStore to avoid hydration mismatch (server returns null).
@@ -1053,6 +1064,10 @@ export default function BerandaSection() {
                         </div>
                         <div className="flex-1">
                           <h3 className="font-semibold text-emerald-800 mb-1">{event.title}</h3>
+                          <p className="text-xs text-emerald-600 flex items-center gap-1 mb-1">
+                            <Calendar className="h-3 w-3" />
+                            {formatMasehiHijri(new Date(event.date))}
+                          </p>
                           {event.location && (
                             <p className="text-xs text-gray-500 flex items-center gap-1">
                               <MapPin className="h-3 w-3" /> {event.location}

@@ -47,8 +47,8 @@ export async function POST(request: NextRequest) {
 
     // Send push notification to all subscribers
     await broadcastPushNotification({
-      title: 'Berita Baru',
-      body: title.length > 80 ? title.substring(0, 80) + '...' : title,
+      title: '📰 [BERITA] ' + (title.length > 60 ? title.substring(0, 60) + '...' : title),
+      body: title,
       url: '/?page=berita',
       tag: `mdta-news-${news.id}`,
     })

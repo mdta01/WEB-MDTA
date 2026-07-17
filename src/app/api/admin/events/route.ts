@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { isAdminAuthenticated } from '@/lib/auth'
+import { broadcastPushNotification } from '@/lib/webpush'
 
 export async function GET() {
   try {
@@ -42,6 +43,14 @@ export async function POST(request: NextRequest) {
         image: image || null,
         category: category || 'kegiatan',
       },
+    })
+
+    // Send push notification
+    await broadcastPushNotification({
+      title: '📅 [EVENT/KEGIATAN] ' + (title.length > 50 ? title.substring(0, 50) + '...' : title),
+      body: title,
+      url: '/?page=berita',
+      tag: `mdta-event-${event.id}`,
     })
 
     return NextResponse.json(event, { status: 201 })
