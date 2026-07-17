@@ -546,7 +546,9 @@ export default function BerandaSection() {
                     content={getSetting('madrasah_welcome') || "Assalamu'alaikum Warahmatullahi Wabarakatuh. Puji syukur kehadirat Allah SWT yang telah memberikan rahmat dan karunia-Nya. MDTA Miftahul Ulum 01 berkomitmen untuk memberikan pendidikan Islam yang terbaik bagi putra-putri Anda. Dengan kurikulum yang berpusat pada Al-Quran dan As-Sunnah, kami berharap dapat mencetak generasi yang berilmu, berakhlak mulia, dan bermanfaat bagi agama, bangsa, dan negara. Selamat datang di keluarga besar Miftahul Ulum 01."}
                   />
                 </div>
-                <p className="text-emerald-700 font-semibold mt-4 text-sm">Wassalamu'alaikum Warahmatullahi Wabarakatuh</p>
+                <p className="text-emerald-700 font-semibold mt-4 text-sm">
+                  {getSetting('madrasah_welcome_closing') || "Wassalamu'alaikum Warahmatullahi Wabarakatuh"}
+                </p>
               </div>
             </div>
           </Card>

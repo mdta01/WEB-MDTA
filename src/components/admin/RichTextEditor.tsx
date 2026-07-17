@@ -14,6 +14,13 @@ import {
   ListsToggle,
   CreateLink,
   linkPlugin,
+  linkDialogPlugin,
+  HighlightToggle,
+  StrikeThroughSupSubToggles,
+  CodeToggle,
+  tablePlugin,
+  imagePlugin,
+  separator,
 } from '@mdxeditor/editor'
 import '@mdxeditor/editor/style.css'
 
@@ -40,7 +47,8 @@ export function RichTextEditor({
           markdown={value || ''}
           onChange={onChange}
           placeholder={placeholder || 'Tulis konten di sini...'}
-          className="min-h-[200px] bg-white"
+          className="min-h-[220px] bg-white"
+          contentEditableClassName="prose prose-sm max-w-none min-h-[180px] px-4 py-3"
           plugins={[
             headingsPlugin(),
             listsPlugin(),
@@ -48,14 +56,21 @@ export function RichTextEditor({
             thematicBreakPlugin(),
             markdownShortcutPlugin(),
             linkPlugin(),
+            linkDialogPlugin(),
+            tablePlugin(),
+            imagePlugin(),
             toolbarPlugin({
               toolbarContents: () => (
                 <>
                   <UndoRedo />
                   <BlockTypeSelect />
                   <BoldItalicUnderlineToggles />
+                  <StrikeThroughSupSubToggles />
+                  <HighlightToggle />
+                  <CodeToggle />
                   <ListsToggle />
                   <CreateLink />
+                  <separator />
                 </>
               ),
             }),

@@ -2319,13 +2319,13 @@ function SettingsManager() {
             {(() => {
               const imageKeys = ['madrasah_principal_photo', 'madrasah_hero_image', 'madrasah_logo']
               const longTextKeys = ['madrasah_history', 'madrasah_welcome', 'madrasah_mission', 'madrasah_goals', 'madrasah_struktur_organisasi', 'ppdb_requirements', 'wali_santri_meeting_schedule']
-              const richtextKeys = ['madrasah_welcome', 'madrasah_history', 'madrasah_vision', 'madrasah_mission', 'madrasah_goals']
+              const richtextKeys = ['madrasah_welcome', 'madrasah_welcome_closing', 'madrasah_history', 'madrasah_vision', 'madrasah_mission', 'madrasah_goals']
               const filteredEntries = Object.entries(settingsValues).filter(([key]) => !imageKeys.includes(key))
               
               const groups: Record<string, string[]> = {
                 'Identitas Madrasah': ['madrasah_name', 'madrasah_subtitle', 'madrasah_description', 'madrasah_history_year', 'madrasah_footer_description', 'madrasah_copyright'],
                 'Kontak & Sosial Media': ['madrasah_address', 'madrasah_phone', 'madrasah_email', 'madrasah_service_hours', 'madrasah_facebook', 'madrasah_instagram', 'madrasah_youtube', 'madrasah_tiktok', 'madrasah_whatsapp_number', 'madrasah_whatsapp_message'],
-                'Profil Madrasah': ['madrasah_welcome', 'madrasah_vision', 'madrasah_mission', 'madrasah_goals', 'madrasah_history', 'madrasah_struktur_organisasi', 'madrasah_principals_name'],
+                'Profil Madrasah': ['madrasah_welcome', 'madrasah_welcome_closing', 'madrasah_vision', 'madrasah_mission', 'madrasah_goals', 'madrasah_history', 'madrasah_struktur_organisasi', 'madrasah_principals_name'],
                 'Kelembagaan': ['madrasah_yayasan', 'madrasah_nsdt', 'madrasah_sk', 'madrasah_izin', 'madrasah_akreditasi', 'madrasah_maps', 'madrasah_maps_embed_url'],
                 'PPDB': ['ppdb_status', 'ppdb_info', 'ppdb_requirements', 'ppdb_contact'],
                 'Wali Santri': ['wali_santri_meeting_schedule'],
