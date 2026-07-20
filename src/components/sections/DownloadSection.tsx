@@ -133,21 +133,21 @@ export default function DownloadSection() {
                           </div>
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
-                          {/* View — buka di tab baru, preview inline (PDF akan tampil di browser) */}
+                          {/* View — PDF preview via Google Docs Viewer (inline di browser) */}
                           <Button size="sm" variant="outline" className="text-emerald-600 hover:bg-emerald-50" asChild>
                             <a
-                              href={item.fileUrl}
+                              href={`https://docs.google.com/viewer?url=${encodeURIComponent(item.fileUrl)}&embedded=true`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              title={`Lihat ${item.title}`}
+                              title={`Preview ${item.title}`}
                             >
                               <Eye className="h-4 w-4" />
                             </a>
                           </Button>
-                          {/* Download — paksa download via flag attachment Cloudinary */}
+                          {/* Download — direct download from Cloudinary */}
                           <Button size="sm" variant="outline" className="text-emerald-600 hover:bg-emerald-50" asChild>
                             <a
-                              href={`${item.fileUrl}${item.fileUrl.includes('?') ? '&' : '?'}fl=attachment`}
+                              href={item.fileUrl}
                               target="_blank"
                               rel="noopener noreferrer"
                               download

@@ -86,14 +86,17 @@ export async function uploadFileToCloudinary(
       {
         folder,
         public_id: finalPublicId,
+        // 'raw' resource_type preserves the original file as-is.
+        // Cloudinary serves it with Content-Type: application/octet-stream.
+        // For PDF preview, we use Google Docs Viewer in the DownloadSection.
         resource_type: 'raw',
-        // Inline display (preview in browser) — jangan paksa download.
-        // Untuk PDF, ini memungkinkan preview langsung di tab browser.
-        flags: 'inline',
       },
       (error, result) => {
         if (error) {
-          reject(error)
+          const errMsg = typeof error === 'object' && error !== null
+            ? JSON.stringify(error)
+            : String(error)
+          reject(new Error(errMsg))
           return
         }
         if (!result) {
