@@ -169,17 +169,46 @@ model Download {
 }
 
 model PPDBRegistration {
-  id              String   @id @default(cuid())
-  name            String   @db.VarChar(100)
-  birthPlace      String   @db.VarChar(100)
-  birthDate       DateTime
-  parentName      String   @db.VarChar(100)
-  parentPhone     String   @db.VarChar(20)
-  address         String?  @db.Text
-  previousSchool  String?  @db.VarChar(255)
-  status          String   @default("pending") @db.VarChar(20)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id                String   @id @default(cuid())
+  // A. Data Calon Santri
+  name              String   @db.VarChar(100)
+  nik               String?  @db.VarChar(20)
+  nokk              String?  @db.VarChar(20)
+  birthPlace        String   @db.VarChar(100)
+  birthDate         DateTime
+  gender            String?  @db.VarChar(15)
+  // B. Asal Sekolah
+  previousSchool    String?  @db.VarChar(255)
+  schoolClass       String?  @db.VarChar(20)
+  schoolAddress     String?  @db.Text
+  // C. Data Ayah
+  fatherName        String?  @db.VarChar(100)
+  fatherStatus      String?  @db.VarChar(15)
+  fatherNik         String?  @db.VarChar(20)
+  fatherBirthPlace  String?  @db.VarChar(100)
+  fatherBirthDate   DateTime?
+  fatherEducation   String?  @db.VarChar(50)
+  fatherJob         String?  @db.VarChar(100)
+  fatherAddress     String?  @db.Text
+  fatherPhone       String?  @db.VarChar(20)
+  // C. Data Ibu
+  motherName        String?  @db.VarChar(100)
+  motherStatus      String?  @db.VarChar(15)
+  motherNik         String?  @db.VarChar(20)
+  motherBirthPlace  String?  @db.VarChar(100)
+  motherBirthDate   DateTime?
+  motherEducation   String?  @db.VarChar(50)
+  motherJob         String?  @db.VarChar(100)
+  motherAddress     String?  @db.Text
+  motherPhone       String?  @db.VarChar(20)
+  // Legacy fields (backward compat)
+  parentName        String?  @db.VarChar(100)
+  parentPhone       String?  @db.VarChar(20)
+  address           String?  @db.Text
+  // Status
+  status            String   @default("pending") @db.VarChar(20)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 }
 
 model PPDBSchedule {

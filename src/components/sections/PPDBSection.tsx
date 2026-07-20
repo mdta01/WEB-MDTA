@@ -21,8 +21,16 @@ import { toast } from 'sonner'
 
 export default function PPDBSection() {
   const [formData, setFormData] = useState({
-    name: '', birthPlace: '', birthDate: '', parentName: '',
-    parentPhone: '', address: '', previousSchool: '',
+    // A. Data Calon Santri
+    name: '', nik: '', nokk: '', birthPlace: '', birthDate: '', gender: '',
+    // B. Asal Sekolah
+    previousSchool: '', schoolClass: '', schoolAddress: '',
+    // C. Data Ayah
+    fatherName: '', fatherStatus: '', fatherNik: '', fatherBirthPlace: '', fatherBirthDate: '',
+    fatherEducation: '', fatherJob: '', fatherAddress: '', fatherPhone: '',
+    // C. Data Ibu
+    motherName: '', motherStatus: '', motherNik: '', motherBirthPlace: '', motherBirthDate: '',
+    motherEducation: '', motherJob: '', motherAddress: '', motherPhone: '',
   })
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
@@ -100,8 +108,12 @@ export default function PPDBSection() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!formData.name || !formData.birthPlace || !formData.birthDate || !formData.parentName || !formData.parentPhone) {
-      toast.error('Harap isi semua kolom yang wajib diisi')
+    if (!formData.name || !formData.birthPlace || !formData.birthDate) {
+      toast.error('Harap isi Nama, Tempat Lahir, dan Tanggal Lahir calon santri')
+      return
+    }
+    if (!formData.fatherName && !formData.motherName) {
+      toast.error('Harap isi minimal data salah satu orang tua (Ayah atau Ibu)')
       return
     }
     setSubmitting(true)
@@ -307,41 +319,171 @@ export default function PPDBSection() {
                     </Button>
                   </div>
                 ) : (
-                  <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="name" className="text-sm font-medium">Nama Lengkap *</Label>
-                        <Input id="name" name="name" value={formData.name} onChange={handleChange} placeholder="Nama lengkap calon santri" required />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="birthPlace" className="text-sm font-medium">Tempat Lahir *</Label>
-                        <Input id="birthPlace" name="birthPlace" value={formData.birthPlace} onChange={handleChange} placeholder="Kota kelahiran" required />
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    {/* A. Data Calon Santri */}
+                    <div>
+                      <h4 className="text-sm font-bold text-emerald-800 bg-emerald-50 px-3 py-2 rounded-lg mb-3">
+                        A. Data Calon Santri
+                      </h4>
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div className="space-y-1.5">
+                          <Label htmlFor="name" className="text-sm font-medium">Nama Lengkap *</Label>
+                          <Input id="name" name="name" value={formData.name} onChange={handleChange} placeholder="Nama lengkap calon santri" required />
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label htmlFor="nik" className="text-sm font-medium">NIK</Label>
+                          <Input id="nik" name="nik" value={formData.nik} onChange={handleChange} placeholder="Nomor Induk Kependudukan" maxLength={20} />
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label htmlFor="nokk" className="text-sm font-medium">Nomor KK</Label>
+                          <Input id="nokk" name="nokk" value={formData.nokk} onChange={handleChange} placeholder="Nomor Kartu Keluarga" maxLength={20} />
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label htmlFor="gender" className="text-sm font-medium">Jenis Kelamin</Label>
+                          <select
+                            id="gender"
+                            name="gender"
+                            value={formData.gender}
+                            onChange={handleChange}
+                            className="w-full h-9 rounded-md border border-input bg-transparent px-3 text-sm"
+                          >
+                            <option value="">Pilih...</option>
+                            <option value="laki-laki">Laki-laki</option>
+                            <option value="perempuan">Perempuan</option>
+                          </select>
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label htmlFor="birthPlace" className="text-sm font-medium">Tempat Lahir *</Label>
+                          <Input id="birthPlace" name="birthPlace" value={formData.birthPlace} onChange={handleChange} placeholder="Kota kelahiran" required />
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label htmlFor="birthDate" className="text-sm font-medium">Tanggal Lahir *</Label>
+                          <Input id="birthDate" name="birthDate" type="date" value={formData.birthDate} onChange={handleChange} required />
+                        </div>
                       </div>
                     </div>
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="birthDate" className="text-sm font-medium">Tanggal Lahir *</Label>
-                        <Input id="birthDate" name="birthDate" type="date" value={formData.birthDate} onChange={handleChange} required />
+
+                    {/* B. Asal Sekolah */}
+                    <div>
+                      <h4 className="text-sm font-bold text-emerald-800 bg-emerald-50 px-3 py-2 rounded-lg mb-3">
+                        B. Asal Sekolah
+                      </h4>
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div className="space-y-1.5">
+                          <Label htmlFor="previousSchool" className="text-sm font-medium">Nama Sekolah</Label>
+                          <Input id="previousSchool" name="previousSchool" value={formData.previousSchool} onChange={handleChange} placeholder="Nama sekolah asal" />
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label htmlFor="schoolClass" className="text-sm font-medium">Kelas</Label>
+                          <Input id="schoolClass" name="schoolClass" value={formData.schoolClass} onChange={handleChange} placeholder="Kelas (mis: 6 SD)" />
+                        </div>
                       </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="previousSchool" className="text-sm font-medium">Asal Sekolah</Label>
-                        <Input id="previousSchool" name="previousSchool" value={formData.previousSchool} onChange={handleChange} placeholder="Sekolah sebelumnya (jika ada)" />
+                      <div className="space-y-1.5 mt-4">
+                        <Label htmlFor="schoolAddress" className="text-sm font-medium">Alamat Sekolah</Label>
+                        <Textarea id="schoolAddress" name="schoolAddress" value={formData.schoolAddress} onChange={handleChange} placeholder="Alamat sekolah asal" rows={2} />
                       </div>
                     </div>
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="parentName" className="text-sm font-medium">Nama Orang Tua/Wali *</Label>
-                        <Input id="parentName" name="parentName" value={formData.parentName} onChange={handleChange} placeholder="Nama ayah/ibu/wali" required />
+
+                    {/* C. Data Ayah */}
+                    <div>
+                      <h4 className="text-sm font-bold text-emerald-800 bg-emerald-50 px-3 py-2 rounded-lg mb-3">
+                        C. Data Ayah
+                      </h4>
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div className="space-y-1.5">
+                          <Label htmlFor="fatherName" className="text-sm font-medium">Nama Ayah</Label>
+                          <Input id="fatherName" name="fatherName" value={formData.fatherName} onChange={handleChange} placeholder="Nama lengkap ayah" />
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label htmlFor="fatherStatus" className="text-sm font-medium">Status</Label>
+                          <select id="fatherStatus" name="fatherStatus" value={formData.fatherStatus} onChange={handleChange}
+                            className="w-full h-9 rounded-md border border-input bg-transparent px-3 text-sm">
+                            <option value="">Pilih...</option>
+                            <option value="hidup">Hidup</option>
+                            <option value="meninggal">Meninggal</option>
+                          </select>
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label htmlFor="fatherNik" className="text-sm font-medium">NIK</Label>
+                          <Input id="fatherNik" name="fatherNik" value={formData.fatherNik} onChange={handleChange} placeholder="NIK Ayah" maxLength={20} />
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label htmlFor="fatherBirthPlace" className="text-sm font-medium">Tempat Lahir</Label>
+                          <Input id="fatherBirthPlace" name="fatherBirthPlace" value={formData.fatherBirthPlace} onChange={handleChange} placeholder="Tempat lahir ayah" />
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label htmlFor="fatherBirthDate" className="text-sm font-medium">Tanggal Lahir</Label>
+                          <Input id="fatherBirthDate" name="fatherBirthDate" type="date" value={formData.fatherBirthDate} onChange={handleChange} />
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label htmlFor="fatherEducation" className="text-sm font-medium">Pendidikan</Label>
+                          <Input id="fatherEducation" name="fatherEducation" value={formData.fatherEducation} onChange={handleChange} placeholder="Pendidikan terakhir" />
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label htmlFor="fatherJob" className="text-sm font-medium">Pekerjaan</Label>
+                          <Input id="fatherJob" name="fatherJob" value={formData.fatherJob} onChange={handleChange} placeholder="Pekerjaan ayah" />
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label htmlFor="fatherPhone" className="text-sm font-medium">No. HP</Label>
+                          <Input id="fatherPhone" name="fatherPhone" type="tel" value={formData.fatherPhone} onChange={handleChange} placeholder="08xxxxxxxxxx" />
+                        </div>
                       </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="parentPhone" className="text-sm font-medium">No. HP Orang Tua *</Label>
-                        <Input id="parentPhone" name="parentPhone" type="tel" value={formData.parentPhone} onChange={handleChange} placeholder="08xxxxxxxxxx" required />
+                      <div className="space-y-1.5 mt-4">
+                        <Label htmlFor="fatherAddress" className="text-sm font-medium">Alamat</Label>
+                        <Textarea id="fatherAddress" name="fatherAddress" value={formData.fatherAddress} onChange={handleChange} placeholder="Alamat tempat tinggal ayah" rows={2} />
                       </div>
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="address" className="text-sm font-medium">Alamat Lengkap</Label>
-                      <Textarea id="address" name="address" value={formData.address} onChange={handleChange} placeholder="Alamat lengkap tempat tinggal" rows={3} />
+
+                    {/* C. Data Ibu */}
+                    <div>
+                      <h4 className="text-sm font-bold text-emerald-800 bg-emerald-50 px-3 py-2 rounded-lg mb-3">
+                        D. Data Ibu
+                      </h4>
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div className="space-y-1.5">
+                          <Label htmlFor="motherName" className="text-sm font-medium">Nama Ibu</Label>
+                          <Input id="motherName" name="motherName" value={formData.motherName} onChange={handleChange} placeholder="Nama lengkap ibu" />
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label htmlFor="motherStatus" className="text-sm font-medium">Status</Label>
+                          <select id="motherStatus" name="motherStatus" value={formData.motherStatus} onChange={handleChange}
+                            className="w-full h-9 rounded-md border border-input bg-transparent px-3 text-sm">
+                            <option value="">Pilih...</option>
+                            <option value="hidup">Hidup</option>
+                            <option value="meninggal">Meninggal</option>
+                          </select>
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label htmlFor="motherNik" className="text-sm font-medium">NIK</Label>
+                          <Input id="motherNik" name="motherNik" value={formData.motherNik} onChange={handleChange} placeholder="NIK Ibu" maxLength={20} />
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label htmlFor="motherBirthPlace" className="text-sm font-medium">Tempat Lahir</Label>
+                          <Input id="motherBirthPlace" name="motherBirthPlace" value={formData.motherBirthPlace} onChange={handleChange} placeholder="Tempat lahir ibu" />
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label htmlFor="motherBirthDate" className="text-sm font-medium">Tanggal Lahir</Label>
+                          <Input id="motherBirthDate" name="motherBirthDate" type="date" value={formData.motherBirthDate} onChange={handleChange} />
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label htmlFor="motherEducation" className="text-sm font-medium">Pendidikan</Label>
+                          <Input id="motherEducation" name="motherEducation" value={formData.motherEducation} onChange={handleChange} placeholder="Pendidikan terakhir" />
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label htmlFor="motherJob" className="text-sm font-medium">Pekerjaan</Label>
+                          <Input id="motherJob" name="motherJob" value={formData.motherJob} onChange={handleChange} placeholder="Pekerjaan ibu" />
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label htmlFor="motherPhone" className="text-sm font-medium">No. HP</Label>
+                          <Input id="motherPhone" name="motherPhone" type="tel" value={formData.motherPhone} onChange={handleChange} placeholder="08xxxxxxxxxx" />
+                        </div>
+                      </div>
+                      <div className="space-y-1.5 mt-4">
+                        <Label htmlFor="motherAddress" className="text-sm font-medium">Alamat</Label>
+                        <Textarea id="motherAddress" name="motherAddress" value={formData.motherAddress} onChange={handleChange} placeholder="Alamat tempat tinggal ibu" rows={2} />
+                      </div>
                     </div>
+
                     <Button type="submit" disabled={submitting} className="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-3">
                       {submitting ? 'Mengirim...' : 'Kirim Pendaftaran'}
                       <Send className="ml-2 h-4 w-4" />

@@ -840,8 +840,9 @@ function PPDBManager() {
                   <TableRow className="bg-gray-50">
                     <TableHead>#</TableHead>
                     <TableHead>Nama</TableHead>
-                    <TableHead>Orang Tua</TableHead>
-                    <TableHead>No. HP</TableHead>
+                    <TableHead>Jenis Kelamin</TableHead>
+                    <TableHead>Ayah</TableHead>
+                    <TableHead>Ibu</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Tgl Daftar</TableHead>
                     <TableHead className="text-center">Aksi</TableHead>
@@ -865,13 +866,9 @@ function PPDBManager() {
                       <TableRow key={reg.id as string} className="hover:bg-emerald-50/50">
                         <TableCell className="text-gray-400 text-xs">{idx + 1}</TableCell>
                         <TableCell className="font-medium">{reg.name as string}</TableCell>
-                        <TableCell>{reg.parentName as string}</TableCell>
-                        <TableCell>
-                          <a href={`tel:${reg.parentPhone as string}`} className="text-emerald-700 hover:underline flex items-center gap-1">
-                            <Phone className="h-3 w-3" />
-                            {reg.parentPhone as string}
-                          </a>
-                        </TableCell>
+                        <TableCell className="text-sm">{(reg.gender as string) || '-'}</TableCell>
+                        <TableCell className="text-sm">{(reg.fatherName as string) || '-'}</TableCell>
+                        <TableCell className="text-sm">{(reg.motherName as string) || '-'}</TableCell>
                         <TableCell>
                           <Badge
                             className={
@@ -1216,7 +1213,7 @@ function PPDBManager() {
 
       {/* Detail Dialog — view full pendaftar info */}
       <Dialog open={!!detailReg} onOpenChange={(open) => { if (!open) setDetailReg(null) }}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="sm:max-w-2xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Eye className="h-5 w-5 text-emerald-600" />
@@ -1227,56 +1224,78 @@ function PPDBManager() {
             </DialogDescription>
           </DialogHeader>
           {detailReg && (
-            <div className="space-y-3 py-2">
+            <div className="space-y-4 py-2">
+              {/* Header */}
               <div className="bg-gradient-to-br from-emerald-50 to-amber-50 rounded-lg p-4 border border-emerald-100">
                 <p className="font-bold text-lg text-emerald-900">{detailReg.name as string}</p>
-                <Badge
-                  className="mt-1.5"
-                  variant="secondary"
-                >
+                <Badge className="mt-1.5" variant="secondary">
                   {detailReg.status === 'accepted' ? '✅ Diterima' : detailReg.status === 'rejected' ? '❌ Ditolak' : '⏳ Menunggu'}
                 </Badge>
               </div>
-              <div className="space-y-2 text-sm">
-                <div className="flex gap-2">
-                  <span className="text-gray-500 w-32 shrink-0">Tempat Lahir:</span>
-                  <span className="font-medium">{detailReg.birthPlace as string}</span>
+
+              {/* A. Data Calon Santri */}
+              <div>
+                <p className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-1 rounded mb-2">A. Data Calon Santri</p>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <DetailField label="Nama" value={detailReg.name as string} />
+                  <DetailField label="NIK" value={(detailReg.nik as string) || '-'} />
+                  <DetailField label="Nomor KK" value={(detailReg.nokk as string) || '-'} />
+                  <DetailField label="Jenis Kelamin" value={(detailReg.gender as string) || '-'} />
+                  <DetailField label="Tempat Lahir" value={detailReg.birthPlace as string} />
+                  <DetailField label="Tanggal Lahir" value={detailReg.birthDate ? new Date(detailReg.birthDate as string).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-'} />
                 </div>
-                <div className="flex gap-2">
-                  <span className="text-gray-500 w-32 shrink-0">Tanggal Lahir:</span>
-                  <span className="font-medium">
-                    {detailReg.birthDate ? new Date(detailReg.birthDate as string).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-'}
-                  </span>
+              </div>
+
+              {/* B. Asal Sekolah */}
+              <div>
+                <p className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-1 rounded mb-2">B. Asal Sekolah</p>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <DetailField label="Nama Sekolah" value={(detailReg.previousSchool as string) || '-'} />
+                  <DetailField label="Kelas" value={(detailReg.schoolClass as string) || '-'} />
                 </div>
-                <div className="flex gap-2">
-                  <span className="text-gray-500 w-32 shrink-0">Nama Orang Tua:</span>
-                  <span className="font-medium">{detailReg.parentName as string}</span>
-                </div>
-                <div className="flex gap-2">
-                  <span className="text-gray-500 w-32 shrink-0">No. HP Ortu:</span>
-                  <a href={`tel:${detailReg.parentPhone as string}`} className="font-medium text-emerald-700 hover:underline flex items-center gap-1">
-                    <Phone className="h-3 w-3" />
-                    {detailReg.parentPhone as string}
-                  </a>
-                </div>
-                {detailReg.address && (
-                  <div className="flex gap-2">
-                    <span className="text-gray-500 w-32 shrink-0">Alamat:</span>
-                    <span className="font-medium">{detailReg.address as string}</span>
-                  </div>
+                {(detailReg.schoolAddress as string) && (
+                  <DetailField label="Alamat Sekolah" value={detailReg.schoolAddress as string} full />
                 )}
-                {detailReg.previousSchool && (
-                  <div className="flex gap-2">
-                    <span className="text-gray-500 w-32 shrink-0">Sekolah Asal:</span>
-                    <span className="font-medium">{detailReg.previousSchool as string}</span>
-                  </div>
-                )}
-                <div className="flex gap-2">
-                  <span className="text-gray-500 w-32 shrink-0">Tanggal Daftar:</span>
-                  <span className="font-medium">
-                    {detailReg.createdAt ? new Date(detailReg.createdAt as string).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-'}
-                  </span>
+              </div>
+
+              {/* C. Data Ayah */}
+              <div>
+                <p className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-1 rounded mb-2">C. Data Ayah</p>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <DetailField label="Nama" value={(detailReg.fatherName as string) || '-'} />
+                  <DetailField label="Status" value={(detailReg.fatherStatus as string) || '-'} />
+                  <DetailField label="NIK" value={(detailReg.fatherNik as string) || '-'} />
+                  <DetailField label="Tempat Lahir" value={(detailReg.fatherBirthPlace as string) || '-'} />
+                  <DetailField label="Tanggal Lahir" value={detailReg.fatherBirthDate ? new Date(detailReg.fatherBirthDate as string).toLocaleDateString('id-ID') : '-'} />
+                  <DetailField label="Pendidikan" value={(detailReg.fatherEducation as string) || '-'} />
+                  <DetailField label="Pekerjaan" value={(detailReg.fatherJob as string) || '-'} />
+                  <DetailField label="No. HP" value={(detailReg.fatherPhone as string) || '-'} link={`tel:${detailReg.fatherPhone}`} />
                 </div>
+                {(detailReg.fatherAddress as string) && (
+                  <DetailField label="Alamat" value={detailReg.fatherAddress as string} full />
+                )}
+              </div>
+
+              {/* D. Data Ibu */}
+              <div>
+                <p className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-1 rounded mb-2">D. Data Ibu</p>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <DetailField label="Nama" value={(detailReg.motherName as string) || '-'} />
+                  <DetailField label="Status" value={(detailReg.motherStatus as string) || '-'} />
+                  <DetailField label="NIK" value={(detailReg.motherNik as string) || '-'} />
+                  <DetailField label="Tempat Lahir" value={(detailReg.motherBirthPlace as string) || '-'} />
+                  <DetailField label="Tanggal Lahir" value={detailReg.motherBirthDate ? new Date(detailReg.motherBirthDate as string).toLocaleDateString('id-ID') : '-'} />
+                  <DetailField label="Pendidikan" value={(detailReg.motherEducation as string) || '-'} />
+                  <DetailField label="Pekerjaan" value={(detailReg.motherJob as string) || '-'} />
+                  <DetailField label="No. HP" value={(detailReg.motherPhone as string) || '-'} link={`tel:${detailReg.motherPhone}`} />
+                </div>
+                {(detailReg.motherAddress as string) && (
+                  <DetailField label="Alamat" value={detailReg.motherAddress as string} full />
+                )}
+              </div>
+
+              <div>
+                <DetailField label="Tanggal Daftar" value={detailReg.createdAt ? new Date(detailReg.createdAt as string).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-'} />
               </div>
             </div>
           )}
@@ -1297,6 +1316,20 @@ function PPDBManager() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+    </div>
+  )
+}
+
+// Helper component for detail fields
+function DetailField({ label, value, full, link }: { label: string; value: string; full?: boolean; link?: string }) {
+  return (
+    <div className={full ? 'col-span-2' : ''}>
+      <span className="text-gray-500 text-xs">{label}:</span>{' '}
+      {link ? (
+        <a href={link} className="font-medium text-emerald-700 hover:underline">{value}</a>
+      ) : (
+        <span className="font-medium">{value}</span>
+      )}
     </div>
   )
 }
