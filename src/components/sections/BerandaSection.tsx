@@ -259,7 +259,6 @@ type MasehiInfo = {
   isWeekend: boolean
 }
 
-const masehiMonthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember']
 const weekdayNames = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']
 
 function getMasehiInfo(date = new Date()): MasehiInfo {
