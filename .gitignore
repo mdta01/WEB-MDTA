@@ -69,8 +69,8 @@ tool-results/
 # Screenshots
 screenshot-*.png
 
-# Upload temp
-/upload/
+# Upload temp (root upload folder only, NOT src/app/api/upload)
+/upload/*
 
 # Z scripts
 /.zscripts/
