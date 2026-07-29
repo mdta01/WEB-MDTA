@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, ChevronLeft, ChevronRight, Calendar as CalendarIcon, Moon, Sun, MapPin, Clock, Event } from 'lucide-react'
+import { X, ChevronLeft, ChevronRight, Calendar as CalendarIcon, Moon, Sun, MapPin, Clock, CalendarDays } from 'lucide-react'
 import {
   gregorianToHijri,
   hijriToGregorian,
@@ -335,7 +335,7 @@ export function CalendarModal({ open, onClose, initialType = 'masehi' }: Calenda
                   {selectedDate && (
                     <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                       <p className="text-xs font-bold text-blue-700 mb-2 flex items-center gap-1">
-                        <Event className="h-3.5 w-3.5" />
+                        <CalendarDays className="h-3.5 w-3.5" />
                         Agenda: {formatDualDate(selectedDate)}
                       </p>
                       {selectedDateEvents.length > 0 ? (
@@ -365,7 +365,7 @@ export function CalendarModal({ open, onClose, initialType = 'masehi' }: Calenda
                 <div className="bg-gradient-to-b from-emerald-50 to-amber-50 p-6 border-l border-emerald-100">
                   {/* Agenda section */}
                   <h4 className="font-bold text-emerald-800 text-sm mb-3 flex items-center gap-2">
-                    <Event className="h-4 w-4 text-blue-600" />
+                    <CalendarDays className="h-4 w-4 text-blue-600" />
                     Agenda/Kegiatan {viewType === 'masehi' ? 'Bulan Ini' : hijriViewYear + ' H'}
                   </h4>
                   {monthEvents.length > 0 ? (
@@ -399,7 +399,7 @@ export function CalendarModal({ open, onClose, initialType = 'masehi' }: Calenda
                     </div>
                   ) : (
                     <div className="text-center py-4 text-gray-400 text-xs mb-4">
-                      <Event className="h-8 w-8 mx-auto mb-1 text-gray-300" />
+                      <CalendarDays className="h-8 w-8 mx-auto mb-1 text-gray-300" />
                       Belum ada agenda
                     </div>
                   )}
