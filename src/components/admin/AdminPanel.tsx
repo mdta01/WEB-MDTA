@@ -296,18 +296,18 @@ const entityConfigs: Record<string, EntityConfig> = {
     ],
   },
   events: {
-    title: 'Kelola Event',
+    title: 'Kelola Agenda/Kegiatan',
     apiPath: 'events',
-    itemName: 'Event',
+    itemName: 'Agenda',
     columns: [
       { key: 'title', label: 'Judul' },
-      { key: 'date', label: 'Tanggal' },
+      { key: 'date', label: 'Tanggal Masehi' },
       { key: 'location', label: 'Lokasi' },
       { key: 'category', label: 'Kategori' },
     ],
     formFields: [
-      { name: 'title', label: 'Judul Event', type: 'text', required: true, placeholder: 'Judul event', colSpan: 2 },
-      { name: 'date', label: 'Tanggal', type: 'date', required: true },
+      { name: 'title', label: 'Judul Agenda/Kegiatan', type: 'text', required: true, placeholder: 'Judul agenda atau kegiatan', colSpan: 2 },
+      { name: 'date', label: 'Tanggal (Masehi)', type: 'date', required: true, hint: 'Input tanggal Masehi. Tanggal Hijriah otomatis dihitung sistem.' },
       { name: 'category', label: 'Kategori', type: 'select', options: [
         { label: 'Kegiatan', value: 'kegiatan' },
         { label: 'PHBI', value: 'phbi' },
