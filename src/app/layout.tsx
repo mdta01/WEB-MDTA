@@ -3,6 +3,7 @@ import { Playfair_Display, Montserrat } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { NotificationManager } from "@/components/layout/NotificationManager";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const playfair = Playfair_Display({
   variable: "--font-display",
@@ -44,6 +45,7 @@ export default function RootLayout({
         {children}
         <Toaster richColors position="top-center" />
         <NotificationManager />
+        <SpeedInsights />
       </body>
     </html>
   );
