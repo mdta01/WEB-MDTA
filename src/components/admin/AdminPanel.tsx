@@ -2373,8 +2373,8 @@ function SettingsManager() {
                 'Identitas Madrasah': ['madrasah_name', 'madrasah_subtitle', 'madrasah_description', 'madrasah_history_year', 'madrasah_footer_description', 'madrasah_copyright'],
                 'Kontak & Sosial Media': ['madrasah_address', 'madrasah_phone', 'madrasah_email', 'madrasah_service_hours', 'madrasah_facebook', 'madrasah_instagram', 'madrasah_youtube', 'madrasah_tiktok', 'madrasah_whatsapp_number', 'madrasah_whatsapp_message'],
                 'Profil Madrasah': ['madrasah_welcome', 'madrasah_welcome_closing', 'madrasah_vision', 'madrasah_mission', 'madrasah_goals', 'madrasah_history', 'madrasah_struktur_organisasi', 'madrasah_principals_name'],
-                'Kelembagaan': ['madrasah_yayasan', 'madrasah_nsdt', 'madrasah_sk', 'madrasah_izin', 'madrasah_akreditasi', 'madrasah_maps', 'madrasah_maps_embed_url'],
-                'PPDB': ['ppdb_status', 'ppdb_info', 'ppdb_requirements', 'ppdb_contact', 'ppdb_panitia_phone'],
+                'Kelembagaan': ['madrasah_yayasan', 'madrasah_nsdt', 'madrasah_sk', 'madrasah_izin', 'madrasah_akreditasi', 'madrasah_maps', 'madrasah_maps_embed_url', 'madrasah_gps_lat', 'madrasah_gps_lng'],
+                // PPDB settings dikelola di tab 'Pengaturan PPDB' pada menu Pendaftaran (tidak duplikat di sini)
                 'Wali Santri': ['wali_santri_meeting_schedule'],
               }
 
