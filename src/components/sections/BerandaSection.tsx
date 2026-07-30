@@ -375,25 +375,30 @@ export default function BerandaSection() {
 
   return (
     <div className="space-y-16">
-      {/* Hero Section */}
+      {/* Hero Section — modern startup style */}
       <section className="relative overflow-hidden">
-        <div className="bg-gradient-to-b from-emerald-800 via-emerald-800 to-emerald-900 text-white">
-          {/* Hero background image - only render after settings load to avoid flashing fallback image */}
+        <div className="bg-emerald-900 text-white min-h-[420px] sm:min-h-[480px] flex items-center">
+          {/* Background image — visible but with gradient overlay for text readability */}
           <div className="absolute inset-0">
             {!settingsLoading && (
               <img
                 src={getSetting('madrasah_hero_image') || '/images/hero-madrasah.png'}
                 alt="MDTA Miftahul Ulum 01"
-                className="w-full h-full object-cover opacity-20"
+                className="w-full h-full object-cover"
               />
             )}
-            {/* Soft radial overlay for depth (subtle, matches section ambiance) */}
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(6,95,70,0.0)_0%,rgba(6,78,59,0.4)_100%)]" />
+            {/* Multi-layer gradient overlay for text readability + modern look */}
+            {/* Bottom-to-top dark gradient (ensures text always readable) */}
+            <div className="absolute inset-0 bg-gradient-to-t from-emerald-950/90 via-emerald-900/60 to-emerald-800/40" />
+            {/* Left-to-right subtle gradient (adds depth, startup feel) */}
+            <div className="absolute inset-0 bg-gradient-to-r from-emerald-950/50 via-transparent to-transparent" />
+            {/* Top vignette (darkens top for header contrast) */}
+            <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-emerald-950/60 to-transparent" />
           </div>
 
-          {/* Subtle Islamic pattern overlay (very low opacity, harmonious) */}
-          <div className="absolute inset-0 opacity-[0.04] pointer-events-none" aria-hidden style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23fbbf24' fill-opacity='1'%3E%3Cpath d='M30 0L60 30L30 60L0 30z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          {/* Subtle Islamic pattern overlay (very low opacity) */}
+          <div className="absolute inset-0 opacity-[0.03] pointer-events-none" aria-hidden style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M30 0L60 30L30 60L0 30z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
           }} />
 
           {/* Centered hero content */}
@@ -409,7 +414,7 @@ export default function BerandaSection() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.6, delay: 0.1 }}
-                className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-400/25 text-amber-200/90 px-4 py-1.5 rounded-full mb-6"
+                className="inline-flex items-center gap-2 bg-white/10 border border-white/20 text-amber-200 px-4 py-1.5 rounded-full mb-6 backdrop-blur-sm"
               >
                 <span className="text-xs leading-none text-amber-300/60">✦</span>
                 <span className="font-arabic text-sm md:text-base tracking-wide">
@@ -418,10 +423,10 @@ export default function BerandaSection() {
                 <span className="text-xs leading-none text-amber-300/60">✦</span>
               </motion.div>
 
-              {/* Madrasah name — gradient text, slightly smaller */}
+              {/* Madrasah name — white with strong drop shadow for readability */}
               <h1
-                className="text-2xl md:text-4xl lg:text-5xl font-bold mb-4 leading-[1.15] uppercase tracking-wide bg-gradient-to-b from-white via-amber-50 to-amber-200 bg-clip-text text-transparent"
-                style={{ filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.35))' }}
+                className="text-2xl md:text-4xl lg:text-5xl font-bold mb-4 leading-[1.15] uppercase tracking-wide text-white"
+                style={{ filter: 'drop-shadow(0 2px 12px rgba(0,0,0,0.6))' }}
               >
                 {getSetting('madrasah_name') || 'MDTA Miftahul Ulum 01'}
               </h1>
@@ -440,7 +445,7 @@ export default function BerandaSection() {
                 const mapsUrl = gpsLat && gpsLng
                   ? `https://www.google.com/maps/search/?api=1&query=${gpsLat},${gpsLng}`
                   : null
-                const badgeClass = 'inline-flex items-center gap-2 bg-emerald-700/40 border border-emerald-400/30 text-amber-100 px-5 py-2 rounded-full mb-5 backdrop-blur-sm transition-all'
+                const badgeClass = 'inline-flex items-center gap-2 bg-white/15 border border-white/25 text-white px-5 py-2 rounded-full mb-5 backdrop-blur-md transition-all'
                 if (mapsUrl) {
                   return (
                     <a
@@ -468,8 +473,9 @@ export default function BerandaSection() {
                 )
               })()}
 
-              {/* Description — italic with typewriter effect */}
-              <p className="text-emerald-50/90 text-sm md:text-base mb-8 max-w-2xl leading-relaxed italic min-h-[3rem] flex items-start">
+              {/* Description — with text shadow for readability over background */}
+              <p className="text-white/90 text-sm md:text-base mb-8 max-w-2xl leading-relaxed italic min-h-[3rem] flex items-start"
+                style={{ textShadow: '0 1px 8px rgba(0,0,0,0.5)' }}>
                 <span>{typedDescription}</span>
                 <span
                   className={`inline-block w-[2px] h-[1.1em] bg-amber-300 ml-1 mt-1 shrink-0 ${typingDone ? 'animate-blink' : ''}`}
@@ -556,7 +562,7 @@ export default function BerandaSection() {
                     content={getSetting('madrasah_welcome') || "Assalamu'alaikum Warahmatullahi Wabarakatuh. Puji syukur kehadirat Allah SWT yang telah memberikan rahmat dan karunia-Nya. MDTA Miftahul Ulum 01 berkomitmen untuk memberikan pendidikan Islam yang terbaik bagi putra-putri Anda. Dengan kurikulum yang berpusat pada Al-Quran dan As-Sunnah, kami berharap dapat mencetak generasi yang berilmu, berakhlak mulia, dan bermanfaat bagi agama, bangsa, dan negara. Selamat datang di keluarga besar Miftahul Ulum 01."}
                   />
                 </div>
-                <p className="text-emerald-700 font-semibold mt-4 text-sm">
+                <p className="text-amber-300 font-semibold mt-4 text-sm" style={{ textShadow: '0 1px 6px rgba(0,0,0,0.5)' }}>
                   {getSetting('madrasah_welcome_closing') || "Wassalamu'alaikum Warahmatullahi Wabarakatuh"}
                 </p>
               </div>
