@@ -25,6 +25,10 @@ const fileTypeIcons: Record<string, React.ElementType> = {
   'docx': FileText,
   'xls': FileSpreadsheet,
   'xlsx': FileSpreadsheet,
+  'ppt': FileText,
+  'pptx': FileText,
+  'zip': File,
+  'txt': FileText,
   'jpg': FileImage,
   'png': FileImage,
   'default': File,
@@ -36,14 +40,45 @@ const fileTypeColors: Record<string, string> = {
   'docx': 'bg-blue-100 text-blue-600',
   'xls': 'bg-green-100 text-green-600',
   'xlsx': 'bg-green-100 text-green-600',
+  'ppt': 'bg-orange-100 text-orange-600',
+  'pptx': 'bg-orange-100 text-orange-600',
+  'zip': 'bg-amber-100 text-amber-600',
+  'txt': 'bg-gray-100 text-gray-600',
   'jpg': 'bg-purple-100 text-purple-600',
   'png': 'bg-purple-100 text-purple-600',
   'default': 'bg-gray-100 text-gray-600',
 }
 
+const fileTypeLabels: Record<string, string> = {
+  'pdf': 'PDF',
+  'doc': 'DOC',
+  'docx': 'DOCX',
+  'xls': 'XLS',
+  'xlsx': 'XLSX',
+  'ppt': 'PPT',
+  'pptx': 'PPTX',
+  'zip': 'ZIP',
+  'txt': 'TXT',
+  'default': 'FILE',
+}
+
+// Extract file type from Cloudinary URL or filename
+// Cloudinary raw URLs look like: /raw/upload/v123/mdta/downloads/filename.pdf
+// or without extension: /raw/upload/v123/mdta/downloads/filename
 function getFileType(url: string): string {
-  const ext = url.split('.').pop()?.toLowerCase() || ''
-  return ext in fileTypeIcons ? ext : 'default'
+  // Try to extract extension from the URL path
+  const pathPart = url.split('/').pop()?.split('?')[0] || ''
+  const extMatch = pathPart.match(/\.([a-zA-Z0-9]+)$/)
+  if (extMatch) {
+    const ext = extMatch[1].toLowerCase()
+    if (ext in fileTypeIcons) return ext
+  }
+  // If no extension found, check if URL contains 'pdf' or 'doc' in the path
+  const lowerUrl = url.toLowerCase()
+  if (lowerUrl.includes('.pdf') || lowerUrl.includes('pdf')) return 'pdf'
+  if (lowerUrl.includes('.doc') || lowerUrl.includes('doc')) return 'doc'
+  if (lowerUrl.includes('.xls') || lowerUrl.includes('xls')) return 'xls'
+  return 'default'
 }
 
 export default function DownloadSection() {
@@ -126,7 +161,7 @@ export default function DownloadSection() {
                         <div className="flex-1 min-w-0">
                           <h4 className="font-medium text-emerald-800 text-sm truncate">{item.title}</h4>
                           <div className="flex items-center gap-2 mt-1">
-                            <Badge variant="outline" className="text-xs uppercase">{fileType}</Badge>
+                            <Badge variant="outline" className="text-xs uppercase">{fileTypeLabels[fileType] || 'FILE'}</Badge>
                             <span className="text-xs text-gray-400">
                               {new Date(item.createdAt).toLocaleDateString('id-ID')}
                             </span>

@@ -73,23 +73,28 @@ export async function uploadFileToCloudinary(
   buffer: Buffer,
   folder: string,
   fileName: string
-): Promise<{ url: string; publicId: string; bytes?: number; format?: string }> {
-  // Sanitize file name → use as public_id (without extension)
+): Promise<{ url: string; publicId: string; bytes?: number; format?: string; originalFilename?: string }> {
+  // Extract extension from original filename
+  const extMatch = fileName.match(/\.([a-zA-Z0-9]+)$/)
+  const ext = extMatch ? extMatch[1].toLowerCase() : ''
+
+  // Sanitize file name → use as public_id (WITHOUT removing extension)
+  // Keep the extension so Cloudinary preserves Content-Type
   const baseName = fileName
-    .replace(/\.[^/.]+$/, '') // remove extension
-    .replace(/[^a-zA-Z0-9_-]/g, '_') // sanitize
-    .substring(0, 60) || `${Date.now()}`
-  const finalPublicId = `${baseName}-${Date.now().toString(36)}`
+    .replace(/[^a-zA-Z0-9._-]/g, '_') // sanitize but keep dots, dashes
+    .substring(0, 80) || `file_${Date.now()}`
+  const finalPublicId = `${baseName}`
 
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(
       {
         folder,
         public_id: finalPublicId,
-        // 'raw' resource_type preserves the original file as-is.
-        // Cloudinary serves it with Content-Type: application/octet-stream.
-        // For PDF preview, we use Google Docs Viewer in the DownloadSection.
+        // 'raw' preserves the original file as-is.
+        // The filename with extension is kept so browsers know the file type.
         resource_type: 'raw',
+        // Attach original filename so Content-Disposition header includes it
+        filename_override: fileName,
       },
       (error, result) => {
         if (error) {
@@ -108,6 +113,7 @@ export async function uploadFileToCloudinary(
           publicId: result.public_id,
           bytes: result.bytes,
           format: result.format,
+          originalFilename: fileName,
         })
       }
     )

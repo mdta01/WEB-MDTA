@@ -32,9 +32,11 @@ export function FileUpload({
     async (file: File) => {
       if (!file) return
 
-      // Client-side validation — PDF only
-      if (file.type !== 'application/pdf') {
-        toast.error('File harus berupa PDF')
+      // Client-side validation — support PDF, DOC, DOCX, etc.
+      const allowedExts = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'zip', 'txt']
+      const fileExt = file.name.split('.').pop()?.toLowerCase() || ''
+      if (!allowedExts.includes(fileExt)) {
+        toast.error(`Format tidak didukung: .${fileExt}. Hanya PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, ZIP, TXT.`)
         return
       }
       if (file.size > 25 * 1024 * 1024) {
@@ -89,7 +91,7 @@ export function FileUpload({
   }
 
   // Extract file name from URL if value already set (e.g. editing existing)
-  const displayName = fileName || (value ? value.split('/').pop()?.split('?')[0] || 'file.pdf' : '')
+  const displayName = fileName || (value ? value.split('/').pop()?.split('?')[0] || 'file' : '')
 
   return (
     <div className="space-y-2">
@@ -183,7 +185,7 @@ export function FileUpload({
               <p className="text-sm text-muted-foreground text-center">
                 Klik untuk pilih file <span className="font-medium text-red-600">PDF</span>
               </p>
-              <p className="text-[10px] text-muted-foreground/70">Maksimal 25 MB • Format PDF saja</p>
+              <p className="text-[10px] text-muted-foreground/70">Maksimal 25 MB • PDF, DOC, DOCX, XLS, PPT, ZIP, TXT</p>
             </>
           )}
         </div>
@@ -192,7 +194,7 @@ export function FileUpload({
       <input
         ref={fileInputRef}
         type="file"
-        accept="application/pdf,.pdf"
+        accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.txt"
         onChange={handleFileChange}
         className="hidden"
         disabled={uploading}
