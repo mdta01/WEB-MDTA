@@ -168,21 +168,21 @@ export default function DownloadSection() {
                           </div>
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
-                          {/* View — PDF preview via Google Docs Viewer (inline di browser) */}
+                          {/* View — preview via our proxy API (works with Cloudinary private mode) */}
                           <Button size="sm" variant="outline" className="text-emerald-600 hover:bg-emerald-50" asChild>
                             <a
-                              href={`https://docs.google.com/viewer?url=${encodeURIComponent(item.fileUrl)}&embedded=true`}
+                              href={`/api/preview/${item.id}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              title={`Preview ${item.title}`}
+                              title={`Lihat ${item.title}`}
                             >
                               <Eye className="h-4 w-4" />
                             </a>
                           </Button>
-                          {/* Download — direct download from Cloudinary */}
+                          {/* Download — via our proxy API with proper filename */}
                           <Button size="sm" variant="outline" className="text-emerald-600 hover:bg-emerald-50" asChild>
                             <a
-                              href={item.fileUrl}
+                              href={`/api/download/${item.id}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               download
