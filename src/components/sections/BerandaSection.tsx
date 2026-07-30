@@ -159,15 +159,16 @@ function StatCard({ icon: Icon, label, value, color, delay }: {
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
       transition={{ delay, duration: 0.5 }}
     >
-      <Card className="text-center p-6 hover:shadow-lg transition-shadow border-0 bg-white">
+      <Card className="text-center p-6 card-hover border-0 bg-white/80 backdrop-blur-sm shadow-premium">
         <CardContent className="p-0 flex flex-col items-center gap-3">
-          <div className={`w-14 h-14 rounded-2xl ${color} flex items-center justify-center`}>
+          <div className={`w-14 h-14 rounded-2xl ${color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
             <Icon className="h-7 w-7 text-white" />
           </div>
-          <div className="text-3xl font-bold text-emerald-800">
+          <div className="text-3xl font-bold text-gradient-emerald">
             <AnimatedCounter target={value} />
           </div>
           <p className="text-sm text-gray-500 font-medium">{label}</p>
@@ -522,10 +523,11 @@ export default function BerandaSection() {
       <section className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.6 }}
         >
-          <Card className="overflow-hidden border-0 shadow-lg">
+          <Card className="overflow-hidden border-0 shadow-premium-lg rounded-2xl">
             <div className="grid md:grid-cols-3 gap-0">
               <div className="bg-gradient-to-br from-emerald-600 to-emerald-800 p-8 flex flex-col items-center justify-center text-white relative overflow-hidden">
                 {/* Decorative pattern */}
@@ -573,10 +575,17 @@ export default function BerandaSection() {
 
       {/* Statistics */}
       <section className="container mx-auto px-4">
-        <div className="text-center mb-8">
-          <h2 className="text-2xl md:text-3xl font-bold text-emerald-800">Data Madrasah</h2>
-          <div className="w-20 h-1 bg-amber-500 mx-auto mt-2 rounded-full" />
-        </div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.5 }}
+          className="text-center mb-8"
+        >
+          <span className="inline-block px-4 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold uppercase tracking-wider mb-3">Statistik</span>
+          <h2 className="text-2xl md:text-3xl font-bold text-gradient-emerald">Data Madrasah</h2>
+          <div className="w-20 h-1 bg-gradient-to-r from-emerald-500 to-amber-500 mx-auto mt-3 rounded-full" />
+        </motion.div>
         {statsLoading ? (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[1, 2, 3, 4].map(i => (
@@ -598,19 +607,26 @@ export default function BerandaSection() {
 
       {/* Latest News */}
       <section className="container mx-auto px-4">
-        <div className="flex items-center justify-between mb-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.5 }}
+          className="flex items-center justify-between mb-6"
+        >
           <div>
-            <h2 className="text-2xl md:text-3xl font-bold text-emerald-800">Berita Terbaru</h2>
-            <div className="w-20 h-1 bg-amber-500 mt-2 rounded-full" />
+            <span className="inline-block px-3 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold uppercase tracking-wider mb-2">Update Terkini</span>
+            <h2 className="text-2xl md:text-3xl font-bold text-gradient-emerald">Berita Terbaru</h2>
+            <div className="w-20 h-1 bg-gradient-to-r from-emerald-500 to-amber-500 mt-2 rounded-full" />
           </div>
           <Button
             variant="ghost"
             onClick={() => { setCurrentPage('berita'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
-            className="text-emerald-600 hover:text-emerald-800"
+            className="text-emerald-600 hover:text-emerald-800 hover:gap-2 transition-all rounded-full"
           >
             Selengkapnya <ArrowRight className="ml-1 h-4 w-4" />
           </Button>
-        </div>
+        </motion.div>
         {newsLoading ? (
           <div className="grid md:grid-cols-3 gap-6">
             {[1, 2, 3].map(i => (
@@ -629,12 +645,13 @@ export default function BerandaSection() {
             {news.map((item: { id: string; title: string; excerpt?: string; content?: string; category: string; createdAt: string; image?: string }, idx: number) => (
               <motion.div
                 key={item.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.1 }}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ delay: idx * 0.1, duration: 0.5 }}
               >
                 <Card
-                  className="overflow-hidden border-0 shadow-md hover:shadow-lg transition-shadow group cursor-pointer"
+                  className="overflow-hidden border-0 shadow-premium card-hover group cursor-pointer rounded-2xl"
                   onClick={() => setSelectedNews(item as typeof selectedNews)}
                 >
                   <div className="h-48 bg-gradient-to-br from-emerald-400 to-emerald-600 relative overflow-hidden">
@@ -705,22 +722,29 @@ export default function BerandaSection() {
 
       {/* Dakwah & Kajian Terbaru */}
       <section className="container mx-auto px-4">
-        <div className="flex items-center justify-between mb-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.5 }}
+          className="flex items-center justify-between mb-6"
+        >
           <div>
-            <h2 className="text-2xl md:text-3xl font-bold text-emerald-800 flex items-center gap-2">
+            <span className="inline-block px-3 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold uppercase tracking-wider mb-2">Inspirasi Islami</span>
+            <h2 className="text-2xl md:text-3xl font-bold text-gradient-emerald flex items-center gap-2">
               <BookHeart className="h-7 w-7 text-amber-500" />
               Dakwah & Kajian
             </h2>
-            <div className="w-20 h-1 bg-amber-500 mt-2 rounded-full" />
+            <div className="w-20 h-1 bg-gradient-to-r from-emerald-500 to-amber-500 mt-2 rounded-full" />
           </div>
           <Button
             variant="ghost"
             onClick={() => { setCurrentPage('dakwah'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
-            className="text-emerald-600 hover:text-emerald-800"
+            className="text-emerald-600 hover:text-emerald-800 hover:gap-2 transition-all rounded-full"
           >
             Selengkapnya <ArrowRight className="ml-1 h-4 w-4" />
           </Button>
-        </div>
+        </motion.div>
         {dakwahLoading ? (
           <div className="grid md:grid-cols-3 gap-6">
             {[1, 2, 3].map(i => (
@@ -739,12 +763,13 @@ export default function BerandaSection() {
             {dakwahList.map((item: { id: string; title: string; content: string; category: string; author?: string; image?: string; videoUrl?: string; createdAt: string }, idx: number) => (
               <motion.div
                 key={item.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.1 }}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ delay: idx * 0.1, duration: 0.5 }}
               >
                 <Card
-                  className="overflow-hidden border-0 shadow-md hover:shadow-lg transition-shadow group cursor-pointer h-full flex flex-col"
+                  className="overflow-hidden border-0 shadow-premium card-hover group cursor-pointer h-full flex flex-col rounded-2xl"
                   onClick={() => setSelectedDakwah(item)}
                 >
                   {/* Image or gradient header */}
@@ -846,19 +871,32 @@ export default function BerandaSection() {
 
       {/* Kalender Hijriyah & Masehi — Professional Calendar Cards */}
       <section className="container mx-auto px-4">
-        <div className="text-center mb-6">
-          <h2 className="text-2xl md:text-3xl font-bold text-emerald-800">Kalender</h2>
-          <div className="w-20 h-1 bg-amber-500 mx-auto mt-2 rounded-full" />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.5 }}
+          className="text-center mb-6"
+        >
+          <span className="inline-block px-3 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold uppercase tracking-wider mb-2">Penanggalan</span>
+          <h2 className="text-2xl md:text-3xl font-bold text-gradient-emerald">Kalender</h2>
+          <div className="w-20 h-1 bg-gradient-to-r from-emerald-500 to-amber-500 mx-auto mt-2 rounded-full" />
           <p className="text-xs text-gray-500 mt-3 flex items-center justify-center gap-1.5">
             <Eye className="h-3.5 w-3.5 text-emerald-600" />
             Klik kartu kalender untuk melihat kalender lengkap &amp; hari besar Islam
           </p>
-        </div>
+        </motion.div>
 
         <div className="grid md:grid-cols-2 gap-6">
           {/* Kalender Hijriyah */}
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.5 }}
+          >
           <Card
-            className="border-0 shadow-lg overflow-hidden cursor-pointer hover:shadow-xl hover:-translate-y-0.5 transition-all group"
+            className="border-0 shadow-premium-lg overflow-hidden cursor-pointer hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group rounded-2xl"
             onClick={() => setCalendarModal({ open: true, type: 'hijri' })}
           >
             <div className="bg-gradient-to-br from-emerald-700 via-emerald-800 to-emerald-900 text-white relative">
@@ -917,10 +955,17 @@ export default function BerandaSection() {
               </div>
             </div>
           </Card>
+          </motion.div>
 
           {/* Kalender Masehi */}
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.5 }}
+          >
           <Card
-            className="border-0 shadow-lg overflow-hidden cursor-pointer hover:shadow-xl hover:-translate-y-0.5 transition-all group"
+            className="border-0 shadow-premium-lg overflow-hidden cursor-pointer hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group rounded-2xl"
             onClick={() => setCalendarModal({ open: true, type: 'masehi' })}
           >
             <div className="bg-gradient-to-br from-amber-600 via-amber-700 to-amber-800 text-white relative">
@@ -985,19 +1030,35 @@ export default function BerandaSection() {
               </div>
             </div>
           </Card>
+          </motion.div>
         </div>
       </section>
 
       {/* Testimonials */}
       {testimonials.length > 0 && (
-        <section className="bg-emerald-50 py-12">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl md:text-3xl font-bold text-emerald-800">Testimoni</h2>
-              <div className="w-20 h-1 bg-amber-500 mx-auto mt-2 rounded-full" />
-            </div>
-            <div className="max-w-2xl mx-auto">
-              <Card className="border-0 shadow-lg">
+        <section className="relative bg-mesh-emerald py-12 overflow-hidden">
+          {/* Decorative glow */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-emerald-200/20 rounded-full blur-3xl pointer-events-none" aria-hidden />
+          <div className="container mx-auto px-4 relative">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.5 }}
+              className="text-center mb-8"
+            >
+              <span className="inline-block px-3 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold uppercase tracking-wider mb-2">Kata Mereka</span>
+              <h2 className="text-2xl md:text-3xl font-bold text-gradient-emerald">Testimoni</h2>
+              <div className="w-20 h-1 bg-gradient-to-r from-emerald-500 to-amber-500 mx-auto mt-2 rounded-full" />
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.6 }}
+              className="max-w-2xl mx-auto"
+            >
+              <Card className="border border-white/40 shadow-premium-lg glass rounded-2xl">
                 <CardContent className="p-8 text-center">
                   <Quote className="h-10 w-10 text-amber-400 mx-auto mb-4" />
                   <p className="text-gray-600 italic leading-relaxed mb-6">
@@ -1035,28 +1096,36 @@ export default function BerandaSection() {
                   )}
                 </CardContent>
               </Card>
-            </div>
+            </motion.div>
           </div>
         </section>
       )}
 
       {/* Upcoming Events */}
       {events.length > 0 && (
-        <section className="bg-amber-50 py-12">
+        <section className="bg-amber-50/50 py-12">
           <div className="container mx-auto px-4">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl md:text-3xl font-bold text-emerald-800">Kegiatan Mendatang</h2>
-              <div className="w-20 h-1 bg-amber-500 mx-auto mt-2 rounded-full" />
-            </div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.5 }}
+              className="text-center mb-8"
+            >
+              <span className="inline-block px-3 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold uppercase tracking-wider mb-2">Agenda</span>
+              <h2 className="text-2xl md:text-3xl font-bold text-gradient-emerald">Kegiatan Mendatang</h2>
+              <div className="w-20 h-1 bg-gradient-to-r from-emerald-500 to-amber-500 mx-auto mt-2 rounded-full" />
+            </motion.div>
             <div className="grid md:grid-cols-3 gap-6">
               {events.map((event: { id: string; title: string; description?: string; date: string; location?: string }, idx: number) => (
                 <motion.div
                   key={event.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.1 }}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ delay: idx * 0.1, duration: 0.5 }}
                 >
-                  <Card className="border-0 shadow-md hover:shadow-lg transition-shadow">
+                  <Card className="border-0 shadow-premium card-hover rounded-2xl">
                     <CardContent className="p-6">
                       <div className="flex gap-4">
                         <div className="bg-emerald-600 text-white rounded-xl p-3 text-center min-w-[60px]">

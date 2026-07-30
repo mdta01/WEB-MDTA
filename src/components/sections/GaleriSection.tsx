@@ -103,8 +103,25 @@ export default function GaleriSection() {
     <div className="space-y-8">
       {/* Header */}
       <div className="text-center mb-8">
-        <h2 className="text-2xl md:text-3xl font-bold text-emerald-800">Galeri</h2>
-        <div className="w-20 h-1 bg-amber-500 mx-auto mt-2 rounded-full" />
+        <motion.span
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.4 }}
+          className="inline-block px-3 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold uppercase tracking-wider mb-2"
+        >
+          Dokumentasi
+        </motion.span>
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.5 }}
+          className="text-2xl md:text-3xl font-bold text-gradient-emerald"
+        >
+          Galeri
+        </motion.h2>
+        <div className="w-20 h-1 bg-gradient-to-r from-emerald-500 to-amber-500 mx-auto mt-2 rounded-full" />
         {filteredGallery.length > 0 && (
           <p className="text-sm text-gray-500 mt-3">
             {filteredGallery.length} foto
@@ -120,10 +137,10 @@ export default function GaleriSection() {
             <button
               key={cat.value}
               onClick={() => setSelectedCategory(cat.value)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
                 selectedCategory === cat.value
-                  ? 'bg-emerald-700 text-white shadow-md'
-                  : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+                  ? 'bg-gradient-to-r from-emerald-700 to-emerald-800 text-white shadow-md shadow-emerald-700/30 scale-105'
+                  : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 hover:scale-105'
               }`}
             >
               {cat.label}
@@ -139,10 +156,10 @@ export default function GaleriSection() {
             </span>
             <button
               onClick={() => setSelectedYear('')}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-300 ${
                 safeSelectedYear === ''
-                  ? 'bg-amber-500 text-white shadow-md'
-                  : 'bg-amber-50 text-amber-700 hover:bg-amber-100'
+                  ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-white shadow-md scale-105'
+                  : 'bg-amber-50 text-amber-700 hover:bg-amber-100 hover:scale-105'
               }`}
             >
               Semua
@@ -151,10 +168,10 @@ export default function GaleriSection() {
               <button
                 key={year}
                 onClick={() => setSelectedYear(year)}
-                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-300 ${
                   safeSelectedYear === year
-                    ? 'bg-amber-500 text-white shadow-md'
-                    : 'bg-amber-50 text-amber-700 hover:bg-amber-100'
+                    ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-white shadow-md scale-105'
+                    : 'bg-amber-50 text-amber-700 hover:bg-amber-100 hover:scale-105'
                 }`}
               >
                 {year}
@@ -176,13 +193,14 @@ export default function GaleriSection() {
           {filteredGallery.map((item, idx) => (
             <motion.div
               key={item.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: Math.min(idx * 0.04, 0.4) }}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ delay: Math.min(idx * 0.04, 0.4), duration: 0.5 }}
               className="break-inside-avoid mb-4 cursor-pointer group"
               onClick={() => setLightboxIndex(idx)}
             >
-              <div className="relative rounded-xl overflow-hidden shadow-md hover:shadow-2xl transition-shadow duration-300 bg-gray-100">
+              <div className="relative rounded-2xl overflow-hidden shadow-premium card-hover bg-gray-100">
                 {item.type === 'video' ? (
                   <div className={`aspect-video bg-gradient-to-br ${gradientVariants[idx % gradientVariants.length]} flex items-center justify-center`}>
                     <Play className="h-12 w-12 text-white/70" />
@@ -192,7 +210,7 @@ export default function GaleriSection() {
                     src={item.image}
                     alt={item.title}
                     loading="lazy"
-                    className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-auto object-cover group-hover:scale-110 transition-transform duration-700"
                   />
                 )}
                 {/* Hover overlay */}

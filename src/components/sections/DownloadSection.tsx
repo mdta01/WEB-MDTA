@@ -101,8 +101,25 @@ export default function DownloadSection() {
   return (
     <div className="space-y-8">
       <div className="text-center mb-8">
-        <h2 className="text-2xl md:text-3xl font-bold text-emerald-800">Download</h2>
-        <div className="w-20 h-1 bg-amber-500 mx-auto mt-2 rounded-full" />
+        <motion.span
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.4 }}
+          className="inline-block px-3 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold uppercase tracking-wider mb-2"
+        >
+          Pusat Unduhan
+        </motion.span>
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.5 }}
+          className="text-2xl md:text-3xl font-bold text-gradient-emerald"
+        >
+          Download
+        </motion.h2>
+        <div className="w-20 h-1 bg-gradient-to-r from-emerald-500 to-amber-500 mx-auto mt-2 rounded-full" />
         <p className="text-gray-500 mt-3 text-sm">Unduh formulir, jadwal, materi, dan dokumen lainnya</p>
       </div>
 
@@ -112,10 +129,10 @@ export default function DownloadSection() {
           <button
             key={cat.value}
             onClick={() => setSelectedCategory(cat.value)}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
               selectedCategory === cat.value
-                ? 'bg-emerald-700 text-white'
-                : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+                ? 'bg-gradient-to-r from-emerald-700 to-emerald-800 text-white shadow-md shadow-emerald-700/30 scale-105'
+                : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 hover:scale-105'
             }`}
           >
             {cat.label}
@@ -140,7 +157,10 @@ export default function DownloadSection() {
       ) : downloads.length > 0 ? (
         Object.entries(grouped).map(([category, items]) => (
           <div key={category}>
-            <h3 className="text-lg font-bold text-emerald-800 mb-4 capitalize">{category}</h3>
+            <h3 className="text-lg font-bold text-emerald-800 mb-4 capitalize flex items-center gap-2">
+              <span className="w-1.5 h-5 bg-gradient-to-b from-amber-400 to-amber-500 rounded-full" />
+              {category}
+            </h3>
             <div className="grid md:grid-cols-2 gap-4">
               {(items as { id: string; title: string; fileUrl: string; category: string; createdAt: string }[]).map((item, idx) => {
                 const fileType = getFileType(item.fileUrl)
@@ -149,13 +169,14 @@ export default function DownloadSection() {
                 return (
                   <motion.div
                     key={item.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.05 }}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-50px" }}
+                    transition={{ delay: idx * 0.05, duration: 0.5 }}
                   >
-                    <Card className="border-0 shadow-md hover:shadow-lg transition-shadow">
+                    <Card className="border-0 shadow-premium card-hover rounded-2xl">
                       <CardContent className="p-4 flex items-center gap-4">
-                        <div className={`w-12 h-12 rounded-xl ${colorClass} flex items-center justify-center shrink-0`}>
+                        <div className={`w-12 h-12 rounded-2xl ${colorClass} flex items-center justify-center shrink-0 shadow-md`}>
                           <FileIcon className="h-6 w-6" />
                         </div>
                         <div className="flex-1 min-w-0">
@@ -169,7 +190,7 @@ export default function DownloadSection() {
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
                           {/* View — preview via our proxy API (works with Cloudinary private mode) */}
-                          <Button size="sm" variant="outline" className="text-emerald-600 hover:bg-emerald-50" asChild>
+                          <Button size="sm" variant="outline" className="text-emerald-600 hover:bg-emerald-50 hover:scale-110 rounded-xl transition-all" asChild>
                             <a
                               href={`/api/preview/${item.id}`}
                               target="_blank"
@@ -180,7 +201,7 @@ export default function DownloadSection() {
                             </a>
                           </Button>
                           {/* Download — via our proxy API with proper filename */}
-                          <Button size="sm" variant="outline" className="text-emerald-600 hover:bg-emerald-50" asChild>
+                          <Button size="sm" variant="outline" className="text-emerald-600 hover:bg-emerald-50 hover:scale-110 rounded-xl transition-all" asChild>
                             <a
                               href={`/api/download/${item.id}`}
                               target="_blank"

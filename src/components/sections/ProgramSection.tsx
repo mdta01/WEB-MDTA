@@ -52,7 +52,7 @@ function getIcon(iconName?: string | null) {
 function ProgramGrid({ items, color }: { items: ProgramItem[]; color: string }) {
   if (items.length === 0) {
     return (
-      <Card className="border-0 shadow-md p-8 text-center">
+      <Card className="border-0 shadow-premium p-8 text-center rounded-2xl">
         <BookOpen className="h-12 w-12 text-emerald-200 mx-auto mb-3" />
         <p className="text-gray-500">Data belum tersedia</p>
       </Card>
@@ -66,13 +66,14 @@ function ProgramGrid({ items, color }: { items: ProgramItem[]; color: string }) 
         return (
           <motion.div
             key={item.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: idx * 0.05 }}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ delay: idx * 0.05, duration: 0.5 }}
           >
-            <Card className="border-0 shadow-md hover:shadow-lg transition-shadow h-full">
+            <Card className="border-0 shadow-premium card-hover h-full rounded-2xl">
               <CardContent className="p-5 flex items-start gap-4">
-                <div className={`w-12 h-12 rounded-xl ${color} flex items-center justify-center shrink-0`}>
+                <div className={`w-12 h-12 rounded-xl ${color} flex items-center justify-center shrink-0 shadow-md`}>
                   <Icon className="h-6 w-6 text-white" />
                 </div>
                 <div>
@@ -150,16 +151,33 @@ export default function ProgramSection() {
   return (
     <div className="space-y-8">
       <div className="text-center mb-8">
-        <h2 className="text-2xl md:text-3xl font-bold text-emerald-800">Program Pendidikan</h2>
-        <div className="w-20 h-1 bg-amber-500 mx-auto mt-2 rounded-full" />
+        <motion.span
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.4 }}
+          className="inline-block px-3 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold uppercase tracking-wider mb-2"
+        >
+          Akademik
+        </motion.span>
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.5 }}
+          className="text-2xl md:text-3xl font-bold text-gradient-emerald"
+        >
+          Program Pendidikan
+        </motion.h2>
+        <div className="w-20 h-1 bg-gradient-to-r from-emerald-500 to-amber-500 mx-auto mt-2 rounded-full" />
       </div>
 
       <Tabs defaultValue="kelas" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 mb-6 bg-emerald-50">
-          <TabsTrigger value="kelas" className="data-[state=active]:bg-emerald-700 data-[state=active]:text-white text-xs md:text-sm">Kelas</TabsTrigger>
-          <TabsTrigger value="kurikulum" className="data-[state=active]:bg-emerald-700 data-[state=active]:text-white text-xs md:text-sm">Kurikulum</TabsTrigger>
-          <TabsTrigger value="unggulan" className="data-[state=active]:bg-emerald-700 data-[state=active]:text-white text-xs md:text-sm">Unggulan</TabsTrigger>
-          <TabsTrigger value="ekskul" className="data-[state=active]:bg-emerald-700 data-[state=active]:text-white text-xs md:text-sm">Ekskul</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-4 mb-6 bg-emerald-50 rounded-2xl p-1.5">
+          <TabsTrigger value="kelas" className="data-[state=active]:bg-gradient-to-br data-[state=active]:from-emerald-600 data-[state=active]:to-emerald-700 data-[state=active]:text-white data-[state=active]:shadow-md rounded-xl text-xs md:text-sm transition-all">Kelas</TabsTrigger>
+          <TabsTrigger value="kurikulum" className="data-[state=active]:bg-gradient-to-br data-[state=active]:from-emerald-600 data-[state=active]:to-emerald-700 data-[state=active]:text-white data-[state=active]:shadow-md rounded-xl text-xs md:text-sm transition-all">Kurikulum</TabsTrigger>
+          <TabsTrigger value="unggulan" className="data-[state=active]:bg-gradient-to-br data-[state=active]:from-emerald-600 data-[state=active]:to-emerald-700 data-[state=active]:text-white data-[state=active]:shadow-md rounded-xl text-xs md:text-sm transition-all">Unggulan</TabsTrigger>
+          <TabsTrigger value="ekskul" className="data-[state=active]:bg-gradient-to-br data-[state=active]:from-emerald-600 data-[state=active]:to-emerald-700 data-[state=active]:text-white data-[state=active]:shadow-md rounded-xl text-xs md:text-sm transition-all">Ekskul</TabsTrigger>
         </TabsList>
 
         <TabsContent value="kelas">
@@ -182,11 +200,26 @@ export default function ProgramSection() {
       {/* Jadwal KBM — Card-based layout per hari */}
       <section className="mt-12">
         <div className="text-center mb-6">
-          <h3 className="text-xl md:text-2xl font-bold text-emerald-800 flex items-center justify-center gap-2">
+          <motion.span
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.4 }}
+            className="inline-block px-3 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold uppercase tracking-wider mb-2"
+          >
+            Jadwal
+          </motion.span>
+          <motion.h3
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.5 }}
+            className="text-xl md:text-2xl font-bold text-gradient-emerald flex items-center justify-center gap-2"
+          >
             <Clock className="h-6 w-6 text-amber-500" />
             Jadwal KBM
-          </h3>
-          <div className="w-20 h-1 bg-amber-500 mx-auto mt-2 rounded-full" />
+          </motion.h3>
+          <div className="w-20 h-1 bg-gradient-to-r from-emerald-500 to-amber-500 mx-auto mt-2 rounded-full" />
           <p className="text-sm text-gray-600 mt-3">
             Hari belajar: <span className="font-semibold text-emerald-700">Sabtu – Kamis</span>
             <span className="mx-2 text-gray-400">•</span>
@@ -217,11 +250,12 @@ export default function ProgramSection() {
               return (
                 <motion.div
                   key={day}
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ duration: 0.4 }}
                 >
-                  <Card className={`border-0 shadow-md overflow-hidden h-full ${isFriday ? 'ring-1 ring-red-200' : ''}`}>
+                  <Card className={`border-0 shadow-premium card-hover overflow-hidden h-full rounded-2xl ${isFriday ? 'ring-1 ring-red-200' : ''}`}>
                     {/* Day header */}
                     <div className={`px-4 py-3 flex items-center justify-between ${
                       isFriday

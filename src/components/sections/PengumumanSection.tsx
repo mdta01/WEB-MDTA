@@ -31,8 +31,25 @@ export default function PengumumanSection() {
   return (
     <div className="space-y-8">
       <div className="text-center mb-8">
-        <h2 className="text-2xl md:text-3xl font-bold text-emerald-800">Pengumuman</h2>
-        <div className="w-20 h-1 bg-amber-500 mx-auto mt-2 rounded-full" />
+        <motion.span
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.4 }}
+          className="inline-block px-3 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold uppercase tracking-wider mb-2"
+        >
+          Pemberitahuan
+        </motion.span>
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.5 }}
+          className="text-2xl md:text-3xl font-bold text-gradient-emerald"
+        >
+          Pengumuman
+        </motion.h2>
+        <div className="w-20 h-1 bg-gradient-to-r from-emerald-500 to-amber-500 mx-auto mt-2 rounded-full" />
       </div>
 
       {isLoading ? (
@@ -58,14 +75,15 @@ export default function PengumumanSection() {
             return (
               <motion.div
                 key={item.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: idx * 0.05 }}
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ delay: idx * 0.05, duration: 0.5 }}
               >
-                <Card className={`border-0 shadow-md hover:shadow-lg transition-shadow ${item.priority >= 3 ? 'ring-2 ring-amber-300' : ''}`}>
+                <Card className={`border-0 shadow-premium card-hover rounded-2xl ${item.priority >= 3 ? 'ring-2 ring-amber-300' : ''}`}>
                   <CardContent className="p-5">
                     <div className="flex items-start gap-4">
-                      <div className={`w-10 h-10 rounded-xl ${config.color} flex items-center justify-center shrink-0`}>
+                      <div className={`w-10 h-10 rounded-2xl ${config.color} flex items-center justify-center shrink-0 shadow-md`}>
                         <TypeIcon className="h-5 w-5" />
                       </div>
                       <div className="flex-1 min-w-0">

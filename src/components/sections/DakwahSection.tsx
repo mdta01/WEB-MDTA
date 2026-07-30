@@ -42,17 +42,34 @@ export default function DakwahSection() {
   return (
     <div className="space-y-8">
       <div className="text-center mb-8">
-        <h2 className="text-2xl md:text-3xl font-bold text-emerald-800">Dakwah & Kajian</h2>
-        <div className="w-20 h-1 bg-amber-500 mx-auto mt-2 rounded-full" />
+        <motion.span
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.4 }}
+          className="inline-block px-3 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold uppercase tracking-wider mb-2"
+        >
+          Inspirasi Islami
+        </motion.span>
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.5 }}
+          className="text-2xl md:text-3xl font-bold text-gradient-emerald"
+        >
+          Dakwah & Kajian
+        </motion.h2>
+        <div className="w-20 h-1 bg-gradient-to-r from-emerald-500 to-amber-500 mx-auto mt-2 rounded-full" />
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-4 mb-6 bg-emerald-50">
+        <TabsList className="grid w-full grid-cols-4 mb-6 bg-emerald-50 rounded-2xl p-1.5">
           {categoryTabs.map((tab) => (
             <TabsTrigger
               key={tab.value}
               value={tab.value}
-              className="data-[state=active]:bg-emerald-700 data-[state=active]:text-white text-xs md:text-sm"
+              className="data-[state=active]:bg-gradient-to-br data-[state=active]:from-emerald-600 data-[state=active]:to-emerald-700 data-[state=active]:text-white data-[state=active]:shadow-md rounded-xl text-xs md:text-sm transition-all"
             >
               <tab.icon className="h-4 w-4 mr-1 hidden sm:block" />
               {tab.label}
@@ -78,19 +95,20 @@ export default function DakwahSection() {
             {dakwah.map((item: { id: string; title: string; content: string; category: string; author?: string; image?: string; videoUrl?: string; createdAt: string }, idx: number) => (
               <motion.div
                 key={item.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.05 }}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ delay: idx * 0.05, duration: 0.5 }}
               >
                 <Card
-                  className="border-0 shadow-md hover:shadow-lg transition-shadow cursor-pointer group h-full overflow-hidden"
+                  className="border-0 shadow-premium card-hover cursor-pointer group h-full overflow-hidden rounded-2xl"
                   onClick={() => setSelectedItem(item)}
                 >
                   {/* Image / Video thumbnail */}
                   {(item.image || item.videoUrl) && (
                     <div className="h-40 bg-gradient-to-br from-emerald-400 to-teal-600 relative overflow-hidden">
                       {item.image ? (
-                        <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                        <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
                           <BookHeart className="h-12 w-12 text-white/50" />
@@ -99,12 +117,12 @@ export default function DakwahSection() {
                       {/* Video play indicator */}
                       {item.videoUrl && (
                         <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="w-12 h-12 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center group-hover:bg-black/70 transition-colors">
+                          <div className="w-12 h-12 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center group-hover:bg-black/70 group-hover:scale-110 transition-all duration-300">
                             <Play className="h-5 w-5 text-white ml-0.5" fill="white" />
                           </div>
                         </div>
                       )}
-                      <Badge className={`absolute top-3 left-3 text-xs ${categoryColors[item.category] || 'bg-gray-100 text-gray-700'}`}>
+                      <Badge className={`absolute top-3 left-3 text-xs backdrop-blur-sm ${categoryColors[item.category] || 'bg-gray-100 text-gray-700'} shadow-md`}>
                         {item.category}
                       </Badge>
                     </div>

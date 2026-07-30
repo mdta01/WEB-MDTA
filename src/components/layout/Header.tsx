@@ -85,12 +85,17 @@ export default function Header() {
 
   return (
     <header
-      className={`sticky top-0 z-50 transition-all duration-300 ${
-        scrolled ? 'shadow-lg' : ''
+      className={`sticky top-0 z-50 transition-all duration-500 ${
+        scrolled
+          ? 'shadow-premium-lg backdrop-blur-xl bg-emerald-900/85'
+          : 'bg-gradient-to-r from-emerald-800 via-emerald-900 to-emerald-900'
       }`}
     >
+      {/* Subtle top accent line */}
+      <div className="h-0.5 bg-gradient-to-r from-transparent via-amber-400/60 to-transparent" />
+
       {/* Main header */}
-      <div className="bg-gradient-to-r from-emerald-800 to-emerald-900 text-white">
+      <div className="text-white">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16 md:h-20">
             {/* Logo & Name */}
@@ -98,7 +103,7 @@ export default function Header() {
               onClick={() => handleNav('beranda')}
               className="flex items-center gap-3 group"
             >
-              <div className="w-10 h-10 md:w-12 md:h-12 group-hover:scale-105 transition-transform flex items-center justify-center">
+              <div className="w-10 h-10 md:w-12 md:h-12 group-hover:scale-110 group-active:scale-95 transition-all duration-300 flex items-center justify-center rounded-full group-hover:shadow-glow-amber">
                 <img
                   src={madrasahLogo}
                   alt={`Logo ${madrasahName}`}
@@ -116,7 +121,7 @@ export default function Header() {
                 />
               </div>
               <div className="flex flex-col">
-                <span className="font-bold text-sm md:text-lg leading-tight uppercase tracking-wide">{madrasahName}</span>
+                <span className="font-bold text-sm md:text-lg leading-tight uppercase tracking-wide group-hover:text-amber-200 transition-colors duration-300">{madrasahName}</span>
                 <span className="text-emerald-200 text-[10px] md:text-xs hidden sm:block">
                   {madrasahSubtitle}
                 </span>
@@ -129,33 +134,35 @@ export default function Header() {
                 <button
                   key={item.page}
                   onClick={() => handleNav(item.page)}
-                  className={`px-2.5 py-2 rounded-md text-xs font-medium transition-colors ${
+                  className={`px-3 py-2 rounded-full text-xs font-medium transition-all duration-300 ${
                     currentPage === item.page
-                      ? 'bg-amber-500 text-emerald-900'
-                      : 'text-emerald-100 hover:bg-emerald-700 hover:text-white'
+                      ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-emerald-900 shadow-md shadow-amber-500/30'
+                      : 'text-emerald-100 hover:bg-white/10 hover:text-white hover:scale-105'
                   }`}
                 >
                   {item.label}
                 </button>
               ))}
               <div className="relative group">
-                <button className="px-2.5 py-2 rounded-md text-xs font-medium text-emerald-100 hover:bg-emerald-700 hover:text-white flex items-center gap-1">
-                  Lainnya <ChevronDown className="h-3 w-3" />
+                <button className="px-3 py-2 rounded-full text-xs font-medium text-emerald-100 hover:bg-white/10 hover:text-white hover:scale-105 flex items-center gap-1 transition-all duration-300">
+                  Lainnya <ChevronDown className="h-3 w-3 group-hover:rotate-180 transition-transform duration-300" />
                 </button>
-                <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-xl py-2 min-w-[180px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                  {navItems.slice(8).map((item) => (
-                    <button
-                      key={item.page}
-                      onClick={() => handleNav(item.page)}
-                      className={`block w-full text-left px-4 py-2 text-sm transition-colors ${
-                        currentPage === item.page
-                          ? 'bg-emerald-50 text-emerald-800 font-medium'
-                          : 'text-gray-700 hover:bg-emerald-50 hover:text-emerald-800'
-                      }`}
-                    >
-                      {item.label}
-                    </button>
-                  ))}
+                <div className="absolute right-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <div className="bg-white/95 backdrop-blur-xl rounded-2xl shadow-premium-lg py-2 min-w-[200px] border border-emerald-100 overflow-hidden">
+                    {navItems.slice(8).map((item) => (
+                      <button
+                        key={item.page}
+                        onClick={() => handleNav(item.page)}
+                        className={`block w-full text-left px-4 py-2 text-sm transition-all duration-200 ${
+                          currentPage === item.page
+                            ? 'bg-emerald-50 text-emerald-800 font-medium border-l-2 border-amber-500'
+                            : 'text-gray-700 hover:bg-emerald-50 hover:text-emerald-800 hover:pl-5'
+                        }`}
+                      >
+                        {item.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
             </nav>
@@ -166,7 +173,7 @@ export default function Header() {
                 variant="ghost"
                 size="icon"
                 onClick={handleSearch}
-                className="text-emerald-100 hover:text-white hover:bg-emerald-700 h-9 w-9"
+                className="text-emerald-100 hover:text-white hover:bg-white/15 hover:scale-110 h-9 w-9 rounded-full transition-all duration-300"
               >
                 <Search className="h-4 w-4" />
               </Button>
@@ -176,7 +183,7 @@ export default function Header() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="xl:hidden text-emerald-100 hover:text-white hover:bg-emerald-700 h-9 w-9"
+                    className="xl:hidden text-emerald-100 hover:text-white hover:bg-white/15 hover:scale-110 h-9 w-9 rounded-full transition-all duration-300"
                   >
                     <Menu className="h-5 w-5" />
                   </Button>

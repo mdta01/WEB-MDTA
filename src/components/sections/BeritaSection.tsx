@@ -72,8 +72,25 @@ export default function BeritaSection() {
   return (
     <div className="space-y-8">
       <div className="text-center mb-8">
-        <h2 className="text-2xl md:text-3xl font-bold text-emerald-800">Berita & Kegiatan</h2>
-        <div className="w-20 h-1 bg-amber-500 mx-auto mt-2 rounded-full" />
+        <motion.span
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.4 }}
+          className="inline-block px-3 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold uppercase tracking-wider mb-2"
+        >
+          Informasi Publik
+        </motion.span>
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.5 }}
+          className="text-2xl md:text-3xl font-bold text-gradient-emerald"
+        >
+          Berita & Kegiatan
+        </motion.h2>
+        <div className="w-20 h-1 bg-gradient-to-r from-emerald-500 to-amber-500 mx-auto mt-2 rounded-full" />
         <p className="text-sm text-gray-500 mt-3">
           {allNews.length > 0
             ? `Menampilkan ${startIndex + 1}-${Math.min(endIndex, allNews.length)} dari ${allNews.length} berita`
@@ -87,10 +104,10 @@ export default function BeritaSection() {
           <button
             key={cat.value}
             onClick={() => handleCategoryChange(cat.value)}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
               selectedCategory === cat.value
-                ? 'bg-emerald-700 text-white'
-                : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+                ? 'bg-gradient-to-r from-emerald-700 to-emerald-800 text-white shadow-md shadow-emerald-700/30 scale-105'
+                : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 hover:scale-105'
             }`}
           >
             {cat.label}
@@ -119,23 +136,24 @@ export default function BeritaSection() {
             {news.map((item: { id: string; title: string; content: string; excerpt?: string; category: string; createdAt: string; image?: string }, idx: number) => (
               <motion.div
                 key={item.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.05 }}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ delay: idx * 0.05, duration: 0.5 }}
               >
                 <Card
-                  className="overflow-hidden border-0 shadow-md hover:shadow-lg transition-shadow cursor-pointer group h-full flex flex-col"
+                  className="overflow-hidden border-0 shadow-premium card-hover cursor-pointer group h-full flex flex-col rounded-2xl"
                   onClick={() => setSelectedNews(item)}
                 >
                   <div className="h-48 bg-gradient-to-br from-emerald-400 to-emerald-600 relative overflow-hidden">
                     {item.image ? (
-                      <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
                         <BookOpen className="h-12 w-12 text-white/50" />
                       </div>
                     )}
-                    <Badge className={`absolute top-3 left-3 text-xs ${categoryColors[item.category] || 'bg-gray-100 text-gray-700'}`}>
+                    <Badge className={`absolute top-3 left-3 text-xs backdrop-blur-sm ${categoryColors[item.category] || 'bg-gray-100 text-gray-700'} shadow-md`}>
                       {item.category}
                     </Badge>
                   </div>
@@ -169,7 +187,7 @@ export default function BeritaSection() {
                   size="sm"
                   onClick={goToPrevPage}
                   disabled={safePage === 1}
-                  className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 hover:scale-105 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100 rounded-full transition-all"
                 >
                   <ChevronLeft className="h-4 w-4 mr-1" />
                   Sebelumnya
@@ -180,10 +198,10 @@ export default function BeritaSection() {
                     <button
                       key={pageNum}
                       onClick={() => goToPage(pageNum)}
-                      className={`h-8 w-8 rounded-md text-sm font-medium transition-colors ${
+                      className={`h-9 w-9 rounded-full text-sm font-medium transition-all duration-300 ${
                         safePage === pageNum
-                          ? 'bg-emerald-700 text-white'
-                          : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+                          ? 'bg-gradient-to-br from-emerald-700 to-emerald-800 text-white shadow-md scale-110'
+                          : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 hover:scale-110'
                       }`}
                       aria-label={`Halaman ${pageNum}`}
                       aria-current={safePage === pageNum ? 'page' : undefined}
@@ -197,7 +215,7 @@ export default function BeritaSection() {
                   size="sm"
                   onClick={goToNextPage}
                   disabled={safePage === totalPages}
-                  className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 hover:scale-105 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100 rounded-full transition-all"
                 >
                   Berikutnya
                   <ChevronRight className="h-4 w-4 ml-1" />

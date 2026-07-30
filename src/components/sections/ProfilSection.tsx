@@ -56,15 +56,33 @@ export default function ProfilSection() {
       {/* Sejarah */}
       <section>
         <div className="text-center mb-8">
-          <h2 className="text-2xl md:text-3xl font-bold text-emerald-800">Sejarah Madrasah</h2>
-          <div className="w-20 h-1 bg-amber-500 mx-auto mt-2 rounded-full" />
+          <motion.span
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.4 }}
+            className="inline-block px-3 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold uppercase tracking-wider mb-2"
+          >
+            Sejarah
+          </motion.span>
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.5 }}
+            className="text-2xl md:text-3xl font-bold text-gradient-emerald"
+          >
+            Sejarah Madrasah
+          </motion.h2>
+          <div className="w-20 h-1 bg-gradient-to-r from-emerald-500 to-amber-500 mx-auto mt-2 rounded-full" />
         </div>
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.6 }}
         >
-          <Card className="border-0 shadow-lg overflow-hidden">
+          <Card className="border-0 shadow-premium-lg overflow-hidden rounded-2xl">
             <div className="grid md:grid-cols-5 gap-0">
               <div className="md:col-span-2 bg-gradient-to-br from-emerald-700 to-emerald-900 p-8 flex items-center justify-center min-h-[300px]">
                 <div className="text-center text-white">
@@ -88,14 +106,31 @@ export default function ProfilSection() {
       {/* Visi Misi Tujuan */}
       <section>
         <div className="text-center mb-8">
-          <h2 className="text-2xl md:text-3xl font-bold text-emerald-800">Visi, Misi & Tujuan</h2>
-          <div className="w-20 h-1 bg-amber-500 mx-auto mt-2 rounded-full" />
+          <motion.span
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.4 }}
+            className="inline-block px-3 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold uppercase tracking-wider mb-2"
+          >
+            Landasan
+          </motion.span>
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.5 }}
+            className="text-2xl md:text-3xl font-bold text-gradient-emerald"
+          >
+            Visi, Misi & Tujuan
+          </motion.h2>
+          <div className="w-20 h-1 bg-gradient-to-r from-emerald-500 to-amber-500 mx-auto mt-2 rounded-full" />
         </div>
         <div className="grid md:grid-cols-3 gap-6">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0 }}>
-            <Card className="border-0 shadow-lg h-full">
+          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-50px" }} transition={{ delay: 0, duration: 0.5 }}>
+            <Card className="border-0 shadow-premium card-hover h-full rounded-2xl">
               <CardContent className="p-6">
-                <div className="w-14 h-14 rounded-2xl bg-emerald-600 flex items-center justify-center mb-4">
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center mb-4 shadow-md shadow-emerald-500/30">
                   <Eye className="h-7 w-7 text-white" />
                 </div>
                 <h3 className="text-xl font-bold text-emerald-800 mb-3">Visi</h3>
@@ -108,10 +143,10 @@ export default function ProfilSection() {
             </Card>
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-            <Card className="border-0 shadow-lg h-full">
+          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-50px" }} transition={{ delay: 0.1, duration: 0.5 }}>
+            <Card className="border-0 shadow-premium card-hover h-full rounded-2xl">
               <CardContent className="p-6">
-                <div className="w-14 h-14 rounded-2xl bg-amber-600 flex items-center justify-center mb-4">
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center mb-4 shadow-md shadow-amber-500/30">
                   <Target className="h-7 w-7 text-white" />
                 </div>
                 <h3 className="text-xl font-bold text-emerald-800 mb-3">Misi</h3>
@@ -124,10 +159,10 @@ export default function ProfilSection() {
             </Card>
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-            <Card className="border-0 shadow-lg h-full">
+          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-50px" }} transition={{ delay: 0.2, duration: 0.5 }}>
+            <Card className="border-0 shadow-premium card-hover h-full rounded-2xl">
               <CardContent className="p-6">
-                <div className="w-14 h-14 rounded-2xl bg-teal-600 flex items-center justify-center mb-4">
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-teal-500 to-teal-700 flex items-center justify-center mb-4 shadow-md shadow-teal-500/30">
                   <Award className="h-7 w-7 text-white" />
                 </div>
                 <h3 className="text-xl font-bold text-emerald-800 mb-3">Tujuan</h3>
@@ -145,18 +180,35 @@ export default function ProfilSection() {
       {/* Struktur Organisasi */}
       <section>
         <div className="text-center mb-8">
-          <h2 className="text-2xl md:text-3xl font-bold text-emerald-800">Struktur Organisasi</h2>
-          <div className="w-20 h-1 bg-amber-500 mx-auto mt-2 rounded-full" />
+          <motion.span
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.4 }}
+            className="inline-block px-3 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold uppercase tracking-wider mb-2"
+          >
+            Organisasi
+          </motion.span>
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.5 }}
+            className="text-2xl md:text-3xl font-bold text-gradient-emerald"
+          >
+            Struktur Organisasi
+          </motion.h2>
+          <div className="w-20 h-1 bg-gradient-to-r from-emerald-500 to-amber-500 mx-auto mt-2 rounded-full" />
         </div>
-        <Card className="border-0 shadow-lg">
+        <Card className="border-0 shadow-premium-lg rounded-2xl">
           <CardContent className="p-8">
             {struktur && struktur.length > 0 ? (
               <div className="flex flex-col items-center">
                 {/* Level 1 - Kepala */}
                 {struktur.filter(s => s.level === 1).map(item => (
-                  <div key={item.role} className="bg-emerald-700 text-white rounded-xl px-6 py-3 text-center mb-2">
+                  <div key={item.role} className="bg-gradient-to-r from-emerald-700 to-emerald-800 text-white rounded-2xl px-6 py-3 text-center mb-2 shadow-md shadow-emerald-700/30 min-w-[200px]">
                     <p className="font-bold">{item.role}</p>
-                    <p className="text-emerald-200 text-xs">{item.name}</p>
+                    <p className="text-amber-300 text-xs">{item.name}</p>
                   </div>
                 ))}
                 {struktur.some(s => s.level === 2) && (
@@ -164,9 +216,9 @@ export default function ProfilSection() {
                 )}
                 {/* Level 2 - Wakil */}
                 {struktur.filter(s => s.level === 2).map(item => (
-                  <div key={item.role} className="bg-emerald-600 text-white rounded-xl px-6 py-3 text-center mb-2">
+                  <div key={item.role} className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white rounded-2xl px-6 py-3 text-center mb-2 shadow-md min-w-[200px]">
                     <p className="font-bold">{item.role}</p>
-                    <p className="text-emerald-200 text-xs">{item.name}</p>
+                    <p className="text-amber-200 text-xs">{item.name}</p>
                   </div>
                 ))}
                 {struktur.some(s => s.level === 3) && (
@@ -176,7 +228,7 @@ export default function ProfilSection() {
                 {struktur.filter(s => s.level === 3).length > 0 && (
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-2xl">
                     {struktur.filter(s => s.level === 3).map(item => (
-                      <div key={item.role} className="bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2 text-center">
+                      <div key={item.role} className="bg-emerald-50 border border-emerald-200 rounded-2xl px-3 py-2 text-center hover:shadow-md transition-shadow">
                         <p className="font-semibold text-emerald-700 text-xs">{item.role}</p>
                         <p className="text-gray-500 text-[10px]">{item.name}</p>
                       </div>
@@ -197,8 +249,25 @@ export default function ProfilSection() {
       {/* Data Guru — Premium Teacher Cards */}
       <section>
         <div className="text-center mb-8">
-          <h2 className="text-2xl md:text-3xl font-bold text-emerald-800">Tenaga Pengajar</h2>
-          <div className="w-20 h-1 bg-amber-500 mx-auto mt-2 rounded-full" />
+          <motion.span
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.4 }}
+            className="inline-block px-3 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold uppercase tracking-wider mb-2"
+          >
+            Edukator
+          </motion.span>
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.5 }}
+            className="text-2xl md:text-3xl font-bold text-gradient-emerald"
+          >
+            Tenaga Pengajar
+          </motion.h2>
+          <div className="w-20 h-1 bg-gradient-to-r from-emerald-500 to-amber-500 mx-auto mt-2 rounded-full" />
           <p className="text-sm text-gray-500 mt-3">
             {teachers.length > 0
               ? `${teachers.filter((t: { isActive?: boolean }) => t.isActive !== false).length} guru pengajar`
@@ -223,11 +292,12 @@ export default function ProfilSection() {
             {teachers.map((teacher: { id: string; name: string; position: string; subject?: string; image?: string; phone?: string }, idx: number) => (
               <motion.div
                 key={teacher.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: Math.min(idx * 0.05, 0.4) }}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ delay: Math.min(idx * 0.05, 0.4), duration: 0.5 }}
               >
-                <Card className="overflow-hidden border-0 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all group flex flex-col h-full">
+                <Card className="overflow-hidden border-0 shadow-premium card-hover group flex flex-col h-full rounded-2xl">
                   {/* Photo area (clean, no overlay text) */}
                   <div className="relative aspect-[3/4] overflow-hidden bg-gradient-to-br from-emerald-100 to-emerald-200">
                     {teacher.image ? (

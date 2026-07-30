@@ -87,8 +87,25 @@ export default function KontakSection() {
   return (
     <div className="space-y-8">
       <div className="text-center mb-8">
-        <h2 className="text-2xl md:text-3xl font-bold text-emerald-800">Hubungi Kami</h2>
-        <div className="w-20 h-1 bg-amber-500 mx-auto mt-2 rounded-full" />
+        <motion.span
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.4 }}
+          className="inline-block px-3 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold uppercase tracking-wider mb-2"
+        >
+          Get In Touch
+        </motion.span>
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.5 }}
+          className="text-2xl md:text-3xl font-bold text-gradient-emerald"
+        >
+          Hubungi Kami
+        </motion.h2>
+        <div className="w-20 h-1 bg-gradient-to-r from-emerald-500 to-amber-500 mx-auto mt-2 rounded-full" />
       </div>
 
       {/* Contact Info Cards */}
@@ -96,13 +113,14 @@ export default function KontakSection() {
         {contactInfo.map((info, idx) => (
           <motion.div
             key={info.title}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: idx * 0.1 }}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ delay: idx * 0.1, duration: 0.5 }}
           >
-            <Card className="border-0 shadow-md hover:shadow-lg transition-shadow h-full">
-              <CardContent className="p-4 text-center">
-                <div className={`w-12 h-12 rounded-xl ${info.color} flex items-center justify-center mx-auto mb-3`}>
+            <Card className="border-0 shadow-premium card-hover h-full rounded-2xl group">
+              <CardContent className="p-5 text-center">
+                <div className={`w-12 h-12 rounded-2xl ${info.color} flex items-center justify-center mx-auto mb-3 shadow-md group-hover:scale-110 transition-transform duration-300`}>
                   <info.icon className="h-6 w-6 text-white" />
                 </div>
                 <h4 className="font-semibold text-emerald-800 text-sm mb-1">{info.title}</h4>
@@ -115,8 +133,8 @@ export default function KontakSection() {
 
       <div className="grid lg:grid-cols-2 gap-8">
         {/* Contact Form */}
-        <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
-          <Card className="border-0 shadow-lg h-full">
+        <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, margin: "-50px" }} transition={{ delay: 0.2, duration: 0.6 }}>
+          <Card className="border-0 shadow-premium-lg h-full rounded-2xl">
             <CardContent className="p-6">
               <h3 className="text-lg font-bold text-emerald-800 flex items-center gap-2 mb-6">
                 <MessageSquare className="h-5 w-5 text-amber-500" />
@@ -126,28 +144,28 @@ export default function KontakSection() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="c-name" className="text-sm">Nama *</Label>
-                    <Input id="c-name" name="name" value={formData.name} onChange={handleChange} placeholder="Nama Anda" required />
+                    <Input id="c-name" name="name" value={formData.name} onChange={handleChange} placeholder="Nama Anda" required className="rounded-xl focus-ring" />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="c-email" className="text-sm">Email</Label>
-                    <Input id="c-email" name="email" type="email" value={formData.email} onChange={handleChange} placeholder="email@contoh.com" />
+                    <Input id="c-email" name="email" type="email" value={formData.email} onChange={handleChange} placeholder="email@contoh.com" className="rounded-xl focus-ring" />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="c-phone" className="text-sm">No. HP</Label>
-                    <Input id="c-phone" name="phone" type="tel" value={formData.phone} onChange={handleChange} placeholder="08xxxxxxxxxx" />
+                    <Input id="c-phone" name="phone" type="tel" value={formData.phone} onChange={handleChange} placeholder="08xxxxxxxxxx" className="rounded-xl focus-ring" />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="c-subject" className="text-sm">Subjek</Label>
-                    <Input id="c-subject" name="subject" value={formData.subject} onChange={handleChange} placeholder="Perihal pesan" />
+                    <Input id="c-subject" name="subject" value={formData.subject} onChange={handleChange} placeholder="Perihal pesan" className="rounded-xl focus-ring" />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="c-message" className="text-sm">Pesan *</Label>
-                  <Textarea id="c-message" name="message" value={formData.message} onChange={handleChange} placeholder="Tulis pesan Anda..." rows={5} required />
+                  <Textarea id="c-message" name="message" value={formData.message} onChange={handleChange} placeholder="Tulis pesan Anda..." rows={5} required className="rounded-xl focus-ring" />
                 </div>
-                <Button type="submit" disabled={submitting} className="w-full bg-emerald-700 hover:bg-emerald-800">
+                <Button type="submit" disabled={submitting} className="w-full bg-gradient-to-r from-emerald-700 to-emerald-800 hover:from-emerald-800 hover:to-emerald-900 rounded-xl shadow-md shadow-emerald-700/30 hover:scale-[1.02] transition-all">
                   {submitting ? 'Mengirim...' : 'Kirim Pesan'}
                   <Send className="ml-2 h-4 w-4" />
                 </Button>
@@ -157,8 +175,8 @@ export default function KontakSection() {
         </motion.div>
 
         {/* Map — dari GPS coords yang diset admin */}
-        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 }}>
-          <Card className="border-0 shadow-lg overflow-hidden h-full">
+        <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, margin: "-50px" }} transition={{ delay: 0.3, duration: 0.6 }}>
+          <Card className="border-0 shadow-premium-lg overflow-hidden h-full rounded-2xl">
             <div className="h-full min-h-[400px] bg-gray-100">
               {(() => {
                 const gpsLat = getSetting('madrasah_gps_lat')
