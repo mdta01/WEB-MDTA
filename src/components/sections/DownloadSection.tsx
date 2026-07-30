@@ -42,7 +42,7 @@ const fileTypeColors: Record<string, string> = {
   'xlsx': 'bg-green-100 text-green-600',
   'ppt': 'bg-orange-100 text-orange-600',
   'pptx': 'bg-orange-100 text-orange-600',
-  'zip': 'bg-amber-100 text-amber-600',
+  'zip': 'bg-[#cca72f]/20 text-[#895033]',
   'txt': 'bg-gray-100 text-gray-600',
   'jpg': 'bg-purple-100 text-purple-600',
   'png': 'bg-purple-100 text-purple-600',
@@ -106,7 +106,7 @@ export default function DownloadSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: 0.4 }}
-          className="inline-block px-3 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold uppercase tracking-wider mb-2"
+          className="inline-block px-3 py-0.5 rounded-full bg-[#064e3b]/15 text-[#003527] text-xs font-semibold uppercase tracking-wider mb-2"
         >
           Pusat Unduhan
         </motion.span>
@@ -119,8 +119,8 @@ export default function DownloadSection() {
         >
           Download
         </motion.h2>
-        <div className="w-20 h-1 bg-gradient-to-r from-emerald-500 to-amber-500 mx-auto mt-2 rounded-full" />
-        <p className="text-gray-500 mt-3 text-sm">Unduh formulir, jadwal, materi, dan dokumen lainnya</p>
+        <div className="w-20 h-1 bg-gradient-to-r from-[#003527] to-[#cca72f] mx-auto mt-2 rounded-full" />
+        <p className="text-[#404944] mt-3 text-sm">Unduh formulir, jadwal, materi, dan dokumen lainnya</p>
       </div>
 
       {/* Category Filter */}
@@ -131,8 +131,8 @@ export default function DownloadSection() {
             onClick={() => setSelectedCategory(cat.value)}
             className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
               selectedCategory === cat.value
-                ? 'bg-gradient-to-r from-emerald-700 to-emerald-800 text-white shadow-md shadow-emerald-700/30 scale-105'
-                : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 hover:scale-105'
+                ? 'bg-[#003527] text-white shadow-md shadow-[#003527]/30 scale-105'
+                : 'bg-[#f5f3ef] text-[#003527] hover:bg-[#efeeea] hover:scale-105'
             }`}
           >
             {cat.label}
@@ -157,8 +157,8 @@ export default function DownloadSection() {
       ) : downloads.length > 0 ? (
         Object.entries(grouped).map(([category, items]) => (
           <div key={category}>
-            <h3 className="text-lg font-bold text-emerald-800 mb-4 capitalize flex items-center gap-2">
-              <span className="w-1.5 h-5 bg-gradient-to-b from-amber-400 to-amber-500 rounded-full" />
+            <h3 className="text-lg font-bold text-[#003527] mb-4 capitalize flex items-center gap-2">
+              <span className="w-1.5 h-5 bg-gradient-to-b from-[#cca72f] to-[#895033] rounded-full" />
               {category}
             </h3>
             <div className="grid md:grid-cols-2 gap-4">
@@ -174,23 +174,23 @@ export default function DownloadSection() {
                     viewport={{ once: true, margin: "-50px" }}
                     transition={{ delay: idx * 0.05, duration: 0.5 }}
                   >
-                    <Card className="border-0 shadow-premium card-hover rounded-2xl">
+                    <Card className="border border-[#e4e2de] shadow-premium card-hover rounded-2xl bg-[#ffffff]">
                       <CardContent className="p-4 flex items-center gap-4">
                         <div className={`w-12 h-12 rounded-2xl ${colorClass} flex items-center justify-center shrink-0 shadow-md`}>
                           <FileIcon className="h-6 w-6" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h4 className="font-medium text-emerald-800 text-sm truncate">{item.title}</h4>
+                          <h4 className="font-medium text-[#003527] text-sm truncate">{item.title}</h4>
                           <div className="flex items-center gap-2 mt-1">
                             <Badge variant="outline" className="text-xs uppercase">{fileTypeLabels[fileType] || 'FILE'}</Badge>
-                            <span className="text-xs text-gray-400">
+                            <span className="text-xs text-[#404944]/70">
                               {new Date(item.createdAt).toLocaleDateString('id-ID')}
                             </span>
                           </div>
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
                           {/* View — preview via our proxy API (works with Cloudinary private mode) */}
-                          <Button size="sm" variant="outline" className="text-emerald-600 hover:bg-emerald-50 hover:scale-110 rounded-xl transition-all" asChild>
+                          <Button size="sm" variant="outline" className="text-[#003527] hover:bg-[#f5f3ef] hover:scale-110 rounded-xl transition-all" asChild>
                             <a
                               href={`/api/preview/${item.id}`}
                               target="_blank"
@@ -201,7 +201,7 @@ export default function DownloadSection() {
                             </a>
                           </Button>
                           {/* Download — via our proxy API with proper filename */}
-                          <Button size="sm" variant="outline" className="text-emerald-600 hover:bg-emerald-50 hover:scale-110 rounded-xl transition-all" asChild>
+                          <Button size="sm" variant="outline" className="text-[#003527] hover:bg-[#f5f3ef] hover:scale-110 rounded-xl transition-all" asChild>
                             <a
                               href={`/api/download/${item.id}`}
                               target="_blank"
@@ -223,8 +223,8 @@ export default function DownloadSection() {
         ))
       ) : (
         <Card className="p-12 text-center border-0">
-          <Download className="h-12 w-12 text-emerald-200 mx-auto mb-3" />
-          <p className="text-gray-500">Belum ada file untuk diunduh</p>
+          <Download className="h-12 w-12 text-[#064e3b]/40 mx-auto mb-3" />
+          <p className="text-[#404944]">Belum ada file untuk diunduh</p>
         </Card>
       )}
     </div>

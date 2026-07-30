@@ -140,16 +140,16 @@ export default function PPDBSection() {
   return (
     <div className="space-y-8">
       <div className="text-center mb-8">
-        <h2 className="text-2xl md:text-3xl font-bold text-emerald-800">
+        <h2 className="text-2xl md:text-3xl font-bold text-[#003527]">
           Pendaftaran Peserta Didik Baru (PPDB)
         </h2>
-        <div className="w-20 h-1 bg-amber-500 mx-auto mt-2 rounded-full" />
+        <div className="w-20 h-1 bg-[#cca72f] mx-auto mt-2 rounded-full" />
       </div>
 
       {/* Status Banner */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-        <Card className={`border-0 shadow-lg overflow-hidden ${ppdbStatus === 'open' ? 'ring-2 ring-emerald-400' : 'ring-2 ring-red-300'}`}>
-          <div className={`p-6 text-center ${ppdbStatus === 'open' ? 'bg-gradient-to-r from-emerald-600 to-emerald-800' : 'bg-gradient-to-r from-red-500 to-red-700'} text-white`}>
+        <Card className={`border-0 shadow-lg overflow-hidden ${ppdbStatus === 'open' ? 'ring-2 ring-[#064e3b]/40' : 'ring-2 ring-red-300'}`}>
+          <div className={`p-6 text-center ${ppdbStatus === 'open' ? 'bg-gradient-to-r from-[#003527] to-[#064e3b]' : 'bg-gradient-to-r from-red-500 to-red-700'} text-white`}>
             <GraduationCap className="h-12 w-12 mx-auto mb-3" />
             <h3 className="text-xl font-bold mb-2">
               {ppdbStatus === 'open' ? 'Pendaftaran Dibuka!' : 'Pendaftaran Ditutup'}
@@ -160,7 +160,7 @@ export default function PPDBSection() {
                 : 'Pendaftaran saat ini belum dibuka. Pantau pengumuman untuk informasi lebih lanjut.'}
             </p>
             {ppdbStatus === 'open' && (
-              <Badge className="mt-3 bg-amber-500 text-emerald-900 font-bold">
+              <Badge className="mt-3 bg-[#cca72f] text-[#003527] font-bold">
                 <CheckCircle className="h-3 w-3 mr-1" /> Pendaftaran Dibuka
               </Badge>
             )}
@@ -174,21 +174,21 @@ export default function PPDBSection() {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
             <Card className="border-0 shadow-md">
               <CardContent className="p-6">
-                <h3 className="text-lg font-bold text-emerald-800 flex items-center gap-2 mb-4">
-                  <ClipboardList className="h-5 w-5 text-amber-500" />
+                <h3 className="text-lg font-bold text-[#003527] flex items-center gap-2 mb-4">
+                  <ClipboardList className="h-5 w-5 text-[#cca72f]" />
                   Persyaratan Pendaftaran
                 </h3>
                 {requirements.length > 0 ? (
                   <ul className="space-y-2">
                     {requirements.map((item, idx) => (
-                      <li key={idx} className="flex items-start gap-2 text-sm text-gray-600">
-                        <CheckCircle className="h-4 w-4 text-emerald-500 mt-0.5 shrink-0" />
+                      <li key={idx} className="flex items-start gap-2 text-sm text-[#404944]">
+                        <CheckCircle className="h-4 w-4 text-[#003527] mt-0.5 shrink-0" />
                         {item}
                       </li>
                     ))}
                   </ul>
                 ) : (
-                  <p className="text-gray-400 italic text-sm">Persyaratan pendaftaran belum tersedia.</p>
+                  <p className="text-[#404944]/70 italic text-sm">Persyaratan pendaftaran belum tersedia.</p>
                 )}
               </CardContent>
             </Card>
@@ -198,15 +198,15 @@ export default function PPDBSection() {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
             <Card className="border-0 shadow-md">
               <CardContent className="p-6">
-                <h3 className="text-lg font-bold text-emerald-800 flex items-center gap-2 mb-4">
-                  <CreditCard className="h-5 w-5 text-amber-500" />
+                <h3 className="text-lg font-bold text-[#003527] flex items-center gap-2 mb-4">
+                  <CreditCard className="h-5 w-5 text-[#cca72f]" />
                   Biaya Pendidikan
                 </h3>
                 {payments.length > 0 ? (
                   <div className="overflow-x-auto">
                     <Table>
                       <TableHeader>
-                        <TableRow className="bg-emerald-50">
+                        <TableRow className="bg-[#064e3b]/10">
                           <TableHead className="font-semibold">Jenis Biaya</TableHead>
                           <TableHead className="font-semibold">Jumlah</TableHead>
                           <TableHead className="font-semibold hidden md:table-cell">Keterangan</TableHead>
@@ -216,8 +216,8 @@ export default function PPDBSection() {
                         {payments.map((item: { id: string; title: string; amount: string; description?: string | null }, idx: number) => (
                           <TableRow key={item.id || idx}>
                             <TableCell className="text-sm">{item.title}</TableCell>
-                            <TableCell className="font-medium text-emerald-700">{item.amount}</TableCell>
-                            <TableCell className="text-sm text-gray-500 hidden md:table-cell">{item.description || '-'}</TableCell>
+                            <TableCell className="font-medium text-[#003527]">{item.amount}</TableCell>
+                            <TableCell className="text-sm text-[#404944] hidden md:table-cell">{item.description || '-'}</TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
@@ -225,11 +225,11 @@ export default function PPDBSection() {
                   </div>
                 ) : (
                   <div className="text-center py-6">
-                    <CreditCard className="h-10 w-10 text-emerald-200 mx-auto mb-2" />
-                    <p className="text-gray-400 italic text-sm">Informasi biaya pendidikan belum tersedia.</p>
+                    <CreditCard className="h-10 w-10 text-[#064e3b]/40 mx-auto mb-2" />
+                    <p className="text-[#404944]/70 italic text-sm">Informasi biaya pendidikan belum tersedia.</p>
                   </div>
                 )}
-                <p className="text-xs text-gray-400 mt-3">* Biaya dapat berubah sewaktu-waktu</p>
+                <p className="text-xs text-[#404944]/70 mt-3">* Biaya dapat berubah sewaktu-waktu</p>
               </CardContent>
             </Card>
           </motion.div>
@@ -238,16 +238,16 @@ export default function PPDBSection() {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
             <Card className="border-0 shadow-md">
               <CardContent className="p-6">
-                <h3 className="text-lg font-bold text-emerald-800 flex items-center gap-2 mb-4">
-                  <Calendar className="h-5 w-5 text-amber-500" />
+                <h3 className="text-lg font-bold text-[#003527] flex items-center gap-2 mb-4">
+                  <Calendar className="h-5 w-5 text-[#cca72f]" />
                   Jadwal Pendaftaran
                 </h3>
                 {ppdbSchedulesLoading ? (
                   <div className="space-y-3">
                     {[1, 2, 3].map(i => (
-                      <div key={i} className="border-l-4 border-amber-300 pl-4 py-2">
-                        <div className="h-4 w-1/2 bg-gray-200 rounded animate-pulse mb-2" />
-                        <div className="h-3 w-1/3 bg-gray-200 rounded animate-pulse" />
+                      <div key={i} className="border-l-4 border-[#cca72f]/50 pl-4 py-2">
+                        <div className="h-4 w-1/2 bg-[#e4e2de] rounded animate-pulse mb-2" />
+                        <div className="h-3 w-1/3 bg-[#e4e2de] rounded animate-pulse" />
                       </div>
                     ))}
                   </div>
@@ -255,35 +255,35 @@ export default function PPDBSection() {
                   <div className="space-y-3">
                     {ppdbSchedules.map((s: { id: string; title: string; startDate: string; endDate?: string | null; location?: string | null; description?: string | null; order?: number }, idx: number) => {
                       const colors = [
-                        'border-emerald-400 bg-emerald-50',
-                        'border-amber-400 bg-amber-50',
-                        'border-teal-400 bg-teal-50',
-                        'border-purple-400 bg-purple-50',
+                        'border-[#003527] bg-[#003527]/5',
+                        'border-[#cca72f] bg-[#cca72f]/5',
+                        'border-[#064e3b] bg-[#064e3b]/5',
+                        'border-[#895033] bg-[#895033]/5',
                       ]
                       const start = new Date(s.startDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
                       const end = s.endDate ? new Date(s.endDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : null
                       return (
                         <div key={s.id} className={`${colors[idx % 4]} border-l-4 rounded-r-lg p-4`}>
                           <div className="flex items-start gap-3">
-                            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white flex items-center justify-center text-xs font-bold text-emerald-700 border border-emerald-200">
+                            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white flex items-center justify-center text-xs font-bold text-[#003527] border border-[#e4e2de]">
                               {typeof s.order === 'number' ? s.order : idx + 1}
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="font-semibold text-sm text-emerald-800">{s.title}</p>
-                              <div className="flex flex-wrap items-center gap-3 mt-1 text-xs text-gray-600">
+                              <p className="font-semibold text-sm text-[#003527]">{s.title}</p>
+                              <div className="flex flex-wrap items-center gap-3 mt-1 text-xs text-[#404944]">
                                 <span className="flex items-center gap-1">
-                                  <Calendar className="h-3 w-3 text-amber-500" />
+                                  <Calendar className="h-3 w-3 text-[#cca72f]" />
                                   {start}{end ? ` — ${end}` : ''}
                                 </span>
                                 {s.location && (
                                   <span className="flex items-center gap-1">
-                                    <MapPin className="h-3 w-3 text-amber-500" />
+                                    <MapPin className="h-3 w-3 text-[#cca72f]" />
                                     {s.location}
                                   </span>
                                 )}
                               </div>
                               {s.description && (
-                                <p className="text-xs text-gray-500 mt-2">{s.description}</p>
+                                <p className="text-xs text-[#404944] mt-2">{s.description}</p>
                               )}
                             </div>
                           </div>
@@ -293,8 +293,8 @@ export default function PPDBSection() {
                   </div>
                 ) : (
                   <div className="text-center py-6">
-                    <Calendar className="h-10 w-10 text-emerald-200 mx-auto mb-2" />
-                    <p className="text-gray-400 italic text-sm">Jadwal pendaftaran belum tersedia. Silakan hubungi panitia untuk informasi lebih lanjut.</p>
+                    <Calendar className="h-10 w-10 text-[#064e3b]/40 mx-auto mb-2" />
+                    <p className="text-[#404944]/70 italic text-sm">Jadwal pendaftaran belum tersedia. Silakan hubungi panitia untuk informasi lebih lanjut.</p>
                   </div>
                 )}
               </CardContent>
@@ -305,16 +305,16 @@ export default function PPDBSection() {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
             <Card className="border-0 shadow-lg">
               <CardContent className="p-6">
-                <h3 className="text-lg font-bold text-emerald-800 flex items-center gap-2 mb-6">
-                  <Send className="h-5 w-5 text-amber-500" />
+                <h3 className="text-lg font-bold text-[#003527] flex items-center gap-2 mb-6">
+                  <Send className="h-5 w-5 text-[#cca72f]" />
                   Formulir Pendaftaran Online
                 </h3>
                 {submitted ? (
                   <div className="text-center py-8">
-                    <CheckCircle className="h-16 w-16 text-emerald-500 mx-auto mb-4" />
-                    <h4 className="text-xl font-bold text-emerald-800 mb-2">Pendaftaran Berhasil!</h4>
-                    <p className="text-gray-500">Data Anda telah terkirim. Tim panitia akan menghubungi Anda melalui nomor yang tercantum.</p>
-                    <Button onClick={() => setSubmitted(false)} className="mt-4 bg-emerald-700 hover:bg-emerald-800">
+                    <CheckCircle className="h-16 w-16 text-[#003527] mx-auto mb-4" />
+                    <h4 className="text-xl font-bold text-[#003527] mb-2">Pendaftaran Berhasil!</h4>
+                    <p className="text-[#404944]">Data Anda telah terkirim. Tim panitia akan menghubungi Anda melalui nomor yang tercantum.</p>
+                    <Button onClick={() => setSubmitted(false)} className="mt-4 bg-[#003527] hover:bg-[#064e3b]">
                       Daftar Lagi
                     </Button>
                   </div>
@@ -322,7 +322,7 @@ export default function PPDBSection() {
                   <form onSubmit={handleSubmit} className="space-y-6">
                     {/* A. Data Calon Santri */}
                     <div>
-                      <h4 className="text-sm font-bold text-emerald-800 bg-emerald-50 px-3 py-2 rounded-lg mb-3">
+                      <h4 className="text-sm font-bold text-[#003527] bg-[#003527]/5 px-3 py-2 rounded-lg mb-3">
                         A. Data Calon Santri
                       </h4>
                       <div className="grid md:grid-cols-2 gap-4">
@@ -365,7 +365,7 @@ export default function PPDBSection() {
 
                     {/* B. Asal Sekolah */}
                     <div>
-                      <h4 className="text-sm font-bold text-emerald-800 bg-emerald-50 px-3 py-2 rounded-lg mb-3">
+                      <h4 className="text-sm font-bold text-[#003527] bg-[#003527]/5 px-3 py-2 rounded-lg mb-3">
                         B. Asal Sekolah
                       </h4>
                       <div className="grid md:grid-cols-2 gap-4">
@@ -386,7 +386,7 @@ export default function PPDBSection() {
 
                     {/* C. Data Ayah */}
                     <div>
-                      <h4 className="text-sm font-bold text-emerald-800 bg-emerald-50 px-3 py-2 rounded-lg mb-3">
+                      <h4 className="text-sm font-bold text-[#003527] bg-[#003527]/5 px-3 py-2 rounded-lg mb-3">
                         C. Data Ayah
                       </h4>
                       <div className="grid md:grid-cols-2 gap-4">
@@ -436,7 +436,7 @@ export default function PPDBSection() {
 
                     {/* C. Data Ibu */}
                     <div>
-                      <h4 className="text-sm font-bold text-emerald-800 bg-emerald-50 px-3 py-2 rounded-lg mb-3">
+                      <h4 className="text-sm font-bold text-[#003527] bg-[#003527]/5 px-3 py-2 rounded-lg mb-3">
                         D. Data Ibu
                       </h4>
                       <div className="grid md:grid-cols-2 gap-4">
@@ -484,7 +484,7 @@ export default function PPDBSection() {
                       </div>
                     </div>
 
-                    <Button type="submit" disabled={submitting} className="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-3">
+                    <Button type="submit" disabled={submitting} className="w-full bg-[#003527] hover:bg-[#064e3b] text-white font-bold py-3">
                       {submitting ? 'Mengirim...' : 'Kirim Pendaftaran'}
                       <Send className="ml-2 h-4 w-4" />
                     </Button>
@@ -496,11 +496,11 @@ export default function PPDBSection() {
 
           {/* Contact Panitia */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-            <Card className="border-0 shadow-md bg-emerald-50">
+            <Card className="border-0 shadow-md bg-[#064e3b]/5">
               <CardContent className="p-6 text-center">
-                <Phone className="h-8 w-8 text-emerald-600 mx-auto mb-3" />
-                <h4 className="font-bold text-emerald-800 mb-2">Hubungi Panitia PPDB</h4>
-                <p className="text-sm text-gray-600 mb-3">Untuk informasi lebih lanjut, silakan hubungi:</p>
+                <Phone className="h-8 w-8 text-[#003527] mx-auto mb-3" />
+                <h4 className="font-bold text-[#003527] mb-2">Hubungi Panitia PPDB</h4>
+                <p className="text-sm text-[#404944] mb-3">Untuk informasi lebih lanjut, silakan hubungi:</p>
 
                 {/* Primary WhatsApp button — pakai ppdb_panitia_phone jika diisi admin */}
                 {panitiaPhone && (
@@ -520,7 +520,7 @@ export default function PPDBSection() {
                 )}
 
                 {contacts.length > 0 ? (
-                  <div className="space-y-2 text-sm text-emerald-700">
+                  <div className="space-y-2 text-sm text-[#003527]">
                     {contacts.map((contact, idx) => (
                       <div key={idx} className="flex items-center justify-center gap-2 flex-wrap">
                         <span className="font-medium">{contact.name}</span>
@@ -540,7 +540,7 @@ export default function PPDBSection() {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-sm text-gray-400 italic">Kontak panitia belum tersedia.</p>
+                  <p className="text-sm text-[#404944]/70 italic">Kontak panitia belum tersedia.</p>
                 )}
               </CardContent>
             </Card>

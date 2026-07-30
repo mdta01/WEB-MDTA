@@ -20,10 +20,10 @@ const categoryTabs = [
 ]
 
 const categoryColors: Record<string, string> = {
-  'artikel': 'bg-emerald-100 text-emerald-700',
-  'kajian': 'bg-teal-100 text-teal-700',
-  'kultum': 'bg-amber-100 text-amber-700',
-  'materi': 'bg-purple-100 text-purple-700',
+  'artikel': 'bg-[#003527]/15 text-[#003527]',
+  'kajian': 'bg-[#064e3b]/15 text-[#064e3b]',
+  'kultum': 'bg-[#cca72f]/20 text-[#895033]',
+  'materi': 'bg-[#895033]/15 text-[#895033]',
 }
 
 export default function DakwahSection() {
@@ -47,7 +47,7 @@ export default function DakwahSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: 0.4 }}
-          className="inline-block px-3 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold uppercase tracking-wider mb-2"
+          className="inline-block px-3 py-0.5 rounded-full bg-[#064e3b]/15 text-[#003527] text-xs font-semibold uppercase tracking-wider mb-2"
         >
           Inspirasi Islami
         </motion.span>
@@ -60,16 +60,16 @@ export default function DakwahSection() {
         >
           Dakwah & Kajian
         </motion.h2>
-        <div className="w-20 h-1 bg-gradient-to-r from-emerald-500 to-amber-500 mx-auto mt-2 rounded-full" />
+        <div className="w-20 h-1 bg-gradient-to-r from-[#003527] to-[#cca72f] mx-auto mt-2 rounded-full" />
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-4 mb-6 bg-emerald-50 rounded-2xl p-1.5">
+        <TabsList className="grid w-full grid-cols-4 mb-6 bg-[#f5f3ef] rounded-2xl p-1.5">
           {categoryTabs.map((tab) => (
             <TabsTrigger
               key={tab.value}
               value={tab.value}
-              className="data-[state=active]:bg-gradient-to-br data-[state=active]:from-emerald-600 data-[state=active]:to-emerald-700 data-[state=active]:text-white data-[state=active]:shadow-md rounded-xl text-xs md:text-sm transition-all"
+              className="data-[state=active]:bg-[#003527] data-[state=active]:text-white data-[state=active]:shadow-md rounded-xl text-xs md:text-sm transition-all"
             >
               <tab.icon className="h-4 w-4 mr-1 hidden sm:block" />
               {tab.label}
@@ -101,12 +101,12 @@ export default function DakwahSection() {
                 transition={{ delay: idx * 0.05, duration: 0.5 }}
               >
                 <Card
-                  className="border-0 shadow-premium card-hover cursor-pointer group h-full overflow-hidden rounded-2xl"
+                  className="border border-[#e4e2de] shadow-premium card-hover cursor-pointer group h-full overflow-hidden rounded-2xl bg-[#ffffff]"
                   onClick={() => setSelectedItem(item)}
                 >
                   {/* Image / Video thumbnail */}
                   {(item.image || item.videoUrl) && (
-                    <div className="h-40 bg-gradient-to-br from-emerald-400 to-teal-600 relative overflow-hidden">
+                    <div className="h-40 bg-gradient-to-br from-[#064e3b] to-[#003527] relative overflow-hidden">
                       {item.image ? (
                         <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                       ) : (
@@ -122,24 +122,24 @@ export default function DakwahSection() {
                           </div>
                         </div>
                       )}
-                      <Badge className={`absolute top-3 left-3 text-xs backdrop-blur-sm ${categoryColors[item.category] || 'bg-gray-100 text-gray-700'} shadow-md`}>
+                      <Badge className={`absolute top-3 left-3 text-xs backdrop-blur-sm ${categoryColors[item.category] || 'bg-[#f5f3ef] text-[#404944]'} shadow-md`}>
                         {item.category}
                       </Badge>
                     </div>
                   )}
                   <CardContent className="p-5">
                     {!item.image && !item.videoUrl && (
-                      <Badge className={`text-xs mb-3 ${categoryColors[item.category] || 'bg-gray-100 text-gray-700'}`}>
+                      <Badge className={`text-xs mb-3 ${categoryColors[item.category] || 'bg-[#f5f3ef] text-[#404944]'}`}>
                         {item.category}
                       </Badge>
                     )}
-                    <h4 className="font-semibold text-emerald-800 mb-2 group-hover:text-emerald-600 transition-colors line-clamp-2">
+                    <h4 className="font-semibold text-[#003527] mb-2 group-hover:text-[#064e3b] transition-colors line-clamp-2">
                       {item.title}
                     </h4>
-                    <p className="text-sm text-gray-500 line-clamp-3 mb-3">
+                    <p className="text-sm text-[#404944] line-clamp-3 mb-3">
                       {item.content.substring(0, 150)}...
                     </p>
-                    <div className="flex items-center justify-between text-xs text-gray-400">
+                    <div className="flex items-center justify-between text-xs text-[#404944]/70">
                       <div className="flex items-center gap-1">
                         <User className="h-3 w-3" />
                         {item.author || 'Tim Dakwah'}
@@ -156,8 +156,8 @@ export default function DakwahSection() {
           </div>
         ) : (
           <Card className="p-12 text-center border-0">
-            <BookOpen className="h-12 w-12 text-emerald-200 mx-auto mb-3" />
-            <p className="text-gray-500">Belum ada konten untuk kategori ini</p>
+            <BookOpen className="h-12 w-12 text-[#064e3b]/40 mx-auto mb-3" />
+            <p className="text-[#404944]">Belum ada konten untuk kategori ini</p>
           </Card>
         )}
       </Tabs>
@@ -172,15 +172,15 @@ export default function DakwahSection() {
           </DialogClose>
           {selectedItem && (
             <>
-              <DialogTitle className="text-xl font-bold text-emerald-800 pr-8">
+              <DialogTitle className="text-xl font-bold text-[#003527] pr-8">
                 {selectedItem.title}
               </DialogTitle>
               <div className="flex items-center gap-3 mt-2">
-                <Badge className={categoryColors[selectedItem.category] || 'bg-gray-100 text-gray-700'}>
+                <Badge className={categoryColors[selectedItem.category] || 'bg-[#f5f3ef] text-[#404944]'}>
                   {selectedItem.category}
                 </Badge>
-                <span className="text-xs text-gray-400">{selectedItem.author || 'Tim Dakwah'}</span>
-                <span className="text-xs text-gray-400">
+                <span className="text-xs text-[#404944]/70">{selectedItem.author || 'Tim Dakwah'}</span>
+                <span className="text-xs text-[#404944]/70">
                   {new Date(selectedItem.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
                 </span>
               </div>

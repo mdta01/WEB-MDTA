@@ -163,7 +163,7 @@ function StatCard({ icon: Icon, label, value, color, delay }: {
       viewport={{ once: true, margin: "-50px" }}
       transition={{ delay, duration: 0.5 }}
     >
-      <Card className="text-center p-6 card-hover border-0 bg-white/80 backdrop-blur-sm shadow-premium">
+      <Card className="text-center p-6 card-hover border border-[#e4e2de] bg-[#ffffff] backdrop-blur-sm wood-carved-shadow">
         <CardContent className="p-0 flex flex-col items-center gap-3">
           <div className={`w-14 h-14 rounded-2xl ${color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
             <Icon className="h-7 w-7 text-white" />
@@ -171,7 +171,7 @@ function StatCard({ icon: Icon, label, value, color, delay }: {
           <div className="text-3xl font-bold text-gradient-emerald">
             <AnimatedCounter target={value} />
           </div>
-          <p className="text-sm text-gray-500 font-medium">{label}</p>
+          <p className="text-sm text-[#404944] font-medium">{label}</p>
         </CardContent>
       </Card>
     </motion.div>
@@ -357,10 +357,10 @@ export default function BerandaSection() {
   const dakwahList = ((Array.isArray(dakwahData) ? dakwahData : (dakwahData?.dakwah || []))).slice(0, 3)
 
   const statsCards = [
-    { icon: GraduationCap, label: 'Santri Aktif', value: getStat('santri_aktif') || 0, color: 'bg-emerald-600', delay: 0 },
-    { icon: Users, label: 'Tenaga Pengajar', value: getStat('guru_aktif') || 0, color: 'bg-teal-600', delay: 0.1 },
-    { icon: Award, label: 'Prestasi', value: getStat('prestasi') || 0, color: 'bg-amber-600', delay: 0.2 },
-    { icon: BookOpen, label: 'Alumni', value: getStat('alumni') || 0, color: 'bg-emerald-800', delay: 0.3 },
+    { icon: GraduationCap, label: 'Santri Aktif', value: getStat('santri_aktif') || 0, color: 'bg-[#003527]', delay: 0 },
+    { icon: Users, label: 'Tenaga Pengajar', value: getStat('guru_aktif') || 0, color: 'bg-[#064e3b]', delay: 0.1 },
+    { icon: Award, label: 'Prestasi', value: getStat('prestasi') || 0, color: 'bg-[#895033]', delay: 0.2 },
+    { icon: BookOpen, label: 'Alumni', value: getStat('alumni') || 0, color: 'bg-[#003527]', delay: 0.3 },
   ]
 
   const nextTestimonial = () => {
@@ -378,7 +378,7 @@ export default function BerandaSection() {
     <div className="space-y-16">
       {/* Hero Section — modern startup style */}
       <section className="relative overflow-hidden">
-        <div className="bg-emerald-900 text-white min-h-[420px] sm:min-h-[480px] flex items-center">
+        <div className="bg-[#003527] text-white min-h-[420px] sm:min-h-[480px] flex items-center">
           {/* Background image — visible but with gradient overlay for text readability */}
           <div className="absolute inset-0">
             {!settingsLoading && (
@@ -390,17 +390,15 @@ export default function BerandaSection() {
             )}
             {/* Multi-layer gradient overlay for text readability + modern look */}
             {/* Bottom-to-top dark gradient (ensures text always readable) */}
-            <div className="absolute inset-0 bg-gradient-to-t from-emerald-950/90 via-emerald-900/60 to-emerald-800/40" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#003527]/90 via-[#003527]/60 to-[#064e3b]/40" />
             {/* Left-to-right subtle gradient (adds depth, startup feel) */}
-            <div className="absolute inset-0 bg-gradient-to-r from-emerald-950/50 via-transparent to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#003527]/50 via-transparent to-transparent" />
             {/* Top vignette (darkens top for header contrast) */}
-            <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-emerald-950/60 to-transparent" />
+            <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-[#003527]/60 to-transparent" />
           </div>
 
-          {/* Subtle Islamic pattern overlay (very low opacity) */}
-          <div className="absolute inset-0 opacity-[0.03] pointer-events-none" aria-hidden style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M30 0L60 30L30 60L0 30z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-          }} />
+          {/* Subtle Kraton pattern overlay (very low opacity) */}
+          <div className="absolute inset-0 kraton-pattern opacity-[0.04] pointer-events-none" aria-hidden />
 
           {/* Centered hero content */}
           <div className="container mx-auto px-4 py-20 md:py-28 relative">
@@ -415,13 +413,13 @@ export default function BerandaSection() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.6, delay: 0.1 }}
-                className="inline-flex items-center gap-2 bg-white/10 border border-white/20 text-amber-200 px-4 py-1.5 rounded-full mb-6 backdrop-blur-sm"
+                className="inline-flex items-center gap-2 bg-white/10 border border-white/20 text-[#ffe088] px-4 py-1.5 rounded-full mb-6 backdrop-blur-sm"
               >
-                <span className="text-xs leading-none text-amber-300/60">✦</span>
+                <span className="text-xs leading-none text-[#ffe088]/60">✦</span>
                 <span className="font-arabic text-sm md:text-base tracking-wide">
                   بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
                 </span>
-                <span className="text-xs leading-none text-amber-300/60">✦</span>
+                <span className="text-xs leading-none text-[#ffe088]/60">✦</span>
               </motion.div>
 
               {/* Madrasah name — white with strong drop shadow for readability */}
@@ -434,9 +432,9 @@ export default function BerandaSection() {
 
               {/* Decorative divider */}
               <div className="flex items-center gap-3 mb-6" aria-hidden>
-                <span className="h-px w-16 md:w-24 bg-gradient-to-r from-transparent to-amber-400/80" />
-                <span className="text-amber-400 text-sm">◆</span>
-                <span className="h-px w-16 md:w-24 bg-gradient-to-l from-transparent to-amber-400/80" />
+                <span className="h-px w-16 md:w-24 bg-gradient-to-r from-transparent to-[#cca72f]/80" />
+                <span className="text-[#cca72f] text-sm">◆</span>
+                <span className="h-px w-16 md:w-24 bg-gradient-to-l from-transparent to-[#cca72f]/80" />
               </div>
 
               {/* Address — badge-style with MapPin icon, clickable ke Google Maps jika GPS tersedia */}
@@ -453,20 +451,20 @@ export default function BerandaSection() {
                       href={mapsUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={`${badgeClass} hover:bg-emerald-700/60 hover:border-amber-400/50 hover:scale-105 cursor-pointer`}
+                      className={`${badgeClass} hover:bg-[#064e3b]/60 hover:border-[#cca72f]/50 hover:scale-105 cursor-pointer`}
                       title="Klik untuk melihat lokasi di Google Maps"
                     >
-                      <MapPin className="h-4 w-4 text-amber-300" />
+                      <MapPin className="h-4 w-4 text-[#ffe088]" />
                       <span className="text-sm md:text-base font-semibold tracking-wide">
                         Tawangsari, Pujon
                       </span>
-                      <ExternalLink className="h-3 w-3 text-amber-300/70 ml-1" />
+                      <ExternalLink className="h-3 w-3 text-[#ffe088]/70 ml-1" />
                     </a>
                   )
                 }
                 return (
                   <div className={badgeClass}>
-                    <MapPin className="h-4 w-4 text-amber-300" />
+                    <MapPin className="h-4 w-4 text-[#ffe088]" />
                     <span className="text-sm md:text-base font-semibold tracking-wide">
                       Tawangsari, Pujon
                     </span>
@@ -479,7 +477,7 @@ export default function BerandaSection() {
                 style={{ textShadow: '0 1px 8px rgba(0,0,0,0.5)' }}>
                 <span>{typedDescription}</span>
                 <span
-                  className={`inline-block w-[2px] h-[1.1em] bg-amber-300 ml-1 mt-1 shrink-0 ${typingDone ? 'animate-blink' : ''}`}
+                  className={`inline-block w-[2px] h-[1.1em] bg-[#ffe088] ml-1 mt-1 shrink-0 ${typingDone ? 'animate-blink' : ''}`}
                   aria-hidden
                 />
               </p>
@@ -488,7 +486,7 @@ export default function BerandaSection() {
               <div className="flex flex-wrap gap-3 justify-center">
                 <Button
                   onClick={() => { setCurrentPage('ppdb'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
-                  className="bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-emerald-900 font-bold px-8 shadow-lg shadow-amber-500/30 hover:shadow-amber-500/50 hover:scale-105 transition-all"
+                  className="bg-[#cca72f] hover:bg-[#895033] text-[#003527] font-bold px-8 shadow-lg shadow-[#cca72f]/30 hover:shadow-[#cca72f]/50 hover:scale-105 transition-all"
                   size="lg"
                 >
                   Daftar PPDB
@@ -496,7 +494,7 @@ export default function BerandaSection() {
                 </Button>
                 <Button
                   onClick={() => { setCurrentPage('profil'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
-                  className="border-2 border-amber-300/40 text-amber-50 bg-white/5 hover:bg-amber-400/10 hover:border-amber-300/70 font-semibold px-8 backdrop-blur-sm hover:scale-105 transition-all"
+                  className="border-2 border-[#cca72f]/40 text-[#ffe088] bg-white/5 hover:bg-[#cca72f]/10 hover:border-[#cca72f]/70 font-semibold px-8 backdrop-blur-sm hover:scale-105 transition-all"
                   size="lg"
                 >
                   Tentang Kami
@@ -529,15 +527,11 @@ export default function BerandaSection() {
         >
           <Card className="overflow-hidden border-0 shadow-premium-lg rounded-2xl">
             <div className="grid md:grid-cols-3 gap-0">
-              <div className="bg-gradient-to-br from-emerald-600 to-emerald-800 p-8 flex flex-col items-center justify-center text-white relative overflow-hidden">
-                {/* Decorative pattern */}
-                <div className="absolute inset-0 opacity-5">
-                  <div className="absolute inset-0" style={{
-                    backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='white'%3E%3Cpath d='M20 0L40 20L20 40L0 20z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-                  }} />
-                </div>
+              <div className="bg-gradient-to-br from-[#064e3b] to-[#003527] p-8 flex flex-col items-center justify-center text-white relative overflow-hidden">
+                {/* Decorative Kraton pattern */}
+                <div className="absolute inset-0 kraton-pattern opacity-5" />
                 <div className="relative">
-                  <div className="w-32 h-32 md:w-36 md:h-36 rounded-full overflow-hidden mb-4 border-4 border-amber-400 shadow-xl ring-4 ring-white/20 bg-white/10">
+                  <div className="w-32 h-32 md:w-36 md:h-36 rounded-full overflow-hidden mb-4 border-4 border-[#cca72f] shadow-xl ring-4 ring-white/20 bg-white/10">
                     {settingsLoading ? (
                       <div className="w-full h-full bg-white/20 animate-pulse" />
                     ) : (
@@ -550,21 +544,21 @@ export default function BerandaSection() {
                   </div>
                 </div>
                 <h3 className="font-bold text-lg text-center relative">Kepala Madrasah</h3>
-                <p className="text-amber-300 text-sm mt-1 font-medium text-center relative">
+                <p className="text-[#ffe088] text-sm mt-1 font-medium text-center relative">
                   {getSetting('madrasah_principals_name') || 'Kepala Madrasah'}
                 </p>
               </div>
               <div className="md:col-span-2 p-8">
-                <h3 className="font-bold text-emerald-800 text-lg mb-3 flex items-center gap-2">
-                  <Quote className="h-5 w-5 text-amber-500" />
+                <h3 className="font-bold text-[#003527] text-lg mb-3 flex items-center gap-2">
+                  <Quote className="h-5 w-5 text-[#cca72f]" />
                   Sambutan Kepala Madrasah
                 </h3>
-                <div className="text-gray-600 text-sm">
+                <div className="text-[#404944] text-sm">
                   <MarkdownRenderer
                     content={getSetting('madrasah_welcome') || "Assalamu'alaikum Warahmatullahi Wabarakatuh. Puji syukur kehadirat Allah SWT yang telah memberikan rahmat dan karunia-Nya. MDTA Miftahul Ulum 01 berkomitmen untuk memberikan pendidikan Islam yang terbaik bagi putra-putri Anda. Dengan kurikulum yang berpusat pada Al-Quran dan As-Sunnah, kami berharap dapat mencetak generasi yang berilmu, berakhlak mulia, dan bermanfaat bagi agama, bangsa, dan negara. Selamat datang di keluarga besar Miftahul Ulum 01."}
                   />
                 </div>
-                <p className="text-amber-300 font-semibold mt-4 text-sm" style={{ textShadow: '0 1px 6px rgba(0,0,0,0.5)' }}>
+                <p className="text-[#ffe088] font-semibold mt-4 text-sm" style={{ textShadow: '0 1px 6px rgba(0,0,0,0.5)' }}>
                   {getSetting('madrasah_welcome_closing') || "Wassalamu'alaikum Warahmatullahi Wabarakatuh"}
                 </p>
               </div>
@@ -582,9 +576,9 @@ export default function BerandaSection() {
           transition={{ duration: 0.5 }}
           className="text-center mb-8"
         >
-          <span className="inline-block px-4 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold uppercase tracking-wider mb-3">Statistik</span>
+          <span className="inline-block px-4 py-1 rounded-full bg-[#064e3b]/15 text-[#003527] text-xs font-semibold uppercase tracking-wider mb-3">Statistik</span>
           <h2 className="text-2xl md:text-3xl font-bold text-gradient-emerald">Data Madrasah</h2>
-          <div className="w-20 h-1 bg-gradient-to-r from-emerald-500 to-amber-500 mx-auto mt-3 rounded-full" />
+          <div className="w-20 h-1 bg-gradient-to-r from-[#003527] to-[#cca72f] mx-auto mt-3 rounded-full" />
         </motion.div>
         {statsLoading ? (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -615,14 +609,14 @@ export default function BerandaSection() {
           className="flex items-center justify-between mb-6"
         >
           <div>
-            <span className="inline-block px-3 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold uppercase tracking-wider mb-2">Update Terkini</span>
+            <span className="inline-block px-3 py-0.5 rounded-full bg-[#cca72f]/15 text-[#895033] text-xs font-semibold uppercase tracking-wider mb-2">Update Terkini</span>
             <h2 className="text-2xl md:text-3xl font-bold text-gradient-emerald">Berita Terbaru</h2>
-            <div className="w-20 h-1 bg-gradient-to-r from-emerald-500 to-amber-500 mt-2 rounded-full" />
+            <div className="w-20 h-1 bg-gradient-to-r from-[#003527] to-[#cca72f] mt-2 rounded-full" />
           </div>
           <Button
             variant="ghost"
             onClick={() => { setCurrentPage('berita'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
-            className="text-emerald-600 hover:text-emerald-800 hover:gap-2 transition-all rounded-full"
+            className="text-[#003527] hover:text-[#064e3b] hover:gap-2 transition-all rounded-full"
           >
             Selengkapnya <ArrowRight className="ml-1 h-4 w-4" />
           </Button>
@@ -651,10 +645,10 @@ export default function BerandaSection() {
                 transition={{ delay: idx * 0.1, duration: 0.5 }}
               >
                 <Card
-                  className="overflow-hidden border-0 shadow-premium card-hover group cursor-pointer rounded-2xl"
+                  className="overflow-hidden border border-[#e4e2de] shadow-premium card-hover group cursor-pointer rounded-2xl bg-[#ffffff]"
                   onClick={() => setSelectedNews(item as typeof selectedNews)}
                 >
-                  <div className="h-48 bg-gradient-to-br from-emerald-400 to-emerald-600 relative overflow-hidden">
+                  <div className="h-48 bg-gradient-to-br from-[#064e3b] to-[#003527] relative overflow-hidden">
                     {item.image ? (
                       <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                     ) : (
@@ -662,16 +656,16 @@ export default function BerandaSection() {
                         <BookOpen className="h-12 w-12 text-white/50" />
                       </div>
                     )}
-                    <Badge className="absolute top-3 left-3 bg-amber-500 text-emerald-900 text-xs">
+                    <Badge className="absolute top-3 left-3 bg-[#cca72f] text-[#003527] text-xs">
                       {item.category}
                     </Badge>
                   </div>
                   <CardContent className="p-4">
-                    <p className="text-xs text-gray-400 mb-1">
+                    <p className="text-xs text-[#404944]/70 mb-1">
                       {new Date(item.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
                     </p>
-                    <h3 className="font-semibold text-emerald-800 line-clamp-2 mb-2 group-hover:text-emerald-600 transition-colors">{item.title}</h3>
-                    <p className="text-sm text-gray-500 line-clamp-2">{item.excerpt || ''}</p>
+                    <h3 className="font-semibold text-[#003527] line-clamp-2 mb-2 group-hover:text-[#064e3b] transition-colors">{item.title}</h3>
+                    <p className="text-sm text-[#404944] line-clamp-2">{item.excerpt || ''}</p>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -679,8 +673,8 @@ export default function BerandaSection() {
           </div>
         ) : (
           <Card className="p-8 text-center border-0">
-            <BookOpen className="h-12 w-12 text-emerald-200 mx-auto mb-3" />
-            <p className="text-gray-500">Belum ada berita</p>
+            <BookOpen className="h-12 w-12 text-[#064e3b]/40 mx-auto mb-3" />
+            <p className="text-[#404944]">Belum ada berita</p>
           </Card>
         )}
 
@@ -694,14 +688,14 @@ export default function BerandaSection() {
             </DialogClose>
             {selectedNews && (
               <>
-                <DialogTitle className="text-xl font-bold text-emerald-800 pr-8">
+                <DialogTitle className="text-xl font-bold text-[#003527] pr-8">
                   {selectedNews.title}
                 </DialogTitle>
                 <div className="flex items-center gap-3 mt-2">
-                  <Badge className="bg-amber-100 text-amber-800">
+                  <Badge className="bg-[#cca72f]/20 text-[#895033]">
                     {selectedNews.category}
                   </Badge>
-                  <span className="text-xs text-gray-400 flex items-center gap-1">
+                  <span className="text-xs text-[#404944]/70 flex items-center gap-1">
                     <Calendar className="h-3 w-3" />
                     {new Date(selectedNews.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
                   </span>
@@ -730,17 +724,17 @@ export default function BerandaSection() {
           className="flex items-center justify-between mb-6"
         >
           <div>
-            <span className="inline-block px-3 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold uppercase tracking-wider mb-2">Inspirasi Islami</span>
+            <span className="inline-block px-3 py-0.5 rounded-full bg-[#064e3b]/15 text-[#003527] text-xs font-semibold uppercase tracking-wider mb-2">Inspirasi Islami</span>
             <h2 className="text-2xl md:text-3xl font-bold text-gradient-emerald flex items-center gap-2">
-              <BookHeart className="h-7 w-7 text-amber-500" />
+              <BookHeart className="h-7 w-7 text-[#cca72f]" />
               Dakwah & Kajian
             </h2>
-            <div className="w-20 h-1 bg-gradient-to-r from-emerald-500 to-amber-500 mt-2 rounded-full" />
+            <div className="w-20 h-1 bg-gradient-to-r from-[#003527] to-[#cca72f] mt-2 rounded-full" />
           </div>
           <Button
             variant="ghost"
             onClick={() => { setCurrentPage('dakwah'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
-            className="text-emerald-600 hover:text-emerald-800 hover:gap-2 transition-all rounded-full"
+            className="text-[#003527] hover:text-[#064e3b] hover:gap-2 transition-all rounded-full"
           >
             Selengkapnya <ArrowRight className="ml-1 h-4 w-4" />
           </Button>
@@ -769,11 +763,11 @@ export default function BerandaSection() {
                 transition={{ delay: idx * 0.1, duration: 0.5 }}
               >
                 <Card
-                  className="overflow-hidden border-0 shadow-premium card-hover group cursor-pointer h-full flex flex-col rounded-2xl"
+                  className="overflow-hidden border border-[#e4e2de] shadow-premium card-hover group cursor-pointer h-full flex flex-col rounded-2xl bg-[#ffffff]"
                   onClick={() => setSelectedDakwah(item)}
                 >
                   {/* Image or gradient header */}
-                  <div className="h-32 bg-gradient-to-br from-emerald-500 to-teal-700 relative overflow-hidden">
+                  <div className="h-32 bg-gradient-to-br from-[#064e3b] to-[#895033] relative overflow-hidden">
                     {item.image ? (
                       <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                     ) : (
@@ -789,18 +783,18 @@ export default function BerandaSection() {
                         </div>
                       </div>
                     )}
-                    <Badge className="absolute top-3 left-3 bg-amber-500 text-emerald-900 text-xs capitalize">
+                    <Badge className="absolute top-3 left-3 bg-[#cca72f] text-[#003527] text-xs capitalize">
                       {item.category}
                     </Badge>
                   </div>
                   <CardContent className="p-4 flex-1 flex flex-col">
-                    <h3 className="font-semibold text-emerald-800 line-clamp-2 mb-2 group-hover:text-emerald-600 transition-colors">
+                    <h3 className="font-semibold text-[#003527] line-clamp-2 mb-2 group-hover:text-[#064e3b] transition-colors">
                       {item.title}
                     </h3>
-                    <p className="text-sm text-gray-500 line-clamp-2 mb-3 flex-1">
+                    <p className="text-sm text-[#404944] line-clamp-2 mb-3 flex-1">
                       {item.content.substring(0, 120)}...
                     </p>
-                    <div className="flex items-center justify-between text-xs text-gray-400 mt-auto">
+                    <div className="flex items-center justify-between text-xs text-[#404944]/70 mt-auto">
                       <span className="flex items-center gap-1">
                         <User className="h-3 w-3" />
                         {item.author || 'Tim Dakwah'}
@@ -817,8 +811,8 @@ export default function BerandaSection() {
           </div>
         ) : (
           <Card className="p-8 text-center border-0">
-            <BookHeart className="h-12 w-12 text-emerald-200 mx-auto mb-3" />
-            <p className="text-gray-500">Belum ada konten dakwah</p>
+            <BookHeart className="h-12 w-12 text-[#064e3b]/40 mx-auto mb-3" />
+            <p className="text-[#404944]">Belum ada konten dakwah</p>
           </Card>
         )}
 
@@ -832,18 +826,18 @@ export default function BerandaSection() {
             </DialogClose>
             {selectedDakwah && (
               <>
-                <DialogTitle className="text-xl font-bold text-emerald-800 pr-8">
+                <DialogTitle className="text-xl font-bold text-[#003527] pr-8">
                   {selectedDakwah.title}
                 </DialogTitle>
                 <div className="flex items-center gap-3 mt-2">
-                  <Badge className="bg-amber-100 text-amber-800 capitalize">
+                  <Badge className="bg-[#cca72f]/20 text-[#895033] capitalize">
                     {selectedDakwah.category}
                   </Badge>
-                  <span className="text-xs text-gray-400 flex items-center gap-1">
+                  <span className="text-xs text-[#404944]/70 flex items-center gap-1">
                     <User className="h-3 w-3" />
                     {selectedDakwah.author || 'Tim Dakwah'}
                   </span>
-                  <span className="text-xs text-gray-400 flex items-center gap-1">
+                  <span className="text-xs text-[#404944]/70 flex items-center gap-1">
                     <Calendar className="h-3 w-3" />
                     {new Date(selectedDakwah.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
                   </span>
@@ -878,11 +872,11 @@ export default function BerandaSection() {
           transition={{ duration: 0.5 }}
           className="text-center mb-6"
         >
-          <span className="inline-block px-3 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold uppercase tracking-wider mb-2">Penanggalan</span>
+          <span className="inline-block px-3 py-0.5 rounded-full bg-[#064e3b]/15 text-[#003527] text-xs font-semibold uppercase tracking-wider mb-2">Penanggalan</span>
           <h2 className="text-2xl md:text-3xl font-bold text-gradient-emerald">Kalender</h2>
-          <div className="w-20 h-1 bg-gradient-to-r from-emerald-500 to-amber-500 mx-auto mt-2 rounded-full" />
-          <p className="text-xs text-gray-500 mt-3 flex items-center justify-center gap-1.5">
-            <Eye className="h-3.5 w-3.5 text-emerald-600" />
+          <div className="w-20 h-1 bg-gradient-to-r from-[#003527] to-[#cca72f] mx-auto mt-2 rounded-full" />
+          <p className="text-xs text-[#404944] mt-3 flex items-center justify-center gap-1.5">
+            <Eye className="h-3.5 w-3.5 text-[#003527]" />
             Klik kartu kalender untuk melihat kalender lengkap &amp; hari besar Islam
           </p>
         </motion.div>
@@ -899,15 +893,13 @@ export default function BerandaSection() {
             className="border-0 shadow-premium-lg overflow-hidden cursor-pointer hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group rounded-2xl"
             onClick={() => setCalendarModal({ open: true, type: 'hijri' })}
           >
-            <div className="bg-gradient-to-br from-emerald-700 via-emerald-800 to-emerald-900 text-white relative">
-              {/* Islamic pattern overlay */}
-              <div className="absolute inset-0 opacity-[0.06] pointer-events-none" aria-hidden style={{
-                backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='white'%3E%3Cpath d='M20 0L40 20L20 40L0 20z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-              }} />
+            <div className="bg-gradient-to-br from-[#003527] via-[#064e3b] to-[#003527] text-white relative">
+              {/* Kraton pattern overlay */}
+              <div className="absolute inset-0 kraton-pattern opacity-[0.07] pointer-events-none" aria-hidden />
               {/* Header strip */}
-              <div className="flex items-center justify-between px-5 py-3 bg-emerald-950/40 border-b border-amber-400/20 relative">
+              <div className="flex items-center justify-between px-5 py-3 bg-[#003527]/40 border-b border-[#cca72f]/20 relative">
                 <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-amber-400" />
+                  <Calendar className="h-4 w-4 text-[#cca72f]" />
                   <h3 className="text-sm font-bold tracking-wider uppercase">Kalender Hijriyah</h3>
                 </div>
                 <span className="text-base leading-none" aria-hidden>﷽</span>
@@ -915,7 +907,7 @@ export default function BerandaSection() {
               {/* Body */}
               <div className="flex items-stretch gap-4 p-5 relative">
                 {/* Date box */}
-                <div className="flex flex-col items-center justify-center bg-amber-400 text-emerald-900 rounded-xl px-5 py-4 shadow-lg min-w-[96px]">
+                <div className="flex flex-col items-center justify-center bg-[#cca72f] text-[#003527] rounded-xl px-5 py-4 shadow-lg min-w-[96px]">
                   <span className="text-4xl font-extrabold leading-none">
                     {hijriInfo?.day ?? '–'}
                   </span>
@@ -925,11 +917,11 @@ export default function BerandaSection() {
                 </div>
                 {/* Info */}
                 <div className="flex-1 flex flex-col justify-center min-w-0">
-                  <p className="text-[10px] text-amber-300/90 uppercase tracking-widest mb-1 font-semibold">Penanggalan Islam</p>
+                  <p className="text-[10px] text-[#ffe088]/90 uppercase tracking-widest mb-1 font-semibold">Penanggalan Islam</p>
                   <p className="text-base md:text-lg font-bold leading-tight">
                     {hijriInfo ? `${hijriInfo.monthName} ${hijriInfo.year} H` : '\u00A0'}
                   </p>
-                  <div className="flex items-center gap-2 mt-2 text-emerald-100/80 text-xs">
+                  <div className="flex items-center gap-2 mt-2 text-[#b0f0d6]/80 text-xs">
                     <Calendar className="h-3 w-3" />
                     <span>{masehiInfo?.weekday ?? '\u00A0'}</span>
                   </div>
@@ -938,17 +930,17 @@ export default function BerandaSection() {
               {/* Holiday badge */}
               {islamicHoliday && (
                 <div className="px-5 pb-3 relative">
-                  <div className="bg-amber-400/20 border border-amber-400/40 rounded-lg px-3 py-2 flex items-center gap-2 backdrop-blur-sm">
+                  <div className="bg-[#cca72f]/20 border border-[#cca72f]/40 rounded-lg px-3 py-2 flex items-center gap-2 backdrop-blur-sm">
                     <span className="text-xl">{islamicHoliday.emoji}</span>
                     <div className="min-w-0">
-                      <p className="text-[10px] text-amber-300 uppercase tracking-wider font-semibold">Hari Besar Islam</p>
-                      <p className="text-sm font-bold text-amber-100 truncate">{islamicHoliday.name}</p>
+                      <p className="text-[10px] text-[#ffe088] uppercase tracking-wider font-semibold">Hari Besar Islam</p>
+                      <p className="text-sm font-bold text-[#ffe088] truncate">{islamicHoliday.name}</p>
                     </div>
                   </div>
                 </div>
               )}
               {/* Footer hint */}
-              <div className="px-5 py-2.5 bg-emerald-950/30 border-t border-amber-400/20 flex items-center justify-center gap-1.5 text-[11px] text-amber-200/80 group-hover:text-amber-100 transition-colors">
+              <div className="px-5 py-2.5 bg-[#003527]/30 border-t border-[#cca72f]/20 flex items-center justify-center gap-1.5 text-[11px] text-[#ffe088]/80 group-hover:text-[#ffe088] transition-colors">
                 <Eye className="h-3 w-3" />
                 <span className="font-medium">Lihat kalender lengkap &amp; hari besar Islam</span>
                 <ChevronRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
@@ -968,15 +960,13 @@ export default function BerandaSection() {
             className="border-0 shadow-premium-lg overflow-hidden cursor-pointer hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group rounded-2xl"
             onClick={() => setCalendarModal({ open: true, type: 'masehi' })}
           >
-            <div className="bg-gradient-to-br from-amber-600 via-amber-700 to-amber-800 text-white relative">
-              {/* Decorative pattern */}
-              <div className="absolute inset-0 opacity-[0.05] pointer-events-none" aria-hidden style={{
-                backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='white'%3E%3Cpath d='M20 0L40 20L20 40L0 20z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-              }} />
+            <div className="bg-gradient-to-br from-[#895033] via-[#a86644] to-[#895033] text-white relative">
+              {/* Decorative Kraton pattern */}
+              <div className="absolute inset-0 kraton-pattern opacity-[0.06] pointer-events-none" aria-hidden />
               {/* Header strip */}
-              <div className="flex items-center justify-between px-5 py-3 bg-amber-950/30 border-b border-emerald-400/20 relative">
+              <div className="flex items-center justify-between px-5 py-3 bg-[#895033]/30 border-b border-[#cca72f]/20 relative">
                 <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-emerald-200" />
+                  <Calendar className="h-4 w-4 text-[#ffe088]" />
                   <h3 className="text-sm font-bold tracking-wider uppercase">Kalender Masehi</h3>
                 </div>
                 <span className="text-base" aria-hidden>📅</span>
@@ -984,7 +974,7 @@ export default function BerandaSection() {
               {/* Body */}
               <div className="flex items-stretch gap-4 p-5 relative">
                 {/* Date box */}
-                <div className="flex flex-col items-center justify-center bg-emerald-600 text-white rounded-xl px-5 py-4 shadow-lg min-w-[96px]">
+                <div className="flex flex-col items-center justify-center bg-[#003527] text-white rounded-xl px-5 py-4 shadow-lg min-w-[96px]">
                   <span className="text-[10px] font-bold uppercase tracking-wider opacity-80 mb-1.5">
                     {masehiInfo?.weekday?.substring(0, 3) ?? 'Hari'}
                   </span>
@@ -997,15 +987,15 @@ export default function BerandaSection() {
                 </div>
                 {/* Info */}
                 <div className="flex-1 flex flex-col justify-center min-w-0">
-                  <p className="text-[10px] text-emerald-100/90 uppercase tracking-widest mb-1 font-semibold">Penanggalan Masehi</p>
+                  <p className="text-[10px] text-[#ffe088]/90 uppercase tracking-widest mb-1 font-semibold">Penanggalan Masehi</p>
                   <p className="text-base md:text-lg font-bold leading-tight">
                     {masehiInfo ? `${masehiInfo.monthName} ${masehiInfo.year}` : '\u00A0'}
                   </p>
-                  <div className="flex items-center gap-2 mt-2 text-emerald-50/80 text-xs">
+                  <div className="flex items-center gap-2 mt-2 text-[#ffe088]/80 text-xs">
                     <Calendar className="h-3 w-3" />
                     <span>
                       {masehiInfo?.weekday ?? '\u00A0'}
-                      {masehiInfo?.isWeekend && <span className="ml-2 text-amber-200">• Akhir pekan</span>}
+                      {masehiInfo?.isWeekend && <span className="ml-2 text-[#ffe088]">• Akhir pekan</span>}
                     </span>
                   </div>
                 </div>
@@ -1013,17 +1003,17 @@ export default function BerandaSection() {
               {/* Holiday badge */}
               {masehiHoliday && (
                 <div className="px-5 pb-3 relative">
-                  <div className="bg-emerald-600/30 border border-emerald-300/40 rounded-lg px-3 py-2 flex items-center gap-2 backdrop-blur-sm">
+                  <div className="bg-[#003527]/30 border border-[#cca72f]/40 rounded-lg px-3 py-2 flex items-center gap-2 backdrop-blur-sm">
                     <span className="text-xl">{masehiHoliday.emoji}</span>
                     <div className="min-w-0">
-                      <p className="text-[10px] text-emerald-100 uppercase tracking-wider font-semibold">Hari Besar Nasional</p>
-                      <p className="text-sm font-bold text-emerald-50 truncate">{masehiHoliday.name}</p>
+                      <p className="text-[10px] text-[#ffe088] uppercase tracking-wider font-semibold">Hari Besar Nasional</p>
+                      <p className="text-sm font-bold text-[#ffe088] truncate">{masehiHoliday.name}</p>
                     </div>
                   </div>
                 </div>
               )}
               {/* Footer hint */}
-              <div className="px-5 py-2.5 bg-amber-950/30 border-t border-emerald-400/20 flex items-center justify-center gap-1.5 text-[11px] text-emerald-100/80 group-hover:text-emerald-50 transition-colors">
+              <div className="px-5 py-2.5 bg-[#895033]/30 border-t border-[#cca72f]/20 flex items-center justify-center gap-1.5 text-[11px] text-[#ffe088]/80 group-hover:text-[#ffe088] transition-colors">
                 <Eye className="h-3 w-3" />
                 <span className="font-medium">Lihat kalender lengkap &amp; hari besar nasional</span>
                 <ChevronRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
@@ -1038,7 +1028,7 @@ export default function BerandaSection() {
       {testimonials.length > 0 && (
         <section className="relative bg-mesh-emerald py-12 overflow-hidden">
           {/* Decorative glow */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-emerald-200/20 rounded-full blur-3xl pointer-events-none" aria-hidden />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#064e3b]/20 rounded-full blur-3xl pointer-events-none" aria-hidden />
           <div className="container mx-auto px-4 relative">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -1047,9 +1037,9 @@ export default function BerandaSection() {
               transition={{ duration: 0.5 }}
               className="text-center mb-8"
             >
-              <span className="inline-block px-3 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold uppercase tracking-wider mb-2">Kata Mereka</span>
+              <span className="inline-block px-3 py-0.5 rounded-full bg-[#cca72f]/15 text-[#895033] text-xs font-semibold uppercase tracking-wider mb-2">Kata Mereka</span>
               <h2 className="text-2xl md:text-3xl font-bold text-gradient-emerald">Testimoni</h2>
-              <div className="w-20 h-1 bg-gradient-to-r from-emerald-500 to-amber-500 mx-auto mt-2 rounded-full" />
+              <div className="w-20 h-1 bg-gradient-to-r from-[#003527] to-[#cca72f] mx-auto mt-2 rounded-full" />
             </motion.div>
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -1060,17 +1050,17 @@ export default function BerandaSection() {
             >
               <Card className="border border-white/40 shadow-premium-lg glass rounded-2xl">
                 <CardContent className="p-8 text-center">
-                  <Quote className="h-10 w-10 text-amber-400 mx-auto mb-4" />
-                  <p className="text-gray-600 italic leading-relaxed mb-6">
+                  <Quote className="h-10 w-10 text-[#cca72f] mx-auto mb-4" />
+                  <p className="text-[#404944] italic leading-relaxed mb-6">
                     &ldquo;{testimonials[testimonialIdx]?.content}&rdquo;
                   </p>
                   <div className="flex items-center justify-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-emerald-600 flex items-center justify-center text-white font-bold">
+                    <div className="w-10 h-10 rounded-full bg-[#003527] flex items-center justify-center text-white font-bold">
                       {testimonials[testimonialIdx]?.name?.charAt(0) || 'W'}
                     </div>
                     <div className="text-left">
-                      <p className="font-semibold text-emerald-800 text-sm">{testimonials[testimonialIdx]?.name}</p>
-                      <p className="text-gray-500 text-xs">{testimonials[testimonialIdx]?.role}</p>
+                      <p className="font-semibold text-[#003527] text-sm">{testimonials[testimonialIdx]?.name}</p>
+                      <p className="text-[#404944] text-xs">{testimonials[testimonialIdx]?.role}</p>
                     </div>
                   </div>
                   {testimonials.length > 1 && (
@@ -1084,7 +1074,7 @@ export default function BerandaSection() {
                             key={i}
                             onClick={() => setTestimonialIdx(i)}
                             className={`w-2 h-2 rounded-full transition-colors ${
-                              i === testimonialIdx ? 'bg-amber-500' : 'bg-emerald-200'
+                              i === testimonialIdx ? 'bg-[#cca72f]' : 'bg-[#064e3b]/30'
                             }`}
                           />
                         ))}
@@ -1103,7 +1093,7 @@ export default function BerandaSection() {
 
       {/* Upcoming Events */}
       {events.length > 0 && (
-        <section className="bg-amber-50/50 py-12">
+        <section className="bg-[#cca72f]/5 py-12">
           <div className="container mx-auto px-4">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -1112,9 +1102,9 @@ export default function BerandaSection() {
               transition={{ duration: 0.5 }}
               className="text-center mb-8"
             >
-              <span className="inline-block px-3 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold uppercase tracking-wider mb-2">Agenda</span>
+              <span className="inline-block px-3 py-0.5 rounded-full bg-[#064e3b]/15 text-[#003527] text-xs font-semibold uppercase tracking-wider mb-2">Agenda</span>
               <h2 className="text-2xl md:text-3xl font-bold text-gradient-emerald">Kegiatan Mendatang</h2>
-              <div className="w-20 h-1 bg-gradient-to-r from-emerald-500 to-amber-500 mx-auto mt-2 rounded-full" />
+              <div className="w-20 h-1 bg-gradient-to-r from-[#003527] to-[#cca72f] mx-auto mt-2 rounded-full" />
             </motion.div>
             <div className="grid md:grid-cols-3 gap-6">
               {events.map((event: { id: string; title: string; description?: string; date: string; location?: string }, idx: number) => (
@@ -1125,10 +1115,10 @@ export default function BerandaSection() {
                   viewport={{ once: true, margin: "-50px" }}
                   transition={{ delay: idx * 0.1, duration: 0.5 }}
                 >
-                  <Card className="border-0 shadow-premium card-hover rounded-2xl">
+                  <Card className="border border-[#e4e2de] shadow-premium card-hover rounded-2xl bg-[#ffffff]">
                     <CardContent className="p-6">
                       <div className="flex gap-4">
-                        <div className="bg-emerald-600 text-white rounded-xl p-3 text-center min-w-[60px]">
+                        <div className="bg-[#003527] text-white rounded-xl p-3 text-center min-w-[60px]">
                           <div className="text-xl font-bold">
                             {new Date(event.date).getDate()}
                           </div>
@@ -1137,18 +1127,18 @@ export default function BerandaSection() {
                           </div>
                         </div>
                         <div className="flex-1">
-                          <h3 className="font-semibold text-emerald-800 mb-1">{event.title}</h3>
-                          <p className="text-xs text-emerald-600 flex items-center gap-1 mb-1">
+                          <h3 className="font-semibold text-[#003527] mb-1">{event.title}</h3>
+                          <p className="text-xs text-[#003527] flex items-center gap-1 mb-1">
                             <Calendar className="h-3 w-3" />
                             {formatMasehiHijri(new Date(event.date))}
                           </p>
                           {event.location && (
-                            <p className="text-xs text-gray-500 flex items-center gap-1">
+                            <p className="text-xs text-[#404944] flex items-center gap-1">
                               <MapPin className="h-3 w-3" /> {event.location}
                             </p>
                           )}
                           {event.description && (
-                            <p className="text-sm text-gray-500 mt-1 line-clamp-2">{event.description}</p>
+                            <p className="text-sm text-[#404944] mt-1 line-clamp-2">{event.description}</p>
                           )}
                         </div>
                       </div>

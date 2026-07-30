@@ -24,18 +24,18 @@ const categories = [
 ]
 
 const categoryColors: Record<string, string> = {
-  kegiatan: 'bg-emerald-600 text-white',
-  acara: 'bg-amber-600 text-white',
-  tahunan: 'bg-teal-600 text-white',
+  kegiatan: 'bg-[#003527] text-white',
+  acara: 'bg-[#895033] text-white',
+  tahunan: 'bg-[#064e3b] text-white',
 }
 
 const gradientVariants = [
-  'from-emerald-400 to-teal-600',
-  'from-emerald-500 to-emerald-700',
-  'from-teal-400 to-emerald-600',
-  'from-emerald-600 to-teal-800',
-  'from-amber-400 to-amber-600',
-  'from-emerald-400 to-cyan-600',
+  'from-[#064e3b] to-[#003527]',
+  'from-[#003527] to-[#064e3b]',
+  'from-[#064e3b] to-[#003527]',
+  'from-[#003527] to-[#064e3b]',
+  'from-[#895033] to-[#a86644]',
+  'from-[#064e3b] to-[#895033]',
 ]
 
 export default function GaleriSection() {
@@ -108,7 +108,7 @@ export default function GaleriSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: 0.4 }}
-          className="inline-block px-3 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold uppercase tracking-wider mb-2"
+          className="inline-block px-3 py-0.5 rounded-full bg-[#064e3b]/15 text-[#003527] text-xs font-semibold uppercase tracking-wider mb-2"
         >
           Dokumentasi
         </motion.span>
@@ -121,9 +121,9 @@ export default function GaleriSection() {
         >
           Galeri
         </motion.h2>
-        <div className="w-20 h-1 bg-gradient-to-r from-emerald-500 to-amber-500 mx-auto mt-2 rounded-full" />
+        <div className="w-20 h-1 bg-gradient-to-r from-[#003527] to-[#cca72f] mx-auto mt-2 rounded-full" />
         {filteredGallery.length > 0 && (
-          <p className="text-sm text-gray-500 mt-3">
+          <p className="text-sm text-[#404944] mt-3">
             {filteredGallery.length} foto
           </p>
         )}
@@ -139,8 +139,8 @@ export default function GaleriSection() {
               onClick={() => setSelectedCategory(cat.value)}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
                 selectedCategory === cat.value
-                  ? 'bg-gradient-to-r from-emerald-700 to-emerald-800 text-white shadow-md shadow-emerald-700/30 scale-105'
-                  : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 hover:scale-105'
+                  ? 'bg-[#003527] text-white shadow-md shadow-[#003527]/30 scale-105'
+                  : 'bg-[#f5f3ef] text-[#003527] hover:bg-[#efeeea] hover:scale-105'
               }`}
             >
               {cat.label}
@@ -151,15 +151,15 @@ export default function GaleriSection() {
         {/* Year filter (auto-populated from data) */}
         {availableYears.length > 0 && (
           <div className="flex flex-wrap gap-2 justify-center items-center">
-            <span className="text-xs text-gray-500 font-medium flex items-center gap-1 mr-1">
+            <span className="text-xs text-[#404944] font-medium flex items-center gap-1 mr-1">
               <Calendar className="h-3 w-3" /> Tahun:
             </span>
             <button
               onClick={() => setSelectedYear('')}
               className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-300 ${
                 safeSelectedYear === ''
-                  ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-white shadow-md scale-105'
-                  : 'bg-amber-50 text-amber-700 hover:bg-amber-100 hover:scale-105'
+                  ? 'bg-[#cca72f] text-white shadow-md scale-105'
+                  : 'bg-[#cca72f]/10 text-[#895033] hover:bg-[#cca72f]/20 hover:scale-105'
               }`}
             >
               Semua
@@ -170,8 +170,8 @@ export default function GaleriSection() {
                 onClick={() => setSelectedYear(year)}
                 className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-300 ${
                   safeSelectedYear === year
-                    ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-white shadow-md scale-105'
-                    : 'bg-amber-50 text-amber-700 hover:bg-amber-100 hover:scale-105'
+                    ? 'bg-[#cca72f] text-white shadow-md scale-105'
+                    : 'bg-[#cca72f]/10 text-[#895033] hover:bg-[#cca72f]/20 hover:scale-105'
                 }`}
               >
                 {year}
@@ -200,7 +200,7 @@ export default function GaleriSection() {
               className="break-inside-avoid mb-4 cursor-pointer group"
               onClick={() => setLightboxIndex(idx)}
             >
-              <div className="relative rounded-2xl overflow-hidden shadow-premium card-hover bg-gray-100">
+              <div className="relative rounded-2xl overflow-hidden shadow-premium card-hover bg-[#f5f3ef]">
                 {item.type === 'video' ? (
                   <div className={`aspect-video bg-gradient-to-br ${gradientVariants[idx % gradientVariants.length]} flex items-center justify-center`}>
                     <Play className="h-12 w-12 text-white/70" />
@@ -217,7 +217,7 @@ export default function GaleriSection() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
                   <p className="text-white text-sm font-medium line-clamp-2 mb-2">{item.title}</p>
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${categoryColors[item.category] || 'bg-gray-600 text-white'}`}>
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${categoryColors[item.category] || 'bg-[#404944] text-white'}`}>
                       {item.category}
                     </span>
                     {item.year && (
@@ -236,10 +236,10 @@ export default function GaleriSection() {
         </div>
       ) : (
         <div className="text-center py-16">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-emerald-50 mb-4">
-            <ImageIcon className="h-10 w-10 text-emerald-300" />
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#064e3b]/10 mb-4">
+            <ImageIcon className="h-10 w-10 text-[#064e3b]/50" />
           </div>
-          <p className="text-gray-500">Belum ada foto untuk filter ini</p>
+          <p className="text-[#404944]">Belum ada foto untuk filter ini</p>
         </div>
       )}
 
@@ -318,7 +318,7 @@ export default function GaleriSection() {
               <div className="mt-4 text-center px-4 max-w-2xl">
                 <h3 className="text-white font-semibold text-lg mb-2">{filteredGallery[lightboxIndex].title}</h3>
                 <div className="flex items-center justify-center gap-2 flex-wrap">
-                  <span className={`text-xs px-3 py-1 rounded-full font-medium ${categoryColors[filteredGallery[lightboxIndex].category] || 'bg-gray-600 text-white'}`}>
+                  <span className={`text-xs px-3 py-1 rounded-full font-medium ${categoryColors[filteredGallery[lightboxIndex].category] || 'bg-[#404944] text-white'}`}>
                     {filteredGallery[lightboxIndex].category}
                   </span>
                   {filteredGallery[lightboxIndex].year && (

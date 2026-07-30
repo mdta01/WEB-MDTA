@@ -12,12 +12,12 @@ import { MarkdownRenderer } from '@/components/sections/MarkdownRenderer'
 import { Skeleton } from '@/components/ui/skeleton'
 
 const typeConfig: Record<string, { icon: React.ElementType; color: string; label: string }> = {
-  'ujian': { icon: FileText, color: 'bg-blue-100 text-blue-700', label: 'Ujian' },
-  'libur': { icon: CalendarDays, color: 'bg-amber-100 text-amber-700', label: 'Libur' },
-  'kegiatan': { icon: Bell, color: 'bg-emerald-100 text-emerald-700', label: 'Kegiatan' },
-  'ppdb': { icon: GraduationCap, color: 'bg-purple-100 text-purple-700', label: 'PPDB' },
+  'ujian': { icon: FileText, color: 'bg-[#064e3b]/15 text-[#064e3b]', label: 'Ujian' },
+  'libur': { icon: CalendarDays, color: 'bg-[#cca72f]/20 text-[#895033]', label: 'Libur' },
+  'kegiatan': { icon: Bell, color: 'bg-[#003527]/15 text-[#003527]', label: 'Kegiatan' },
+  'ppdb': { icon: GraduationCap, color: 'bg-[#895033]/15 text-[#895033]', label: 'PPDB' },
   'penting': { icon: AlertCircle, color: 'bg-red-100 text-red-700', label: 'Penting' },
-  'general': { icon: Megaphone, color: 'bg-gray-100 text-gray-700', label: 'Umum' },
+  'general': { icon: Megaphone, color: 'bg-[#f5f3ef] text-[#404944]', label: 'Umum' },
 }
 
 export default function PengumumanSection() {
@@ -36,7 +36,7 @@ export default function PengumumanSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: 0.4 }}
-          className="inline-block px-3 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold uppercase tracking-wider mb-2"
+          className="inline-block px-3 py-0.5 rounded-full bg-[#cca72f]/15 text-[#895033] text-xs font-semibold uppercase tracking-wider mb-2"
         >
           Pemberitahuan
         </motion.span>
@@ -49,7 +49,7 @@ export default function PengumumanSection() {
         >
           Pengumuman
         </motion.h2>
-        <div className="w-20 h-1 bg-gradient-to-r from-emerald-500 to-amber-500 mx-auto mt-2 rounded-full" />
+        <div className="w-20 h-1 bg-gradient-to-r from-[#003527] to-[#cca72f] mx-auto mt-2 rounded-full" />
       </div>
 
       {isLoading ? (
@@ -80,7 +80,7 @@ export default function PengumumanSection() {
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ delay: idx * 0.05, duration: 0.5 }}
               >
-                <Card className={`border-0 shadow-premium card-hover rounded-2xl ${item.priority >= 3 ? 'ring-2 ring-amber-300' : ''}`}>
+                <Card className={`border border-[#e4e2de] shadow-premium card-hover rounded-2xl bg-[#ffffff] ${item.priority >= 3 ? 'ring-2 ring-[#cca72f]/50' : ''}`}>
                   <CardContent className="p-5">
                     <div className="flex items-start gap-4">
                       <div className={`w-10 h-10 rounded-2xl ${config.color} flex items-center justify-center shrink-0 shadow-md`}>
@@ -88,16 +88,16 @@ export default function PengumumanSection() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap mb-1">
-                          <h4 className="font-semibold text-emerald-800">{item.title}</h4>
+                          <h4 className="font-semibold text-[#003527]">{item.title}</h4>
                           <Badge className={`text-xs ${config.color}`}>{config.label}</Badge>
                           {item.priority >= 3 && (
                             <Badge className="text-xs bg-red-100 text-red-700">Prioritas</Badge>
                           )}
                         </div>
-                        <div className="text-gray-600 text-sm">
+                        <div className="text-[#404944] text-sm">
                           <MarkdownRenderer content={item.content} />
                         </div>
-                        <div className="flex items-center gap-1 mt-2 text-xs text-gray-400">
+                        <div className="flex items-center gap-1 mt-2 text-xs text-[#404944]/70">
                           <Clock className="h-3 w-3" />
                           {new Date(item.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
                         </div>
@@ -111,8 +111,8 @@ export default function PengumumanSection() {
         </div>
       ) : (
         <Card className="p-12 text-center border-0">
-          <Megaphone className="h-12 w-12 text-emerald-200 mx-auto mb-3" />
-          <p className="text-gray-500">Belum ada pengumuman saat ini</p>
+          <Megaphone className="h-12 w-12 text-[#064e3b]/40 mx-auto mb-3" />
+          <p className="text-[#404944]">Belum ada pengumuman saat ini</p>
         </Card>
       )}
     </div>

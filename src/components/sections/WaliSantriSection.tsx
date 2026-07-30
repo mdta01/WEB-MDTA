@@ -77,9 +77,9 @@ export default function WaliSantriSection() {
   return (
     <div className="space-y-8">
       <div className="text-center mb-8">
-        <h2 className="text-2xl md:text-3xl font-bold text-emerald-800">Wali Santri</h2>
-        <div className="w-20 h-1 bg-amber-500 mx-auto mt-2 rounded-full" />
-        <p className="text-gray-500 mt-3 text-sm">Informasi dan layanan untuk orang tua/wali santri</p>
+        <h2 className="text-2xl md:text-3xl font-bold text-[#003527]">Wali Santri</h2>
+        <div className="w-20 h-1 bg-[#cca72f] mx-auto mt-2 rounded-full" />
+        <p className="text-[#404944] mt-3 text-sm">Informasi dan layanan untuk orang tua/wali santri</p>
       </div>
 
       <div className="grid lg:grid-cols-2 gap-8">
@@ -87,10 +87,10 @@ export default function WaliSantriSection() {
         <div className="space-y-6">
           {/* Payment Info */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            <Card className="border-0 shadow-md">
+            <Card className="border border-[#e4e2de] shadow-md card-hover rounded-2xl bg-[#ffffff]">
               <CardContent className="p-6">
-                <h3 className="text-lg font-bold text-emerald-800 flex items-center gap-2 mb-4">
-                  <CreditCard className="h-5 w-5 text-amber-500" />
+                <h3 className="text-lg font-bold text-[#003527] flex items-center gap-2 mb-4">
+                  <CreditCard className="h-5 w-5 text-[#cca72f]" />
                   Informasi Pembayaran
                 </h3>
                 {paymentsLoading ? (
@@ -102,25 +102,25 @@ export default function WaliSantriSection() {
                 ) : payments.length > 0 ? (
                   <div className="space-y-3">
                     {payments.map((payment: { id: string; title: string; amount: string; description?: string; dueDate?: string }) => (
-                      <div key={payment.id} className="flex items-center justify-between p-3 bg-emerald-50 rounded-lg">
+                      <div key={payment.id} className="flex items-center justify-between p-3 bg-[#064e3b]/5 rounded-lg">
                         <div>
-                          <p className="font-medium text-sm text-emerald-800">{payment.title}</p>
+                          <p className="font-medium text-sm text-[#003527]">{payment.title}</p>
                           {payment.description && (
-                            <p className="text-xs text-gray-500">{payment.description}</p>
+                            <p className="text-xs text-[#404944]">{payment.description}</p>
                           )}
                           {payment.dueDate && (
-                            <p className="text-xs text-gray-400 mt-1 flex items-center gap-1">
+                            <p className="text-xs text-[#404944]/70 mt-1 flex items-center gap-1">
                               <Clock className="h-3 w-3" />
                               Jatuh tempo: {new Date(payment.dueDate).toLocaleDateString('id-ID')}
                             </p>
                           )}
                         </div>
-                        <Badge className="bg-amber-100 text-amber-800 font-bold">{payment.amount}</Badge>
+                        <Badge className="bg-[#cca72f]/20 text-[#895033] font-bold">{payment.amount}</Badge>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-gray-400 text-sm">Informasi pembayaran belum tersedia</p>
+                  <p className="text-[#404944]/70 text-sm">Informasi pembayaran belum tersedia</p>
                 )}
               </CardContent>
             </Card>
@@ -128,10 +128,10 @@ export default function WaliSantriSection() {
 
           {/* Announcements for Parents */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-            <Card className="border-0 shadow-md">
+            <Card className="border border-[#e4e2de] shadow-md card-hover rounded-2xl bg-[#ffffff]">
               <CardContent className="p-6">
-                <h3 className="text-lg font-bold text-emerald-800 flex items-center gap-2 mb-4">
-                  <Bell className="h-5 w-5 text-amber-500" />
+                <h3 className="text-lg font-bold text-[#003527] flex items-center gap-2 mb-4">
+                  <Bell className="h-5 w-5 text-[#cca72f]" />
                   Pengumuman untuk Wali Santri
                 </h3>
                 {announcementsLoading ? (
@@ -145,19 +145,19 @@ export default function WaliSantriSection() {
                         key={a.id}
                         type="button"
                         onClick={() => setSelectedAnnouncement(a)}
-                        className="w-full text-left flex items-start gap-3 p-3 bg-amber-50 hover:bg-amber-100 rounded-lg transition-colors cursor-pointer"
+                        className="w-full text-left flex items-start gap-3 p-3 bg-[#cca72f]/5 hover:bg-[#cca72f]/10 rounded-lg transition-colors cursor-pointer"
                       >
-                        <AlertCircle className="h-4 w-4 text-amber-500 mt-0.5 shrink-0" />
+                        <AlertCircle className="h-4 w-4 text-[#cca72f] mt-0.5 shrink-0" />
                         <div className="min-w-0 flex-1">
-                          <p className="text-sm font-medium text-emerald-800">{a.title}</p>
+                          <p className="text-sm font-medium text-[#003527]">{a.title}</p>
                           {a.content && (
-                            <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">{a.content}</p>
+                            <p className="text-xs text-[#404944] mt-0.5 line-clamp-2">{a.content}</p>
                           )}
-                          <p className="text-xs text-gray-400 mt-1">
+                          <p className="text-xs text-[#404944]/70 mt-1">
                             {new Date(a.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
                           </p>
                           {a.content && a.content.length > 120 && (
-                            <span className="inline-block mt-1 text-xs text-emerald-600 font-semibold hover:underline">
+                            <span className="inline-block mt-1 text-xs text-[#003527] font-semibold hover:underline">
                               Baca selengkapnya →
                             </span>
                           )}
@@ -166,7 +166,7 @@ export default function WaliSantriSection() {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-gray-400 text-sm">Belum ada pengumuman untuk wali santri</p>
+                  <p className="text-[#404944]/70 text-sm">Belum ada pengumuman untuk wali santri</p>
                 )}
               </CardContent>
             </Card>
@@ -174,10 +174,10 @@ export default function WaliSantriSection() {
 
           {/* Meeting Schedule */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
-            <Card className="border-0 shadow-md">
+            <Card className="border border-[#e4e2de] shadow-md card-hover rounded-2xl bg-[#ffffff]">
               <CardContent className="p-6">
-                <h3 className="text-lg font-bold text-emerald-800 flex items-center gap-2 mb-4">
-                  <Calendar className="h-5 w-5 text-amber-500" />
+                <h3 className="text-lg font-bold text-[#003527] flex items-center gap-2 mb-4">
+                  <Calendar className="h-5 w-5 text-[#cca72f]" />
                   Jadwal Pertemuan Wali Santri
                 </h3>
                 <div className="space-y-3">
@@ -187,31 +187,31 @@ export default function WaliSantriSection() {
                     </div>
                   ) : meetings.length > 0 ? (
                     meetings.map((m: { id: string; title: string; date: string; time: string; location?: string; description?: string }) => (
-                      <div key={m.id} className="p-3 bg-emerald-50 rounded-lg border-l-4 border-amber-400">
-                        <p className="font-medium text-sm text-emerald-800">{m.title}</p>
-                        <div className="flex flex-wrap items-center gap-3 mt-1.5 text-xs text-gray-600">
+                      <div key={m.id} className="p-3 bg-[#064e3b]/5 rounded-lg border-l-4 border-[#cca72f]">
+                        <p className="font-medium text-sm text-[#003527]">{m.title}</p>
+                        <div className="flex flex-wrap items-center gap-3 mt-1.5 text-xs text-[#404944]">
                           <span className="flex items-center gap-1">
-                            <Calendar className="h-3 w-3 text-amber-500" />
+                            <Calendar className="h-3 w-3 text-[#cca72f]" />
                             {new Date(m.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
                           </span>
                           <span className="flex items-center gap-1">
-                            <Clock className="h-3 w-3 text-amber-500" />
+                            <Clock className="h-3 w-3 text-[#cca72f]" />
                             {m.time}
                           </span>
                           {m.location && (
                             <span className="flex items-center gap-1">
-                              <MapPin className="h-3 w-3 text-amber-500" />
+                              <MapPin className="h-3 w-3 text-[#cca72f]" />
                               {m.location}
                             </span>
                           )}
                         </div>
                         {m.description && (
-                          <p className="text-xs text-gray-500 mt-2 line-clamp-2">{m.description}</p>
+                          <p className="text-xs text-[#404944] mt-2 line-clamp-2">{m.description}</p>
                         )}
                       </div>
                     ))
                   ) : (
-                    <p className="text-gray-400 text-sm">Jadwal pertemuan belum tersedia</p>
+                    <p className="text-[#404944]/70 text-sm">Jadwal pertemuan belum tersedia</p>
                   )}
                 </div>
               </CardContent>
@@ -223,10 +223,10 @@ export default function WaliSantriSection() {
         <div className="space-y-6">
           {/* Suggestion Form */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-            <Card className="border-0 shadow-md">
+            <Card className="border border-[#e4e2de] shadow-md card-hover rounded-2xl bg-[#ffffff]">
               <CardContent className="p-6">
-                <h3 className="text-lg font-bold text-emerald-800 flex items-center gap-2 mb-4">
-                  <MessageSquare className="h-5 w-5 text-amber-500" />
+                <h3 className="text-lg font-bold text-[#003527] flex items-center gap-2 mb-4">
+                  <MessageSquare className="h-5 w-5 text-[#cca72f]" />
                   Kotak Saran & Kritik
                 </h3>
                 <form onSubmit={handleSuggestionSubmit} className="space-y-4">
@@ -260,8 +260,8 @@ export default function WaliSantriSection() {
                           onClick={() => setSuggestionForm(prev => ({ ...prev, type }))}
                           className={`px-4 py-2 rounded-full text-sm font-medium transition-colors capitalize ${
                             suggestionForm.type === type
-                              ? 'bg-emerald-700 text-white'
-                              : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+                              ? 'bg-[#003527] text-white'
+                              : 'bg-[#f5f3ef] text-[#003527] hover:bg-[#efeeea]'
                           }`}
                         >
                           {type}
@@ -280,7 +280,7 @@ export default function WaliSantriSection() {
                       required
                     />
                   </div>
-                  <Button type="submit" disabled={submitting} className="w-full bg-emerald-700 hover:bg-emerald-800">
+                  <Button type="submit" disabled={submitting} className="w-full bg-[#003527] hover:bg-[#064e3b]">
                     {submitting ? 'Mengirim...' : 'Kirim Saran'}
                     <Send className="ml-2 h-4 w-4" />
                   </Button>
@@ -302,14 +302,14 @@ export default function WaliSantriSection() {
           </DialogClose>
           {selectedAnnouncement && (
             <>
-              <DialogTitle className="text-xl font-bold text-emerald-800 pr-8">
+              <DialogTitle className="text-xl font-bold text-[#003527] pr-8">
                 {selectedAnnouncement.title}
               </DialogTitle>
               <div className="flex items-center gap-3 mt-2">
-                <Badge className="bg-amber-100 text-amber-800 capitalize">
+                <Badge className="bg-[#cca72f]/20 text-[#895033] capitalize">
                   {selectedAnnouncement.type || 'pengumuman'}
                 </Badge>
-                <span className="text-xs text-gray-400 flex items-center gap-1">
+                <span className="text-xs text-[#404944]/70 flex items-center gap-1">
                   <Calendar className="h-3 w-3" />
                   {new Date(selectedAnnouncement.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
                 </span>
@@ -317,7 +317,7 @@ export default function WaliSantriSection() {
               <div className="mt-4">
                 {selectedAnnouncement.content
                   ? <MarkdownRenderer content={selectedAnnouncement.content} />
-                  : <p className="text-sm text-gray-400 italic">Tidak ada isi pengumuman.</p>}
+                  : <p className="text-sm text-[#404944]/70 italic">Tidak ada isi pengumuman.</p>}
               </div>
             </>
           )}

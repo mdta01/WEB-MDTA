@@ -62,25 +62,25 @@ export default function KontakSection() {
       icon: MapPin,
       title: 'Alamat',
       content: getSetting('madrasah_address') || 'Jl. Pesantren No. 01, Kec. Cisauk, Kab. Tangerang, Banten 15345',
-      color: 'bg-emerald-600',
+      color: 'bg-[#003527]',
     },
     {
       icon: Phone,
       title: 'Telepon',
       content: getSetting('madrasah_phone') || '(021) 123-4567',
-      color: 'bg-teal-600',
+      color: 'bg-[#064e3b]',
     },
     {
       icon: Mail,
       title: 'Email',
       content: getSetting('madrasah_email') || 'info@miftahululum01.sch.id',
-      color: 'bg-amber-600',
+      color: 'bg-[#895033]',
     },
     {
       icon: Clock,
       title: 'Jam Operasional',
       content: getSetting('madrasah_service_hours') || 'Senin - Sabtu: 08:00 - 16:00 WIB',
-      color: 'bg-emerald-800',
+      color: 'bg-[#003527]',
     },
   ]
 
@@ -92,7 +92,7 @@ export default function KontakSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: 0.4 }}
-          className="inline-block px-3 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold uppercase tracking-wider mb-2"
+          className="inline-block px-3 py-0.5 rounded-full bg-[#064e3b]/15 text-[#003527] text-xs font-semibold uppercase tracking-wider mb-2"
         >
           Get In Touch
         </motion.span>
@@ -105,7 +105,7 @@ export default function KontakSection() {
         >
           Hubungi Kami
         </motion.h2>
-        <div className="w-20 h-1 bg-gradient-to-r from-emerald-500 to-amber-500 mx-auto mt-2 rounded-full" />
+        <div className="w-20 h-1 bg-gradient-to-r from-[#003527] to-[#cca72f] mx-auto mt-2 rounded-full" />
       </div>
 
       {/* Contact Info Cards */}
@@ -118,13 +118,13 @@ export default function KontakSection() {
             viewport={{ once: true, margin: "-50px" }}
             transition={{ delay: idx * 0.1, duration: 0.5 }}
           >
-            <Card className="border-0 shadow-premium card-hover h-full rounded-2xl group">
+            <Card className="border border-[#e4e2de] shadow-premium wood-carved-shadow card-hover h-full rounded-2xl bg-[#ffffff] group">
               <CardContent className="p-5 text-center">
                 <div className={`w-12 h-12 rounded-2xl ${info.color} flex items-center justify-center mx-auto mb-3 shadow-md group-hover:scale-110 transition-transform duration-300`}>
                   <info.icon className="h-6 w-6 text-white" />
                 </div>
-                <h4 className="font-semibold text-emerald-800 text-sm mb-1">{info.title}</h4>
-                <p className="text-gray-500 text-xs leading-relaxed">{info.content}</p>
+                <h4 className="font-semibold text-[#003527] text-sm mb-1">{info.title}</h4>
+                <p className="text-[#404944] text-xs leading-relaxed">{info.content}</p>
               </CardContent>
             </Card>
           </motion.div>
@@ -134,38 +134,38 @@ export default function KontakSection() {
       <div className="grid lg:grid-cols-2 gap-8">
         {/* Contact Form */}
         <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, margin: "-50px" }} transition={{ delay: 0.2, duration: 0.6 }}>
-          <Card className="border-0 shadow-premium-lg h-full rounded-2xl">
+          <Card className="border border-[#e4e2de] shadow-premium-lg wood-carved-shadow h-full rounded-2xl bg-[#ffffff]">
             <CardContent className="p-6">
-              <h3 className="text-lg font-bold text-emerald-800 flex items-center gap-2 mb-6">
-                <MessageSquare className="h-5 w-5 text-amber-500" />
+              <h3 className="text-lg font-bold text-[#003527] flex items-center gap-2 mb-6">
+                <MessageSquare className="h-5 w-5 text-[#cca72f]" />
                 Kirim Pesan
               </h3>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="c-name" className="text-sm">Nama *</Label>
-                    <Input id="c-name" name="name" value={formData.name} onChange={handleChange} placeholder="Nama Anda" required className="rounded-xl focus-ring" />
+                    <Input id="c-name" name="name" value={formData.name} onChange={handleChange} placeholder="Nama Anda" required className="rounded-xl focus-ring focus-visible:ring-[#cca72f]/30" />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="c-email" className="text-sm">Email</Label>
-                    <Input id="c-email" name="email" type="email" value={formData.email} onChange={handleChange} placeholder="email@contoh.com" className="rounded-xl focus-ring" />
+                    <Input id="c-email" name="email" type="email" value={formData.email} onChange={handleChange} placeholder="email@contoh.com" className="rounded-xl focus-ring focus-visible:ring-[#cca72f]/30" />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="c-phone" className="text-sm">No. HP</Label>
-                    <Input id="c-phone" name="phone" type="tel" value={formData.phone} onChange={handleChange} placeholder="08xxxxxxxxxx" className="rounded-xl focus-ring" />
+                    <Input id="c-phone" name="phone" type="tel" value={formData.phone} onChange={handleChange} placeholder="08xxxxxxxxxx" className="rounded-xl focus-ring focus-visible:ring-[#cca72f]/30" />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="c-subject" className="text-sm">Subjek</Label>
-                    <Input id="c-subject" name="subject" value={formData.subject} onChange={handleChange} placeholder="Perihal pesan" className="rounded-xl focus-ring" />
+                    <Input id="c-subject" name="subject" value={formData.subject} onChange={handleChange} placeholder="Perihal pesan" className="rounded-xl focus-ring focus-visible:ring-[#cca72f]/30" />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="c-message" className="text-sm">Pesan *</Label>
-                  <Textarea id="c-message" name="message" value={formData.message} onChange={handleChange} placeholder="Tulis pesan Anda..." rows={5} required className="rounded-xl focus-ring" />
+                  <Textarea id="c-message" name="message" value={formData.message} onChange={handleChange} placeholder="Tulis pesan Anda..." rows={5} required className="rounded-xl focus-ring focus-visible:ring-[#cca72f]/30" />
                 </div>
-                <Button type="submit" disabled={submitting} className="w-full bg-gradient-to-r from-emerald-700 to-emerald-800 hover:from-emerald-800 hover:to-emerald-900 rounded-xl shadow-md shadow-emerald-700/30 hover:scale-[1.02] transition-all">
+                <Button type="submit" disabled={submitting} className="w-full bg-[#003527] hover:bg-[#064e3b] rounded-xl shadow-md shadow-[#003527]/30 hover:scale-[1.02] transition-all">
                   {submitting ? 'Mengirim...' : 'Kirim Pesan'}
                   <Send className="ml-2 h-4 w-4" />
                 </Button>
@@ -176,8 +176,8 @@ export default function KontakSection() {
 
         {/* Map — dari GPS coords yang diset admin */}
         <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, margin: "-50px" }} transition={{ delay: 0.3, duration: 0.6 }}>
-          <Card className="border-0 shadow-premium-lg overflow-hidden h-full rounded-2xl">
-            <div className="h-full min-h-[400px] bg-gray-100">
+          <Card className="border border-[#e4e2de] shadow-premium-lg wood-carved-shadow overflow-hidden h-full rounded-2xl bg-[#ffffff]">
+            <div className="h-full min-h-[400px] bg-[#f5f3ef]">
               {(() => {
                 const gpsLat = getSetting('madrasah_gps_lat')
                 const gpsLng = getSetting('madrasah_gps_lng')
@@ -212,8 +212,8 @@ export default function KontakSection() {
                   )
                 }
                 return (
-                  <div className="h-full min-h-[400px] flex items-center justify-center text-gray-400 flex-col gap-2">
-                    <MapPin className="h-12 w-12 text-gray-300" />
+                  <div className="h-full min-h-[400px] flex items-center justify-center text-[#404944]/60 flex-col gap-2">
+                    <MapPin className="h-12 w-12 text-[#064e3b]/40" />
                     <p className="text-sm">Peta belum tersedia. Admin belum setup GPS.</p>
                   </div>
                 )

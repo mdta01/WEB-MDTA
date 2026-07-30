@@ -31,10 +31,10 @@ const iconMap: Record<string, React.ElementType> = {
 }
 
 const categoryColors: Record<string, string> = {
-  'kelas': 'bg-emerald-600',
-  'kurikulum': 'bg-teal-600',
-  'unggulan': 'bg-amber-600',
-  'ekstrakurikuler': 'bg-emerald-800',
+  'kelas': 'bg-[#003527]',
+  'kurikulum': 'bg-[#064e3b]',
+  'unggulan': 'bg-[#895033]',
+  'ekstrakurikuler': 'bg-[#003527]',
 }
 
 interface ProgramItem {
@@ -52,9 +52,9 @@ function getIcon(iconName?: string | null) {
 function ProgramGrid({ items, color }: { items: ProgramItem[]; color: string }) {
   if (items.length === 0) {
     return (
-      <Card className="border-0 shadow-premium p-8 text-center rounded-2xl">
-        <BookOpen className="h-12 w-12 text-emerald-200 mx-auto mb-3" />
-        <p className="text-gray-500">Data belum tersedia</p>
+      <Card className="border border-[#e4e2de] shadow-premium p-8 text-center rounded-2xl bg-[#ffffff]">
+        <BookOpen className="h-12 w-12 text-[#064e3b]/40 mx-auto mb-3" />
+        <p className="text-[#404944]">Data belum tersedia</p>
       </Card>
     )
   }
@@ -71,14 +71,14 @@ function ProgramGrid({ items, color }: { items: ProgramItem[]; color: string }) 
             viewport={{ once: true, margin: "-50px" }}
             transition={{ delay: idx * 0.05, duration: 0.5 }}
           >
-            <Card className="border-0 shadow-premium card-hover h-full rounded-2xl">
+            <Card className="border border-[#e4e2de] shadow-premium card-hover h-full rounded-2xl bg-[#ffffff]">
               <CardContent className="p-5 flex items-start gap-4">
                 <div className={`w-12 h-12 rounded-xl ${color} flex items-center justify-center shrink-0 shadow-md`}>
                   <Icon className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <h4 className="font-semibold text-emerald-800 text-sm">{item.title}</h4>
-                  <p className="text-gray-500 text-xs mt-1">{item.description}</p>
+                  <h4 className="font-semibold text-[#003527] text-sm">{item.title}</h4>
+                  <p className="text-[#404944] text-xs mt-1">{item.description}</p>
                 </div>
               </CardContent>
             </Card>
@@ -156,7 +156,7 @@ export default function ProgramSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: 0.4 }}
-          className="inline-block px-3 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold uppercase tracking-wider mb-2"
+          className="inline-block px-3 py-0.5 rounded-full bg-[#064e3b]/15 text-[#003527] text-xs font-semibold uppercase tracking-wider mb-2"
         >
           Akademik
         </motion.span>
@@ -169,15 +169,15 @@ export default function ProgramSection() {
         >
           Program Pendidikan
         </motion.h2>
-        <div className="w-20 h-1 bg-gradient-to-r from-emerald-500 to-amber-500 mx-auto mt-2 rounded-full" />
+        <div className="w-20 h-1 bg-gradient-to-r from-[#003527] to-[#cca72f] mx-auto mt-2 rounded-full" />
       </div>
 
       <Tabs defaultValue="kelas" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 mb-6 bg-emerald-50 rounded-2xl p-1.5">
-          <TabsTrigger value="kelas" className="data-[state=active]:bg-gradient-to-br data-[state=active]:from-emerald-600 data-[state=active]:to-emerald-700 data-[state=active]:text-white data-[state=active]:shadow-md rounded-xl text-xs md:text-sm transition-all">Kelas</TabsTrigger>
-          <TabsTrigger value="kurikulum" className="data-[state=active]:bg-gradient-to-br data-[state=active]:from-emerald-600 data-[state=active]:to-emerald-700 data-[state=active]:text-white data-[state=active]:shadow-md rounded-xl text-xs md:text-sm transition-all">Kurikulum</TabsTrigger>
-          <TabsTrigger value="unggulan" className="data-[state=active]:bg-gradient-to-br data-[state=active]:from-emerald-600 data-[state=active]:to-emerald-700 data-[state=active]:text-white data-[state=active]:shadow-md rounded-xl text-xs md:text-sm transition-all">Unggulan</TabsTrigger>
-          <TabsTrigger value="ekskul" className="data-[state=active]:bg-gradient-to-br data-[state=active]:from-emerald-600 data-[state=active]:to-emerald-700 data-[state=active]:text-white data-[state=active]:shadow-md rounded-xl text-xs md:text-sm transition-all">Ekskul</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-4 mb-6 bg-[#f5f3ef] rounded-2xl p-1.5">
+          <TabsTrigger value="kelas" className="data-[state=active]:bg-[#003527] data-[state=active]:text-white data-[state=active]:shadow-md rounded-xl text-xs md:text-sm transition-all">Kelas</TabsTrigger>
+          <TabsTrigger value="kurikulum" className="data-[state=active]:bg-[#003527] data-[state=active]:text-white data-[state=active]:shadow-md rounded-xl text-xs md:text-sm transition-all">Kurikulum</TabsTrigger>
+          <TabsTrigger value="unggulan" className="data-[state=active]:bg-[#003527] data-[state=active]:text-white data-[state=active]:shadow-md rounded-xl text-xs md:text-sm transition-all">Unggulan</TabsTrigger>
+          <TabsTrigger value="ekskul" className="data-[state=active]:bg-[#003527] data-[state=active]:text-white data-[state=active]:shadow-md rounded-xl text-xs md:text-sm transition-all">Ekskul</TabsTrigger>
         </TabsList>
 
         <TabsContent value="kelas">
@@ -205,7 +205,7 @@ export default function ProgramSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.4 }}
-            className="inline-block px-3 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold uppercase tracking-wider mb-2"
+            className="inline-block px-3 py-0.5 rounded-full bg-[#cca72f]/15 text-[#895033] text-xs font-semibold uppercase tracking-wider mb-2"
           >
             Jadwal
           </motion.span>
@@ -216,13 +216,13 @@ export default function ProgramSection() {
             transition={{ duration: 0.5 }}
             className="text-xl md:text-2xl font-bold text-gradient-emerald flex items-center justify-center gap-2"
           >
-            <Clock className="h-6 w-6 text-amber-500" />
+            <Clock className="h-6 w-6 text-[#cca72f]" />
             Jadwal KBM
           </motion.h3>
-          <div className="w-20 h-1 bg-gradient-to-r from-emerald-500 to-amber-500 mx-auto mt-2 rounded-full" />
-          <p className="text-sm text-gray-600 mt-3">
-            Hari belajar: <span className="font-semibold text-emerald-700">Sabtu – Kamis</span>
-            <span className="mx-2 text-gray-400">•</span>
+          <div className="w-20 h-1 bg-gradient-to-r from-[#003527] to-[#cca72f] mx-auto mt-2 rounded-full" />
+          <p className="text-sm text-[#404944] mt-3">
+            Hari belajar: <span className="font-semibold text-[#003527]">Sabtu – Kamis</span>
+            <span className="mx-2 text-[#404944]/50">•</span>
             <span className="inline-flex items-center gap-1 text-red-600 font-medium">
               <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
               Jumat Libur
@@ -255,12 +255,12 @@ export default function ProgramSection() {
                   viewport={{ once: true, margin: "-50px" }}
                   transition={{ duration: 0.4 }}
                 >
-                  <Card className={`border-0 shadow-premium card-hover overflow-hidden h-full rounded-2xl ${isFriday ? 'ring-1 ring-red-200' : ''}`}>
+                  <Card className={`border border-[#e4e2de] shadow-premium card-hover overflow-hidden h-full rounded-2xl bg-[#ffffff] ${isFriday ? 'ring-1 ring-red-200' : ''}`}>
                     {/* Day header */}
                     <div className={`px-4 py-3 flex items-center justify-between ${
                       isFriday
-                        ? 'bg-gradient-to-r from-red-500 to-red-600'
-                        : 'bg-gradient-to-r from-emerald-700 to-emerald-800'
+                        ? 'bg-gradient-to-r from-[#895033] to-[#a86644]'
+                        : 'bg-[#003527]'
                     }`}>
                       <div className="flex items-center gap-2 text-white">
                         <CalendarDays className="h-4 w-4" />
@@ -273,32 +273,32 @@ export default function ProgramSection() {
 
                     {/* Day content */}
                     {isFriday ? (
-                      <div className="p-6 text-center bg-red-50">
-                        <p className="text-sm text-red-600 font-medium">
+                      <div className="p-6 text-center bg-[#895033]/5">
+                        <p className="text-sm text-[#895033] font-medium">
                           🕌 Hari Jumat adalah hari libur KBM
                         </p>
                       </div>
                     ) : (
-                      <div className="divide-y divide-gray-100">
+                      <div className="divide-y divide-[#e4e2de]">
                         {daySchedules.map((s: { id: string; timeStart: string; timeEnd: string; subject?: string; teacher?: string; class?: string; title?: string }) => (
-                          <div key={s.id} className="p-3 hover:bg-emerald-50/50 transition-colors">
+                          <div key={s.id} className="p-3 hover:bg-[#064e3b]/5 transition-colors">
                             {/* Time */}
-                            <div className="flex items-center gap-1.5 text-xs text-amber-600 font-semibold mb-1.5">
+                            <div className="flex items-center gap-1.5 text-xs text-[#895033] font-semibold mb-1.5">
                               <Clock className="h-3 w-3 shrink-0" />
                               <span>{s.timeStart} – {s.timeEnd}</span>
                               {s.class && (
-                                <Badge variant="secondary" className="ml-auto text-[10px] bg-emerald-50 text-emerald-700 px-1.5 py-0">
+                                <Badge variant="secondary" className="ml-auto text-[10px] bg-[#064e3b]/10 text-[#003527] px-1.5 py-0">
                                   {s.class}
                                 </Badge>
                               )}
                             </div>
                             {/* Subject + teacher */}
                             <div className="space-y-0.5">
-                              <p className="text-sm font-medium text-emerald-800 leading-tight">
+                              <p className="text-sm font-medium text-[#003527] leading-tight">
                                 {s.subject || s.title || '—'}
                               </p>
                               {s.teacher && (
-                                <p className="text-xs text-gray-500 flex items-center gap-1">
+                                <p className="text-xs text-[#404944] flex items-center gap-1">
                                   <User className="h-3 w-3 shrink-0" />
                                   <span className="truncate">{s.teacher}</span>
                                 </p>
@@ -314,9 +314,9 @@ export default function ProgramSection() {
             })}
           </div>
         ) : (
-          <Card className="p-8 text-center border-0 shadow-md">
-            <CalendarDays className="h-12 w-12 text-emerald-200 mx-auto mb-3" />
-            <p className="text-gray-500">Jadwal belum tersedia</p>
+          <Card className="p-8 text-center border border-[#e4e2de] shadow-md rounded-2xl bg-[#ffffff]">
+            <CalendarDays className="h-12 w-12 text-[#064e3b]/40 mx-auto mb-3" />
+            <p className="text-[#404944]">Jadwal belum tersedia</p>
           </Card>
         )}
       </section>

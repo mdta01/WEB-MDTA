@@ -95,11 +95,11 @@ export default function SearchSection() {
   }, [searchQuery, newsData, announcementsData, programsData, achievementsData, eventsData])
 
   const typeConfig: Record<string, { icon: React.ElementType; label: string; color: string; page: string }> = {
-    'berita': { icon: BookOpen, label: 'Berita', color: 'bg-emerald-100 text-emerald-700', page: 'berita' },
-    'pengumuman': { icon: Megaphone, label: 'Pengumuman', color: 'bg-amber-100 text-amber-700', page: 'pengumuman' },
-    'program': { icon: GraduationCap, label: 'Program', color: 'bg-teal-100 text-teal-700', page: 'program' },
-    'prestasi': { icon: Award, label: 'Prestasi', color: 'bg-purple-100 text-purple-700', page: 'prestasi' },
-    'kegiatan': { icon: Calendar, label: 'Kegiatan', color: 'bg-blue-100 text-blue-700', page: 'berita' },
+    'berita': { icon: BookOpen, label: 'Berita', color: 'bg-[#003527]/15 text-[#003527]', page: 'berita' },
+    'pengumuman': { icon: Megaphone, label: 'Pengumuman', color: 'bg-[#cca72f]/20 text-[#895033]', page: 'pengumuman' },
+    'program': { icon: GraduationCap, label: 'Program', color: 'bg-[#064e3b]/15 text-[#064e3b]', page: 'program' },
+    'prestasi': { icon: Award, label: 'Prestasi', color: 'bg-[#895033]/15 text-[#895033]', page: 'prestasi' },
+    'kegiatan': { icon: Calendar, label: 'Kegiatan', color: 'bg-[#003527]/15 text-[#003527]', page: 'berita' },
   }
 
   const isLoading = newsLoading
@@ -107,18 +107,18 @@ export default function SearchSection() {
   return (
     <div className="space-y-8">
       <div className="text-center mb-8">
-        <h2 className="text-2xl md:text-3xl font-bold text-emerald-800">Pencarian</h2>
-        <div className="w-20 h-1 bg-amber-500 mx-auto mt-2 rounded-full" />
+        <h2 className="text-2xl md:text-3xl font-bold text-[#003527]">Pencarian</h2>
+        <div className="w-20 h-1 bg-[#cca72f] mx-auto mt-2 rounded-full" />
       </div>
 
       {/* Search Input */}
       <div className="max-w-xl mx-auto relative">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-emerald-400" />
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-[#003527]/40" />
         <Input
           placeholder="Cari berita, program, pengumuman..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-12 h-12 text-lg border-emerald-200 focus:border-emerald-500 shadow-md"
+          className="pl-12 h-12 text-lg border-[#e4e2de] focus:border-[#003527] focus-visible:ring-[#cca72f]/30 shadow-md"
           autoFocus
         />
       </div>
@@ -137,7 +137,7 @@ export default function SearchSection() {
       ) : searchQuery.length >= 2 ? (
         results.length > 0 ? (
           <div className="max-w-xl mx-auto space-y-3">
-            <p className="text-sm text-gray-400 mb-4">Ditemukan {results.length} hasil untuk &ldquo;{searchQuery}&rdquo;</p>
+            <p className="text-sm text-[#404944]/70 mb-4">Ditemukan {results.length} hasil untuk &ldquo;{searchQuery}&rdquo;</p>
             {results.map((result, idx) => {
               const config = typeConfig[result.type] || typeConfig['berita']
               const TypeIcon = config.icon
@@ -149,7 +149,7 @@ export default function SearchSection() {
                   transition={{ delay: idx * 0.03 }}
                 >
                   <Card
-                    className="border-0 shadow-md hover:shadow-lg transition-shadow cursor-pointer group"
+                    className="border border-[#e4e2de] shadow-md hover:shadow-lg transition-shadow cursor-pointer group rounded-2xl bg-[#ffffff]"
                     onClick={() => {
                       setCurrentPage(config.page as 'berita' | 'pengumuman' | 'program' | 'prestasi')
                       window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -164,15 +164,15 @@ export default function SearchSection() {
                           <div className="flex items-center gap-2 mb-1">
                             <Badge className={`text-xs ${config.color}`}>{config.label}</Badge>
                             {result.date && (
-                              <span className="text-xs text-gray-400">
+                              <span className="text-xs text-[#404944]/70">
                                 {new Date(result.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
                               </span>
                             )}
                           </div>
-                          <h4 className="font-medium text-emerald-800 text-sm group-hover:text-emerald-600 transition-colors line-clamp-1">
+                          <h4 className="font-medium text-[#003527] text-sm group-hover:text-[#064e3b] transition-colors line-clamp-1">
                             {result.title}
                           </h4>
-                          <p className="text-xs text-gray-500 mt-1 line-clamp-2">{result.description}</p>
+                          <p className="text-xs text-[#404944] mt-1 line-clamp-2">{result.description}</p>
                         </div>
                       </div>
                     </CardContent>
@@ -183,15 +183,15 @@ export default function SearchSection() {
           </div>
         ) : (
           <Card className="p-12 text-center border-0 max-w-md mx-auto">
-            <Search className="h-12 w-12 text-emerald-200 mx-auto mb-3" />
-            <p className="text-gray-500">Tidak ditemukan hasil untuk &ldquo;{searchQuery}&rdquo;</p>
-            <p className="text-gray-400 text-sm mt-1">Coba kata kunci yang berbeda</p>
+            <Search className="h-12 w-12 text-[#064e3b]/40 mx-auto mb-3" />
+            <p className="text-[#404944]">Tidak ditemukan hasil untuk &ldquo;{searchQuery}&rdquo;</p>
+            <p className="text-[#404944]/70 text-sm mt-1">Coba kata kunci yang berbeda</p>
           </Card>
         )
       ) : (
         <Card className="p-12 text-center border-0 max-w-md mx-auto">
-          <Search className="h-12 w-12 text-emerald-200 mx-auto mb-3" />
-          <p className="text-gray-500">Ketik minimal 2 karakter untuk mulai mencari</p>
+          <Search className="h-12 w-12 text-[#064e3b]/40 mx-auto mb-3" />
+          <p className="text-[#404944]">Ketik minimal 2 karakter untuk mulai mencari</p>
         </Card>
       )}
     </div>

@@ -19,9 +19,9 @@ export default function AlumniSection() {
   return (
     <div className="space-y-8">
       <div className="text-center mb-8">
-        <h2 className="text-2xl md:text-3xl font-bold text-emerald-800">Alumni</h2>
-        <div className="w-20 h-1 bg-amber-500 mx-auto mt-2 rounded-full" />
-        <p className="text-gray-500 mt-3 text-sm">Para alumni MDTA Miftahul Ulum 01 yang telah berkontribusi</p>
+        <h2 className="text-2xl md:text-3xl font-bold text-[#003527]">Alumni</h2>
+        <div className="w-20 h-1 bg-[#cca72f] mx-auto mt-2 rounded-full" />
+        <p className="text-[#404944] mt-3 text-sm">Para alumni MDTA Miftahul Ulum 01 yang telah berkontribusi</p>
       </div>
 
       {isLoading ? (
@@ -45,30 +45,30 @@ export default function AlumniSection() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.05 }}
             >
-              <Card className="border-0 shadow-md hover:shadow-lg transition-shadow h-full">
+              <Card className="border border-[#e4e2de] shadow-md hover:shadow-lg card-hover transition-shadow h-full rounded-2xl bg-[#ffffff]">
                 <CardContent className="p-6 text-center">
                   <Avatar className="w-16 h-16 mx-auto mb-3">
                     {item.image ? (
                       <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                     ) : (
-                      <AvatarFallback className="bg-emerald-600 text-white text-xl font-bold">
+                      <AvatarFallback className="bg-[#003527] text-white text-xl font-bold">
                         {item.name.charAt(0)}
                       </AvatarFallback>
                     )}
                   </Avatar>
-                  <h4 className="font-semibold text-emerald-800">{item.name}</h4>
-                  <Badge variant="outline" className="mt-1 text-xs border-emerald-200 text-emerald-600">
+                  <h4 className="font-semibold text-[#003527]">{item.name}</h4>
+                  <Badge variant="outline" className="mt-1 text-xs border-[#e4e2de] text-[#003527]">
                     <GraduationCap className="h-3 w-3 mr-1" />
                     Angkatan {item.year}
                   </Badge>
                   {item.testimony && (
-                    <div className="mt-3 text-sm text-gray-500 italic relative">
-                      <Quote className="h-4 w-4 text-amber-400 absolute -top-1 -left-1" />
+                    <div className="mt-3 text-sm text-[#404944] italic relative">
+                      <Quote className="h-4 w-4 text-[#cca72f] absolute -top-1 -left-1" />
                       <p className="pl-4 line-clamp-3">{item.testimony}</p>
                     </div>
                   )}
                   {item.currentActivity && (
-                    <div className="mt-3 flex items-center justify-center gap-1 text-xs text-gray-400">
+                    <div className="mt-3 flex items-center justify-center gap-1 text-xs text-[#404944]/70">
                       <Briefcase className="h-3 w-3" />
                       {item.currentActivity}
                     </div>
@@ -80,8 +80,8 @@ export default function AlumniSection() {
         </div>
       ) : (
         <Card className="p-8 text-center border-0">
-          <GraduationCap className="h-12 w-12 text-emerald-200 mx-auto mb-3" />
-          <p className="text-gray-500">Data alumni belum tersedia</p>
+          <GraduationCap className="h-12 w-12 text-[#064e3b]/40 mx-auto mb-3" />
+          <p className="text-[#404944]">Data alumni belum tersedia</p>
         </Card>
       )}
     </div>

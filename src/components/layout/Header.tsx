@@ -87,12 +87,12 @@ export default function Header() {
     <header
       className={`sticky top-0 z-50 transition-all duration-500 ${
         scrolled
-          ? 'shadow-premium-lg backdrop-blur-xl bg-emerald-900/85'
-          : 'bg-gradient-to-r from-emerald-800 via-emerald-900 to-emerald-900'
+          ? 'shadow-premium-lg bg-[#fbf9f5]/85 backdrop-blur-xl'
+          : 'bg-[#003527]'
       }`}
     >
       {/* Subtle top accent line */}
-      <div className="h-0.5 bg-gradient-to-r from-transparent via-amber-400/60 to-transparent" />
+      <div className="h-0.5 bg-gradient-to-r from-transparent via-[#cca72f]/60 to-transparent" />
 
       {/* Main header */}
       <div className="text-white">
@@ -121,8 +121,8 @@ export default function Header() {
                 />
               </div>
               <div className="flex flex-col">
-                <span className="font-bold text-sm md:text-lg leading-tight uppercase tracking-wide group-hover:text-amber-200 transition-colors duration-300">{madrasahName}</span>
-                <span className="text-emerald-200 text-[10px] md:text-xs hidden sm:block">
+                <span className="font-bold text-sm md:text-lg leading-tight uppercase tracking-wide group-hover:text-[#ffe088] transition-colors duration-300">{madrasahName}</span>
+                <span className="text-[#b0f0d6] text-[10px] md:text-xs hidden sm:block">
                   {madrasahSubtitle}
                 </span>
               </div>
@@ -136,27 +136,27 @@ export default function Header() {
                   onClick={() => handleNav(item.page)}
                   className={`px-3 py-2 rounded-full text-xs font-medium transition-all duration-300 ${
                     currentPage === item.page
-                      ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-emerald-900 shadow-md shadow-amber-500/30'
-                      : 'text-emerald-100 hover:bg-white/10 hover:text-white hover:scale-105'
+                      ? 'bg-[#cca72f] text-[#003527] shadow-md shadow-[#cca72f]/30'
+                      : 'text-[#b0f0d6] hover:bg-[#064e3b]/50 hover:text-white hover:scale-105'
                   }`}
                 >
                   {item.label}
                 </button>
               ))}
               <div className="relative group">
-                <button className="px-3 py-2 rounded-full text-xs font-medium text-emerald-100 hover:bg-white/10 hover:text-white hover:scale-105 flex items-center gap-1 transition-all duration-300">
+                <button className="px-3 py-2 rounded-full text-xs font-medium text-[#b0f0d6] hover:bg-[#064e3b]/50 hover:text-white hover:scale-105 flex items-center gap-1 transition-all duration-300">
                   Lainnya <ChevronDown className="h-3 w-3 group-hover:rotate-180 transition-transform duration-300" />
                 </button>
                 <div className="absolute right-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                  <div className="bg-white/95 backdrop-blur-xl rounded-2xl shadow-premium-lg py-2 min-w-[200px] border border-emerald-100 overflow-hidden">
+                  <div className="bg-[#ffffff]/95 backdrop-blur-xl rounded-2xl shadow-premium-lg py-2 min-w-[200px] border border-[#e4e2de] overflow-hidden">
                     {navItems.slice(8).map((item) => (
                       <button
                         key={item.page}
                         onClick={() => handleNav(item.page)}
                         className={`block w-full text-left px-4 py-2 text-sm transition-all duration-200 ${
                           currentPage === item.page
-                            ? 'bg-emerald-50 text-emerald-800 font-medium border-l-2 border-amber-500'
-                            : 'text-gray-700 hover:bg-emerald-50 hover:text-emerald-800 hover:pl-5'
+                            ? 'bg-[#f5f3ef] text-[#003527] font-medium border-l-2 border-[#cca72f]'
+                            : 'text-[#404944] hover:bg-[#f5f3ef] hover:text-[#003527] hover:pl-5'
                         }`}
                       >
                         {item.label}
@@ -173,7 +173,7 @@ export default function Header() {
                 variant="ghost"
                 size="icon"
                 onClick={handleSearch}
-                className="text-emerald-100 hover:text-white hover:bg-white/15 hover:scale-110 h-9 w-9 rounded-full transition-all duration-300"
+                className="text-[#b0f0d6] hover:text-white hover:bg-white/15 hover:scale-110 h-9 w-9 rounded-full transition-all duration-300"
               >
                 <Search className="h-4 w-4" />
               </Button>
@@ -183,26 +183,24 @@ export default function Header() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="xl:hidden text-emerald-100 hover:text-white hover:bg-white/15 hover:scale-110 h-9 w-9 rounded-full transition-all duration-300"
+                    className="xl:hidden text-[#b0f0d6] hover:text-white hover:bg-white/15 hover:scale-110 h-9 w-9 rounded-full transition-all duration-300"
                   >
                     <Menu className="h-5 w-5" />
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="right" className="w-[85vw] max-w-sm bg-emerald-900 text-white border-l border-emerald-700 p-0 flex flex-col">
+                <SheetContent side="right" className="w-[85vw] max-w-sm bg-[#003527] text-white border-l border-[#064e3b] p-0 flex flex-col">
                   <SheetTitle className="sr-only">Menu Navigasi</SheetTitle>
 
                   {/* Header dengan gradient + pattern */}
-                  <div className="relative bg-gradient-to-br from-emerald-800 to-emerald-950 p-5 border-b border-emerald-700/50 overflow-hidden">
-                    {/* Islamic pattern overlay */}
-                    <div className="absolute inset-0 opacity-[0.06] pointer-events-none" aria-hidden style={{
-                      backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='white'%3E%3Cpath d='M20 0L40 20L20 40L0 20z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-                    }} />
-                    {/* Top amber strip */}
-                    <div className="absolute top-0 inset-x-0 h-0.5 bg-gradient-to-r from-transparent via-amber-400 to-transparent" />
+                  <div className="relative bg-[#003527] p-5 border-b border-[#064e3b]/50 overflow-hidden">
+                    {/* Kraton pattern overlay */}
+                    <div className="absolute inset-0 kraton-pattern opacity-[0.06] pointer-events-none" aria-hidden />
+                    {/* Top gold strip */}
+                    <div className="absolute top-0 inset-x-0 h-0.5 bg-gradient-to-r from-transparent via-[#cca72f] to-transparent" />
                     {/* Close button */}
                     <button
                       onClick={() => setMobileOpen(false)}
-                      className="absolute top-3 right-3 w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center text-emerald-200 hover:text-white transition-colors z-10"
+                      className="absolute top-3 right-3 w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center text-[#b0f0d6] hover:text-white transition-colors z-10"
                       aria-label="Tutup menu"
                     >
                       <X className="h-4 w-4" />
@@ -226,7 +224,7 @@ export default function Header() {
                       </div>
                       <div className="min-w-0">
                         <p className="font-bold text-sm uppercase tracking-wide leading-tight">{madrasahName}</p>
-                        <p className="text-[10px] text-amber-300/80 mt-0.5">{madrasahSubtitle}</p>
+                        <p className="text-[10px] text-[#ffe088]/80 mt-0.5">{madrasahSubtitle}</p>
                       </div>
                     </div>
                   </div>
@@ -236,7 +234,7 @@ export default function Header() {
                     {navGroups.map((group) => (
                       <div key={group.group} className="mb-3">
                         {/* Group label */}
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-400/70 px-5 py-2">
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-[#ffe088]/70 px-5 py-2">
                           {group.group}
                         </p>
                         {/* Nav items */}
@@ -249,15 +247,11 @@ export default function Header() {
                               onClick={() => handleNav(item.page)}
                               className={`w-full flex items-center gap-3 px-5 py-2.5 text-sm font-medium transition-colors relative ${
                                 isActive
-                                  ? 'bg-amber-500/15 text-amber-300'
-                                  : 'text-emerald-100 hover:bg-emerald-800/60 hover:text-white'
+                                  ? 'active-nav-pill bg-[#064e3b] text-[#ffe088]'
+                                  : 'text-[#b0f0d6] hover:bg-[#064e3b]/30 hover:text-white'
                               }`}
                             >
-                              {/* Active left bar */}
-                              {isActive && (
-                                <span className="absolute left-0 top-0 bottom-0 w-1 bg-amber-400" aria-hidden />
-                              )}
-                              <Icon className={`h-4 w-4 shrink-0 ${isActive ? 'text-amber-400' : 'text-emerald-300/80'}`} />
+                              <Icon className={`h-4 w-4 shrink-0 ${isActive ? 'text-[#ffe088]' : 'text-[#b0f0d6]/80'}`} />
                               <span>{item.label}</span>
                             </button>
                           )
@@ -267,27 +261,27 @@ export default function Header() {
                   </div>
 
                   {/* Footer dengan kontak info */}
-                  <div className="border-t border-emerald-700/50 bg-emerald-950/40 p-4 space-y-2">
+                  <div className="border-t border-[#064e3b]/50 bg-[#003527]/40 p-4 space-y-2">
                     <a
                       href={`tel:${getSetting('madrasah_phone') || ''}`}
-                      className="flex items-center gap-2.5 text-xs text-emerald-200 hover:text-amber-300 transition-colors"
+                      className="flex items-center gap-2.5 text-xs text-[#b0f0d6] hover:text-[#ffe088] transition-colors"
                     >
-                      <div className="w-7 h-7 rounded-full bg-emerald-700/50 flex items-center justify-center shrink-0">
+                      <div className="w-7 h-7 rounded-full bg-[#064e3b]/50 flex items-center justify-center shrink-0">
                         <Phone className="h-3 w-3" />
                       </div>
                       <span className="truncate">{getSetting('madrasah_phone') || '(021) 123-4567'}</span>
                     </a>
                     <a
                       href={`mailto:${getSetting('madrasah_email') || ''}`}
-                      className="flex items-center gap-2.5 text-xs text-emerald-200 hover:text-amber-300 transition-colors"
+                      className="flex items-center gap-2.5 text-xs text-[#b0f0d6] hover:text-[#ffe088] transition-colors"
                     >
-                      <div className="w-7 h-7 rounded-full bg-emerald-700/50 flex items-center justify-center shrink-0">
+                      <div className="w-7 h-7 rounded-full bg-[#064e3b]/50 flex items-center justify-center shrink-0">
                         <Mail className="h-3 w-3" />
                       </div>
                       <span className="truncate">{getSetting('madrasah_email') || 'info@mdta.sch.id'}</span>
                     </a>
-                    <div className="pt-2 mt-2 border-t border-emerald-700/30 text-center">
-                      <p className="text-[10px] text-emerald-400/60">
+                    <div className="pt-2 mt-2 border-t border-[#064e3b]/30 text-center">
+                      <p className="text-[10px] text-[#b0f0d6]/60">
                         © {new Date().getFullYear()} {madrasahName}
                       </p>
                     </div>

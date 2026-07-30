@@ -364,11 +364,11 @@ const entityConfigs: Record<string, EntityConfig> = {
       { key: 'category', label: 'Kategori' },
       { key: 'fileUrl', label: 'File', render: (value: unknown) => {
         const url = String(value || '')
-        if (!url) return <span className="text-gray-400">-</span>
+        if (!url) return <span className="text-[#404944]/70">-</span>
         const fileName = url.split('/').pop()?.split('?')[0] || 'file.pdf'
         return (
           <a href={url} target="_blank" rel="noopener noreferrer" download
-            className="inline-flex items-center gap-1 text-xs text-emerald-600 hover:text-emerald-800 hover:underline max-w-[180px] truncate">
+            className="inline-flex items-center gap-1 text-xs text-[#003527] hover:text-[#064e3b] hover:underline max-w-[180px] truncate">
             <FileText className="h-3 w-3 shrink-0 text-red-600" />
             <span className="truncate">{fileName}</span>
           </a>
@@ -693,11 +693,11 @@ function PPDBManager() {
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-            <ClipboardList className="h-5 w-5 text-emerald-600" />
+          <h2 className="text-xl font-bold text-[#1b1c1a] flex items-center gap-2">
+            <ClipboardList className="h-5 w-5 text-[#003527]" />
             Pendaftaran Santri Baru (PPDB)
           </h2>
-          <p className="text-sm text-gray-500">Kelola pendaftaran & pengaturan PPDB</p>
+          <p className="text-sm text-[#404944]">Kelola pendaftaran & pengaturan PPDB</p>
         </div>
         <div className="flex items-center gap-2">
           <Button
@@ -705,7 +705,7 @@ function PPDBManager() {
             size="sm"
             onClick={handleExportCSV}
             disabled={filteredItems.length === 0}
-            className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 border-emerald-200"
+            className="text-[#003527] hover:text-[#064e3b] hover:bg-[#f5f3ef] border-[#e4e2de]"
           >
             <Download className="h-4 w-4 mr-1" />
             Export CSV
@@ -719,48 +719,48 @@ function PPDBManager() {
           onClick={() => setActiveTab('pendaftar')}
           className={`px-4 py-2 text-sm font-medium transition-colors relative ${
             activeTab === 'pendaftar'
-              ? 'text-emerald-700'
-              : 'text-gray-500 hover:text-gray-700'
+              ? 'text-[#003527]'
+              : 'text-[#404944] hover:text-[#1b1c1a]'
           }`}
         >
           <Users className="h-4 w-4 inline mr-1" />
           Pendaftar
-          <span className="ml-1.5 text-xs bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full">
+          <span className="ml-1.5 text-xs bg-[#003527]/15 text-[#003527] px-1.5 py-0.5 rounded-full">
             {stats.total}
           </span>
           {activeTab === 'pendaftar' && (
-            <span className="absolute bottom-0 inset-x-0 h-0.5 bg-emerald-600" />
+            <span className="absolute bottom-0 inset-x-0 h-0.5 bg-[#003527]" />
           )}
         </button>
         <button
           onClick={() => setActiveTab('jadwal')}
           className={`px-4 py-2 text-sm font-medium transition-colors relative ${
             activeTab === 'jadwal'
-              ? 'text-emerald-700'
-              : 'text-gray-500 hover:text-gray-700'
+              ? 'text-[#003527]'
+              : 'text-[#404944] hover:text-[#1b1c1a]'
           }`}
         >
           <Calendar className="h-4 w-4 inline mr-1" />
           Jadwal Pendaftaran
-          <span className="ml-1.5 text-xs bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full">
+          <span className="ml-1.5 text-xs bg-[#003527]/15 text-[#003527] px-1.5 py-0.5 rounded-full">
             {schedules.length}
           </span>
           {activeTab === 'jadwal' && (
-            <span className="absolute bottom-0 inset-x-0 h-0.5 bg-emerald-600" />
+            <span className="absolute bottom-0 inset-x-0 h-0.5 bg-[#003527]" />
           )}
         </button>
         <button
           onClick={() => setActiveTab('settings')}
           className={`px-4 py-2 text-sm font-medium transition-colors relative ${
             activeTab === 'settings'
-              ? 'text-emerald-700'
-              : 'text-gray-500 hover:text-gray-700'
+              ? 'text-[#003527]'
+              : 'text-[#404944] hover:text-[#1b1c1a]'
           }`}
         >
           <Settings className="h-4 w-4 inline mr-1" />
           Pengaturan PPDB
           {activeTab === 'settings' && (
-            <span className="absolute bottom-0 inset-x-0 h-0.5 bg-emerald-600" />
+            <span className="absolute bottom-0 inset-x-0 h-0.5 bg-[#003527]" />
           )}
         </button>
       </div>
@@ -770,48 +770,48 @@ function PPDBManager() {
         <>
           {/* Statistik cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <div className="bg-white rounded-lg border p-4 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center shrink-0">
-                <UserPlus className="h-5 w-5 text-emerald-700" />
+            <div className="bg-[#ffffff] rounded-lg border p-4 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-[#003527]/15 flex items-center justify-center shrink-0">
+                <UserPlus className="h-5 w-5 text-[#003527]" />
               </div>
               <div className="min-w-0">
-                <p className="text-2xl font-bold text-gray-900 leading-none">{stats.total}</p>
-                <p className="text-xs text-gray-500 mt-1">Total Pendaftar</p>
+                <p className="text-2xl font-bold text-[#1b1c1a] leading-none">{stats.total}</p>
+                <p className="text-xs text-[#404944] mt-1">Total Pendaftar</p>
               </div>
             </div>
-            <div className="bg-white rounded-lg border p-4 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center shrink-0">
-                <Clock className="h-5 w-5 text-amber-700" />
+            <div className="bg-[#ffffff] rounded-lg border p-4 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-[#cca72f]/20 flex items-center justify-center shrink-0">
+                <Clock className="h-5 w-5 text-[#895033]" />
               </div>
               <div className="min-w-0">
-                <p className="text-2xl font-bold text-gray-900 leading-none">{stats.pending}</p>
-                <p className="text-xs text-gray-500 mt-1">Menunggu</p>
+                <p className="text-2xl font-bold text-[#1b1c1a] leading-none">{stats.pending}</p>
+                <p className="text-xs text-[#404944] mt-1">Menunggu</p>
               </div>
             </div>
-            <div className="bg-white rounded-lg border p-4 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center shrink-0">
-                <UserCheck className="h-5 w-5 text-emerald-700" />
+            <div className="bg-[#ffffff] rounded-lg border p-4 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-[#003527]/15 flex items-center justify-center shrink-0">
+                <UserCheck className="h-5 w-5 text-[#003527]" />
               </div>
               <div className="min-w-0">
-                <p className="text-2xl font-bold text-gray-900 leading-none">{stats.accepted}</p>
-                <p className="text-xs text-gray-500 mt-1">Diterima</p>
+                <p className="text-2xl font-bold text-[#1b1c1a] leading-none">{stats.accepted}</p>
+                <p className="text-xs text-[#404944] mt-1">Diterima</p>
               </div>
             </div>
-            <div className="bg-white rounded-lg border p-4 flex items-center gap-3">
+            <div className="bg-[#ffffff] rounded-lg border p-4 flex items-center gap-3">
               <div className="w-10 h-10 rounded-lg bg-red-100 flex items-center justify-center shrink-0">
                 <UserX className="h-5 w-5 text-red-700" />
               </div>
               <div className="min-w-0">
-                <p className="text-2xl font-bold text-gray-900 leading-none">{stats.rejected}</p>
-                <p className="text-xs text-gray-500 mt-1">Ditolak</p>
+                <p className="text-2xl font-bold text-[#1b1c1a] leading-none">{stats.rejected}</p>
+                <p className="text-xs text-[#404944] mt-1">Ditolak</p>
               </div>
             </div>
           </div>
 
           {/* Filter */}
           <div className="flex items-center gap-2 flex-wrap">
-            <Filter className="h-4 w-4 text-gray-400" />
-            <span className="text-sm text-gray-500">Filter:</span>
+            <Filter className="h-4 w-4 text-[#404944]/70" />
+            <span className="text-sm text-[#404944]">Filter:</span>
             {[
               { value: 'all', label: 'Semua', count: stats.total },
               { value: 'pending', label: 'Menunggu', count: stats.pending },
@@ -823,8 +823,8 @@ function PPDBManager() {
                 onClick={() => setStatusFilter(f.value)}
                 className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
                   statusFilter === f.value
-                    ? 'bg-emerald-700 text-white'
-                    : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+                    ? 'bg-[#003527] text-white'
+                    : 'bg-[#003527]/5 text-[#003527] hover:bg-[#003527]/15'
                 }`}
               >
                 {f.label} ({f.count})
@@ -833,11 +833,11 @@ function PPDBManager() {
           </div>
 
           {/* Table */}
-          <div className="border rounded-lg bg-white overflow-hidden">
+          <div className="border rounded-lg bg-[#ffffff] overflow-hidden">
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-gray-50">
+                  <TableRow className="bg-[#f5f3ef]">
                     <TableHead>#</TableHead>
                     <TableHead>Nama</TableHead>
                     <TableHead>Jenis Kelamin</TableHead>
@@ -852,19 +852,19 @@ function PPDBManager() {
                   {isLoading ? (
                     <TableRow>
                       <TableCell colSpan={7} className="text-center py-12">
-                        <Loader2 className="h-6 w-6 animate-spin mx-auto text-emerald-600" />
+                        <Loader2 className="h-6 w-6 animate-spin mx-auto text-[#003527]" />
                       </TableCell>
                     </TableRow>
                   ) : filteredItems.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center py-12 text-gray-500">
+                      <TableCell colSpan={7} className="text-center py-12 text-[#404944]">
                         {items.length === 0 ? 'Belum ada pendaftaran' : 'Tidak ada pendaftar untuk filter ini'}
                       </TableCell>
                     </TableRow>
                   ) : (
                     filteredItems.map((reg, idx) => (
-                      <TableRow key={reg.id as string} className="hover:bg-emerald-50/50">
-                        <TableCell className="text-gray-400 text-xs">{idx + 1}</TableCell>
+                      <TableRow key={reg.id as string} className="hover:bg-[#f5f3ef]/50">
+                        <TableCell className="text-[#404944]/70 text-xs">{idx + 1}</TableCell>
                         <TableCell className="font-medium">{reg.name as string}</TableCell>
                         <TableCell className="text-sm">{(reg.gender as string) || '-'}</TableCell>
                         <TableCell className="text-sm">{(reg.fatherName as string) || '-'}</TableCell>
@@ -873,10 +873,10 @@ function PPDBManager() {
                           <Badge
                             className={
                               reg.status === 'accepted'
-                                ? 'bg-emerald-100 text-emerald-800'
+                                ? 'bg-[#003527]/15 text-[#003527]'
                                 : reg.status === 'rejected'
                                 ? 'bg-red-100 text-red-800'
-                                : 'bg-amber-100 text-amber-800'
+                                : 'bg-[#cca72f]/20 text-[#895033]'
                             }
                           >
                             {reg.status === 'accepted' ? 'Diterima' : reg.status === 'rejected' ? 'Ditolak' : 'Menunggu'}
@@ -899,7 +899,7 @@ function PPDBManager() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50 h-8"
+                              className="text-[#003527] hover:text-[#064e3b] hover:bg-[#f5f3ef] h-8"
                               onClick={() => {
                                 setSelectedReg(reg)
                                 setNewStatus(reg.status as string)
@@ -924,15 +924,15 @@ function PPDBManager() {
       {activeTab === 'jadwal' && (
         <div className="space-y-4">
           <div className="flex justify-end">
-            <Button onClick={openCreateSchedule} className="bg-emerald-700 hover:bg-emerald-800 text-white">
+            <Button onClick={openCreateSchedule} className="bg-[#003527] hover:bg-[#064e3b] text-white">
               <Plus className="h-4 w-4 mr-1" /> Tambah Jadwal
             </Button>
           </div>
-          <div className="border rounded-lg bg-white overflow-hidden">
+          <div className="border rounded-lg bg-[#ffffff] overflow-hidden">
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-gray-50">
+                  <TableRow className="bg-[#f5f3ef]">
                     <TableHead>Urutan</TableHead>
                     <TableHead>Judul</TableHead>
                     <TableHead>Tanggal Mulai</TableHead>
@@ -944,25 +944,25 @@ function PPDBManager() {
                 </TableHeader>
                 <TableBody>
                   {schedulesLoading ? (
-                    <TableRow><TableCell colSpan={7} className="text-center py-8"><Loader2 className="h-5 w-5 animate-spin mx-auto text-emerald-600" /></TableCell></TableRow>
+                    <TableRow><TableCell colSpan={7} className="text-center py-8"><Loader2 className="h-5 w-5 animate-spin mx-auto text-[#003527]" /></TableCell></TableRow>
                   ) : schedules.length === 0 ? (
-                    <TableRow><TableCell colSpan={7} className="text-center py-8 text-gray-500">Belum ada jadwal pendaftaran</TableCell></TableRow>
+                    <TableRow><TableCell colSpan={7} className="text-center py-8 text-[#404944]">Belum ada jadwal pendaftaran</TableCell></TableRow>
                   ) : (
                     schedules.map((s) => (
-                      <TableRow key={s.id as string} className="hover:bg-emerald-50/50">
-                        <TableCell className="text-sm text-gray-500">{(s.order as number) || 0}</TableCell>
-                        <TableCell className="font-medium text-emerald-800">{s.title as string}</TableCell>
+                      <TableRow key={s.id as string} className="hover:bg-[#f5f3ef]/50">
+                        <TableCell className="text-sm text-[#404944]">{(s.order as number) || 0}</TableCell>
+                        <TableCell className="font-medium text-[#003527]">{s.title as string}</TableCell>
                         <TableCell className="text-sm">{s.startDate ? new Date(s.startDate as string).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : '-'}</TableCell>
                         <TableCell className="text-sm">{s.endDate ? new Date(s.endDate as string).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : '-'}</TableCell>
-                        <TableCell className="text-sm text-gray-500">{(s.location as string) || '-'}</TableCell>
+                        <TableCell className="text-sm text-[#404944]">{(s.location as string) || '-'}</TableCell>
                         <TableCell>
-                          <Badge className={s.isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-100 text-gray-600'}>
+                          <Badge className={s.isActive ? 'bg-[#003527]/15 text-[#003527]' : 'bg-[#efeeea] text-[#404944]'}>
                             {s.isActive ? 'Aktif' : 'Nonaktif'}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-center">
                           <div className="flex items-center justify-center gap-1">
-                            <Button variant="ghost" size="sm" className="text-emerald-600 hover:bg-emerald-50 h-8" onClick={() => openEditSchedule(s)}>
+                            <Button variant="ghost" size="sm" className="text-[#003527] hover:bg-[#f5f3ef] h-8" onClick={() => openEditSchedule(s)}>
                               <Pencil className="h-4 w-4" />
                             </Button>
                             <Button variant="ghost" size="sm" className="text-red-600 hover:bg-red-50 h-8" onClick={() => setDeleteSchedule(s)}>
@@ -1026,7 +1026,7 @@ function PPDBManager() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setScheduleForm(null)}>Batal</Button>
             <Button
-              className="bg-emerald-700 hover:bg-emerald-800 text-white"
+              className="bg-[#003527] hover:bg-[#064e3b] text-white"
               disabled={saveScheduleMutation.isPending}
               onClick={() => scheduleForm && saveScheduleMutation.mutate(scheduleForm)}
             >
@@ -1063,10 +1063,10 @@ function PPDBManager() {
           <Card>
             <CardHeader>
               <CardTitle className="text-base flex items-center gap-2">
-                <Settings className="h-4 w-4 text-emerald-600" />
+                <Settings className="h-4 w-4 text-[#003527]" />
                 Pengaturan PPDB
               </CardTitle>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-[#404944]">
                 Pengaturan ini akan otomatis sinkron dengan halaman PPDB publik.
               </p>
             </CardHeader>
@@ -1087,7 +1087,7 @@ function PPDBManager() {
                     <SelectItem value="soon">🟡 Segera Dibuka</SelectItem>
                   </SelectContent>
                 </Select>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-[#404944]">
                   Menentukan apakah form pendaftaran di halaman publik aktif atau tidak.
                 </p>
               </div>
@@ -1112,7 +1112,7 @@ function PPDBManager() {
                   placeholder="Satu persyaratan per baris"
                   rows={5}
                 />
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-[#404944]">
                   Tulis satu persyaratan per baris. Akan tampil sebagai list di halaman publik.
                 </p>
               </div>
@@ -1126,7 +1126,7 @@ function PPDBManager() {
                   placeholder="Satu kontak per baris (Nama - No. HP)"
                   rows={3}
                 />
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-[#404944]">
                   Format: &quot;Nama - No. HP&quot; per baris. Akan tampil sebagai list kontak di halaman publik.
                 </p>
               </div>
@@ -1139,14 +1139,14 @@ function PPDBManager() {
                   onChange={(e) => setPpdbEdit('ppdb_panitia_phone', e.target.value)}
                   placeholder="08xxxxxxxxxx atau 62xxxxxxxxxxx"
                 />
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-[#404944]">
                   Nomor ini akan tampil sebagai tombol &quot;Chat WhatsApp Panitia&quot; utama di halaman PPDB. Format bebas (0/62/+62), otomatis dinormalisasi.
                 </p>
               </div>
 
               <div className="flex justify-end pt-2">
                 <Button
-                  className="bg-emerald-700 hover:bg-emerald-800 text-white"
+                  className="bg-[#003527] hover:bg-[#064e3b] text-white"
                   onClick={() => saveSettingsMutation.mutate(ppdbEdits)}
                   disabled={saveSettingsMutation.isPending}
                 >
@@ -1183,20 +1183,20 @@ function PPDBManager() {
               </Select>
             </div>
             {selectedReg && (
-              <div className="space-y-2 text-sm bg-gray-50 rounded-lg p-3">
-                <p><span className="text-gray-500">Nama:</span> <span className="font-medium">{selectedReg.name as string}</span></p>
-                <p><span className="text-gray-500">Tempat, Tanggal Lahir:</span> {selectedReg.birthPlace as string}, {selectedReg.birthDate ? new Date(selectedReg.birthDate as string).toLocaleDateString('id-ID') : '-'}</p>
-                <p><span className="text-gray-500">Orang Tua:</span> {selectedReg.parentName as string}</p>
-                <p><span className="text-gray-500">No. HP:</span> {selectedReg.parentPhone as string}</p>
-                {selectedReg.address && <p><span className="text-gray-500">Alamat:</span> {selectedReg.address as string}</p>}
-                {selectedReg.previousSchool && <p><span className="text-gray-500">Sekolah Asal:</span> {selectedReg.previousSchool as string}</p>}
+              <div className="space-y-2 text-sm bg-[#f5f3ef] rounded-lg p-3">
+                <p><span className="text-[#404944]">Nama:</span> <span className="font-medium">{selectedReg.name as string}</span></p>
+                <p><span className="text-[#404944]">Tempat, Tanggal Lahir:</span> {selectedReg.birthPlace as string}, {selectedReg.birthDate ? new Date(selectedReg.birthDate as string).toLocaleDateString('id-ID') : '-'}</p>
+                <p><span className="text-[#404944]">Orang Tua:</span> {selectedReg.parentName as string}</p>
+                <p><span className="text-[#404944]">No. HP:</span> {selectedReg.parentPhone as string}</p>
+                {selectedReg.address && <p><span className="text-[#404944]">Alamat:</span> {selectedReg.address as string}</p>}
+                {selectedReg.previousSchool && <p><span className="text-[#404944]">Sekolah Asal:</span> {selectedReg.previousSchool as string}</p>}
               </div>
             )}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setSelectedReg(null)}>Batal</Button>
             <Button
-              className="bg-emerald-700 hover:bg-emerald-800 text-white"
+              className="bg-[#003527] hover:bg-[#064e3b] text-white"
               onClick={() => {
                 if (selectedReg && newStatus) {
                   updateMutation.mutate({ id: selectedReg.id as string, status: newStatus })
@@ -1216,7 +1216,7 @@ function PPDBManager() {
         <DialogContent className="sm:max-w-2xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Eye className="h-5 w-5 text-emerald-600" />
+              <Eye className="h-5 w-5 text-[#003527]" />
               Detail Pendaftar
             </DialogTitle>
             <DialogDescription>
@@ -1226,8 +1226,8 @@ function PPDBManager() {
           {detailReg && (
             <div className="space-y-4 py-2">
               {/* Header */}
-              <div className="bg-gradient-to-br from-emerald-50 to-amber-50 rounded-lg p-4 border border-emerald-100">
-                <p className="font-bold text-lg text-emerald-900">{detailReg.name as string}</p>
+              <div className="bg-gradient-to-br from-[#003527]/5 to-[#cca72f]/5 rounded-lg p-4 border border-[#e4e2de]">
+                <p className="font-bold text-lg text-[#003527]">{detailReg.name as string}</p>
                 <Badge className="mt-1.5" variant="secondary">
                   {detailReg.status === 'accepted' ? '✅ Diterima' : detailReg.status === 'rejected' ? '❌ Ditolak' : '⏳ Menunggu'}
                 </Badge>
@@ -1235,7 +1235,7 @@ function PPDBManager() {
 
               {/* A. Data Calon Santri */}
               <div>
-                <p className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-1 rounded mb-2">A. Data Calon Santri</p>
+                <p className="text-xs font-bold text-[#003527] bg-[#003527]/5 px-2 py-1 rounded mb-2">A. Data Calon Santri</p>
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <DetailField label="Nama" value={detailReg.name as string} />
                   <DetailField label="NIK" value={(detailReg.nik as string) || '-'} />
@@ -1248,7 +1248,7 @@ function PPDBManager() {
 
               {/* B. Asal Sekolah */}
               <div>
-                <p className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-1 rounded mb-2">B. Asal Sekolah</p>
+                <p className="text-xs font-bold text-[#003527] bg-[#003527]/5 px-2 py-1 rounded mb-2">B. Asal Sekolah</p>
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <DetailField label="Nama Sekolah" value={(detailReg.previousSchool as string) || '-'} />
                   <DetailField label="Kelas" value={(detailReg.schoolClass as string) || '-'} />
@@ -1260,7 +1260,7 @@ function PPDBManager() {
 
               {/* C. Data Ayah */}
               <div>
-                <p className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-1 rounded mb-2">C. Data Ayah</p>
+                <p className="text-xs font-bold text-[#003527] bg-[#003527]/5 px-2 py-1 rounded mb-2">C. Data Ayah</p>
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <DetailField label="Nama" value={(detailReg.fatherName as string) || '-'} />
                   <DetailField label="Status" value={(detailReg.fatherStatus as string) || '-'} />
@@ -1278,7 +1278,7 @@ function PPDBManager() {
 
               {/* D. Data Ibu */}
               <div>
-                <p className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-1 rounded mb-2">D. Data Ibu</p>
+                <p className="text-xs font-bold text-[#003527] bg-[#003527]/5 px-2 py-1 rounded mb-2">D. Data Ibu</p>
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <DetailField label="Nama" value={(detailReg.motherName as string) || '-'} />
                   <DetailField label="Status" value={(detailReg.motherStatus as string) || '-'} />
@@ -1302,7 +1302,7 @@ function PPDBManager() {
           <DialogFooter className="gap-2">
             <Button variant="outline" onClick={() => setDetailReg(null)}>Tutup</Button>
             <Button
-              className="bg-emerald-700 hover:bg-emerald-800 text-white"
+              className="bg-[#003527] hover:bg-[#064e3b] text-white"
               onClick={() => {
                 if (detailReg) {
                   setSelectedReg(detailReg)
@@ -1324,9 +1324,9 @@ function PPDBManager() {
 function DetailField({ label, value, full, link }: { label: string; value: string; full?: boolean; link?: string }) {
   return (
     <div className={full ? 'col-span-2' : ''}>
-      <span className="text-gray-500 text-xs">{label}:</span>{' '}
+      <span className="text-[#404944] text-xs">{label}:</span>{' '}
       {link ? (
-        <a href={link} className="font-medium text-emerald-700 hover:underline">{value}</a>
+        <a href={link} className="font-medium text-[#003527] hover:underline">{value}</a>
       ) : (
         <span className="font-medium">{value}</span>
       )}
@@ -1494,11 +1494,11 @@ function WaliSantriManager() {
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-          <Users className="h-5 w-5 text-emerald-600" />
+        <h2 className="text-xl font-bold text-[#1b1c1a] flex items-center gap-2">
+          <Users className="h-5 w-5 text-[#003527]" />
           Wali Santri
         </h2>
-        <p className="text-sm text-gray-500">Kelola jadwal pertemuan & pengumuman untuk wali santri</p>
+        <p className="text-sm text-[#404944]">Kelola jadwal pertemuan & pengumuman untuk wali santri</p>
       </div>
 
       {/* Tab switcher */}
@@ -1506,28 +1506,28 @@ function WaliSantriManager() {
         <button
           onClick={() => setActiveTab('meetings')}
           className={`px-4 py-2 text-sm font-medium transition-colors relative ${
-            activeTab === 'meetings' ? 'text-emerald-700' : 'text-gray-500 hover:text-gray-700'
+            activeTab === 'meetings' ? 'text-[#003527]' : 'text-[#404944] hover:text-[#1b1c1a]'
           }`}
         >
           <Calendar className="h-4 w-4 inline mr-1" />
           Jadwal Pertemuan
-          <span className="ml-1.5 text-xs bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full">
+          <span className="ml-1.5 text-xs bg-[#003527]/15 text-[#003527] px-1.5 py-0.5 rounded-full">
             {meetings.length}
           </span>
-          {activeTab === 'meetings' && <span className="absolute bottom-0 inset-x-0 h-0.5 bg-emerald-600" />}
+          {activeTab === 'meetings' && <span className="absolute bottom-0 inset-x-0 h-0.5 bg-[#003527]" />}
         </button>
         <button
           onClick={() => setActiveTab('announcements')}
           className={`px-4 py-2 text-sm font-medium transition-colors relative ${
-            activeTab === 'announcements' ? 'text-emerald-700' : 'text-gray-500 hover:text-gray-700'
+            activeTab === 'announcements' ? 'text-[#003527]' : 'text-[#404944] hover:text-[#1b1c1a]'
           }`}
         >
           <Megaphone className="h-4 w-4 inline mr-1" />
           Pengumuman
-          <span className="ml-1.5 text-xs bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full">
+          <span className="ml-1.5 text-xs bg-[#003527]/15 text-[#003527] px-1.5 py-0.5 rounded-full">
             {waliAnnouncements.length}
           </span>
-          {activeTab === 'announcements' && <span className="absolute bottom-0 inset-x-0 h-0.5 bg-emerald-600" />}
+          {activeTab === 'announcements' && <span className="absolute bottom-0 inset-x-0 h-0.5 bg-[#003527]" />}
         </button>
       </div>
 
@@ -1535,15 +1535,15 @@ function WaliSantriManager() {
       {activeTab === 'meetings' && (
         <div className="space-y-4">
           <div className="flex justify-end">
-            <Button onClick={openCreateMeeting} className="bg-emerald-700 hover:bg-emerald-800 text-white">
+            <Button onClick={openCreateMeeting} className="bg-[#003527] hover:bg-[#064e3b] text-white">
               <Plus className="h-4 w-4 mr-1" /> Tambah Pertemuan
             </Button>
           </div>
-          <div className="border rounded-lg bg-white overflow-hidden">
+          <div className="border rounded-lg bg-[#ffffff] overflow-hidden">
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-gray-50">
+                  <TableRow className="bg-[#f5f3ef]">
                     <TableHead>Judul</TableHead>
                     <TableHead>Tanggal</TableHead>
                     <TableHead>Waktu</TableHead>
@@ -1554,24 +1554,24 @@ function WaliSantriManager() {
                 </TableHeader>
                 <TableBody>
                   {meetingsLoading ? (
-                    <TableRow><TableCell colSpan={6} className="text-center py-8"><Loader2 className="h-5 w-5 animate-spin mx-auto text-emerald-600" /></TableCell></TableRow>
+                    <TableRow><TableCell colSpan={6} className="text-center py-8"><Loader2 className="h-5 w-5 animate-spin mx-auto text-[#003527]" /></TableCell></TableRow>
                   ) : meetings.length === 0 ? (
-                    <TableRow><TableCell colSpan={6} className="text-center py-8 text-gray-500">Belum ada jadwal pertemuan</TableCell></TableRow>
+                    <TableRow><TableCell colSpan={6} className="text-center py-8 text-[#404944]">Belum ada jadwal pertemuan</TableCell></TableRow>
                   ) : (
                     meetings.map((m) => (
-                      <TableRow key={m.id as string} className="hover:bg-emerald-50/50">
-                        <TableCell className="font-medium text-emerald-800">{m.title as string}</TableCell>
+                      <TableRow key={m.id as string} className="hover:bg-[#f5f3ef]/50">
+                        <TableCell className="font-medium text-[#003527]">{m.title as string}</TableCell>
                         <TableCell className="text-sm">{m.date ? new Date(m.date as string).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-'}</TableCell>
                         <TableCell className="text-sm">{m.time as string}</TableCell>
-                        <TableCell className="text-sm text-gray-500">{(m.location as string) || '-'}</TableCell>
+                        <TableCell className="text-sm text-[#404944]">{(m.location as string) || '-'}</TableCell>
                         <TableCell>
-                          <Badge className={m.isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-100 text-gray-600'}>
+                          <Badge className={m.isActive ? 'bg-[#003527]/15 text-[#003527]' : 'bg-[#efeeea] text-[#404944]'}>
                             {m.isActive ? 'Aktif' : 'Nonaktif'}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-center">
                           <div className="flex items-center justify-center gap-1">
-                            <Button variant="ghost" size="sm" className="text-emerald-600 hover:bg-emerald-50 h-8" onClick={() => openEditMeeting(m)}>
+                            <Button variant="ghost" size="sm" className="text-[#003527] hover:bg-[#f5f3ef] h-8" onClick={() => openEditMeeting(m)}>
                               <Pencil className="h-4 w-4" />
                             </Button>
                             <Button variant="ghost" size="sm" className="text-red-600 hover:bg-red-50 h-8" onClick={() => setDeleteMeeting(m)}>
@@ -1593,15 +1593,15 @@ function WaliSantriManager() {
       {activeTab === 'announcements' && (
         <div className="space-y-4">
           <div className="flex justify-end">
-            <Button onClick={openCreateAnnouncement} className="bg-emerald-700 hover:bg-emerald-800 text-white">
+            <Button onClick={openCreateAnnouncement} className="bg-[#003527] hover:bg-[#064e3b] text-white">
               <Plus className="h-4 w-4 mr-1" /> Tambah Pengumuman
             </Button>
           </div>
-          <div className="border rounded-lg bg-white overflow-hidden">
+          <div className="border rounded-lg bg-[#ffffff] overflow-hidden">
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-gray-50">
+                  <TableRow className="bg-[#f5f3ef]">
                     <TableHead>Judul</TableHead>
                     <TableHead>Prioritas</TableHead>
                     <TableHead>Status</TableHead>
@@ -1611,23 +1611,23 @@ function WaliSantriManager() {
                 </TableHeader>
                 <TableBody>
                   {announcementsLoading ? (
-                    <TableRow><TableCell colSpan={5} className="text-center py-8"><Loader2 className="h-5 w-5 animate-spin mx-auto text-emerald-600" /></TableCell></TableRow>
+                    <TableRow><TableCell colSpan={5} className="text-center py-8"><Loader2 className="h-5 w-5 animate-spin mx-auto text-[#003527]" /></TableCell></TableRow>
                   ) : waliAnnouncements.length === 0 ? (
-                    <TableRow><TableCell colSpan={5} className="text-center py-8 text-gray-500">Belum ada pengumuman wali santri</TableCell></TableRow>
+                    <TableRow><TableCell colSpan={5} className="text-center py-8 text-[#404944]">Belum ada pengumuman wali santri</TableCell></TableRow>
                   ) : (
                     waliAnnouncements.map((a) => (
-                      <TableRow key={a.id as string} className="hover:bg-emerald-50/50">
-                        <TableCell className="font-medium text-emerald-800">{a.title as string}</TableCell>
+                      <TableRow key={a.id as string} className="hover:bg-[#f5f3ef]/50">
+                        <TableCell className="font-medium text-[#003527]">{a.title as string}</TableCell>
                         <TableCell className="text-sm">{(a.priority as number) || 0}</TableCell>
                         <TableCell>
-                          <Badge className={a.isActive ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-100 text-gray-600'}>
+                          <Badge className={a.isActive ? 'bg-[#003527]/15 text-[#003527]' : 'bg-[#efeeea] text-[#404944]'}>
                             {a.isActive ? 'Aktif' : 'Nonaktif'}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-sm">{a.createdAt ? new Date(a.createdAt as string).toLocaleDateString('id-ID') : '-'}</TableCell>
                         <TableCell className="text-center">
                           <div className="flex items-center justify-center gap-1">
-                            <Button variant="ghost" size="sm" className="text-emerald-600 hover:bg-emerald-50 h-8" onClick={() => openEditAnnouncement(a)}>
+                            <Button variant="ghost" size="sm" className="text-[#003527] hover:bg-[#f5f3ef] h-8" onClick={() => openEditAnnouncement(a)}>
                               <Pencil className="h-4 w-4" />
                             </Button>
                             <Button variant="ghost" size="sm" className="text-red-600 hover:bg-red-50 h-8" onClick={() => setDeleteAnnouncement(a)}>
@@ -1685,7 +1685,7 @@ function WaliSantriManager() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setMeetingForm(null)}>Batal</Button>
             <Button
-              className="bg-emerald-700 hover:bg-emerald-800 text-white"
+              className="bg-[#003527] hover:bg-[#064e3b] text-white"
               disabled={saveMeetingMutation.isPending}
               onClick={() => meetingForm && saveMeetingMutation.mutate(meetingForm)}
             >
@@ -1728,7 +1728,7 @@ function WaliSantriManager() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setAnnouncementForm(null)}>Batal</Button>
             <Button
-              className="bg-emerald-700 hover:bg-emerald-800 text-white"
+              className="bg-[#003527] hover:bg-[#064e3b] text-white"
               disabled={saveAnnouncementMutation.isPending}
               onClick={() => announcementForm && saveAnnouncementMutation.mutate(announcementForm)}
             >
@@ -1817,15 +1817,15 @@ function ContactMessagesManager() {
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-xl font-bold text-gray-900">Pesan Kontak</h2>
-        <p className="text-sm text-gray-500">Lihat pesan dari pengunjung website</p>
+        <h2 className="text-xl font-bold text-[#1b1c1a]">Pesan Kontak</h2>
+        <p className="text-sm text-[#404944]">Lihat pesan dari pengunjung website</p>
       </div>
 
-      <div className="border rounded-lg bg-white overflow-hidden">
+      <div className="border rounded-lg bg-[#ffffff] overflow-hidden">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow className="bg-gray-50">
+              <TableRow className="bg-[#f5f3ef]">
                 <TableHead>#</TableHead>
                 <TableHead>Nama</TableHead>
                 <TableHead>Email</TableHead>
@@ -1839,29 +1839,29 @@ function ContactMessagesManager() {
               {isLoading ? (
                 <TableRow>
                   <TableCell colSpan={7} className="text-center py-12">
-                    <Loader2 className="h-6 w-6 animate-spin mx-auto text-emerald-600" />
+                    <Loader2 className="h-6 w-6 animate-spin mx-auto text-[#003527]" />
                   </TableCell>
                 </TableRow>
               ) : items.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-12 text-gray-500">
+                  <TableCell colSpan={7} className="text-center py-12 text-[#404944]">
                     Belum ada pesan
                   </TableCell>
                 </TableRow>
               ) : (
                 items.map((msg, idx) => (
-                  <TableRow key={msg.id as string} className={!msg.isRead ? 'bg-amber-50/50' : ''}>
-                    <TableCell className="text-gray-400 text-xs">{idx + 1}</TableCell>
+                  <TableRow key={msg.id as string} className={!msg.isRead ? 'bg-[#cca72f]/5/50' : ''}>
+                    <TableCell className="text-[#404944]/70 text-xs">{idx + 1}</TableCell>
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-2">
-                        {!msg.isRead && <span className="w-2 h-2 rounded-full bg-amber-500" />}
+                        {!msg.isRead && <span className="w-2 h-2 rounded-full bg-[#cca72f]" />}
                         {msg.name as string}
                       </div>
                     </TableCell>
                     <TableCell>{(msg.email as string) || '-'}</TableCell>
                     <TableCell>{(msg.subject as string) || '-'}</TableCell>
                     <TableCell>
-                      <Badge className={msg.isRead ? 'bg-gray-100 text-gray-600' : 'bg-amber-100 text-amber-800'}>
+                      <Badge className={msg.isRead ? 'bg-[#efeeea] text-[#404944]' : 'bg-[#cca72f]/20 text-[#895033]'}>
                         {msg.isRead ? 'Dibaca' : 'Baru'}
                       </Badge>
                     </TableCell>
@@ -1882,7 +1882,7 @@ function ContactMessagesManager() {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 text-emerald-600 hover:text-emerald-800"
+                            className="h-8 w-8 text-[#003527] hover:text-[#064e3b]"
                             onClick={() => markReadMutation.mutate(msg.id as string)}
                           >
                             <Mail className="h-4 w-4" />
@@ -1908,19 +1908,19 @@ function ContactMessagesManager() {
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label className="text-xs text-gray-500">Nama</Label>
+                  <Label className="text-xs text-[#404944]">Nama</Label>
                   <p className="text-sm font-medium">{selectedMsg.name as string}</p>
                 </div>
                 <div>
-                  <Label className="text-xs text-gray-500">Email</Label>
+                  <Label className="text-xs text-[#404944]">Email</Label>
                   <p className="text-sm">{(selectedMsg.email as string) || '-'}</p>
                 </div>
                 <div>
-                  <Label className="text-xs text-gray-500">Telepon</Label>
+                  <Label className="text-xs text-[#404944]">Telepon</Label>
                   <p className="text-sm">{(selectedMsg.phone as string) || '-'}</p>
                 </div>
                 <div>
-                  <Label className="text-xs text-gray-500">Tanggal</Label>
+                  <Label className="text-xs text-[#404944]">Tanggal</Label>
                   <p className="text-sm">
                     {selectedMsg.createdAt ? new Date(selectedMsg.createdAt as string).toLocaleDateString('id-ID', {
                       day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit',
@@ -1930,13 +1930,13 @@ function ContactMessagesManager() {
               </div>
               {(selectedMsg.subject as string) && (
                 <div>
-                  <Label className="text-xs text-gray-500">Subjek</Label>
+                  <Label className="text-xs text-[#404944]">Subjek</Label>
                   <p className="text-sm font-medium">{selectedMsg.subject as string}</p>
                 </div>
               )}
               <div>
-                <Label className="text-xs text-gray-500">Pesan</Label>
-                <div className="bg-gray-50 rounded-lg p-3 mt-1">
+                <Label className="text-xs text-[#404944]">Pesan</Label>
+                <div className="bg-[#f5f3ef] rounded-lg p-3 mt-1">
                   <p className="text-sm whitespace-pre-wrap">{selectedMsg.message as string}</p>
                 </div>
               </div>
@@ -1945,7 +1945,7 @@ function ContactMessagesManager() {
           <DialogFooter>
             {selectedMsg && !selectedMsg.isRead && (
               <Button
-                className="bg-emerald-700 hover:bg-emerald-800 text-white"
+                className="bg-[#003527] hover:bg-[#064e3b] text-white"
                 onClick={() => markReadMutation.mutate(selectedMsg.id as string)}
                 disabled={markReadMutation.isPending}
               >
@@ -1996,15 +1996,15 @@ function SuggestionsManager() {
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-xl font-bold text-gray-900">Kritik & Saran</h2>
-        <p className="text-sm text-gray-500">Lihat kritik dan saran dari pengunjung</p>
+        <h2 className="text-xl font-bold text-[#1b1c1a]">Kritik & Saran</h2>
+        <p className="text-sm text-[#404944]">Lihat kritik dan saran dari pengunjung</p>
       </div>
 
-      <div className="border rounded-lg bg-white overflow-hidden">
+      <div className="border rounded-lg bg-[#ffffff] overflow-hidden">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow className="bg-gray-50">
+              <TableRow className="bg-[#f5f3ef]">
                 <TableHead>#</TableHead>
                 <TableHead>Nama</TableHead>
                 <TableHead>Tipe</TableHead>
@@ -2018,22 +2018,22 @@ function SuggestionsManager() {
               {isLoading ? (
                 <TableRow>
                   <TableCell colSpan={7} className="text-center py-12">
-                    <Loader2 className="h-6 w-6 animate-spin mx-auto text-emerald-600" />
+                    <Loader2 className="h-6 w-6 animate-spin mx-auto text-[#003527]" />
                   </TableCell>
                 </TableRow>
               ) : items.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-12 text-gray-500">
+                  <TableCell colSpan={7} className="text-center py-12 text-[#404944]">
                     Belum ada saran
                   </TableCell>
                 </TableRow>
               ) : (
                 items.map((item, idx) => (
-                  <TableRow key={item.id as string} className={!item.isRead ? 'bg-amber-50/50' : ''}>
-                    <TableCell className="text-gray-400 text-xs">{idx + 1}</TableCell>
+                  <TableRow key={item.id as string} className={!item.isRead ? 'bg-[#cca72f]/5/50' : ''}>
+                    <TableCell className="text-[#404944]/70 text-xs">{idx + 1}</TableCell>
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-2">
-                        {!item.isRead && <span className="w-2 h-2 rounded-full bg-amber-500" />}
+                        {!item.isRead && <span className="w-2 h-2 rounded-full bg-[#cca72f]" />}
                         {item.name as string}
                       </div>
                     </TableCell>
@@ -2042,7 +2042,7 @@ function SuggestionsManager() {
                     </TableCell>
                     <TableCell className="max-w-48 truncate">{(item.message as string)?.slice(0, 60)}</TableCell>
                     <TableCell>
-                      <Badge className={item.isRead ? 'bg-gray-100 text-gray-600' : 'bg-amber-100 text-amber-800'}>
+                      <Badge className={item.isRead ? 'bg-[#efeeea] text-[#404944]' : 'bg-[#cca72f]/20 text-[#895033]'}>
                         {item.isRead ? 'Dibaca' : 'Baru'}
                       </Badge>
                     </TableCell>
@@ -2063,7 +2063,7 @@ function SuggestionsManager() {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 text-emerald-600"
+                            className="h-8 w-8 text-[#003527]"
                             onClick={() => markReadMutation.mutate(item.id as string)}
                           >
                             <Mail className="h-4 w-4" />
@@ -2089,22 +2089,22 @@ function SuggestionsManager() {
             <div className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label className="text-xs text-gray-500">Nama</Label>
+                  <Label className="text-xs text-[#404944]">Nama</Label>
                   <p className="text-sm font-medium">{selectedItem.name as string}</p>
                 </div>
                 <div>
-                  <Label className="text-xs text-gray-500">Tipe</Label>
+                  <Label className="text-xs text-[#404944]">Tipe</Label>
                   <Badge variant="outline" className="capitalize">{(selectedItem.type as string) || 'saran'}</Badge>
                 </div>
               </div>
               <div>
-                <Label className="text-xs text-gray-500">Pesan</Label>
-                <div className="bg-gray-50 rounded-lg p-3 mt-1">
+                <Label className="text-xs text-[#404944]">Pesan</Label>
+                <div className="bg-[#f5f3ef] rounded-lg p-3 mt-1">
                   <p className="text-sm whitespace-pre-wrap">{selectedItem.message as string}</p>
                 </div>
               </div>
               <div>
-                <Label className="text-xs text-gray-500">Tanggal</Label>
+                <Label className="text-xs text-[#404944]">Tanggal</Label>
                 <p className="text-sm">
                   {selectedItem.createdAt ? new Date(selectedItem.createdAt as string).toLocaleDateString('id-ID', {
                     day: 'numeric', month: 'long', year: 'numeric',
@@ -2116,7 +2116,7 @@ function SuggestionsManager() {
           <DialogFooter>
             {selectedItem && !selectedItem.isRead && (
               <Button
-                className="bg-emerald-700 hover:bg-emerald-800 text-white"
+                className="bg-[#003527] hover:bg-[#064e3b] text-white"
                 onClick={() => markReadMutation.mutate(selectedItem.id as string)}
                 disabled={markReadMutation.isPending}
               >
@@ -2272,7 +2272,7 @@ function SettingsManager() {
   if (settingsLoading || statsLoading || institutionLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-6 w-6 animate-spin text-emerald-600" />
+        <Loader2 className="h-6 w-6 animate-spin text-[#003527]" />
       </div>
     )
   }
@@ -2280,8 +2280,8 @@ function SettingsManager() {
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-xl font-bold text-gray-900">Pengaturan Website</h2>
-        <p className="text-sm text-gray-500">Kelola pengaturan dan data website</p>
+        <h2 className="text-xl font-bold text-[#1b1c1a]">Pengaturan Website</h2>
+        <p className="text-sm text-[#404944]">Kelola pengaturan dan data website</p>
       </div>
 
       {/* Tab selector */}
@@ -2295,7 +2295,7 @@ function SettingsManager() {
             key={tab.id}
             variant={activeTab === tab.id ? 'default' : 'ghost'}
             size="sm"
-            className={activeTab === tab.id ? 'bg-emerald-700 hover:bg-emerald-800' : ''}
+            className={activeTab === tab.id ? 'bg-[#003527] hover:bg-[#064e3b]' : ''}
             onClick={() => setActiveTab(tab.id)}
           >
             {tab.label}
@@ -2311,7 +2311,7 @@ function SettingsManager() {
               <CardTitle className="text-base">Pengaturan Website</CardTitle>
               <Button
                 size="sm"
-                className="bg-emerald-700 hover:bg-emerald-800 text-white"
+                className="bg-[#003527] hover:bg-[#064e3b] text-white"
                 onClick={() => saveSettingsMutation.mutate()}
                 disabled={saveSettingsMutation.isPending}
               >
@@ -2324,7 +2324,7 @@ function SettingsManager() {
             {/* Image Settings - Cloudinary Upload */}
             {(['madrasah_principal_photo', 'madrasah_hero_image', 'madrasah_logo'] as const).map((imgKey) =>
               settingsValues[imgKey] !== undefined && (
-                <div key={imgKey} className="mb-4 p-4 border border-amber-200 bg-amber-50 rounded-lg flex flex-col sm:flex-row sm:items-start gap-4">
+                <div key={imgKey} className="mb-4 p-4 border border-[#cca72f]/30 bg-[#cca72f]/5 rounded-lg flex flex-col sm:flex-row sm:items-start gap-4">
                   <div className="shrink-0">
                     <ImageUpload
                       value={settingsValues[imgKey] || ''}
@@ -2343,18 +2343,18 @@ function SettingsManager() {
                     />
                   </div>
                   <div className="flex-1 min-w-0 space-y-1">
-                    <p className="text-sm font-semibold text-amber-900">
+                    <p className="text-sm font-semibold text-[#895033]">
                       {imgKey === 'madrasah_principal_photo' ? 'Foto Kepala Madrasah' :
                        imgKey === 'madrasah_hero_image' ? 'Gambar Hero Beranda' : 'Logo Madrasah'}
                     </p>
-                    <p className="text-xs text-amber-700/80">
+                    <p className="text-xs text-[#895033]/80">
                       {imgKey === 'madrasah_principal_photo'
                         ? 'Foto profil kepala madrasah. Rasio 3:4 (portrait) disarankan.'
                         : imgKey === 'madrasah_hero_image'
                         ? 'Gambar latar belakang section hero di halaman beranda. Rasio 16:9 (wide) disarankan.'
                         : 'Logo madrasah. Format persegi (1:1) dengan latar transparan (PNG/SVG) disarankan.'}
                     </p>
-                    <p className="text-[11px] text-amber-600/70 mt-2">
+                    <p className="text-[11px] text-[#895033]/70 mt-2">
                       Format: JPEG, PNG, WebP, GIF, SVG. Maksimal 10 MB.
                     </p>
                   </div>
@@ -2388,14 +2388,14 @@ function SettingsManager() {
                     if (groupEntries.length === 0) return null
                     return (
                       <div key={groupName}>
-                        <h4 className="text-sm font-semibold text-emerald-800 mb-3 flex items-center gap-2">
-                          <div className="w-1 h-4 bg-amber-500 rounded-full" />
+                        <h4 className="text-sm font-semibold text-[#003527] mb-3 flex items-center gap-2">
+                          <div className="w-1 h-4 bg-[#cca72f] rounded-full" />
                           {groupName}
                         </h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           {groupEntries.map(([key, value]) => (
                             <div key={key} className={longTextKeys.includes(key) ? 'md:col-span-2' : ''}>
-                              <Label className="text-xs text-gray-500">
+                              <Label className="text-xs text-[#404944]">
                                 {settingsLabels[key] || key.replace(/_/g, ' ').replace(/madrasah/g, '').trim() || key}
                               </Label>
                               {richtextKeys.includes(key) ? (
@@ -2428,14 +2428,14 @@ function SettingsManager() {
                   })}
                   {otherEntries.length > 0 && (
                     <div>
-                      <h4 className="text-sm font-semibold text-emerald-800 mb-3 flex items-center gap-2">
-                        <div className="w-1 h-4 bg-amber-500 rounded-full" />
+                      <h4 className="text-sm font-semibold text-[#003527] mb-3 flex items-center gap-2">
+                        <div className="w-1 h-4 bg-[#cca72f] rounded-full" />
                         Lainnya
                       </h4>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {otherEntries.map(([key, value]) => (
                           <div key={key}>
-                            <Label className="text-xs text-gray-500">
+                            <Label className="text-xs text-[#404944]">
                               {settingsLabels[key] || key.replace(/_/g, ' ').replace(/madrasah/g, '').trim() || key}
                             </Label>
                             <Input
@@ -2449,7 +2449,7 @@ function SettingsManager() {
                     </div>
                   )}
                   {Object.keys(settingsValues).length === 0 && (
-                    <p className="text-sm text-gray-500 text-center py-4">
+                    <p className="text-sm text-[#404944] text-center py-4">
                       Belum ada pengaturan. Data akan muncul setelah pertama kali disimpan.
                     </p>
                   )}
@@ -2468,7 +2468,7 @@ function SettingsManager() {
               <CardTitle className="text-base">Statistik Website</CardTitle>
               <Button
                 size="sm"
-                className="bg-emerald-700 hover:bg-emerald-800 text-white"
+                className="bg-[#003527] hover:bg-[#064e3b] text-white"
                 onClick={() => saveStatsMutation.mutate()}
                 disabled={saveStatsMutation.isPending}
               >
@@ -2481,7 +2481,7 @@ function SettingsManager() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {Object.entries(statsValues).map(([key, value]) => (
                 <div key={key} className="space-y-1">
-                  <Label className="text-xs text-gray-500 capitalize">
+                  <Label className="text-xs text-[#404944] capitalize">
                     {key.replace(/_/g, ' ')}
                   </Label>
                   <Input
@@ -2491,7 +2491,7 @@ function SettingsManager() {
                 </div>
               ))}
               {Object.keys(statsValues).length === 0 && (
-                <p className="text-sm text-gray-500 col-span-2 text-center py-4">
+                <p className="text-sm text-[#404944] col-span-2 text-center py-4">
                   Belum ada statistik. Data akan muncul setelah pertama kali disimpan.
                 </p>
               )}
@@ -2508,7 +2508,7 @@ function SettingsManager() {
               <CardTitle className="text-base">Data Kelembagaan</CardTitle>
               <Button
                 size="sm"
-                className="bg-emerald-700 hover:bg-emerald-800 text-white"
+                className="bg-[#003527] hover:bg-[#064e3b] text-white"
                 onClick={() => saveInstitutionMutation.mutate()}
                 disabled={saveInstitutionMutation.isPending}
               >
@@ -2521,7 +2521,7 @@ function SettingsManager() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {Object.entries(institutionValues).map(([key, { value, label }]) => (
                 <div key={key} className="space-y-1">
-                  <Label className="text-xs text-gray-500">{label || key.replace(/_/g, ' ')}</Label>
+                  <Label className="text-xs text-[#404944]">{label || key.replace(/_/g, ' ')}</Label>
                   <Input
                     value={value}
                     onChange={(e) => setInstitutionEdits((prev) => ({
@@ -2532,7 +2532,7 @@ function SettingsManager() {
                 </div>
               ))}
               {Object.keys(institutionValues).length === 0 && (
-                <p className="text-sm text-gray-500 col-span-2 text-center py-4">
+                <p className="text-sm text-[#404944] col-span-2 text-center py-4">
                   Belum ada data lembaga. Data akan muncul setelah pertama kali disimpan.
                 </p>
               )}
@@ -2633,7 +2633,7 @@ export default function AdminPanel({ adminName: adminNameProp, onLogout }: Admin
   })
 
   return (
-    <div className="min-h-screen flex bg-gray-50">
+    <div className="min-h-screen flex bg-[#fbf9f5]">
       {/* Sidebar Overlay (mobile) */}
       <AnimatePresence>
         {sidebarOpen && (
@@ -2649,13 +2649,15 @@ export default function AdminPanel({ adminName: adminNameProp, onLogout }: Admin
 
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-gradient-to-b from-emerald-800 to-emerald-900 text-white transform transition-transform duration-300 lg:translate-x-0 lg:sticky lg:top-0 lg:h-screen lg:z-auto ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#003527] text-white transform transition-transform duration-300 lg:translate-x-0 lg:sticky lg:top-0 lg:h-screen lg:z-auto ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <div className="flex flex-col h-full">
+        {/* Kraton pattern overlay */}
+        <div className="absolute inset-0 kraton-pattern opacity-[0.07] pointer-events-none" aria-hidden />
+        <div className="relative flex flex-col h-full">
           {/* Logo — fixed at top, tidak scroll */}
-          <div className="p-4 border-b border-emerald-700 shrink-0">
+          <div className="p-4 border-b border-[#064e3b] shrink-0">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg overflow-hidden shadow">
@@ -2663,13 +2665,13 @@ export default function AdminPanel({ adminName: adminNameProp, onLogout }: Admin
                 </div>
                 <div>
                   <p className="font-bold text-sm leading-tight">MDTA Miftahul Ulum</p>
-                  <p className="text-emerald-300 text-xs">Admin Panel</p>
+                  <p className="text-[#ffe088] text-xs">Admin Panel</p>
                 </div>
               </div>
               <Button
                 variant="ghost"
                 size="icon"
-                className="lg:hidden text-emerald-200 hover:text-white hover:bg-emerald-700 h-8 w-8"
+                className="lg:hidden text-[#b0f0d6] hover:text-white hover:bg-[#064e3b] h-8 w-8"
                 onClick={() => setSidebarOpen(false)}
               >
                 <X className="h-4 w-4" />
@@ -2683,7 +2685,7 @@ export default function AdminPanel({ adminName: adminNameProp, onLogout }: Admin
               {groupedNav.map((group) => (
                 <div key={group.group || 'main'} className="mb-2">
                   {group.group && (
-                    <p className="text-emerald-400 text-[10px] font-semibold uppercase tracking-wider px-3 py-2 mt-2">
+                    <p className="text-[#ffe088]/70 text-[10px] font-semibold uppercase tracking-wider px-3 py-2 mt-2">
                       {group.group}
                     </p>
                   )}
@@ -2691,10 +2693,10 @@ export default function AdminPanel({ adminName: adminNameProp, onLogout }: Admin
                     <button
                       key={item.id}
                       onClick={() => handleNavigate(item.id)}
-                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
+                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors relative ${
                         activeSection === item.id
-                          ? 'bg-emerald-700 text-white font-medium'
-                          : 'text-emerald-200 hover:bg-emerald-700/50 hover:text-white'
+                          ? 'active-nav-pill bg-[#064e3b] text-[#ffe088] font-medium'
+                          : 'text-[#b0f0d6] hover:bg-[#064e3b]/30 hover:text-white'
                       }`}
                     >
                       {item.icon}
@@ -2707,7 +2709,7 @@ export default function AdminPanel({ adminName: adminNameProp, onLogout }: Admin
           </div>
 
           {/* User & Logout — fixed at bottom, tidak scroll */}
-          <div className="p-4 border-t border-emerald-700 shrink-0">
+          <div className="p-4 border-t border-[#064e3b] shrink-0">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2 min-w-0">
                 <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0">
@@ -2715,13 +2717,13 @@ export default function AdminPanel({ adminName: adminNameProp, onLogout }: Admin
                 </div>
                 <div className="min-w-0">
                   <p className="text-sm font-medium truncate">{adminName || 'Admin'}</p>
-                  <p className="text-xs text-emerald-400">Administrator</p>
+                  <p className="text-xs text-[#ffe088]/70">Administrator</p>
                 </div>
               </div>
               <Button
                 variant="ghost"
                 size="icon"
-                className="text-emerald-300 hover:text-white hover:bg-emerald-700 h-8 w-8 shrink-0"
+                className="text-[#ffe088] hover:text-white hover:bg-[#064e3b] h-8 w-8 shrink-0"
                 onClick={handleLogout}
                 title="Logout"
               >
@@ -2730,7 +2732,7 @@ export default function AdminPanel({ adminName: adminNameProp, onLogout }: Admin
             </div>
             <a
               href="/"
-              className="flex items-center gap-2 text-xs text-emerald-300 hover:text-amber-400 transition-colors"
+              className="flex items-center gap-2 text-xs text-[#b0f0d6] hover:text-[#ffe088] transition-colors"
             >
               ← Kembali ke Website
             </a>
@@ -2741,7 +2743,7 @@ export default function AdminPanel({ adminName: adminNameProp, onLogout }: Admin
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top Bar */}
-        <header className="sticky top-0 z-30 bg-white border-b shadow-sm">
+        <header className="sticky top-0 z-30 bg-[#fbf9f5]/80 backdrop-blur-md border-b border-[#e4e2de]/30 shadow-sm">
           <div className="flex items-center justify-between h-14 px-4">
             <div className="flex items-center gap-3">
               <Button
@@ -2752,11 +2754,11 @@ export default function AdminPanel({ adminName: adminNameProp, onLogout }: Admin
               >
                 <Menu className="h-5 w-5" />
               </Button>
-              <div className="flex items-center gap-2 text-sm text-gray-500">
+              <div className="flex items-center gap-2 text-sm text-[#404944]">
                 <LayoutDashboard className="h-4 w-4" />
                 <span>Admin</span>
                 <ChevronRight className="h-3 w-3" />
-                <span className="text-gray-900 font-medium">{getBreadcrumb()}</span>
+                <span className="text-[#1b1c1a] font-medium">{getBreadcrumb()}</span>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -2764,14 +2766,14 @@ export default function AdminPanel({ adminName: adminNameProp, onLogout }: Admin
                 <Button
                   variant="outline"
                   size="sm"
-                  className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 border-emerald-200"
+                  className="text-[#003527] hover:text-[#064e3b] hover:bg-[#f5f3ef] border-[#e4e2de]"
                 >
                   <span className="hidden sm:inline">Lihat Website</span>
                   <span className="sm:hidden">Website</span>
                 </Button>
               </a>
-              <div className="hidden sm:flex items-center gap-2 text-sm text-gray-500">
-                <div className="w-7 h-7 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold text-xs">
+              <div className="hidden sm:flex items-center gap-2 text-sm text-[#404944]">
+                <div className="w-7 h-7 rounded-full bg-[#003527]/15 flex items-center justify-center text-[#003527] font-bold text-xs">
                   {(adminName || 'A').charAt(0).toUpperCase()}
                 </div>
                 <span>{adminName || 'Admin'}</span>
@@ -2780,7 +2782,7 @@ export default function AdminPanel({ adminName: adminNameProp, onLogout }: Admin
                 variant="outline"
                 size="sm"
                 onClick={handleLogout}
-                className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+                className="text-[#ba1a1a] hover:text-[#ba1a1a] hover:bg-[#ba1a1a]/10 border-[#ba1a1a]/30"
               >
                 <LogOut className="h-4 w-4 mr-1" />
                 <span className="hidden sm:inline">Keluar</span>

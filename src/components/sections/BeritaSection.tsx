@@ -21,11 +21,11 @@ const categories = [
 ]
 
 const categoryColors: Record<string, string> = {
-  'kegiatan': 'bg-emerald-100 text-emerald-700',
-  'phbi': 'bg-amber-100 text-amber-700',
-  'keagamaan': 'bg-teal-100 text-teal-700',
-  'lomba': 'bg-purple-100 text-purple-700',
-  'prestasi': 'bg-amber-100 text-amber-800',
+  'kegiatan': 'bg-[#003527]/15 text-[#003527]',
+  'phbi': 'bg-[#cca72f]/20 text-[#895033]',
+  'keagamaan': 'bg-[#064e3b]/15 text-[#064e3b]',
+  'lomba': 'bg-[#895033]/15 text-[#895033]',
+  'prestasi': 'bg-[#cca72f]/20 text-[#895033]',
 }
 
 const PAGE_SIZE = 6
@@ -77,7 +77,7 @@ export default function BeritaSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: 0.4 }}
-          className="inline-block px-3 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold uppercase tracking-wider mb-2"
+          className="inline-block px-3 py-0.5 rounded-full bg-[#064e3b]/15 text-[#003527] text-xs font-semibold uppercase tracking-wider mb-2"
         >
           Informasi Publik
         </motion.span>
@@ -90,8 +90,8 @@ export default function BeritaSection() {
         >
           Berita & Kegiatan
         </motion.h2>
-        <div className="w-20 h-1 bg-gradient-to-r from-emerald-500 to-amber-500 mx-auto mt-2 rounded-full" />
-        <p className="text-sm text-gray-500 mt-3">
+        <div className="w-20 h-1 bg-gradient-to-r from-[#003527] to-[#cca72f] mx-auto mt-2 rounded-full" />
+        <p className="text-sm text-[#404944] mt-3">
           {allNews.length > 0
             ? `Menampilkan ${startIndex + 1}-${Math.min(endIndex, allNews.length)} dari ${allNews.length} berita`
             : ''}
@@ -106,8 +106,8 @@ export default function BeritaSection() {
             onClick={() => handleCategoryChange(cat.value)}
             className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
               selectedCategory === cat.value
-                ? 'bg-gradient-to-r from-emerald-700 to-emerald-800 text-white shadow-md shadow-emerald-700/30 scale-105'
-                : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 hover:scale-105'
+                ? 'bg-[#003527] text-white shadow-md shadow-[#003527]/30 scale-105'
+                : 'bg-[#f5f3ef] text-[#003527] hover:bg-[#efeeea] hover:scale-105'
             }`}
           >
             {cat.label}
@@ -142,10 +142,10 @@ export default function BeritaSection() {
                 transition={{ delay: idx * 0.05, duration: 0.5 }}
               >
                 <Card
-                  className="overflow-hidden border-0 shadow-premium card-hover cursor-pointer group h-full flex flex-col rounded-2xl"
+                  className="overflow-hidden border border-[#e4e2de] shadow-premium card-hover cursor-pointer group h-full flex flex-col rounded-2xl bg-[#ffffff]"
                   onClick={() => setSelectedNews(item)}
                 >
-                  <div className="h-48 bg-gradient-to-br from-emerald-400 to-emerald-600 relative overflow-hidden">
+                  <div className="h-48 bg-gradient-to-br from-[#064e3b] to-[#003527] relative overflow-hidden">
                     {item.image ? (
                       <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                     ) : (
@@ -153,20 +153,20 @@ export default function BeritaSection() {
                         <BookOpen className="h-12 w-12 text-white/50" />
                       </div>
                     )}
-                    <Badge className={`absolute top-3 left-3 text-xs backdrop-blur-sm ${categoryColors[item.category] || 'bg-gray-100 text-gray-700'} shadow-md`}>
+                    <Badge className={`absolute top-3 left-3 text-xs backdrop-blur-sm ${categoryColors[item.category] || 'bg-[#f5f3ef] text-[#404944]'} shadow-md`}>
                       {item.category}
                     </Badge>
                   </div>
                   <CardContent className="p-4 flex-1 flex flex-col">
-                    <div className="flex items-center gap-2 text-xs text-gray-400 mb-2">
+                    <div className="flex items-center gap-2 text-xs text-[#404944]/70 mb-2">
                       <Calendar className="h-3 w-3" />
                       {new Date(item.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
                     </div>
-                    <h3 className="font-semibold text-emerald-800 line-clamp-2 mb-2 group-hover:text-emerald-600 transition-colors">
+                    <h3 className="font-semibold text-[#003527] line-clamp-2 mb-2 group-hover:text-[#064e3b] transition-colors">
                       {item.title}
                     </h3>
-                    <p className="text-sm text-gray-500 line-clamp-3 mt-auto">{item.excerpt || item.content?.substring(0, 120) + '...'}</p>
-                    <span className="mt-3 text-xs text-emerald-600 font-medium inline-flex items-center gap-1 group-hover:gap-2 transition-all">
+                    <p className="text-sm text-[#404944] line-clamp-3 mt-auto">{item.excerpt || item.content?.substring(0, 120) + '...'}</p>
+                    <span className="mt-3 text-xs text-[#003527] font-medium inline-flex items-center gap-1 group-hover:gap-2 transition-all">
                       Baca selengkapnya <ChevronRight className="h-3 w-3" />
                     </span>
                   </CardContent>
@@ -177,9 +177,9 @@ export default function BeritaSection() {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-gray-100">
-              <p className="text-sm text-gray-500 order-2 sm:order-1">
-                Halaman <span className="font-semibold text-emerald-700">{safePage}</span> dari <span className="font-semibold text-emerald-700">{totalPages}</span>
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-[#e4e2de]">
+              <p className="text-sm text-[#404944] order-2 sm:order-1">
+                Halaman <span className="font-semibold text-[#003527]">{safePage}</span> dari <span className="font-semibold text-[#003527]">{totalPages}</span>
               </p>
               <div className="flex items-center gap-2 order-1 sm:order-2">
                 <Button
@@ -187,7 +187,7 @@ export default function BeritaSection() {
                   size="sm"
                   onClick={goToPrevPage}
                   disabled={safePage === 1}
-                  className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 hover:scale-105 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100 rounded-full transition-all"
+                  className="border-[#e4e2de] text-[#003527] hover:bg-[#f5f3ef] hover:text-[#064e3b] hover:scale-105 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100 rounded-full transition-all"
                 >
                   <ChevronLeft className="h-4 w-4 mr-1" />
                   Sebelumnya
@@ -200,8 +200,8 @@ export default function BeritaSection() {
                       onClick={() => goToPage(pageNum)}
                       className={`h-9 w-9 rounded-full text-sm font-medium transition-all duration-300 ${
                         safePage === pageNum
-                          ? 'bg-gradient-to-br from-emerald-700 to-emerald-800 text-white shadow-md scale-110'
-                          : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 hover:scale-110'
+                          ? 'bg-gradient-to-br from-[#003527] to-[#064e3b] text-white shadow-md scale-110'
+                          : 'bg-[#f5f3ef] text-[#003527] hover:bg-[#efeeea] hover:scale-110'
                       }`}
                       aria-label={`Halaman ${pageNum}`}
                       aria-current={safePage === pageNum ? 'page' : undefined}
@@ -215,7 +215,7 @@ export default function BeritaSection() {
                   size="sm"
                   onClick={goToNextPage}
                   disabled={safePage === totalPages}
-                  className="border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 hover:scale-105 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100 rounded-full transition-all"
+                  className="border-[#e4e2de] text-[#003527] hover:bg-[#f5f3ef] hover:text-[#064e3b] hover:scale-105 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100 rounded-full transition-all"
                 >
                   Berikutnya
                   <ChevronRight className="h-4 w-4 ml-1" />
@@ -226,8 +226,8 @@ export default function BeritaSection() {
         </>
       ) : (
         <Card className="p-12 text-center border-0">
-          <BookOpen className="h-12 w-12 text-emerald-200 mx-auto mb-3" />
-          <p className="text-gray-500">Belum ada berita untuk kategori ini</p>
+          <BookOpen className="h-12 w-12 text-[#064e3b]/40 mx-auto mb-3" />
+          <p className="text-[#404944]">Belum ada berita untuk kategori ini</p>
         </Card>
       )}
 
@@ -241,14 +241,14 @@ export default function BeritaSection() {
           </DialogClose>
           {selectedNews && (
             <>
-              <DialogTitle className="text-xl font-bold text-emerald-800 pr-8">
+              <DialogTitle className="text-xl font-bold text-[#003527] pr-8">
                 {selectedNews.title}
               </DialogTitle>
               <div className="flex items-center gap-3 mt-2">
-                <Badge className={categoryColors[selectedNews.category] || 'bg-gray-100 text-gray-700'}>
+                <Badge className={categoryColors[selectedNews.category] || 'bg-[#f5f3ef] text-[#404944]'}>
                   {selectedNews.category}
                 </Badge>
-                <span className="text-xs text-gray-400 flex items-center gap-1">
+                <span className="text-xs text-[#404944]/70 flex items-center gap-1">
                   <Calendar className="h-3 w-3" />
                   {new Date(selectedNews.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
                 </span>
