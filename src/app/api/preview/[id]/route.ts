@@ -6,7 +6,7 @@ export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
 // GET /api/preview/[id] — serve file inline for browser preview
-// Same as download but with Content-Disposition: inline (not attachment)
+// Uses signed delivery URL to bypass Cloudinary private mode
 export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -22,7 +22,7 @@ export async function GET(
     const fileUrl = download.fileUrl
 
     // If it's a local file, redirect
-    if (fileUrl.startsWith('/') || !fileUrl.includes('cloudinary.com')) {
+    if (!fileUrl.includes('cloudinary.com')) {
       return NextResponse.redirect(fileUrl)
     }
 
@@ -33,22 +33,22 @@ export async function GET(
     }
 
     const pathAfterUpload = urlParts[1]
-    const publicIdWithExt = pathAfterUpload.replace(/^v\d+\//, '')
-    const publicId = publicIdWithExt.replace(/\.[^.]+$/, '')
-    const ext = publicIdWithExt.split('.').pop()?.toLowerCase() || 'pdf'
+    const fullPath = pathAfterUpload.replace(/^v\d+\//, '')
+
+    // Check if there's an extension (old uploads may not have one)
+    const extMatch = fullPath.match(/\.([a-zA-Z0-9]+)$/)
+    const ext = extMatch ? extMatch[1].toLowerCase() : 'pdf'
+    const publicId = fullPath.replace(/\.[^.]+$/, '')
 
     const isRaw = fileUrl.includes('/raw/upload/')
     const resourceType = isRaw ? 'raw' : 'image'
 
-    // Generate signed URL
-    const signedUrl = cloudinary.utils.private_download_url(
-      publicId,
-      ext,
-      {
-        resource_type: resourceType,
-        expires_at: Math.floor(Date.now() / 1000) + 3600,
-      }
-    )
+    // Generate signed delivery URL (bypasses Cloudinary private mode)
+    const signedUrl = cloudinary.url(publicId, {
+      resource_type: resourceType,
+      sign_url: true,
+      secure: true,
+    })
 
     // Fetch from Cloudinary
     const response = await fetch(signedUrl)
