@@ -58,7 +58,7 @@ export default function Footer() {
           {/* Tentang Kami */}
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-2xl overflow-hidden bg-white/10 p-1.5 ring-2 ring-[#cca72f]/30 shadow-glow-amber">
+              <div className="w-12 h-12 shrink-0">
                 <img src={madrasahLogo} alt={`Logo ${madrasahName}`} className="w-full h-full object-contain" />
               </div>
               <div>

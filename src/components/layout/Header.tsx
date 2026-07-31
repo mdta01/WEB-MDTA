@@ -101,7 +101,7 @@ export default function Header() {
               onClick={() => handleNav('beranda')}
               className="flex items-center gap-3 group"
             >
-              <div className="w-11 h-11 md:w-13 md:h-13 group-hover:scale-110 group-active:scale-95 transition-all duration-300 flex items-center justify-center rounded-full bg-[#003527] ring-2 ring-[#cca72f]/40 group-hover:ring-[#cca72f] group-hover:shadow-glow-amber shrink-0 p-1.5">
+              <div className="w-11 h-11 md:w-13 md:h-13 group-hover:scale-110 group-active:scale-95 transition-all duration-300 shrink-0">
                 <img
                   src={madrasahLogo}
                   alt={`Logo ${madrasahName}`}
@@ -195,7 +195,7 @@ export default function Header() {
                     </button>
                     {/* Logo + name */}
                     <div className="relative flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-xl overflow-hidden bg-[#fbf9f5] flex items-center justify-center shrink-0 p-1 ring-2 ring-[#cca72f]/40">
+                      <div className="w-12 h-12 shrink-0">
                         <img
                           src={madrasahLogo}
                           alt="Logo"

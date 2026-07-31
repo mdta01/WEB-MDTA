@@ -21,9 +21,8 @@ export const metadata: Metadata = {
   description: "Website resmi MDTA Miftahul Ulum 01 - Madrasah Diniyah Takmiliyah Awaliyah. Mencetak generasi Muslim yang berilmu, berakhlak mulia, dan berprestasi.",
   keywords: ["MDTA", "Miftahul Ulum", "Madrasah Diniyah", "Pondok Pesantren", "Tahfidz Quran", "Pendidikan Islam"],
   authors: [{ name: "MDTA Miftahul Ulum 01" }],
-  icons: {
-    icon: "/images/logo-madin-warna.png",
-  },
+  // Favicon: Next.js 16 auto-detects src/app/icon.png and serves it at /icon
+  // Logo displayed in header/footer comes from admin-uploaded 'madrasah_logo' setting
   openGraph: {
     title: "MDTA Miftahul Ulum 01",
     description: "Mencetak generasi Muslim yang berilmu, berakhlak mulia, dan berprestasi",
