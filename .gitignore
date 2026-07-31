@@ -90,3 +90,5 @@ screenshot-*.png
 # Caddy
 Caddyfile
 cloudinary-onboarding.js
+dl-mobile.png
+dl-modal.png
