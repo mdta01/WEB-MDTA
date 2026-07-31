@@ -379,7 +379,8 @@ export default function BerandaSection() {
     <div className="space-y-16 pb-8">
       {/* Hero Section — split layout: dark green left + image right */}
       <section className="relative overflow-hidden bg-[#003527]">
-        <div className="grid lg:grid-cols-2 min-h-[520px] md:min-h-[600px]">
+        {/* Fixed height — prevents portrait images from forcing the hero too tall */}
+        <div className="grid lg:grid-cols-2 h-[560px] sm:h-[600px] md:h-[640px] lg:h-[72vh] xl:h-[76vh] min-h-[560px] max-h-[820px]">
           {/* LEFT — dark green bg with text content */}
           <div className="relative bg-[#003527] text-white flex items-center overflow-hidden">
             {/* Kraton pattern overlay (very low opacity) */}
@@ -387,7 +388,7 @@ export default function BerandaSection() {
             {/* Subtle radial glow at top-left for depth */}
             <div className="absolute -top-32 -left-32 w-96 h-96 bg-[#064e3b]/40 rounded-full blur-3xl pointer-events-none" aria-hidden />
 
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 relative">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 relative">
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -485,13 +486,13 @@ export default function BerandaSection() {
             </div>
           </div>
 
-          {/* RIGHT — school image, masked to blend into dark green on left edge */}
+          {/* RIGHT — school image, absolutely positioned so it never affects row height */}
           <div className="relative hidden lg:block overflow-hidden">
             {!settingsLoading && (
               <img
                 src={getSetting('madrasah_hero_image') || '/images/hero-madrasah.png'}
                 alt="MDTA Miftahul Ulum 01"
-                className="w-full h-full object-cover"
+                className="absolute inset-0 w-full h-full object-cover object-center"
               />
             )}
             {/* Left-to-right gradient: transparent on right, dark green on left (blends with text panel) */}
