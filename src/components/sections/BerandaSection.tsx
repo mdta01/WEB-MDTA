@@ -377,12 +377,12 @@ export default function BerandaSection() {
 
   return (
     <div className="space-y-16 pb-8">
-      {/* Hero Section — split layout: dark green left + image right */}
+      {/* Hero Section — split layout: dark green left + image right (desktop), text top + image bottom (mobile) */}
       <section className="relative overflow-hidden bg-[#003527]">
         {/* Fixed height — prevents portrait images from forcing the hero too tall */}
-        <div className="grid lg:grid-cols-2 h-[560px] sm:h-[600px] md:h-[640px] lg:h-[72vh] xl:h-[76vh] min-h-[560px] max-h-[820px]">
+        <div className="grid lg:grid-cols-2 h-[640px] sm:h-[680px] md:h-[640px] lg:h-[72vh] xl:h-[76vh] min-h-[640px] max-h-[820px]">
           {/* LEFT — dark green bg with text content */}
-          <div className="relative bg-[#003527] text-white flex items-center overflow-hidden">
+          <div className="relative bg-[#003527] text-white flex items-center overflow-hidden order-1 lg:order-1">
             {/* Kraton pattern overlay (very low opacity) */}
             <div className="absolute inset-0 kraton-pattern opacity-[0.05] pointer-events-none" aria-hidden />
             {/* Subtle radial glow at top-left for depth */}
@@ -486,8 +486,8 @@ export default function BerandaSection() {
             </div>
           </div>
 
-          {/* RIGHT — school image, absolutely positioned so it never affects row height */}
-          <div className="relative hidden lg:block overflow-hidden">
+          {/* RIGHT — school image. Visible on mobile (top portion) + desktop (full split) */}
+          <div className="relative overflow-hidden order-2 lg:order-2 h-[200px] sm:h-[220px] lg:h-auto">
             {!settingsLoading && (
               <img
                 src={getSetting('madrasah_hero_image') || '/images/hero-madrasah.png'}
@@ -495,10 +495,10 @@ export default function BerandaSection() {
                 className="absolute inset-0 w-full h-full object-cover object-center"
               />
             )}
-            {/* Left-to-right gradient: transparent on right, dark green on left (blends with text panel) */}
-            <div className="absolute inset-0 bg-gradient-to-r from-[#003527] via-[#003527]/40 to-transparent pointer-events-none" />
-            {/* Subtle bottom gradient for depth */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#003527]/30 to-transparent pointer-events-none" />
+            {/* Mobile: top-to-bottom gradient (dark green at top blends with text panel above) */}
+            <div className="absolute inset-0 bg-gradient-to-b lg:bg-gradient-to-r from-[#003527] via-[#003527]/40 to-transparent pointer-events-none" />
+            {/* Subtle bottom gradient for depth (mobile only) */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#003527]/60 to-transparent lg:from-[#003527]/30 pointer-events-none" />
           </div>
         </div>
 
@@ -560,7 +560,7 @@ export default function BerandaSection() {
                 >
                   السَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللَّهِ وَبَرَكَاتُهُ
                 </p>
-                <div className="text-[#404944] text-sm">
+                <div className="text-[#404944] text-sm text-center">
                   <MarkdownRenderer
                     content={getSetting('madrasah_welcome') || "Puji syukur kehadirat Allah SWT yang telah memberikan rahmat dan karunia-Nya. MDTA Miftahul Ulum 01 berkomitmen untuk memberikan pendidikan Islam yang terbaik bagi putra-putri Anda. Dengan kurikulum yang berpusat pada Al-Quran dan As-Sunnah, kami berharap dapat mencetak generasi yang berilmu, berakhlak mulia, dan bermanfaat bagi agama, bangsa, dan negara. Selamat datang di keluarga besar Miftahul Ulum 01."}
                   />
