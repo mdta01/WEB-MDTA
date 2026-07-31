@@ -88,18 +88,59 @@ export async function GET(
     const publicIdWithExt = fullPath // e.g. mdta/downloads/file.pdf
     const publicIdWithoutExt = publicId // e.g. mdta/downloads/file
 
-    // Try multiple fetch strategies — Cloudinary access control can be finicky.
-    // Strategy 1: private_download_url (signed, time-limited)
-    // Strategy 2: cloudinary.url with sign_url
-    // Strategy 3: direct URL with Basic Auth (API key:secret as username:password)
+    // Cloudinary account has strict access control — direct public URLs return 401.
+    // Use cloudinary.api.resource() to get resource info + generate authenticated URL.
+    // This is the most reliable method for accessing private/restricted resources.
+
+    // First, get resource info via Admin API (uses API key/secret authentication)
+    let resourceInfo: { secure_url?: string; url?: string; type?: string; access_mode?: string } | null = null
+    try {
+      console.log(`[Download Proxy] Getting resource info: ${publicIdWithExt}`)
+      resourceInfo = await cloudinary.api.resource(publicIdWithExt, {
+        resource_type: resourceType,
+      })
+      console.log(`[Download Proxy] Resource found:`, {
+        type: resourceInfo?.type,
+        access_mode: resourceInfo?.access_mode,
+        secure_url: resourceInfo?.secure_url?.substring(0, 80),
+      })
+    } catch (apiErr) {
+      console.error('[Download Proxy] api.resource failed:', apiErr instanceof Error ? apiErr.message : String(apiErr))
+      // Try without extension for raw files
+      if (isRaw) {
+        try {
+          console.log(`[Download Proxy] Retrying with publicId without ext: ${publicIdWithoutExt}`)
+          resourceInfo = await cloudinary.api.resource(publicIdWithoutExt, {
+            resource_type: resourceType,
+          })
+          console.log(`[Download Proxy] Resource found (no ext):`, {
+            type: resourceInfo?.type,
+            access_mode: resourceInfo?.access_mode,
+          })
+        } catch (apiErr2) {
+          console.error('[Download Proxy] api.resource (no ext) also failed:', apiErr2 instanceof Error ? apiErr2.message : String(apiErr2))
+        }
+      }
+    }
+
+    if (!resourceInfo) {
+      return NextResponse.json(
+        {
+          error: 'File tidak ditemukan di Cloudinary',
+          hint: 'File mungkin telah dihapus. Hubungi admin untuk upload ulang.',
+        },
+        { status: 404 }
+      )
+    }
+
+    // Try multiple fetch strategies for downloading the file content
     let response: Response | null = null
     let lastError: string = ''
 
     const fetchStrategies: Array<() => Promise<{ url: string; auth?: string }>> = []
 
-    // Build strategies based on resource type
+    // Strategy 1: private_download_url with extension (raw files)
     if (isRaw) {
-      // Strategy 1: private_download_url with extension
       fetchStrategies.push(async () => ({
         url: cloudinary.utils.private_download_url(publicIdWithExt, ext, {
           resource_type: 'raw',
@@ -107,7 +148,6 @@ export async function GET(
           expires_at: Math.floor(Date.now() / 1000) + 3600,
         }),
       }))
-      // Strategy 2: private_download_url without extension
       fetchStrategies.push(async () => ({
         url: cloudinary.utils.private_download_url(publicIdWithoutExt, ext, {
           resource_type: 'raw',
@@ -128,15 +168,22 @@ export async function GET(
       }))
     }
 
-    // Strategy 3 (fallback): direct URL with Basic Auth
-    // Cloudinary supports Basic Auth with API key:secret for authenticated access
+    // Strategy 3: api_download_url — Admin API download endpoint with signature.
+    // This is the most reliable method for accessing restricted Cloudinary resources.
+    // Uses /api/v1_1/:cloud/download endpoint which authenticates via API signature.
     const apiKey = process.env.CLOUDINARY_API_KEY
     const apiSecret = process.env.CLOUDINARY_API_SECRET
     if (apiKey && apiSecret) {
-      fetchStrategies.push(async () => ({
-        url: fileUrl,
-        auth: 'Basic ' + Buffer.from(`${apiKey}:${apiSecret}`).toString('base64'),
-      }))
+      fetchStrategies.push(async () => {
+        // api_download_url generates a signed Admin API URL for direct download
+        const authUrl = cloudinary.utils.api_download_url(publicIdWithExt, {
+          resource_type: resourceType,
+          format: ext,
+          secure: true,
+          expires_at: Math.floor(Date.now() / 1000) + 3600,
+        })
+        return { url: authUrl }
+      })
     }
 
     // Try each strategy until one works

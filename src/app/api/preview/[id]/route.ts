@@ -110,14 +110,19 @@ export async function GET(
       }))
     }
 
-    // Strategy 3: direct URL with Basic Auth
+    // Strategy 3: api_download_url — Admin API download endpoint with signature
     const apiKey = process.env.CLOUDINARY_API_KEY
     const apiSecret = process.env.CLOUDINARY_API_SECRET
     if (apiKey && apiSecret) {
-      fetchStrategies.push(async () => ({
-        url: fileUrl,
-        auth: 'Basic ' + Buffer.from(`${apiKey}:${apiSecret}`).toString('base64'),
-      }))
+      fetchStrategies.push(async () => {
+        const authUrl = cloudinary.utils.api_download_url(publicIdWithExt, {
+          resource_type: resourceType,
+          format: ext,
+          secure: true,
+          expires_at: Math.floor(Date.now() / 1000) + 3600,
+        })
+        return { url: authUrl }
+      })
     }
 
     for (let i = 0; i < fetchStrategies.length; i++) {
