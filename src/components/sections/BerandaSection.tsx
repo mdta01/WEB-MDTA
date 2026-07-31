@@ -379,14 +379,17 @@ export default function BerandaSection() {
     <div className="space-y-16 pb-8">
       {/* Hero Section — full-bleed image bg + text overlay (no split, no vertical line) */}
       <section className="relative overflow-hidden bg-[#003527]">
-        {/* Fixed height — prevents portrait images from forcing the hero too tall */}
-        <div className="relative h-[560px] sm:h-[600px] md:h-[640px] lg:h-[72vh] xl:h-[76vh] min-h-[560px] max-h-[820px]">
-          {/* Background image — full-bleed, covers entire hero */}
+        {/* Fixed height — mobile shorter (less vertical space), desktop viewport-based */}
+        <div className="relative h-[440px] sm:h-[500px] md:h-[560px] lg:h-[68vh] xl:h-[72vh] min-h-[440px] max-h-[760px]">
+          {/* Background image — full-bleed.
+              Mobile: object-cover, object-position top (show building top, less empty sky).
+              Desktop: scale-95 (slight zoom out) so image isn't too tight/cropped,
+                with object-position slightly lower to reveal more building context. */}
           {!settingsLoading && (
             <img
               src={getSetting('madrasah_hero_image') || '/images/hero-madrasah.png'}
               alt="MDTA Miftahul Ulum 01"
-              className="absolute inset-0 w-full h-full object-cover object-center"
+              className="absolute inset-0 w-full h-full object-cover object-[center_25%] lg:object-[center_40%] lg:scale-95"
             />
           )}
           {/* Smooth gradient overlay — thickened for better text readability.
