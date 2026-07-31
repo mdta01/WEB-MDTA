@@ -551,11 +551,11 @@ export default function BerandaSection() {
                   <Quote className="h-5 w-5 text-[#cca72f]" />
                   Sambutan Kepala Madrasah
                 </h3>
-                {/* Arabic salam (opening) — RTL, gold accent */}
+                {/* Arabic salam (opening) — centered, RTL, slightly smaller to sync with body */}
                 <p
                   dir="rtl"
                   lang="ar"
-                  className="text-xl md:text-2xl text-[#003527] font-semibold mb-4 leading-loose"
+                  className="text-base md:text-lg text-[#003527] font-semibold mb-4 leading-relaxed text-center"
                   style={{ fontFamily: '"Traditional Arabic", "Scheherazade New", "Amiri", serif' }}
                 >
                   السَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللَّهِ وَبَرَكَاتُهُ
@@ -565,11 +565,11 @@ export default function BerandaSection() {
                     content={getSetting('madrasah_welcome') || "Puji syukur kehadirat Allah SWT yang telah memberikan rahmat dan karunia-Nya. MDTA Miftahul Ulum 01 berkomitmen untuk memberikan pendidikan Islam yang terbaik bagi putra-putri Anda. Dengan kurikulum yang berpusat pada Al-Quran dan As-Sunnah, kami berharap dapat mencetak generasi yang berilmu, berakhlak mulia, dan bermanfaat bagi agama, bangsa, dan negara. Selamat datang di keluarga besar Miftahul Ulum 01."}
                   />
                 </div>
-                {/* Arabic closing — RTL, gold accent */}
+                {/* Arabic closing — centered, RTL, slightly smaller to sync with body */}
                 <p
                   dir="rtl"
                   lang="ar"
-                  className="text-xl md:text-2xl text-[#003527] font-semibold mt-4 leading-loose"
+                  className="text-base md:text-lg text-[#003527] font-semibold mt-4 leading-relaxed text-center"
                   style={{ fontFamily: '"Traditional Arabic", "Scheherazade New", "Amiri", serif' }}
                 >
                   وَالسَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللَّهِ وَبَرَكَاتُهُ
