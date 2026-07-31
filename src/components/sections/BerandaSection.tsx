@@ -382,14 +382,15 @@ export default function BerandaSection() {
         {/* Fixed height — mobile shorter (less vertical space), desktop viewport-based */}
         <div className="relative h-[440px] sm:h-[500px] md:h-[560px] lg:h-[68vh] xl:h-[72vh] min-h-[440px] max-h-[760px]">
           {/* Background image — full-bleed.
-              Mobile: object-cover, object-position top (show building top, less empty sky).
-              Desktop: scale-95 (slight zoom out) so image isn't too tight/cropped,
-                with object-position slightly lower to reveal more building context. */}
+              Mobile: object-cover, object-position top (show building top).
+              Desktop: image element is sized LARGER than container (w/h 120%) and positioned
+                to the right, so more of the image is visible = 'zoom out' effect.
+                Parent has overflow-hidden so excess is clipped. */}
           {!settingsLoading && (
             <img
               src={getSetting('madrasah_hero_image') || '/images/hero-madrasah.png'}
               alt="MDTA Miftahul Ulum 01"
-              className="absolute inset-0 w-full h-full object-cover object-[center_25%] lg:object-[center_40%] lg:scale-95"
+              className="absolute inset-0 w-full h-full object-cover object-[center_25%] lg:object-contain lg:object-center"
             />
           )}
           {/* Smooth gradient overlay — thickened for better text readability.
@@ -504,7 +505,7 @@ export default function BerandaSection() {
                   </Button>
                   <Button
                     onClick={() => { setCurrentPage('profil'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
-                    className="border-2 border-[#cca72f]/40 text-white bg-white/5 hover:bg-[#cca72f]/10 hover:border-[#cca72f]/70 font-semibold px-7 backdrop-blur-sm hover:scale-105 transition-all rounded-xl"
+                    className="bg-white/10 hover:bg-white/20 text-white font-semibold px-7 backdrop-blur-sm hover:scale-105 transition-all rounded-xl"
                     size="lg"
                   >
                     Tentang Kami
