@@ -95,6 +95,12 @@ export async function uploadFileToCloudinary(
         resource_type: 'raw',
         // Attach original filename so Content-Disposition header includes it
         filename_override: fileName,
+        // Explicitly set access mode to 'public' so files are accessible via
+        // direct URL. Some Cloudinary accounts default to 'authenticated'
+        // which blocks direct access (401 'deny or ACL failure').
+        access_mode: 'public',
+        // Ensure upload type is 'upload' (public), not 'authenticated' or 'private'
+        type: 'upload',
       },
       (error, result) => {
         if (error) {
