@@ -143,7 +143,7 @@ export default function DownloadSection() {
       </div>
 
       {isLoading ? (
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-[minmax(0,1fr)] md:grid-cols-2 gap-4">
           {[1, 2, 3, 4].map(i => (
             <Card key={i} className="p-5 border-0">
               <div className="flex items-center gap-4">
@@ -163,7 +163,7 @@ export default function DownloadSection() {
               <span className="w-1.5 h-5 bg-gradient-to-b from-[#cca72f] to-[#895033] rounded-full" />
               {category}
             </h3>
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-[minmax(0,1fr)] md:grid-cols-2 gap-4">
               {(items as { id: string; title: string; fileUrl: string; category: string; createdAt: string }[]).map((item, idx) => {
                 const fileType = getFileType(item.fileUrl)
                 const FileIcon = fileTypeIcons[fileType] || fileTypeIcons['default']
