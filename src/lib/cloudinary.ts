@@ -90,16 +90,15 @@ export async function uploadFileToCloudinary(
       {
         folder,
         public_id: finalPublicId,
-        // 'raw' preserves the original file as-is.
-        // The filename with extension is kept so browsers know the file type.
-        resource_type: 'raw',
+        // Use 'auto' resource_type — Cloudinary will detect file type.
+        // For PDFs, Cloudinary treats them as 'image' type (preview available),
+        // which is publicly accessible via direct URL.
+        // 'raw' type is subject to account-level access control (401 errors).
+        resource_type: 'auto',
         // Attach original filename so Content-Disposition header includes it
         filename_override: fileName,
-        // Explicitly set access mode to 'public' so files are accessible via
-        // direct URL. Some Cloudinary accounts default to 'authenticated'
-        // which blocks direct access (401 'deny or ACL failure').
+        // Explicitly set access mode to 'public'
         access_mode: 'public',
-        // Ensure upload type is 'upload' (public), not 'authenticated' or 'private'
         type: 'upload',
       },
       (error, result) => {
