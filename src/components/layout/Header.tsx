@@ -85,10 +85,8 @@ export default function Header() {
 
   return (
     <header
-      className={`sticky top-0 z-50 transition-all duration-500 ${
-        scrolled
-          ? 'shadow-premium-lg bg-[#fbf9f5]/85 backdrop-blur-xl'
-          : 'bg-[#003527]'
+      className={`sticky top-0 z-50 transition-all duration-500 bg-[#003527] ${
+        scrolled ? 'shadow-premium-lg bg-[#064e3b]/95 backdrop-blur-xl' : ''
       }`}
     >
       {/* Subtle top accent line */}
@@ -103,25 +101,15 @@ export default function Header() {
               onClick={() => handleNav('beranda')}
               className="flex items-center gap-3 group"
             >
-              <div className="w-10 h-10 md:w-12 md:h-12 group-hover:scale-110 group-active:scale-95 transition-all duration-300 flex items-center justify-center rounded-full group-hover:shadow-glow-amber">
+              <div className="w-11 h-11 md:w-13 md:h-13 group-hover:scale-110 group-active:scale-95 transition-all duration-300 flex items-center justify-center rounded-full bg-[#fbf9f5] ring-2 ring-[#cca72f]/40 group-hover:ring-[#cca72f] group-hover:shadow-glow-amber shrink-0 p-1">
                 <img
                   src={madrasahLogo}
                   alt={`Logo ${madrasahName}`}
                   className="w-full h-full object-contain"
-                  style={{
-                    filter: [
-                      // White halo — mengikuti kontur logo (bukan kotak)
-                      'drop-shadow(0 0 2px rgba(255,255,255,0.95))',
-                      'drop-shadow(0 0 3px rgba(255,255,255,0.9))',
-                      'drop-shadow(0 0 4px rgba(255,255,255,0.85))',
-                      // Dark shadow untuk depth
-                      'drop-shadow(0 2px 4px rgba(0,0,0,0.45))',
-                    ].join(' '),
-                  }}
                 />
               </div>
               <div className="flex flex-col">
-                <span className="font-bold text-sm md:text-lg leading-tight uppercase tracking-wide group-hover:text-[#ffe088] transition-colors duration-300">{madrasahName}</span>
+                <span className="font-bold text-sm md:text-lg leading-tight uppercase tracking-wide text-white group-hover:text-[#ffe088] transition-colors duration-300">{madrasahName}</span>
                 <span className="text-[#b0f0d6] text-[10px] md:text-xs hidden sm:block">
                   {madrasahSubtitle}
                 </span>
@@ -207,19 +195,11 @@ export default function Header() {
                     </button>
                     {/* Logo + name */}
                     <div className="relative flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-xl overflow-hidden bg-white/10 flex items-center justify-center shrink-0">
+                      <div className="w-12 h-12 rounded-xl overflow-hidden bg-[#fbf9f5] flex items-center justify-center shrink-0 p-1 ring-2 ring-[#cca72f]/40">
                         <img
                           src={madrasahLogo}
                           alt="Logo"
                           className="w-full h-full object-contain"
-                          style={{
-                            filter: [
-                              'drop-shadow(0 0 2px rgba(255,255,255,0.95))',
-                              'drop-shadow(0 0 3px rgba(255,255,255,0.9))',
-                              'drop-shadow(0 0 4px rgba(255,255,255,0.85))',
-                              'drop-shadow(0 2px 4px rgba(0,0,0,0.45))',
-                            ].join(' '),
-                          }}
                         />
                       </div>
                       <div className="min-w-0">
