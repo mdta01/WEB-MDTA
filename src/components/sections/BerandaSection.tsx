@@ -389,29 +389,31 @@ export default function BerandaSection() {
               className="absolute inset-0 w-full h-full object-cover object-center"
             />
           )}
-          {/* Smooth gradient overlay — dark green on left fades to transparent on right (desktop) / bottom (mobile).
+          {/* Smooth gradient overlay — thickened for better text readability.
+              Dark green on left fades to transparent on right (desktop).
               No hard vertical line — gradient is wide and soft for smooth transition. */}
           <div
             className="absolute inset-0 pointer-events-none"
             style={{
-              background: 'linear-gradient(90deg, rgba(0,53,39,0.95) 0%, rgba(0,53,39,0.85) 25%, rgba(0,53,39,0.55) 50%, rgba(0,53,39,0.25) 75%, rgba(0,53,39,0.1) 100%)',
+              background: 'linear-gradient(90deg, rgba(0,53,39,0.97) 0%, rgba(0,53,39,0.92) 30%, rgba(0,53,39,0.75) 55%, rgba(0,53,39,0.45) 80%, rgba(0,53,39,0.2) 100%)',
             }}
             aria-hidden
           />
-          {/* Mobile: also add bottom-to-top gradient so text readable on small screens */}
+          {/* Mobile: top-to-bottom gradient so text readable on small screens (thickened) */}
           <div
             className="absolute inset-0 pointer-events-none md:hidden"
             style={{
-              background: 'linear-gradient(180deg, rgba(0,53,39,0.7) 0%, rgba(0,53,39,0.5) 50%, rgba(0,53,39,0.85) 100%)',
+              background: 'linear-gradient(180deg, rgba(0,53,39,0.88) 0%, rgba(0,53,39,0.7) 40%, rgba(0,53,39,0.85) 75%, rgba(0,53,39,0.95) 100%)',
             }}
             aria-hidden
           />
           {/* Subtle Kraton pattern overlay */}
           <div className="absolute inset-0 kraton-pattern opacity-[0.04] pointer-events-none" aria-hidden />
 
-          {/* Text content overlay — positioned left, can extend over image area */}
-          <div className="absolute inset-0 flex items-center">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 relative z-10 w-full">
+          {/* Text content overlay — mobile: start from top (no empty space above Bismillah);
+              desktop: vertically centered */}
+          <div className="absolute inset-0 flex items-start md:items-center pt-8 md:pt-0">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-12 relative z-10 w-full">
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
