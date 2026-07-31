@@ -366,3 +366,16 @@
 }
 
 section { scroll-margin-top: 80px; }
+
+/* ===== Hero scroll indicator (mouse with moving dot) ===== */
+/* Mouse shape: vertical capsule outline.
+   Dot inside animates top → bottom → loop, indicating "scroll down". */
+@keyframes scroll-mouse-dot {
+  0% { transform: translateY(0); opacity: 0; }
+  30% { opacity: 1; }
+  60% { transform: translateY(10px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 0; }
+}
+.scroll-mouse-dot {
+  animation: scroll-mouse-dot 1.8s ease-in-out infinite;
+}

@@ -380,7 +380,6 @@ function HeroContent({ getSetting, typedDescription, typingDone, setCurrentPage 
           size="lg"
         >
           Daftar PPDB
-          <ArrowRight className="ml-2 h-4 w-4" />
         </Button>
         <Button
           onClick={() => { setCurrentPage('profil'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
@@ -561,6 +560,17 @@ export default function BerandaSection() {
               aria-hidden
             />
           </div>
+        </div>
+
+        {/* Scroll indicator — animated mouse with moving dot (desktop only, centered above wave) */}
+        <div className="hidden lg:flex absolute bottom-16 left-1/2 -translate-x-1/2 flex-col items-center gap-2 z-20 pointer-events-none" aria-hidden>
+          {/* Mouse shape: vertical capsule outline */}
+          <div className="relative w-6 h-10 border-2 border-white/50 rounded-full flex justify-center pt-1.5">
+            {/* Animated dot — moves top → bottom inside mouse */}
+            <span className="scroll-mouse-dot block w-1 h-2 bg-white/80 rounded-full" />
+          </div>
+          {/* "Scroll" label */}
+          <span className="text-[10px] uppercase tracking-widest text-white/60 font-body">Scroll</span>
         </div>
 
         {/* Smooth wave transition to next section (parchment below) */}
