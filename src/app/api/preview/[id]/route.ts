@@ -74,19 +74,21 @@ export async function GET(
     const isRaw = fileUrl.includes('/raw/upload/')
     const resourceType = isRaw ? 'raw' : 'image'
 
+    // For raw files, publicId should INCLUDE extension.
+    const publicIdWithExt = fullPath
+    const publicIdWithoutExt = publicId
+
     // Generate authenticated download URL — bypasses Cloudinary access control.
     let signedUrl: string
     try {
       if (isRaw) {
-        // For raw files (PDF, DOC, etc.) — use private_download_url
-        signedUrl = cloudinary.utils.private_download_url(publicId, ext, {
+        signedUrl = cloudinary.utils.private_download_url(publicIdWithExt, ext, {
           resource_type: 'raw',
           secure: true,
           expires_at: Math.floor(Date.now() / 1000) + 3600,
         })
       } else {
-        // For images — use signed url() with sign_url
-        signedUrl = cloudinary.url(publicId, {
+        signedUrl = cloudinary.url(publicIdWithoutExt, {
           resource_type: 'image',
           sign_url: true,
           secure: true,
@@ -102,7 +104,7 @@ export async function GET(
       )
     }
 
-    console.log(`[Preview Proxy] Fetching: ${publicId} (${resourceType})`)
+    console.log(`[Preview Proxy] Fetching: ${publicIdWithExt} (${resourceType})`)
 
     // Fetch from Cloudinary with signed URL
     const response = await fetch(signedUrl, {
