@@ -74,7 +74,7 @@ export default function AdminLogin({ open, onOpenChange }: AdminLoginProps) {
       <DialogContent className="sm:max-w-md p-0 overflow-hidden" showCloseButton={true}>
         <div className="relative">
           {/* Islamic pattern header */}
-          <div className="bg-gradient-to-br from-emerald-700 via-emerald-800 to-emerald-900 p-6 pb-12 relative overflow-hidden">
+          <div className="bg-gradient-to-br from-[#003527] via-[#064e3b] to-[#003527] p-6 pb-12 relative overflow-hidden">
             {/* Decorative pattern */}
             <div className="absolute inset-0 opacity-10">
               <svg className="w-full h-full" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
@@ -93,34 +93,34 @@ export default function AdminLogin({ open, onOpenChange }: AdminLoginProps) {
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-                className="w-16 h-16 rounded-full bg-amber-500 flex items-center justify-center mb-3 shadow-lg"
+                className="w-16 h-16 rounded-full bg-[#cca72f] flex items-center justify-center mb-3 shadow-lg shadow-[#cca72f]/30"
               >
-                <Shield className="h-8 w-8 text-emerald-900" />
+                <Shield className="h-8 w-8 text-[#003527]" />
               </motion.div>
               <h2 className="text-xl font-bold text-white">Admin Panel</h2>
-              <p className="text-emerald-200 text-sm mt-1">MDTA Miftahul Ulum 01</p>
+              <p className="text-[#ffe088] text-sm mt-1">MDTA Miftahul Ulum 01</p>
             </div>
           </div>
 
           {/* Form area */}
           <div className="p-6 pt-0 -mt-6">
-            <div className="bg-white rounded-xl shadow-lg p-6">
+            <div className="bg-[#ffffff] rounded-xl shadow-premium-lg p-6">
               <DialogHeader className="p-0 mb-4">
-                <DialogTitle className="text-lg font-semibold text-gray-900 text-center">
+                <DialogTitle className="text-lg font-semibold text-[#003527] text-center">
                   Masuk ke Panel Admin
                 </DialogTitle>
-                <DialogDescription className="text-center text-sm text-gray-500">
+                <DialogDescription className="text-center text-sm text-[#404944]">
                   Masukkan kredensial Anda untuk mengakses panel admin
                 </DialogDescription>
               </DialogHeader>
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="admin-username" className="text-sm font-medium text-gray-700">
+                  <Label htmlFor="admin-username" className="text-sm font-medium text-[#003527]">
                     Username
                   </Label>
                   <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#404944]" />
                     <Input
                       id="admin-username"
                       name="username"
@@ -136,11 +136,11 @@ export default function AdminLogin({ open, onOpenChange }: AdminLoginProps) {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="admin-password" className="text-sm font-medium text-gray-700">
+                  <Label htmlFor="admin-password" className="text-sm font-medium text-[#003527]">
                     Password
                   </Label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#404944]" />
                     <Input
                       id="admin-password"
                       name="password"
@@ -155,7 +155,7 @@ export default function AdminLogin({ open, onOpenChange }: AdminLoginProps) {
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[#404944] hover:text-[#003527]"
                     >
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
@@ -166,7 +166,7 @@ export default function AdminLogin({ open, onOpenChange }: AdminLoginProps) {
                   <motion.div
                     initial={{ opacity: 0, y: -5 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-red-50 border border-red-200 rounded-md p-3 text-sm text-red-600"
+                    className="bg-[#ba1a1a]/10 border border-[#ba1a1a]/30 rounded-md p-3 text-sm text-[#ba1a1a]"
                   >
                     {error}
                   </motion.div>
@@ -174,7 +174,7 @@ export default function AdminLogin({ open, onOpenChange }: AdminLoginProps) {
 
                 <Button
                   type="submit"
-                  className="w-full bg-emerald-700 hover:bg-emerald-800 text-white"
+                  className="w-full bg-[#003527] hover:bg-[#064e3b] text-white"
                   disabled={loading}
                 >
                   {loading ? (

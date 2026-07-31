@@ -56,11 +56,11 @@ function AdminLoginPage({ onLoginSuccess }: { onLoginSuccess: (name: string) => 
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 via-white to-amber-50 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-[#fbf9f5] p-4">
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-0 w-96 h-96 bg-emerald-100 rounded-full -translate-x-1/2 -translate-y-1/2 opacity-50" />
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-amber-100 rounded-full translate-x-1/2 translate-y-1/2 opacity-50" />
+        <div className="absolute top-0 left-0 w-96 h-96 bg-[#064e3b]/10 rounded-full -translate-x-1/2 -translate-y-1/2 opacity-50" />
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#cca72f]/10 rounded-full translate-x-1/2 translate-y-1/2 opacity-50" />
         <div className="absolute inset-0 opacity-[0.03]" style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23065f46' fill-opacity='1'%3E%3Cpath d='M30 0L60 30L30 60L0 30z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
         }} />
@@ -72,9 +72,9 @@ function AdminLoginPage({ onLoginSuccess }: { onLoginSuccess: (name: string) => 
         transition={{ duration: 0.5 }}
         className="relative w-full max-w-md"
       >
-        <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
+        <div className="bg-[#ffffff] rounded-2xl shadow-premium-lg overflow-hidden">
           {/* Header */}
-          <div className="bg-gradient-to-br from-emerald-700 via-emerald-800 to-emerald-900 p-8 pb-14 relative overflow-hidden">
+          <div className="bg-gradient-to-br from-[#003527] via-[#064e3b] to-[#003527] p-8 pb-14 relative overflow-hidden">
             <div className="absolute inset-0 opacity-10">
               <svg className="w-full h-full" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -92,34 +92,35 @@ function AdminLoginPage({ onLoginSuccess }: { onLoginSuccess: (name: string) => 
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-                className="w-20 h-20 rounded-xl overflow-hidden mb-4 shadow-lg"
+                className="w-20 h-20 rounded-xl overflow-hidden mb-4 shadow-lg ring-2 ring-[#cca72f]/40"
               >
                 <img src="/images/logo-madin-warna.png" alt="Logo MDTA" className="w-full h-full object-contain" />
               </motion.div>
-              <h1 className="text-2xl font-bold text-white">Admin Panel</h1>
-              <p className="text-emerald-200 text-sm mt-1">MDTA Miftahul Ulum 01</p>
+              <h1 className="text-2xl font-bold text-white font-display">Admin Panel</h1>
+              <p className="text-[#ffe088] text-sm mt-1">MDTA Miftahul Ulum 01</p>
             </div>
           </div>
 
           {/* Form area */}
           <div className="p-8 pt-0 -mt-8">
-            <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
-              <h2 className="text-lg font-semibold text-gray-900 text-center mb-1">
+            <div className="bg-[#ffffff] rounded-xl shadow-premium p-6 border border-[#e4e2de]">
+              <h2 className="text-lg font-semibold text-[#003527] text-center mb-1 font-display">
                 Masuk ke Panel Admin
               </h2>
-              <p className="text-center text-sm text-gray-500 mb-6">
+              <p className="text-center text-sm text-[#404944] mb-6">
                 Masukkan kredensial Anda untuk mengakses panel admin
               </p>
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="admin-username" className="text-sm font-medium text-gray-700">
+                  <Label htmlFor="admin-username" className="text-sm font-medium text-[#003527]">
                     Username
                   </Label>
                   <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#404944]" />
                     <Input
                       id="admin-username"
+                      name="username"
                       type="text"
                       placeholder="Masukkan username"
                       value={username}
@@ -132,13 +133,14 @@ function AdminLoginPage({ onLoginSuccess }: { onLoginSuccess: (name: string) => 
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="admin-password" className="text-sm font-medium text-gray-700">
+                  <Label htmlFor="admin-password" className="text-sm font-medium text-[#003527]">
                     Password
                   </Label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#404944]" />
                     <Input
                       id="admin-password"
+                      name="password"
                       type={showPassword ? 'text' : 'password'}
                       placeholder="Masukkan password"
                       value={password}
@@ -150,7 +152,7 @@ function AdminLoginPage({ onLoginSuccess }: { onLoginSuccess: (name: string) => 
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[#404944] hover:text-[#003527]"
                     >
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
@@ -161,7 +163,7 @@ function AdminLoginPage({ onLoginSuccess }: { onLoginSuccess: (name: string) => 
                   <motion.div
                     initial={{ opacity: 0, y: -5 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-red-50 border border-red-200 rounded-md p-3 text-sm text-red-600"
+                    className="bg-[#ba1a1a]/10 border border-[#ba1a1a]/30 rounded-md p-3 text-sm text-[#ba1a1a]"
                   >
                     {error}
                   </motion.div>
@@ -169,7 +171,7 @@ function AdminLoginPage({ onLoginSuccess }: { onLoginSuccess: (name: string) => 
 
                 <Button
                   type="submit"
-                  className="w-full bg-emerald-700 hover:bg-emerald-800 text-white h-11"
+                  className="w-full bg-[#003527] hover:bg-[#064e3b] text-white h-11"
                   disabled={loading}
                 >
                   {loading ? (
@@ -192,7 +194,7 @@ function AdminLoginPage({ onLoginSuccess }: { onLoginSuccess: (name: string) => 
           <div className="px-8 pb-6 text-center">
             <a
               href="/"
-              className="text-sm text-emerald-600 hover:text-emerald-800 transition-colors"
+              className="text-sm text-[#003527] hover:text-[#064e3b] transition-colors"
             >
               ← Kembali ke Website
             </a>
@@ -283,10 +285,10 @@ function AdminPageContent() {
   // Loading state while checking auth
   if (checking) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-[#fbf9f5]">
         <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin mx-auto text-emerald-600" />
-          <p className="mt-2 text-gray-500">Memverifikasi...</p>
+          <Loader2 className="h-8 w-8 animate-spin mx-auto text-[#003527]" />
+          <p className="mt-2 text-[#404944]">Memverifikasi...</p>
         </div>
       </div>
     )

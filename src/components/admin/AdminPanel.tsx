@@ -2633,7 +2633,7 @@ export default function AdminPanel({ adminName: adminNameProp, onLogout }: Admin
   })
 
   return (
-    <div className="min-h-screen flex bg-[#fbf9f5]">
+    <div className="h-screen overflow-hidden flex bg-[#fbf9f5]">
       {/* Sidebar Overlay (mobile) */}
       <AnimatePresence>
         {sidebarOpen && (
@@ -2647,9 +2647,9 @@ export default function AdminPanel({ adminName: adminNameProp, onLogout }: Admin
         )}
       </AnimatePresence>
 
-      {/* Sidebar */}
+      {/* Sidebar — fixed full-height on desktop (h-screen), slide-in drawer on mobile */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#003527] text-white transform transition-transform duration-300 lg:translate-x-0 lg:sticky lg:top-0 lg:h-screen lg:z-auto ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#003527] text-white transform transition-transform duration-300 lg:static lg:translate-x-0 lg:h-screen lg:z-auto shrink-0 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -2740,10 +2740,10 @@ export default function AdminPanel({ adminName: adminNameProp, onLogout }: Admin
         </div>
       </aside>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Top Bar */}
-        <header className="sticky top-0 z-30 bg-[#fbf9f5]/80 backdrop-blur-md border-b border-[#e4e2de]/30 shadow-sm">
+      {/* Main Content — full height, internal scroll (sidebar stays fixed) */}
+      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+        {/* Top Bar — fixed at top of main content (not window) */}
+        <header className="shrink-0 z-30 bg-[#fbf9f5]/95 backdrop-blur-md border-b border-[#e4e2de]/30 shadow-sm">
           <div className="flex items-center justify-between h-14 px-4">
             <div className="flex items-center gap-3">
               <Button
@@ -2791,8 +2791,8 @@ export default function AdminPanel({ adminName: adminNameProp, onLogout }: Admin
           </div>
         </header>
 
-        {/* Page Content */}
-        <main className="flex-1 p-4 md:p-6 overflow-auto">
+        {/* Page Content — scrolls independently, sidebar + topbar stay fixed */}
+        <main className="flex-1 p-4 md:p-6 overflow-y-auto overflow-x-hidden">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeSection}
