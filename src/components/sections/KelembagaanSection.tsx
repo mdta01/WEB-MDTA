@@ -5,16 +5,23 @@ import { motion } from 'framer-motion'
 import { Building2, FileCheck, Hash, Award, Landmark, Shield } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
+import { KratonSectionHeader, KratonDivider } from '@/components/kraton'
 
+// Kraton palette mapping (replacing old emerald/teal/amber Tailwind colors):
+//  - emerald-600  → #064e3b (primary container)
+//  - emerald-700  → #003527 (primary)
+//  - emerald-800  → #003527 (primary)
+//  - teal-600/700 → #064e3b (use emerald container for visual variety)
+//  - amber-600/700 → #895033 (secondary teak wood)
 const defaultInstitutionData = [
-  { key: 'nsdt', label: 'NSDT', settingKey: 'madrasah_nsdt', icon: Hash, color: 'bg-emerald-600' },
-  { key: 'sk_pendirian', label: 'SK Pendirian', settingKey: 'madrasah_sk', icon: FileCheck, color: 'bg-teal-600' },
-  { key: 'sk_izin', label: 'SK Izin Operasional', settingKey: 'madrasah_izin', icon: Shield, color: 'bg-amber-600' },
-  { key: 'yayasan', label: 'Yayasan Pengelola', settingKey: 'madrasah_yayasan', icon: Landmark, color: 'bg-emerald-800' },
-  { key: 'akreditasi', label: 'Akreditasi', settingKey: 'madrasah_akreditasi', icon: Award, color: 'bg-amber-700' },
-  { key: 'nsm', label: 'NSM', settingKey: 'madrasah_nsdt', icon: Hash, color: 'bg-teal-700' },
-  { key: 'alamat', label: 'Alamat', settingKey: 'madrasah_address', icon: Building2, color: 'bg-emerald-700' },
-  { key: 'kepala', label: 'Kepala Madrasah', settingKey: 'madrasah_principals_name', icon: Building2, color: 'bg-emerald-600' },
+  { key: 'nsdt', label: 'NSDT', settingKey: 'madrasah_nsdt', icon: Hash, color: 'bg-gradient-to-br from-[#003527] to-[#064e3b]' },
+  { key: 'sk_pendirian', label: 'SK Pendirian', settingKey: 'madrasah_sk', icon: FileCheck, color: 'bg-gradient-to-br from-[#064e3b] to-[#003527]' },
+  { key: 'sk_izin', label: 'SK Izin Operasional', settingKey: 'madrasah_izin', icon: Shield, color: 'bg-gradient-to-br from-[#895033] to-[#a86644]' },
+  { key: 'yayasan', label: 'Yayasan Pengelola', settingKey: 'madrasah_yayasan', icon: Landmark, color: 'bg-gradient-to-br from-[#003527] to-[#064e3b]' },
+  { key: 'akreditasi', label: 'Akreditasi', settingKey: 'madrasah_akreditasi', icon: Award, color: 'bg-gradient-to-br from-[#cca72f] to-[#895033]' },
+  { key: 'nsm', label: 'NSM', settingKey: 'madrasah_nsdt', icon: Hash, color: 'bg-gradient-to-br from-[#064e3b] to-[#003527]' },
+  { key: 'alamat', label: 'Alamat', settingKey: 'madrasah_address', icon: Building2, color: 'bg-gradient-to-br from-[#003527] to-[#064e3b]' },
+  { key: 'kepala', label: 'Kepala Madrasah', settingKey: 'madrasah_principals_name', icon: Building2, color: 'bg-gradient-to-br from-[#895033] to-[#003527]' },
 ]
 
 export default function KelembagaanSection() {
@@ -55,16 +62,17 @@ export default function KelembagaanSection() {
 
   return (
     <div className="space-y-8">
-      <div className="text-center mb-8">
-        <h2 className="text-2xl md:text-3xl font-bold text-emerald-800">Kelembagaan</h2>
-        <div className="w-20 h-1 bg-amber-500 mx-auto mt-2 rounded-full" />
-        <p className="text-gray-500 mt-3 text-sm">Data resmi lembaga {madrasahName}</p>
-      </div>
+      <KratonSectionHeader
+        badge="Profil Lembaga"
+        title="Kelembagaan"
+        subtitle={`Data resmi lembaga ${madrasahName}`}
+        align="center"
+      />
 
       {isLoading ? (
         <div className="grid md:grid-cols-2 gap-6">
           {[1, 2, 3, 4, 5, 6].map(i => (
-            <Card key={i} className="p-6 border-0">
+            <Card key={i} className="p-6 border-[#e4e2de] bg-[#ffffff] rounded-2xl">
               <div className="flex items-start gap-4">
                 <Skeleton className="w-12 h-12 rounded-xl" />
                 <div className="flex-1 space-y-2">
@@ -76,9 +84,9 @@ export default function KelembagaanSection() {
           ))}
         </div>
       ) : allValuesEmpty ? (
-        <Card className="p-8 text-center border-0">
-          <Building2 className="h-12 w-12 text-emerald-200 mx-auto mb-3" />
-          <p className="text-gray-500">Data kelembagaan belum tersedia</p>
+        <Card className="p-8 text-center border-[#e4e2de] bg-[#ffffff] wood-carved-shadow rounded-2xl">
+          <Building2 className="h-12 w-12 text-[#064e3b]/40 mx-auto mb-3" />
+          <p className="text-[#404944] font-body">Data kelembagaan belum tersedia</p>
         </Card>
       ) : (
         <div className="grid md:grid-cols-2 gap-6">
@@ -88,17 +96,20 @@ export default function KelembagaanSection() {
               <motion.div
                 key={item.key}
                 initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.05 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-50px' }}
+                transition={{ delay: idx * 0.05, duration: 0.5 }}
               >
-                <Card className="border-0 shadow-md hover:shadow-lg transition-shadow group">
+                <Card className="border-[#e4e2de] bg-[#ffffff] wood-carved-shadow card-hover group rounded-2xl relative overflow-hidden">
+                  {/* Top gold accent bar (appears on hover) */}
+                  <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-[#cca72f] via-[#ffe088] to-[#cca72f] opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden />
                   <CardContent className="p-5 flex items-start gap-4">
-                    <div className={`w-12 h-12 rounded-xl ${item.color} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform`}>
+                    <div className={`w-12 h-12 rounded-xl ${item.color} flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform shadow-md`}>
                       <Icon className="h-6 w-6 text-white" />
                     </div>
-                    <div>
-                      <p className="text-xs text-gray-400 uppercase tracking-wider font-medium">{item.label}</p>
-                      <p className="font-semibold text-emerald-800 mt-1">{item.value}</p>
+                    <div className="min-w-0">
+                      <p className="text-xs text-[#404944]/70 uppercase tracking-wider font-semibold font-body">{item.label}</p>
+                      <p className="font-semibold text-[#003527] mt-1 font-display">{item.value}</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -108,40 +119,53 @@ export default function KelembagaanSection() {
         </div>
       )}
 
-      {/* Official Document Style */}
+      {/* Official Document Style — Kraton parchment certificate */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-50px' }}
+        transition={{ delay: 0.3, duration: 0.5 }}
       >
-        <Card className="border-0 shadow-lg overflow-hidden">
-          <div className="bg-gradient-to-r from-emerald-800 to-emerald-900 p-6 text-white text-center">
-            <Building2 className="h-12 w-12 text-amber-400 mx-auto mb-3" />
-            <h3 className="text-xl font-bold">{madrasahName}</h3>
-            <p className="text-emerald-200 text-sm">{madrasahSubtitle}</p>
+        <Card className="border-[#e4e2de] bg-[#ffffff] wood-carved-shadow overflow-hidden rounded-2xl">
+          {/* Header — deep emerald gradient with kraton pattern */}
+          <div className="bg-gradient-to-r from-[#003527] to-[#064e3b] p-6 text-center text-white relative overflow-hidden">
+            <div className="absolute inset-0 kraton-pattern opacity-[0.06] pointer-events-none" aria-hidden />
+            <div className="relative">
+              <div className="w-14 h-14 rounded-xl bg-[#cca72f]/15 flex items-center justify-center mx-auto mb-3 ring-2 ring-[#cca72f]/30">
+                <Building2 className="h-7 w-7 text-[#ffe088]" />
+              </div>
+              <h3 className="text-xl font-bold font-display">{madrasahName}</h3>
+              <p className="text-[#b0f0d6] text-sm font-body">{madrasahSubtitle}</p>
+            </div>
           </div>
           {!allValuesEmpty ? (
-            <div className="p-6 bg-amber-50/50">
-              <div className="border-2 border-emerald-200 rounded-xl p-6">
+            <div className="p-6 bg-[#fbf9f5]">
+              <div className="border-2 border-[#cca72f]/40 rounded-xl p-6 bg-[#ffffff] relative">
+                {/* Corner ornaments */}
+                <span className="absolute top-2 left-2 h-2 w-2 rotate-45 bg-[#cca72f]/40" aria-hidden />
+                <span className="absolute top-2 right-2 h-2 w-2 rotate-45 bg-[#cca72f]/40" aria-hidden />
+                <span className="absolute bottom-2 left-2 h-2 w-2 rotate-45 bg-[#cca72f]/40" aria-hidden />
+                <span className="absolute bottom-2 right-2 h-2 w-2 rotate-45 bg-[#cca72f]/40" aria-hidden />
+
                 <div className="text-center mb-4">
-                  <p className="text-xs text-gray-400 uppercase tracking-widest">Dokumen Resmi</p>
-                  <h4 className="text-lg font-bold text-emerald-800 mt-1">Identitas Madrasah</h4>
-                  <div className="w-16 h-0.5 bg-amber-500 mx-auto mt-2" />
+                  <p className="text-xs text-[#404944]/70 uppercase tracking-widest font-body">Dokumen Resmi</p>
+                  <h4 className="text-lg font-bold text-[#003527] mt-1 font-display">Identitas Madrasah</h4>
+                  <KratonDivider variant="minimal" align="center" className="mt-2" />
                 </div>
                 <div className="space-y-3">
                   {displayData.filter(item => item.value).map((item) => (
-                    <div key={item.key} className="flex justify-between items-center py-2 border-b border-dashed border-gray-200 last:border-0">
-                      <span className="text-sm text-gray-600">{item.label}</span>
-                      <span className="text-sm font-medium text-emerald-800 text-right">{item.value}</span>
+                    <div key={item.key} className="flex justify-between items-center py-2 border-b border-dashed border-[#e4e2de] last:border-0">
+                      <span className="text-sm text-[#404944] font-body">{item.label}</span>
+                      <span className="text-sm font-medium text-[#003527] text-right font-body">{item.value}</span>
                     </div>
                   ))}
                 </div>
               </div>
             </div>
           ) : (
-            <div className="p-6 bg-amber-50/50">
-              <div className="border-2 border-emerald-200 rounded-xl p-6 text-center">
-                <p className="text-gray-400 text-sm">Data identitas madrasah belum tersedia</p>
+            <div className="p-6 bg-[#fbf9f5]">
+              <div className="border-2 border-[#cca72f]/40 rounded-xl p-6 text-center">
+                <p className="text-[#404944]/70 text-sm font-body">Data identitas madrasah belum tersedia</p>
               </div>
             </div>
           )}
