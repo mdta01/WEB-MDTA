@@ -123,6 +123,7 @@ export default function AdminLogin({ open, onOpenChange }: AdminLoginProps) {
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
                       id="admin-username"
+                      name="username"
                       type="text"
                       placeholder="Masukkan username"
                       value={username}
@@ -142,6 +143,7 @@ export default function AdminLogin({ open, onOpenChange }: AdminLoginProps) {
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <Input
                       id="admin-password"
+                      name="password"
                       type={showPassword ? 'text' : 'password'}
                       placeholder="Masukkan password"
                       value={password}

@@ -234,6 +234,7 @@ export default function WaliSantriSection() {
                     <Label htmlFor="sug-name" className="text-sm">Nama *</Label>
                     <Input
                       id="sug-name"
+                      name="name"
                       value={suggestionForm.name}
                       onChange={(e) => setSuggestionForm(prev => ({ ...prev, name: e.target.value }))}
                       placeholder="Nama Anda"
@@ -244,6 +245,7 @@ export default function WaliSantriSection() {
                     <Label htmlFor="sug-email" className="text-sm">Email</Label>
                     <Input
                       id="sug-email"
+                      name="email"
                       type="email"
                       value={suggestionForm.email}
                       onChange={(e) => setSuggestionForm(prev => ({ ...prev, email: e.target.value }))}
@@ -273,6 +275,7 @@ export default function WaliSantriSection() {
                     <Label htmlFor="sug-message" className="text-sm">Pesan *</Label>
                     <Textarea
                       id="sug-message"
+                      name="message"
                       value={suggestionForm.message}
                       onChange={(e) => setSuggestionForm(prev => ({ ...prev, message: e.target.value }))}
                       placeholder="Tulis saran atau kritik Anda..."

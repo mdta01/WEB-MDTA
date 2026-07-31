@@ -46,6 +46,9 @@ export default function FAQSection() {
       <div className="max-w-md mx-auto relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#404944]" />
         <Input
+          id="faq-search"
+          name="q"
+          type="search"
           placeholder="Cari pertanyaan..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
