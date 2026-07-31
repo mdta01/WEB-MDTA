@@ -547,17 +547,32 @@ export default function BerandaSection() {
                 </p>
               </div>
               <div className="md:col-span-2 p-8">
-                <h3 className="font-bold text-[#003527] text-lg mb-3 flex items-center gap-2">
+                <h3 className="font-bold text-[#003527] text-lg mb-4 flex items-center gap-2">
                   <Quote className="h-5 w-5 text-[#cca72f]" />
                   Sambutan Kepala Madrasah
                 </h3>
+                {/* Arabic salam (opening) — RTL, gold accent */}
+                <p
+                  dir="rtl"
+                  lang="ar"
+                  className="text-xl md:text-2xl text-[#003527] font-semibold mb-4 leading-loose"
+                  style={{ fontFamily: '"Traditional Arabic", "Scheherazade New", "Amiri", serif' }}
+                >
+                  السَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللَّهِ وَبَرَكَاتُهُ
+                </p>
                 <div className="text-[#404944] text-sm">
                   <MarkdownRenderer
-                    content={getSetting('madrasah_welcome') || "Assalamu'alaikum Warahmatullahi Wabarakatuh. Puji syukur kehadirat Allah SWT yang telah memberikan rahmat dan karunia-Nya. MDTA Miftahul Ulum 01 berkomitmen untuk memberikan pendidikan Islam yang terbaik bagi putra-putri Anda. Dengan kurikulum yang berpusat pada Al-Quran dan As-Sunnah, kami berharap dapat mencetak generasi yang berilmu, berakhlak mulia, dan bermanfaat bagi agama, bangsa, dan negara. Selamat datang di keluarga besar Miftahul Ulum 01."}
+                    content={getSetting('madrasah_welcome') || "Puji syukur kehadirat Allah SWT yang telah memberikan rahmat dan karunia-Nya. MDTA Miftahul Ulum 01 berkomitmen untuk memberikan pendidikan Islam yang terbaik bagi putra-putri Anda. Dengan kurikulum yang berpusat pada Al-Quran dan As-Sunnah, kami berharap dapat mencetak generasi yang berilmu, berakhlak mulia, dan bermanfaat bagi agama, bangsa, dan negara. Selamat datang di keluarga besar Miftahul Ulum 01."}
                   />
                 </div>
-                <p className="text-[#ffe088] font-semibold mt-4 text-sm" style={{ textShadow: '0 1px 6px rgba(0,0,0,0.5)' }}>
-                  {getSetting('madrasah_welcome_closing') || "Wassalamu'alaikum Warahmatullahi Wabarakatuh"}
+                {/* Arabic closing — RTL, gold accent */}
+                <p
+                  dir="rtl"
+                  lang="ar"
+                  className="text-xl md:text-2xl text-[#003527] font-semibold mt-4 leading-loose"
+                  style={{ fontFamily: '"Traditional Arabic", "Scheherazade New", "Amiri", serif' }}
+                >
+                  وَالسَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللَّهِ وَبَرَكَاتُهُ
                 </p>
               </div>
             </div>
