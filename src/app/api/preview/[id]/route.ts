@@ -74,59 +74,87 @@ export async function GET(
     const isRaw = fileUrl.includes('/raw/upload/')
     const resourceType = isRaw ? 'raw' : 'image'
 
-    // For raw files, publicId should INCLUDE extension.
     const publicIdWithExt = fullPath
     const publicIdWithoutExt = publicId
 
-    // Generate authenticated download URL — bypasses Cloudinary access control.
-    let signedUrl: string
-    try {
-      if (isRaw) {
-        signedUrl = cloudinary.utils.private_download_url(publicIdWithExt, ext, {
+    // Try multiple fetch strategies — same as download route.
+    let response: Response | null = null
+    let lastError: string = ''
+
+    const fetchStrategies: Array<() => Promise<{ url: string; auth?: string }>> = []
+
+    if (isRaw) {
+      fetchStrategies.push(async () => ({
+        url: cloudinary.utils.private_download_url(publicIdWithExt, ext, {
           resource_type: 'raw',
           secure: true,
           expires_at: Math.floor(Date.now() / 1000) + 3600,
-        })
-      } else {
-        signedUrl = cloudinary.url(publicIdWithoutExt, {
+        }),
+      }))
+      fetchStrategies.push(async () => ({
+        url: cloudinary.utils.private_download_url(publicIdWithoutExt, ext, {
+          resource_type: 'raw',
+          secure: true,
+          expires_at: Math.floor(Date.now() / 1000) + 3600,
+        }),
+      }))
+    } else {
+      fetchStrategies.push(async () => ({
+        url: cloudinary.url(publicIdWithoutExt, {
           resource_type: 'image',
           sign_url: true,
           secure: true,
           fetch_format: 'auto',
           quality: 'auto',
-        })
-      }
-    } catch (signError) {
-      console.error('[Preview Proxy] Signed URL generation failed:', signError)
-      return NextResponse.json(
-        { error: 'Gagal generate URL preview. Coba lagi.' },
-        { status: 500 }
-      )
+        }),
+      }))
     }
 
-    console.log(`[Preview Proxy] Fetching: ${publicIdWithExt} (${resourceType})`)
+    // Strategy 3: direct URL with Basic Auth
+    const apiKey = process.env.CLOUDINARY_API_KEY
+    const apiSecret = process.env.CLOUDINARY_API_SECRET
+    if (apiKey && apiSecret) {
+      fetchStrategies.push(async () => ({
+        url: fileUrl,
+        auth: 'Basic ' + Buffer.from(`${apiKey}:${apiSecret}`).toString('base64'),
+      }))
+    }
 
-    // Fetch from Cloudinary with signed URL
-    const response = await fetch(signedUrl, {
-      signal: AbortSignal.timeout(60000),
-    })
+    for (let i = 0; i < fetchStrategies.length; i++) {
+      const strategy = fetchStrategies[i]
+      try {
+        const { url, auth } = await strategy()
+        console.log(`[Preview Proxy] Strategy ${i + 1}: ${url.substring(0, 100)}...`)
 
-    if (!response.ok) {
-      const errorText = await response.text().catch(() => '')
-      console.error('[Preview Proxy] Cloudinary fetch failed:', {
-        status: response.status,
-        statusText: response.statusText,
-        error: errorText.substring(0, 200),
-        publicId,
-      })
+        const headers: Record<string, string> = {}
+        if (auth) headers.Authorization = auth
 
-      // DO NOT redirect to Cloudinary (causes 401) — return error JSON
+        response = await fetch(url, {
+          headers,
+          signal: AbortSignal.timeout(60000),
+        })
+
+        if (response.ok) {
+          console.log(`[Preview Proxy] Strategy ${i + 1} succeeded`)
+          break
+        }
+
+        lastError = `HTTP ${response.status} ${response.statusText}`
+        console.error(`[Preview Proxy] Strategy ${i + 1} failed: ${lastError}`)
+        response = null
+      } catch (err) {
+        lastError = err instanceof Error ? err.message : String(err)
+        console.error(`[Preview Proxy] Strategy ${i + 1} error:`, lastError)
+      }
+    }
+
+    if (!response || !response.ok) {
+      console.error('[Preview Proxy] All strategies failed. Last error:', lastError)
       return NextResponse.json(
         {
-          error: `File tidak dapat dimuat (HTTP ${response.status})`,
-          hint: response.status === 401
-            ? 'Akses Cloudinary ditolak. Hubungi admin.'
-            : 'Coba beberapa saat lagi.',
+          error: 'File tidak dapat dimuat',
+          hint: 'File mungkin tidak tersedia atau akses ditolak. Hubungi admin.',
+          debug: process.env.NODE_ENV === 'development' ? lastError : undefined,
         },
         { status: 502 }
       )
