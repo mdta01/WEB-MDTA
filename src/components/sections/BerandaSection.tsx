@@ -377,18 +377,18 @@ export default function BerandaSection() {
 
   return (
     <div className="space-y-16 pb-8">
-      {/* Hero Section — split layout: dark green left + image right (desktop), text top + image bottom (mobile) */}
+      {/* Hero Section — split layout: dark green left + image right (always side-by-side, image narrower on mobile) */}
       <section className="relative overflow-hidden bg-[#003527]">
         {/* Fixed height — prevents portrait images from forcing the hero too tall */}
-        <div className="grid lg:grid-cols-2 h-[640px] sm:h-[680px] md:h-[640px] lg:h-[72vh] xl:h-[76vh] min-h-[640px] max-h-[820px]">
-          {/* LEFT — dark green bg with text content */}
-          <div className="relative bg-[#003527] text-white flex items-center overflow-hidden order-1 lg:order-1">
+        <div className="grid grid-cols-[1fr_140px] sm:grid-cols-[1fr_180px] md:grid-cols-[1fr_240px] lg:grid-cols-2 h-[560px] sm:h-[600px] md:h-[640px] lg:h-[72vh] xl:h-[76vh] min-h-[560px] max-h-[820px]">
+          {/* LEFT — dark green bg with text content (wider on mobile for readability) */}
+          <div className="relative bg-[#003527] text-white flex items-center overflow-hidden">
             {/* Kraton pattern overlay (very low opacity) */}
             <div className="absolute inset-0 kraton-pattern opacity-[0.05] pointer-events-none" aria-hidden />
             {/* Subtle radial glow at top-left for depth */}
             <div className="absolute -top-32 -left-32 w-96 h-96 bg-[#064e3b]/40 rounded-full blur-3xl pointer-events-none" aria-hidden />
 
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 relative">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 md:py-12 relative">
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -400,18 +400,18 @@ export default function BerandaSection() {
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.6, delay: 0.1 }}
-                  className="inline-flex items-center gap-2 bg-white/10 border border-white/20 text-[#ffe088] px-4 py-1.5 rounded-full mb-8 backdrop-blur-sm"
+                  className="inline-flex items-center gap-1.5 sm:gap-2 bg-white/10 border border-white/20 text-[#ffe088] px-3 sm:px-4 py-1 sm:py-1.5 rounded-full mb-4 sm:mb-6 md:mb-8 backdrop-blur-sm"
                 >
-                  <span className="text-xs leading-none text-[#ffe088]/60">✦</span>
-                  <span className="font-arabic text-sm md:text-base tracking-wide">
+                  <span className="text-[10px] sm:text-xs leading-none text-[#ffe088]/60">✦</span>
+                  <span className="font-arabic text-xs sm:text-sm md:text-base tracking-wide">
                     بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
                   </span>
-                  <span className="text-xs leading-none text-[#ffe088]/60">✦</span>
+                  <span className="text-[10px] sm:text-xs leading-none text-[#ffe088]/60">✦</span>
                 </motion.div>
 
                 {/* Madrasah name — white + gold accent on second part */}
                 <h1
-                  className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 leading-[1.1] tracking-wide uppercase"
+                  className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 leading-[1.1] tracking-wide uppercase"
                   style={{ filter: 'drop-shadow(0 2px 12px rgba(0,0,0,0.6))' }}
                 >
                   <span className="text-white">MDTA</span>{' '}
@@ -419,14 +419,14 @@ export default function BerandaSection() {
                 </h1>
 
                 {/* Location pin (clickable ke Google Maps jika GPS tersedia) */}
-                <div className="mb-6">
+                <div className="mb-4 sm:mb-5 md:mb-6">
                   {(() => {
                     const gpsLat = getSetting('madrasah_gps_lat')
                     const gpsLng = getSetting('madrasah_gps_lng')
                     const mapsUrl = gpsLat && gpsLng
                       ? `https://www.google.com/maps/search/?api=1&query=${gpsLat},${gpsLng}`
                       : null
-                    const locClass = 'inline-flex items-center gap-2 text-[#b0f0d6] text-sm md:text-base transition-all'
+                    const locClass = 'inline-flex items-center gap-1.5 sm:gap-2 text-[#b0f0d6] text-xs sm:text-sm md:text-base transition-all'
                     if (mapsUrl) {
                       return (
                         <a
@@ -436,15 +436,15 @@ export default function BerandaSection() {
                           className={`${locClass} hover:text-[#ffe088] cursor-pointer`}
                           title="Klik untuk melihat lokasi di Google Maps"
                         >
-                          <MapPin className="h-4 w-4 text-[#ffe088]" />
+                          <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-[#ffe088]" />
                           <span className="font-medium">Tawangsari, Pujon</span>
-                          <ExternalLink className="h-3 w-3 text-[#ffe088]/70 ml-1" />
+                          <ExternalLink className="h-3 w-3 text-[#ffe088]/70 ml-0.5 sm:ml-1" />
                         </a>
                       )
                     }
                     return (
                       <div className={locClass}>
-                        <MapPin className="h-4 w-4 text-[#ffe088]" />
+                        <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-[#ffe088]" />
                         <span className="font-medium">Tawangsari, Pujon</span>
                       </div>
                     )
@@ -452,10 +452,10 @@ export default function BerandaSection() {
                 </div>
 
                 {/* Gold divider line */}
-                <div className="w-16 h-0.5 bg-gradient-to-r from-[#cca72f] to-transparent mb-6" />
+                <div className="w-12 sm:w-16 h-0.5 bg-gradient-to-r from-[#cca72f] to-transparent mb-4 sm:mb-5 md:mb-6" />
 
                 {/* Description */}
-                <p className="text-white/90 text-sm md:text-base mb-10 max-w-lg leading-relaxed"
+                <p className="text-white/90 text-xs sm:text-sm md:text-base mb-6 sm:mb-8 md:mb-10 max-w-lg leading-relaxed"
                   style={{ textShadow: '0 1px 8px rgba(0,0,0,0.5)' }}>
                   <span>{typedDescription}</span>
                   <span
@@ -465,19 +465,19 @@ export default function BerandaSection() {
                 </p>
 
                 {/* CTA buttons */}
-                <div className="flex flex-wrap gap-3">
+                <div className="flex flex-wrap gap-2 sm:gap-3">
                   <Button
                     onClick={() => { setCurrentPage('ppdb'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
-                    className="bg-[#cca72f] hover:bg-[#ffe088] text-[#003527] font-bold px-7 shadow-lg shadow-[#cca72f]/30 hover:shadow-[#cca72f]/50 hover:scale-105 transition-all rounded-xl"
-                    size="lg"
+                    className="bg-[#cca72f] hover:bg-[#ffe088] text-[#003527] font-bold px-4 sm:px-7 shadow-lg shadow-[#cca72f]/30 hover:shadow-[#cca72f]/50 hover:scale-105 transition-all rounded-xl text-xs sm:text-sm md:text-base"
+                    size="sm"
                   >
                     Daftar PPDB
-                    <ArrowRight className="ml-2 h-4 w-4" />
+                    <ArrowRight className="ml-1.5 sm:ml-2 h-3.5 w-3.5 sm:h-4 sm:w-4" />
                   </Button>
                   <Button
                     onClick={() => { setCurrentPage('profil'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
-                    className="border-2 border-[#cca72f]/40 text-white bg-white/5 hover:bg-[#cca72f]/10 hover:border-[#cca72f]/70 font-semibold px-7 backdrop-blur-sm hover:scale-105 transition-all rounded-xl"
-                    size="lg"
+                    className="border-2 border-[#cca72f]/40 text-white bg-white/5 hover:bg-[#cca72f]/10 hover:border-[#cca72f]/70 font-semibold px-4 sm:px-7 backdrop-blur-sm hover:scale-105 transition-all rounded-xl text-xs sm:text-sm md:text-base"
+                    size="sm"
                   >
                     Tentang Kami
                   </Button>
@@ -486,8 +486,8 @@ export default function BerandaSection() {
             </div>
           </div>
 
-          {/* RIGHT — school image. Visible on mobile (top portion) + desktop (full split) */}
-          <div className="relative overflow-hidden order-2 lg:order-2 h-[200px] sm:h-[220px] lg:h-auto">
+          {/* RIGHT — school image, always side-by-side with text panel (narrower on mobile) */}
+          <div className="relative overflow-hidden">
             {!settingsLoading && (
               <img
                 src={getSetting('madrasah_hero_image') || '/images/hero-madrasah.png'}
@@ -495,10 +495,10 @@ export default function BerandaSection() {
                 className="absolute inset-0 w-full h-full object-cover object-center"
               />
             )}
-            {/* Mobile: top-to-bottom gradient (dark green at top blends with text panel above) */}
-            <div className="absolute inset-0 bg-gradient-to-b lg:bg-gradient-to-r from-[#003527] via-[#003527]/40 to-transparent pointer-events-none" />
-            {/* Subtle bottom gradient for depth (mobile only) */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#003527]/60 to-transparent lg:from-[#003527]/30 pointer-events-none" />
+            {/* Left-to-right gradient: dark green on left (blends with text panel), transparent on right */}
+            <div className="absolute inset-0 bg-gradient-to-r from-[#003527] via-[#003527]/50 to-transparent pointer-events-none" />
+            {/* Subtle bottom gradient for depth */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#003527]/40 to-transparent pointer-events-none" />
           </div>
         </div>
 
