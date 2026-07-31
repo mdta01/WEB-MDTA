@@ -125,12 +125,44 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    /* Prevent horizontal scroll on mobile — kill the "page shift" bug */
+    overflow-x: hidden;
+    /* Native app feel: prevent text auto-adjust on rotation (iOS) */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    /* Smooth scroll, but respect prefers-reduced-motion */
+    scroll-behavior: smooth;
+  }
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-body), Montserrat, system-ui, sans-serif;
+    /* Double-lock horizontal overflow (html + body) */
+    overflow-x: hidden;
+    /* Optimize touch scrolling on iOS — momentum scrolling */
+    -webkit-overflow-scrolling: touch;
+    /* Prevent tap highlight (native app feel) */
+    -webkit-tap-highlight-color: transparent;
+    /* Prevent text selection on long press for UI elements (native feel) */
+    -webkit-touch-callout: none;
+    /* Respect safe-area insets (notch, home indicator) */
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
   }
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display), 'Playfair Display', Georgia, serif;
+    /* Prevent headings from causing overflow on narrow screens */
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+  /* Ensure images never cause horizontal overflow */
+  img, video, canvas, svg {
+    max-width: 100%;
+    height: auto;
+  }
+  /* Long words/URLs break instead of overflowing */
+  p, span, a, li {
+    overflow-wrap: break-word;
+    word-break: break-word;
   }
 }
 
@@ -158,11 +190,6 @@
   height: 24px;
   background-color: #ffe088;
   border-radius: 0 4px 4px 0;
-}
-
-/* Smooth scroll behavior */
-html {
-  scroll-behavior: smooth;
 }
 
 /* Custom scrollbar — Kraton themed */

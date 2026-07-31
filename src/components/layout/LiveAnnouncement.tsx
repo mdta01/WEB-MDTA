@@ -19,9 +19,9 @@ export default function LiveAnnouncement() {
     .join('  •  ')
 
   return (
-    <div className="bg-emerald-700 text-white py-2 overflow-hidden relative">
+    <div className="bg-[#003527] text-white py-2 overflow-hidden relative">
       <div className="flex items-center">
-        <div className="bg-amber-500 text-emerald-900 px-3 py-1 text-xs font-bold flex items-center gap-1 shrink-0 z-10">
+        <div className="bg-[#cca72f] text-[#003527] px-3 py-1 text-xs font-bold flex items-center gap-1 shrink-0 z-10">
           <Megaphone className="h-3 w-3" />
           INFO
         </div>

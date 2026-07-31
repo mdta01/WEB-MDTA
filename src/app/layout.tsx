@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Playfair_Display, Montserrat } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
@@ -29,6 +29,18 @@ export const metadata: Metadata = {
     description: "Mencetak generasi Muslim yang berilmu, berakhlak mulia, dan berprestasi",
     type: "website",
   },
+};
+
+// Viewport — disable pinch zoom & set maximumScale=1 for native app feel.
+// userScalable=false prevents zoom on mobile (iOS Safari + Android Chrome).
+// viewportFit=cover respects safe-area insets (notch, home indicator).
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
+  themeColor: "#003527",
 };
 
 export default function RootLayout({

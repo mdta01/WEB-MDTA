@@ -78,10 +78,10 @@ export default function Home() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="min-h-screen flex flex-col bg-gray-50">
+      <div className="min-h-screen flex flex-col bg-background overflow-x-hidden">
         <Header />
         <LiveAnnouncement />
-        <main className="flex-1 container mx-auto px-4 py-8">
+        <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 overflow-x-hidden">
           <SectionRenderer />
         </main>
         <Footer />
