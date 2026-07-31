@@ -2,12 +2,13 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
-import { Download, FileText, FileSpreadsheet, FileImage, File, Eye } from 'lucide-react'
+import { Download, FileText, FileSpreadsheet, FileImage, File, Eye, X } from 'lucide-react'
 import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 
 const categories = [
   { value: '', label: 'Semua' },
@@ -83,6 +84,7 @@ function getFileType(url: string): string {
 
 export default function DownloadSection() {
   const [selectedCategory, setSelectedCategory] = useState('')
+  const [previewItem, setPreviewItem] = useState<{ id: string; title: string; fileUrl: string } | null>(null)
 
   const { data, isLoading } = useQuery({
     queryKey: ['downloads', selectedCategory],
@@ -175,43 +177,44 @@ export default function DownloadSection() {
                     transition={{ delay: idx * 0.05, duration: 0.5 }}
                   >
                     <Card className="border border-[#e4e2de] shadow-premium card-hover rounded-2xl bg-[#ffffff]">
-                      <CardContent className="p-4 flex items-center gap-4">
-                        <div className={`w-12 h-12 rounded-2xl ${colorClass} flex items-center justify-center shrink-0 shadow-md`}>
-                          <FileIcon className="h-6 w-6" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-medium text-[#003527] text-sm truncate">{item.title}</h4>
-                          <div className="flex items-center gap-2 mt-1">
-                            <Badge variant="outline" className="text-xs uppercase">{fileTypeLabels[fileType] || 'FILE'}</Badge>
-                            <span className="text-xs text-[#404944]/70">
-                              {new Date(item.createdAt).toLocaleDateString('id-ID')}
-                            </span>
+                      <CardContent className="p-3 sm:p-4">
+                        {/* Mobile: stack vertical. Desktop: horizontal row. */}
+                        <div className="flex items-center gap-3 sm:gap-4">
+                          <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl ${colorClass} flex items-center justify-center shrink-0 shadow-md`}>
+                            <FileIcon className="h-5 w-5 sm:h-6 sm:w-6" />
                           </div>
-                        </div>
-                        <div className="flex items-center gap-2 shrink-0">
-                          {/* View — preview via our proxy API (works with Cloudinary private mode) */}
-                          <Button size="sm" variant="outline" className="text-[#003527] hover:bg-[#f5f3ef] hover:scale-110 rounded-xl transition-all" asChild>
-                            <a
-                              href={`/api/preview/${item.id}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-medium text-[#003527] text-sm truncate">{item.title}</h4>
+                            <div className="flex items-center gap-2 mt-1">
+                              <Badge variant="outline" className="text-xs uppercase">{fileTypeLabels[fileType] || 'FILE'}</Badge>
+                              <span className="text-xs text-[#404944]/70">
+                                {new Date(item.createdAt).toLocaleDateString('id-ID')}
+                              </span>
+                            </div>
+                          </div>
+                          {/* Action buttons — shrink-0 so they never get cut off */}
+                          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="text-[#003527] hover:bg-[#f5f3ef] hover:scale-110 rounded-xl transition-all h-9 w-9 p-0"
+                              onClick={() => setPreviewItem({ id: item.id, title: item.title, fileUrl: item.fileUrl })}
                               title={`Lihat ${item.title}`}
                             >
                               <Eye className="h-4 w-4" />
-                            </a>
-                          </Button>
-                          {/* Download — via our proxy API with proper filename */}
-                          <Button size="sm" variant="outline" className="text-[#003527] hover:bg-[#f5f3ef] hover:scale-110 rounded-xl transition-all" asChild>
-                            <a
-                              href={`/api/download/${item.id}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              download
-                              title={`Download ${item.title}`}
-                            >
-                              <Download className="h-4 w-4" />
-                            </a>
-                          </Button>
+                            </Button>
+                            <Button size="sm" variant="outline" className="text-[#003527] hover:bg-[#f5f3ef] hover:scale-110 rounded-xl transition-all h-9 w-9 p-0" asChild>
+                              <a
+                                href={`/api/download/${item.id}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                download
+                                title={`Download ${item.title}`}
+                              >
+                                <Download className="h-4 w-4" />
+                              </a>
+                            </Button>
+                          </div>
                         </div>
                       </CardContent>
                     </Card>
@@ -227,6 +230,88 @@ export default function DownloadSection() {
           <p className="text-[#404944]">Belum ada file untuk diunduh</p>
         </Card>
       )}
+
+      {/* Preview Modal — uses Google Docs Viewer for PDFs (works on mobile + desktop).
+          For images, uses direct URL in img tag.
+          For other files (DOC/XLS), falls back to download. */}
+      <Dialog open={!!previewItem} onOpenChange={() => setPreviewItem(null)}>
+        <DialogContent className="max-w-4xl w-[95vw] h-[90vh] p-0 overflow-hidden">
+          <DialogTitle className="sr-only">Preview: {previewItem?.title}</DialogTitle>
+          {previewItem && (
+            <div className="flex flex-col h-full">
+              {/* Header bar with title + close + download */}
+              <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-[#e4e2de] bg-[#fbf9f5] shrink-0">
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-semibold text-[#003527] text-sm truncate font-display">{previewItem.title}</h3>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <Button size="sm" variant="outline" className="text-[#003527] hover:bg-[#f5f3ef] rounded-lg" asChild>
+                    <a
+                      href={`/api/download/${previewItem.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      download
+                    >
+                      <Download className="h-4 w-4 mr-1" />
+                      <span className="hidden sm:inline">Download</span>
+                    </a>
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="text-[#404944] hover:bg-[#f5f3ef] h-9 w-9 p-0 rounded-lg"
+                    onClick={() => setPreviewItem(null)}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+              {/* Preview content — iframe for PDFs (Google Docs Viewer), img for images */}
+              <div className="flex-1 overflow-hidden bg-[#f5f3ef]">
+                {previewItem.fileUrl.toLowerCase().match(/\.(jpg|jpeg|png|gif|webp|svg)$/) ? (
+                  // Image preview
+                  <div className="flex items-center justify-center h-full p-4">
+                    <img
+                      src={previewItem.fileUrl.includes('cloudinary.com') ? previewItem.fileUrl : `/api/preview/${previewItem.id}`}
+                      alt={previewItem.title}
+                      className="max-w-full max-h-full object-contain rounded-lg shadow-lg"
+                    />
+                  </div>
+                ) : previewItem.fileUrl.toLowerCase().includes('.pdf') ? (
+                  // PDF preview — use our proxy URL in iframe.
+                  // Google Docs Viewer would need public URL; our proxy streams inline
+                  // which browsers can render in iframe (desktop + mobile).
+                  <iframe
+                    src={`/api/preview/${previewItem.id}`}
+                    className="w-full h-full border-0"
+                    title={previewItem.title}
+                  />
+                ) : (
+                  // Other files (DOC/XLS/PPT) — can't preview inline, offer download
+                  <div className="flex flex-col items-center justify-center h-full gap-4 p-6 text-center">
+                    <FileText className="h-16 w-16 text-[#064e3b]/40" />
+                    <div>
+                      <p className="text-[#404944] text-sm mb-1">Preview tidak tersedia untuk format file ini</p>
+                      <p className="text-[#404944]/60 text-xs mb-4">Silakan download untuk melihat</p>
+                    </div>
+                    <Button className="bg-[#003527] hover:bg-[#064e3b] text-white rounded-xl" asChild>
+                      <a
+                        href={`/api/download/${previewItem.id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        download
+                      >
+                        <Download className="h-4 w-4 mr-2" />
+                        Download File
+                      </a>
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
