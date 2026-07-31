@@ -51,41 +51,87 @@ export function ImageUpload({
         return
       }
       if (file.size > 10 * 1024 * 1024) {
-        toast.error('Ukuran file maksimal 10 MB')
+        toast.error('Ukuran gambar maksimal 10 MB', {
+          description: `File Anda: ${(file.size / 1024 / 1024).toFixed(1)} MB`,
+        })
         return
       }
 
       setUploading(true)
       setImgError(false)
 
+      // Retry logic — network errors are common on slow connections
+      const maxRetries = 2
+      let lastError: string = 'Gagal upload'
+      let success = false
+
       try {
-        const formData = new FormData()
-        formData.append('file', file)
-        formData.append('folder', folder)
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+          try {
+            const formData = new FormData()
+            formData.append('file', file)
+            formData.append('folder', folder)
 
-        const res = await fetch('/api/upload', {
-          method: 'POST',
-          body: formData,
-        })
+            const res = await fetch('/api/upload', {
+              method: 'POST',
+              body: formData,
+              // Don't set Content-Type — browser sets it with boundary for FormData
+            })
 
-        const data = await res.json()
+            // Handle non-OK responses
+            if (!res.ok) {
+              let errorMsg: string
+              try {
+                const data = await res.json()
+                errorMsg = data.error || `Upload gagal (HTTP ${res.status})`
+              } catch {
+                errorMsg = `Upload gagal (HTTP ${res.status})`
+              }
+              // Don't retry on client errors (4xx) — only retry on server errors (5xx)
+              if (res.status >= 400 && res.status < 500) {
+                toast.error('Upload gagal', { description: errorMsg })
+                return
+              }
+              throw new Error(errorMsg)
+            }
 
-        if (!res.ok) {
-          throw new Error(data.error || 'Upload gagal')
+            const data = await res.json()
+
+            onChange(data.url)
+            toast.success('Gambar berhasil diupload', {
+              description: `${(file.size / 1024).toFixed(0)} KB → ${data.format?.toUpperCase()} ${data.width}×${data.height}`,
+            })
+            success = true
+            return // Success — exit retry loop
+          } catch (error) {
+            lastError = error instanceof Error ? error.message : 'Gagal upload'
+            console.error(`[ImageUpload] attempt ${attempt}/${maxRetries} failed:`, lastError)
+
+            if (attempt < maxRetries) {
+              // Show retry toast
+              toast.loading(`Upload gagal, mencoba ulang (${attempt + 1}/${maxRetries})...`, {
+                id: 'upload-retry',
+              })
+              // Wait before retry (1s, 2s)
+              await new Promise(resolve => setTimeout(resolve, 1000 * attempt))
+            }
+          }
         }
 
-        onChange(data.url)
-        toast.success('Gambar berhasil diupload', {
-          description: `${(file.size / 1024).toFixed(0)} KB → ${data.format?.toUpperCase()} ${data.width}×${data.height}`,
+        // All retries exhausted
+        toast.dismiss('upload-retry')
+        toast.error('Upload gagal setelah beberapa percobaan', {
+          description: lastError + '. Coba file lebih kecil atau periksa koneksi internet.',
         })
-      } catch (error) {
-        const msg = error instanceof Error ? error.message : 'Gagal upload'
-        toast.error('Upload gagal', { description: msg })
       } finally {
         setUploading(false)
         // Reset input so same file can be re-selected
         if (fileInputRef.current) {
           fileInputRef.current.value = ''
+        }
+        // Dismiss retry toast if still showing
+        if (!success) {
+          toast.dismiss('upload-retry')
         }
       }
     },

@@ -36,44 +36,88 @@ export function FileUpload({
       const allowedExts = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'zip', 'txt']
       const fileExt = file.name.split('.').pop()?.toLowerCase() || ''
       if (!allowedExts.includes(fileExt)) {
-        toast.error(`Format tidak didukung: .${fileExt}. Hanya PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, ZIP, TXT.`)
+        toast.error(`Format tidak didukung: .${fileExt}`, {
+          description: 'Hanya PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, ZIP, TXT.',
+        })
         return
       }
       if (file.size > 25 * 1024 * 1024) {
-        toast.error('Ukuran file maksimal 25 MB')
+        toast.error('Ukuran file maksimal 25 MB', {
+          description: `File Anda: ${(file.size / 1024 / 1024).toFixed(1)} MB`,
+        })
         return
       }
 
       setUploading(true)
 
+      // Retry logic — network errors are common on slow connections
+      const maxRetries = 2
+      let lastError: string = 'Gagal upload'
+      let success = false
+
       try {
-        const formData = new FormData()
-        formData.append('file', file)
-        formData.append('folder', folder)
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+          try {
+            const formData = new FormData()
+            formData.append('file', file)
+            formData.append('folder', folder)
 
-        const res = await fetch('/api/upload', {
-          method: 'POST',
-          body: formData,
-        })
+            const res = await fetch('/api/upload', {
+              method: 'POST',
+              body: formData,
+            })
 
-        const data = await res.json()
+            // Handle non-OK responses
+            if (!res.ok) {
+              let errorMsg: string
+              try {
+                const data = await res.json()
+                errorMsg = data.error || `Upload gagal (HTTP ${res.status})`
+              } catch {
+                errorMsg = `Upload gagal (HTTP ${res.status})`
+              }
+              // Don't retry on client errors (4xx) — only retry on server errors (5xx)
+              if (res.status >= 400 && res.status < 500) {
+                toast.error('Upload gagal', { description: errorMsg })
+                return
+              }
+              throw new Error(errorMsg)
+            }
 
-        if (!res.ok) {
-          throw new Error(data.error || 'Upload gagal')
+            const data = await res.json()
+
+            onChange(data.url)
+            setFileName(file.name)
+            toast.success('File berhasil diupload', {
+              description: `${file.name} (${(file.size / 1024).toFixed(0)} KB)`,
+            })
+            success = true
+            return // Success — exit retry loop
+          } catch (error) {
+            lastError = error instanceof Error ? error.message : 'Gagal upload'
+            console.error(`[FileUpload] attempt ${attempt}/${maxRetries} failed:`, lastError)
+
+            if (attempt < maxRetries) {
+              toast.loading(`Upload gagal, mencoba ulang (${attempt + 1}/${maxRetries})...`, {
+                id: 'file-upload-retry',
+              })
+              await new Promise(resolve => setTimeout(resolve, 1000 * attempt))
+            }
+          }
         }
 
-        onChange(data.url)
-        setFileName(file.name)
-        toast.success('PDF berhasil diupload', {
-          description: `${file.name} (${(file.size / 1024).toFixed(0)} KB)`,
+        // All retries exhausted
+        toast.dismiss('file-upload-retry')
+        toast.error('Upload gagal setelah beberapa percobaan', {
+          description: lastError + '. Coba file lebih kecil atau periksa koneksi internet.',
         })
-      } catch (error) {
-        const msg = error instanceof Error ? error.message : 'Gagal upload'
-        toast.error('Upload gagal', { description: msg })
       } finally {
         setUploading(false)
         if (fileInputRef.current) {
           fileInputRef.current.value = ''
+        }
+        if (!success) {
+          toast.dismiss('file-upload-retry')
         }
       }
     },

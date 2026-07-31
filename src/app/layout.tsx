@@ -49,6 +49,38 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="id" suppressHydrationWarning>
+      <head>
+        {/* ChunkLoadError auto-reload — when Next.js chunk fails to load
+            (common after new deploy with different chunk hashes),
+            automatically reload page once to fetch fresh chunks. */}
+        <script dangerouslySetInnerHTML={{ __html: `
+          (function() {
+            var reloaded = false;
+            window.addEventListener('error', function(e) {
+              if (reloaded) return;
+              var msg = (e.message || '').toLowerCase();
+              var tag = (e.target && e.target.tagName || '').toLowerCase();
+              if (msg.includes('chunkloaderror') ||
+                  msg.includes('failed to fetch dynamically imported module') ||
+                  msg.includes('loading chunk') ||
+                  (tag === 'script' && e.target.src && e.target.src.includes('/_next/static/chunks/'))) {
+                reloaded = true;
+                console.warn('[ChunkLoadError] Auto-reloading page to fetch fresh chunks...');
+                window.location.reload();
+              }
+            }, true);
+            window.addEventListener('unhandledrejection', function(e) {
+              if (reloaded) return;
+              var msg = (e.reason && (e.reason.message || String(e.reason)) || '').toLowerCase();
+              if (msg.includes('chunkloaderror') || msg.includes('failed to fetch dynamically imported module')) {
+                reloaded = true;
+                console.warn('[ChunkLoadError] Auto-reloading (unhandled rejection)...');
+                window.location.reload();
+              }
+            });
+          })();
+        `}} />
+      </head>
       <body
         className={`${playfair.variable} ${montserrat.variable} antialiased bg-background text-foreground font-body`}
       >
