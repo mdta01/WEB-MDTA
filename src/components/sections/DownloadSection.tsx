@@ -176,10 +176,10 @@ export default function DownloadSection() {
                     viewport={{ once: true, margin: "-50px" }}
                     transition={{ delay: idx * 0.05, duration: 0.5 }}
                   >
-                    <Card className="border border-[#e4e2de] shadow-premium card-hover rounded-2xl bg-[#ffffff]">
-                      <CardContent className="p-3 sm:p-4">
+                    <Card className="border border-[#e4e2de] shadow-premium card-hover rounded-2xl bg-[#ffffff] min-w-0 max-w-full overflow-hidden">
+                      <CardContent className="p-3 sm:p-4 min-w-0">
                         {/* Mobile: stack vertical. Desktop: horizontal row. */}
-                        <div className="flex items-center gap-3 sm:gap-4">
+                        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
                           <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl ${colorClass} flex items-center justify-center shrink-0 shadow-md`}>
                             <FileIcon className="h-5 w-5 sm:h-6 sm:w-6" />
                           </div>
@@ -235,24 +235,24 @@ export default function DownloadSection() {
           For images, uses direct URL in img tag.
           For other files (DOC/XLS), falls back to download. */}
       <Dialog open={!!previewItem} onOpenChange={() => setPreviewItem(null)}>
-        <DialogContent className="max-w-4xl w-[95vw] h-[90vh] p-0 overflow-hidden">
+        <DialogContent className="max-w-4xl w-[95vw] max-w-[95vw] h-[90vh] p-0 overflow-hidden flex flex-col">
           <DialogTitle className="sr-only">Preview: {previewItem?.title}</DialogTitle>
           {previewItem && (
-            <div className="flex flex-col h-full">
+            <div className="flex flex-col h-full min-h-0">
               {/* Header bar with title + close + download */}
-              <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-[#e4e2de] bg-[#fbf9f5] shrink-0">
+              <div className="flex items-center justify-between gap-2 sm:gap-3 px-3 sm:px-4 py-3 border-b border-[#e4e2de] bg-[#fbf9f5] shrink-0">
                 <div className="flex-1 min-w-0">
                   <h3 className="font-semibold text-[#003527] text-sm truncate font-display">{previewItem.title}</h3>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <Button size="sm" variant="outline" className="text-[#003527] hover:bg-[#f5f3ef] rounded-lg" asChild>
+                <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                  <Button size="sm" variant="outline" className="text-[#003527] hover:bg-[#f5f3ef] rounded-lg h-9 px-2 sm:px-3" asChild>
                     <a
                       href={`/api/download/${previewItem.id}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       download
                     >
-                      <Download className="h-4 w-4 mr-1" />
+                      <Download className="h-4 w-4" />
                       <span className="hidden sm:inline">Download</span>
                     </a>
                   </Button>
@@ -266,8 +266,9 @@ export default function DownloadSection() {
                   </Button>
                 </div>
               </div>
-              {/* Preview content — iframe for PDFs (Google Docs Viewer), img for images */}
-              <div className="flex-1 overflow-hidden bg-[#f5f3ef]">
+              {/* Preview content — iframe for PDFs, img for images.
+                  min-h-0 required for flex-1 child to shrink properly. */}
+              <div className="flex-1 min-h-0 overflow-hidden bg-[#f5f3ef]">
                 {previewItem.fileUrl.toLowerCase().match(/\.(jpg|jpeg|png|gif|webp|svg)$/) ? (
                   // Image preview
                   <div className="flex items-center justify-center h-full p-4">
