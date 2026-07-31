@@ -287,6 +287,113 @@ function getMasehiHoliday(info: MasehiInfo): { name: string; emoji: string } | n
   return match ? { name: match.name, emoji: match.emoji } : null
 }
 
+// Hero content — extracted as sub-component so it can be reused in both mobile + desktop layouts.
+// Props: getSetting (DB settings accessor), typedDescription + typingDone (typewriter effect),
+// setCurrentPage (navigation).
+function HeroContent({ getSetting, typedDescription, typingDone, setCurrentPage }: {
+  getSetting: (key: string) => string
+  typedDescription: string
+  typingDone: boolean
+  setCurrentPage: (page: string) => void
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.7 }}
+      className="max-w-xl"
+    >
+      {/* Bismillah badge — glassmorphism */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.6, delay: 0.1 }}
+        className="inline-flex items-center gap-2 bg-white/10 border border-white/20 text-[#ffe088] px-4 py-1.5 rounded-full mb-6 md:mb-8 backdrop-blur-sm"
+      >
+        <span className="text-xs leading-none text-[#ffe088]/60">✦</span>
+        <span className="font-arabic text-sm md:text-base tracking-wide">
+          بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
+        </span>
+        <span className="text-xs leading-none text-[#ffe088]/60">✦</span>
+      </motion.div>
+
+      {/* Madrasah name — white + gold accent on second part */}
+      <h1
+        className="text-2xl md:text-4xl lg:text-5xl font-bold mb-4 leading-[1.1] tracking-wide uppercase"
+        style={{ filter: 'drop-shadow(0 2px 12px rgba(0,0,0,0.6))' }}
+      >
+        <span className="text-white">MDTA</span>{' '}
+        <span className="text-gradient-amber">Miftahul Ulum 01</span>
+      </h1>
+
+      {/* Location pin (clickable ke Google Maps jika GPS tersedia) */}
+      <div className="mb-6">
+        {(() => {
+          const gpsLat = getSetting('madrasah_gps_lat')
+          const gpsLng = getSetting('madrasah_gps_lng')
+          const mapsUrl = gpsLat && gpsLng
+            ? `https://www.google.com/maps/search/?api=1&query=${gpsLat},${gpsLng}`
+            : null
+          const locClass = 'inline-flex items-center gap-2 text-[#b0f0d6] text-sm md:text-base transition-all'
+          if (mapsUrl) {
+            return (
+              <a
+                href={mapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`${locClass} hover:text-[#ffe088] cursor-pointer`}
+                title="Klik untuk melihat lokasi di Google Maps"
+              >
+                <MapPin className="h-4 w-4 text-[#ffe088]" />
+                <span className="font-medium">Tawangsari, Pujon</span>
+                <ExternalLink className="h-3 w-3 text-[#ffe088]/70 ml-1" />
+              </a>
+            )
+          }
+          return (
+            <div className={locClass}>
+              <MapPin className="h-4 w-4 text-[#ffe088]" />
+              <span className="font-medium">Tawangsari, Pujon</span>
+            </div>
+          )
+        })()}
+      </div>
+
+      {/* Gold divider line */}
+      <div className="w-16 h-0.5 bg-gradient-to-r from-[#cca72f] to-transparent mb-6" />
+
+      {/* Description */}
+      <p className="text-white/90 text-sm md:text-base mb-8 md:mb-10 max-w-lg leading-relaxed"
+        style={{ textShadow: '0 1px 8px rgba(0,0,0,0.5)' }}>
+        <span>{typedDescription}</span>
+        <span
+          className={`inline-block w-[2px] h-[1.1em] bg-[#ffe088] ml-1 mt-1 shrink-0 ${typingDone ? 'animate-blink' : ''}`}
+          aria-hidden
+        />
+      </p>
+
+      {/* CTA buttons */}
+      <div className="flex flex-wrap gap-3">
+        <Button
+          onClick={() => { setCurrentPage('ppdb'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+          className="bg-[#cca72f] hover:bg-[#ffe088] text-[#003527] font-bold px-7 shadow-lg shadow-[#cca72f]/30 hover:shadow-[#cca72f]/50 hover:scale-105 transition-all rounded-xl"
+          size="lg"
+        >
+          Daftar PPDB
+          <ArrowRight className="ml-2 h-4 w-4" />
+        </Button>
+        <Button
+          onClick={() => { setCurrentPage('profil'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+          className="bg-white/10 hover:bg-white/20 text-white font-semibold px-7 backdrop-blur-sm hover:scale-105 transition-all rounded-xl"
+          size="lg"
+        >
+          Tentang Kami
+        </Button>
+      </div>
+    </motion.div>
+  )
+}
+
 export default function BerandaSection() {
   const { setCurrentPage } = useAppStore()
   const [testimonialIdx, setTestimonialIdx] = useState(0)
@@ -377,142 +484,82 @@ export default function BerandaSection() {
 
   return (
     <div className="space-y-16 pb-8">
-      {/* Hero Section — full-bleed image bg + text overlay (no split, no vertical line) */}
+      {/* Hero Section — split layout: text left (solid emerald) + image right (full visible, smooth gradient blend).
+          Mobile: image full-bg with heavy overlay + text overlay (compact). */}
       <section className="relative overflow-hidden bg-[#003527]">
-        {/* Fixed height — mobile shorter (less vertical space), desktop viewport-based */}
-        <div className="relative h-[440px] sm:h-[500px] md:h-[560px] lg:h-[68vh] xl:h-[72vh] min-h-[440px] max-h-[760px]">
-          {/* Background image — full-bleed.
-              Mobile: object-cover, object-position top (show building top).
-              Desktop: image element is sized LARGER than container (w/h 120%) and positioned
-                to the right, so more of the image is visible = 'zoom out' effect.
-                Parent has overflow-hidden so excess is clipped. */}
+        {/* Mobile: full-bg image + heavy overlay (text readable, image subtle) */}
+        <div className="lg:hidden relative h-[480px] overflow-hidden">
           {!settingsLoading && (
             <img
               src={getSetting('madrasah_hero_image') || '/images/hero-madrasah.png'}
               alt="MDTA Miftahul Ulum 01"
-              className="absolute inset-0 w-full h-full object-cover object-[center_25%] lg:object-contain lg:object-center"
+              className="absolute inset-0 w-full h-full object-cover object-[center_25%]"
             />
           )}
-          {/* Smooth gradient overlay — thickened for better text readability.
-              Dark green on left fades to transparent on right (desktop).
-              No hard vertical line — gradient is wide and soft for smooth transition. */}
+          {/* Heavy overlay — top + bottom dark, middle medium (text readable, image hint visible) */}
           <div
             className="absolute inset-0 pointer-events-none"
             style={{
-              background: 'linear-gradient(90deg, rgba(0,53,39,0.97) 0%, rgba(0,53,39,0.92) 30%, rgba(0,53,39,0.75) 55%, rgba(0,53,39,0.45) 80%, rgba(0,53,39,0.2) 100%)',
+              background: 'linear-gradient(180deg, rgba(0,53,39,0.92) 0%, rgba(0,53,39,0.78) 35%, rgba(0,53,39,0.85) 70%, rgba(0,53,39,0.95) 100%)',
             }}
             aria-hidden
           />
-          {/* Mobile: top-to-bottom gradient so text readable on small screens (thickened) */}
-          <div
-            className="absolute inset-0 pointer-events-none md:hidden"
-            style={{
-              background: 'linear-gradient(180deg, rgba(0,53,39,0.88) 0%, rgba(0,53,39,0.7) 40%, rgba(0,53,39,0.85) 75%, rgba(0,53,39,0.95) 100%)',
-            }}
-            aria-hidden
-          />
-          {/* Subtle Kraton pattern overlay */}
           <div className="absolute inset-0 kraton-pattern opacity-[0.04] pointer-events-none" aria-hidden />
-
-          {/* Text content overlay — mobile: start from top (no empty space above Bismillah);
-              desktop: vertically centered */}
-          <div className="absolute inset-0 flex items-start md:items-center pt-8 md:pt-0">
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-12 relative z-10 w-full">
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7 }}
-                className="max-w-xl"
-              >
-                {/* Bismillah badge — glassmorphism */}
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.6, delay: 0.1 }}
-                  className="inline-flex items-center gap-2 bg-white/10 border border-white/20 text-[#ffe088] px-4 py-1.5 rounded-full mb-6 md:mb-8 backdrop-blur-sm"
-                >
-                  <span className="text-xs leading-none text-[#ffe088]/60">✦</span>
-                  <span className="font-arabic text-sm md:text-base tracking-wide">
-                    بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
-                  </span>
-                  <span className="text-xs leading-none text-[#ffe088]/60">✦</span>
-                </motion.div>
-
-                {/* Madrasah name — white + gold accent on second part */}
-                <h1
-                  className="text-2xl md:text-4xl lg:text-5xl font-bold mb-4 leading-[1.1] tracking-wide uppercase"
-                  style={{ filter: 'drop-shadow(0 2px 12px rgba(0,0,0,0.6))' }}
-                >
-                  <span className="text-white">MDTA</span>{' '}
-                  <span className="text-gradient-amber">Miftahul Ulum 01</span>
-                </h1>
-
-                {/* Location pin (clickable ke Google Maps jika GPS tersedia) */}
-                <div className="mb-6">
-                  {(() => {
-                    const gpsLat = getSetting('madrasah_gps_lat')
-                    const gpsLng = getSetting('madrasah_gps_lng')
-                    const mapsUrl = gpsLat && gpsLng
-                      ? `https://www.google.com/maps/search/?api=1&query=${gpsLat},${gpsLng}`
-                      : null
-                    const locClass = 'inline-flex items-center gap-2 text-[#b0f0d6] text-sm md:text-base transition-all'
-                    if (mapsUrl) {
-                      return (
-                        <a
-                          href={mapsUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={`${locClass} hover:text-[#ffe088] cursor-pointer`}
-                          title="Klik untuk melihat lokasi di Google Maps"
-                        >
-                          <MapPin className="h-4 w-4 text-[#ffe088]" />
-                          <span className="font-medium">Tawangsari, Pujon</span>
-                          <ExternalLink className="h-3 w-3 text-[#ffe088]/70 ml-1" />
-                        </a>
-                      )
-                    }
-                    return (
-                      <div className={locClass}>
-                        <MapPin className="h-4 w-4 text-[#ffe088]" />
-                        <span className="font-medium">Tawangsari, Pujon</span>
-                      </div>
-                    )
-                  })()}
-                </div>
-
-                {/* Gold divider line */}
-                <div className="w-16 h-0.5 bg-gradient-to-r from-[#cca72f] to-transparent mb-6" />
-
-                {/* Description */}
-                <p className="text-white/90 text-sm md:text-base mb-8 md:mb-10 max-w-lg leading-relaxed"
-                  style={{ textShadow: '0 1px 8px rgba(0,0,0,0.5)' }}>
-                  <span>{typedDescription}</span>
-                  <span
-                    className={`inline-block w-[2px] h-[1.1em] bg-[#ffe088] ml-1 mt-1 shrink-0 ${typingDone ? 'animate-blink' : ''}`}
-                    aria-hidden
-                  />
-                </p>
-
-                {/* CTA buttons */}
-                <div className="flex flex-wrap gap-3">
-                  <Button
-                    onClick={() => { setCurrentPage('ppdb'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
-                    className="bg-[#cca72f] hover:bg-[#ffe088] text-[#003527] font-bold px-7 shadow-lg shadow-[#cca72f]/30 hover:shadow-[#cca72f]/50 hover:scale-105 transition-all rounded-xl"
-                    size="lg"
-                  >
-                    Daftar PPDB
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                  <Button
-                    onClick={() => { setCurrentPage('profil'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
-                    className="bg-white/10 hover:bg-white/20 text-white font-semibold px-7 backdrop-blur-sm hover:scale-105 transition-all rounded-xl"
-                    size="lg"
-                  >
-                    Tentang Kami
-                  </Button>
-                </div>
-              </motion.div>
+          {/* Text content — top-aligned, no empty space */}
+          <div className="absolute inset-0 flex items-start pt-8">
+            <div className="w-full px-4 py-4 relative z-10">
+              <HeroContent
+                getSetting={getSetting}
+                typedDescription={typedDescription}
+                typingDone={typingDone}
+                setCurrentPage={setCurrentPage}
+              />
             </div>
+          </div>
+        </div>
+
+        {/* Desktop: split 50/50 — text left (solid emerald bg), image right (full visible + smooth gradient blend from left) */}
+        <div className="hidden lg:flex relative h-[72vh] min-h-[600px] max-h-[820px]">
+          {/* LEFT — text panel, solid emerald bg */}
+          <div className="w-1/2 relative bg-[#003527] flex items-center overflow-hidden">
+            <div className="absolute inset-0 kraton-pattern opacity-[0.05] pointer-events-none" aria-hidden />
+            <div className="absolute -top-32 -left-32 w-96 h-96 bg-[#064e3b]/40 rounded-full blur-3xl pointer-events-none" aria-hidden />
+            <div className="relative z-10 px-12 xl:px-16 py-12 w-full max-w-2xl">
+              <HeroContent
+                getSetting={getSetting}
+                typedDescription={typedDescription}
+                typingDone={typingDone}
+                setCurrentPage={setCurrentPage}
+              />
+            </div>
+          </div>
+
+          {/* RIGHT — image panel, full visible + smooth gradient overlay from left (blends with text panel) */}
+          <div className="w-1/2 relative overflow-hidden">
+            {!settingsLoading && (
+              <img
+                src={getSetting('madrasah_hero_image') || '/images/hero-madrasah.png'}
+                alt="MDTA Miftahul Ulum 01"
+                className="absolute inset-0 w-full h-full object-cover object-center"
+              />
+            )}
+            {/* Smooth gradient blend: left edge dark green (matches text panel) → right edge transparent.
+                Wide gradient (0% to 45%) so transition is SMOOTH, no sharp vertical line. */}
+            <div
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                background: 'linear-gradient(90deg, rgba(0,53,39,1) 0%, rgba(0,53,39,0.85) 15%, rgba(0,53,39,0.5) 30%, rgba(0,53,39,0.2) 45%, rgba(0,53,39,0) 60%)',
+              }}
+              aria-hidden
+            />
+            {/* Bottom subtle fade for depth */}
+            <div
+              className="absolute inset-x-0 bottom-0 h-32 pointer-events-none"
+              style={{
+                background: 'linear-gradient(180deg, transparent 0%, rgba(0,53,39,0.4) 100%)',
+              }}
+              aria-hidden
+            />
           </div>
         </div>
 
