@@ -85,23 +85,23 @@ export default function Header() {
 
   return (
     <header
-      className={`sticky top-0 z-50 transition-all duration-500 bg-[#003527] ${
-        scrolled ? 'shadow-premium-lg bg-[#064e3b]/95 backdrop-blur-xl' : ''
+      className={`sticky top-0 z-50 transition-all duration-500 bg-[#ffffff] border-b border-[#e4e2de] ${
+        scrolled ? 'shadow-premium-lg' : 'shadow-sm'
       }`}
     >
       {/* Subtle top accent line */}
       <div className="h-0.5 bg-gradient-to-r from-transparent via-[#cca72f]/60 to-transparent" />
 
       {/* Main header */}
-      <div className="text-white">
-        <div className="container mx-auto px-4">
+      <div>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 md:h-20">
             {/* Logo & Name */}
             <button
               onClick={() => handleNav('beranda')}
               className="flex items-center gap-3 group"
             >
-              <div className="w-11 h-11 md:w-13 md:h-13 group-hover:scale-110 group-active:scale-95 transition-all duration-300 flex items-center justify-center rounded-full bg-[#fbf9f5] ring-2 ring-[#cca72f]/40 group-hover:ring-[#cca72f] group-hover:shadow-glow-amber shrink-0 p-1">
+              <div className="w-11 h-11 md:w-13 md:h-13 group-hover:scale-110 group-active:scale-95 transition-all duration-300 flex items-center justify-center rounded-full bg-[#003527] ring-2 ring-[#cca72f]/40 group-hover:ring-[#cca72f] group-hover:shadow-glow-amber shrink-0 p-1.5">
                 <img
                   src={madrasahLogo}
                   alt={`Logo ${madrasahName}`}
@@ -109,8 +109,8 @@ export default function Header() {
                 />
               </div>
               <div className="flex flex-col">
-                <span className="font-bold text-sm md:text-lg leading-tight uppercase tracking-wide text-white group-hover:text-[#ffe088] transition-colors duration-300">{madrasahName}</span>
-                <span className="text-[#b0f0d6] text-[10px] md:text-xs hidden sm:block">
+                <span className="font-bold text-sm md:text-lg leading-tight uppercase tracking-wide text-[#003527] group-hover:text-[#895033] transition-colors duration-300">{madrasahName}</span>
+                <span className="text-[#404944] text-[10px] md:text-xs hidden sm:block">
                   {madrasahSubtitle}
                 </span>
               </div>
@@ -124,15 +124,15 @@ export default function Header() {
                   onClick={() => handleNav(item.page)}
                   className={`px-3 py-2 rounded-full text-xs font-medium transition-all duration-300 ${
                     currentPage === item.page
-                      ? 'bg-[#cca72f] text-[#003527] shadow-md shadow-[#cca72f]/30'
-                      : 'text-[#b0f0d6] hover:bg-[#064e3b]/50 hover:text-white hover:scale-105'
+                      ? 'bg-[#003527] text-white shadow-md shadow-[#003527]/20'
+                      : 'text-[#003527] hover:bg-[#f5f3ef] hover:text-[#064e3b] hover:scale-105'
                   }`}
                 >
                   {item.label}
                 </button>
               ))}
               <div className="relative group">
-                <button className="px-3 py-2 rounded-full text-xs font-medium text-[#b0f0d6] hover:bg-[#064e3b]/50 hover:text-white hover:scale-105 flex items-center gap-1 transition-all duration-300">
+                <button className="px-3 py-2 rounded-full text-xs font-medium text-[#003527] hover:bg-[#f5f3ef] hover:text-[#064e3b] hover:scale-105 flex items-center gap-1 transition-all duration-300">
                   Lainnya <ChevronDown className="h-3 w-3 group-hover:rotate-180 transition-transform duration-300" />
                 </button>
                 <div className="absolute right-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
@@ -161,7 +161,7 @@ export default function Header() {
                 variant="ghost"
                 size="icon"
                 onClick={handleSearch}
-                className="text-[#b0f0d6] hover:text-white hover:bg-white/15 hover:scale-110 h-9 w-9 rounded-full transition-all duration-300"
+                className="text-[#003527] hover:text-[#064e3b] hover:bg-[#f5f3ef] hover:scale-110 h-9 w-9 rounded-full transition-all duration-300"
               >
                 <Search className="h-4 w-4" />
               </Button>
@@ -171,7 +171,7 @@ export default function Header() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="xl:hidden text-[#b0f0d6] hover:text-white hover:bg-white/15 hover:scale-110 h-9 w-9 rounded-full transition-all duration-300"
+                    className="xl:hidden text-[#003527] hover:text-[#064e3b] hover:bg-[#f5f3ef] hover:scale-110 h-9 w-9 rounded-full transition-all duration-300"
                   >
                     <Menu className="h-5 w-5" />
                   </Button>
