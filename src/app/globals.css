@@ -166,6 +166,51 @@
   }
 }
 
+/* ===== Mobile scroll optimization ===== */
+/* Reduce motion & disable expensive effects on mobile for smooth scrolling */
+@media (max-width: 768px) {
+  /* Disable will-change on non-animated elements to free GPU memory */
+  .card-hover {
+    will-change: auto;
+  }
+  /* Reduce hover transform distance on mobile (less repaint area) */
+  .card-hover:hover {
+    transform: translateY(-2px);
+  }
+  /* Disable wood-carved-shadow on mobile (expensive box-shadow repaint) */
+  .wood-carved-shadow {
+    box-shadow: 0 2px 8px -2px rgba(69, 26, 3, 0.06);
+  }
+  /* Reduce shadow-premium-lg intensity on mobile */
+  .shadow-premium-lg {
+    box-shadow: 0 4px 12px -4px rgba(0, 53, 39, 0.10);
+  }
+  /* Disable glow shadows on mobile (expensive) */
+  .shadow-glow-emerald,
+  .shadow-glow-amber {
+    box-shadow: 0 2px 8px -2px rgba(0, 53, 39, 0.15);
+  }
+  /* Reduce backdrop-blur cost on mobile (smaller blur radius) */
+  .glass,
+  .glass-dark,
+  .glass-emerald {
+    backdrop-filter: blur(8px) saturate(120%);
+    -webkit-backdrop-filter: blur(8px) saturate(120%);
+  }
+}
+
+/* Respect users who prefer reduced motion (accessibility) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* ===== Kraton Pattern Overlay ===== */
 .kraton-pattern {
   background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M54.627 0l.83.83L40.153 16.13l-.83-.83L54.627 0zm-54.627 0l.83.83L15.305 16.13l-.83-.83L0 0zm27.314 0l.83.83L42.619 16.13l-.83-.83L27.314 0zm13.657 0l.83.83L56.275 16.13l-.83-.83L40.971 0zM13.657 0l.83.83L28.962 16.13l-.83-.83L13.657 0zM0 27.314l.83.83L15.305 43.444l-.83-.83L0 27.314zm27.314 0l.83.83L42.619 43.444l-.83-.83L27.314 27.314zm13.657 0l.83.83L56.275 43.444l-.83-.83L40.971 27.314zM13.657 27.314l.83.83L28.962 43.444l-.83-.83L13.657 27.314z' fill='%23003527' fill-opacity='1' fill-rule='evenodd'/%3E%3C/svg%3E");
@@ -283,8 +328,11 @@
 }
 
 /* ===== Card hover ===== */
+/* Optimized: only transition transform + box-shadow (not 'all') for smooth scroll on mobile */
 .card-hover {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Promote to own layer so hover repaint doesn't trigger full-page reflow */
+  will-change: transform;
 }
 .card-hover:hover {
   transform: translateY(-4px);

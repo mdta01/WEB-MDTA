@@ -59,7 +59,7 @@ export default function ProfilSection() {
           <motion.span
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
+            viewport={{ once: true }}
             transition={{ duration: 0.4 }}
             className="inline-block px-3 py-0.5 rounded-full bg-[#064e3b]/15 text-[#003527] text-xs font-semibold uppercase tracking-wider mb-2"
           >
@@ -68,7 +68,7 @@ export default function ProfilSection() {
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
+            viewport={{ once: true }}
             transition={{ duration: 0.5 }}
             className="text-2xl md:text-3xl font-bold text-gradient-emerald"
           >
@@ -79,12 +79,12 @@ export default function ProfilSection() {
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
+          viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
           <Card className="border border-[#e4e2de] shadow-premium-lg wood-carved-shadow overflow-hidden rounded-2xl bg-[#ffffff]">
             <div className="grid md:grid-cols-5 gap-0">
-              <div className="md:col-span-2 bg-gradient-to-br from-[#003527] to-[#064e3b] p-8 flex items-center justify-center min-h-[300px]">
+              <div className="md:col-span-2 bg-gradient-to-br from-[#003527] to-[#064e3b] p-6 md:p-8 flex items-center justify-center md:min-h-[300px]">
                 <div className="text-center text-white">
                   <BookOpen className="h-16 w-16 text-[#cca72f] mx-auto mb-4" />
                   <h3 className="text-2xl font-bold mb-2">{madrasahName}</h3>
@@ -109,7 +109,7 @@ export default function ProfilSection() {
           <motion.span
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
+            viewport={{ once: true }}
             transition={{ duration: 0.4 }}
             className="inline-block px-3 py-0.5 rounded-full bg-[#cca72f]/15 text-[#895033] text-xs font-semibold uppercase tracking-wider mb-2"
           >
@@ -118,7 +118,7 @@ export default function ProfilSection() {
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
+            viewport={{ once: true }}
             transition={{ duration: 0.5 }}
             className="text-2xl md:text-3xl font-bold text-gradient-emerald"
           >
@@ -127,7 +127,7 @@ export default function ProfilSection() {
           <div className="w-20 h-1 bg-gradient-to-r from-[#003527] to-[#cca72f] mx-auto mt-2 rounded-full" />
         </div>
         <div className="grid md:grid-cols-3 gap-6">
-          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-50px" }} transition={{ delay: 0, duration: 0.5 }}>
+          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
             <Card className="border border-[#e4e2de] shadow-premium wood-carved-shadow card-hover h-full rounded-2xl bg-[#ffffff]">
               <CardContent className="p-6">
                 <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#003527] to-[#064e3b] flex items-center justify-center mb-4 shadow-md shadow-[#003527]/30">
@@ -143,7 +143,7 @@ export default function ProfilSection() {
             </Card>
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-50px" }} transition={{ delay: 0.1, duration: 0.5 }}>
+          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1, duration: 0.5 }}>
             <Card className="border border-[#e4e2de] shadow-premium wood-carved-shadow card-hover h-full rounded-2xl bg-[#ffffff]">
               <CardContent className="p-6">
                 <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#895033] to-[#a86644] flex items-center justify-center mb-4 shadow-md shadow-[#895033]/30">
@@ -159,7 +159,7 @@ export default function ProfilSection() {
             </Card>
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-50px" }} transition={{ delay: 0.2, duration: 0.5 }}>
+          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2, duration: 0.5 }}>
             <Card className="border border-[#e4e2de] shadow-premium wood-carved-shadow card-hover h-full rounded-2xl bg-[#ffffff]">
               <CardContent className="p-6">
                 <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#064e3b] to-[#003527] flex items-center justify-center mb-4 shadow-md shadow-[#064e3b]/30">
@@ -183,7 +183,7 @@ export default function ProfilSection() {
           <motion.span
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
+            viewport={{ once: true }}
             transition={{ duration: 0.4 }}
             className="inline-block px-3 py-0.5 rounded-full bg-[#064e3b]/15 text-[#003527] text-xs font-semibold uppercase tracking-wider mb-2"
           >
@@ -192,7 +192,7 @@ export default function ProfilSection() {
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
+            viewport={{ once: true }}
             transition={{ duration: 0.5 }}
             className="text-2xl md:text-3xl font-bold text-gradient-emerald"
           >
@@ -252,7 +252,7 @@ export default function ProfilSection() {
           <motion.span
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
+            viewport={{ once: true }}
             transition={{ duration: 0.4 }}
             className="inline-block px-3 py-0.5 rounded-full bg-[#cca72f]/15 text-[#895033] text-xs font-semibold uppercase tracking-wider mb-2"
           >
@@ -261,7 +261,7 @@ export default function ProfilSection() {
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
+            viewport={{ once: true }}
             transition={{ duration: 0.5 }}
             className="text-2xl md:text-3xl font-bold text-gradient-emerald"
           >
@@ -292,10 +292,10 @@ export default function ProfilSection() {
             {teachers.map((teacher: { id: string; name: string; position: string; subject?: string; image?: string; phone?: string }, idx: number) => (
               <motion.div
                 key={teacher.id}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ delay: Math.min(idx * 0.05, 0.4), duration: 0.5 }}
+                viewport={{ once: true }}
+                transition={{ delay: Math.min(idx * 0.03, 0.15), duration: 0.4 }}
               >
                 <Card className="overflow-hidden border border-[#e4e2de] shadow-premium card-hover group flex flex-col h-full rounded-2xl bg-[#ffffff]">
                   {/* Photo area (clean, no overlay text) */}
