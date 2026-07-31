@@ -17,6 +17,7 @@ import { CalendarModal } from '@/components/sections/CalendarModal'
 import { MarkdownRenderer } from '@/components/sections/MarkdownRenderer'
 import { useAppStore } from '@/store/useAppStore'
 import { gregorianToHijri, hijriMonthNames, masehiMonthNames } from '@/lib/hijri'
+import { KratonSectionHeader, KratonDivider } from '@/components/kraton'
 
 // Format a Date as "15 Juli 2026 (1 Muharram 1448 H)" — Masehi + Hijri
 function formatMasehiHijri(date: Date): string {
@@ -430,12 +431,8 @@ export default function BerandaSection() {
                 {getSetting('madrasah_name') || 'MDTA Miftahul Ulum 01'}
               </h1>
 
-              {/* Decorative divider */}
-              <div className="flex items-center gap-3 mb-6" aria-hidden>
-                <span className="h-px w-16 md:w-24 bg-gradient-to-r from-transparent to-[#cca72f]/80" />
-                <span className="text-[#cca72f] text-sm">◆</span>
-                <span className="h-px w-16 md:w-24 bg-gradient-to-l from-transparent to-[#cca72f]/80" />
-              </div>
+              {/* Decorative Kraton divider — Javanese diamond ornament */}
+              <KratonDivider variant="full" animated={false} className="mb-6" />
 
               {/* Address — badge-style with MapPin icon, clickable ke Google Maps jika GPS tersedia */}
               {(() => {
@@ -569,17 +566,11 @@ export default function BerandaSection() {
 
       {/* Statistics */}
       <section className="container mx-auto px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-8"
-        >
-          <span className="inline-block px-4 py-1 rounded-full bg-[#064e3b]/15 text-[#003527] text-xs font-semibold uppercase tracking-wider mb-3">Statistik</span>
-          <h2 className="text-2xl md:text-3xl font-bold text-gradient-emerald">Data Madrasah</h2>
-          <div className="w-20 h-1 bg-gradient-to-r from-[#003527] to-[#cca72f] mx-auto mt-3 rounded-full" />
-        </motion.div>
+        <KratonSectionHeader
+          badge="Statistik"
+          title="Data Madrasah"
+          align="center"
+        />
         {statsLoading ? (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[1, 2, 3, 4].map(i => (
@@ -601,26 +592,21 @@ export default function BerandaSection() {
 
       {/* Latest News */}
       <section className="container mx-auto px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.5 }}
-          className="flex items-center justify-between mb-6"
-        >
-          <div>
-            <span className="inline-block px-3 py-0.5 rounded-full bg-[#cca72f]/15 text-[#895033] text-xs font-semibold uppercase tracking-wider mb-2">Update Terkini</span>
-            <h2 className="text-2xl md:text-3xl font-bold text-gradient-emerald">Berita Terbaru</h2>
-            <div className="w-20 h-1 bg-gradient-to-r from-[#003527] to-[#cca72f] mt-2 rounded-full" />
-          </div>
+        <div className="flex items-center justify-between mb-6 gap-4">
+          <KratonSectionHeader
+            badge="Update Terkini"
+            title="Berita Terbaru"
+            align="left"
+            className="mb-0"
+          />
           <Button
             variant="ghost"
             onClick={() => { setCurrentPage('berita'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
-            className="text-[#003527] hover:text-[#064e3b] hover:gap-2 transition-all rounded-full"
+            className="text-[#003527] hover:text-[#064e3b] hover:gap-2 transition-all rounded-full shrink-0"
           >
             Selengkapnya <ArrowRight className="ml-1 h-4 w-4" />
           </Button>
-        </motion.div>
+        </div>
         {newsLoading ? (
           <div className="grid md:grid-cols-3 gap-6">
             {[1, 2, 3].map(i => (
@@ -716,29 +702,21 @@ export default function BerandaSection() {
 
       {/* Dakwah & Kajian Terbaru */}
       <section className="container mx-auto px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.5 }}
-          className="flex items-center justify-between mb-6"
-        >
-          <div>
-            <span className="inline-block px-3 py-0.5 rounded-full bg-[#064e3b]/15 text-[#003527] text-xs font-semibold uppercase tracking-wider mb-2">Inspirasi Islami</span>
-            <h2 className="text-2xl md:text-3xl font-bold text-gradient-emerald flex items-center gap-2">
-              <BookHeart className="h-7 w-7 text-[#cca72f]" />
-              Dakwah & Kajian
-            </h2>
-            <div className="w-20 h-1 bg-gradient-to-r from-[#003527] to-[#cca72f] mt-2 rounded-full" />
-          </div>
+        <div className="flex items-center justify-between mb-6 gap-4">
+          <KratonSectionHeader
+            badge="Inspirasi Islami"
+            title={<span className="inline-flex items-center gap-2"><BookHeart className="h-7 w-7 text-[#cca72f]" /> Dakwah & Kajian</span>}
+            align="left"
+            className="mb-0"
+          />
           <Button
             variant="ghost"
             onClick={() => { setCurrentPage('dakwah'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
-            className="text-[#003527] hover:text-[#064e3b] hover:gap-2 transition-all rounded-full"
+            className="text-[#003527] hover:text-[#064e3b] hover:gap-2 transition-all rounded-full shrink-0"
           >
             Selengkapnya <ArrowRight className="ml-1 h-4 w-4" />
           </Button>
-        </motion.div>
+        </div>
         {dakwahLoading ? (
           <div className="grid md:grid-cols-3 gap-6">
             {[1, 2, 3].map(i => (
@@ -865,21 +843,12 @@ export default function BerandaSection() {
 
       {/* Kalender Hijriyah & Masehi — Professional Calendar Cards */}
       <section className="container mx-auto px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-6"
-        >
-          <span className="inline-block px-3 py-0.5 rounded-full bg-[#064e3b]/15 text-[#003527] text-xs font-semibold uppercase tracking-wider mb-2">Penanggalan</span>
-          <h2 className="text-2xl md:text-3xl font-bold text-gradient-emerald">Kalender</h2>
-          <div className="w-20 h-1 bg-gradient-to-r from-[#003527] to-[#cca72f] mx-auto mt-2 rounded-full" />
-          <p className="text-xs text-[#404944] mt-3 flex items-center justify-center gap-1.5">
-            <Eye className="h-3.5 w-3.5 text-[#003527]" />
-            Klik kartu kalender untuk melihat kalender lengkap &amp; hari besar Islam
-          </p>
-        </motion.div>
+        <KratonSectionHeader
+          badge="Penanggalan"
+          title="Kalender"
+          align="center"
+          subtitle={<span className="inline-flex items-center justify-center gap-1.5"><Eye className="h-3.5 w-3.5 text-[#003527]" /> Klik kartu kalender untuk melihat kalender lengkap & hari besar Islam</span>}
+        />
 
         <div className="grid md:grid-cols-2 gap-6">
           {/* Kalender Hijriyah */}
@@ -1030,17 +999,11 @@ export default function BerandaSection() {
           {/* Decorative glow */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#064e3b]/20 rounded-full blur-3xl pointer-events-none" aria-hidden />
           <div className="container mx-auto px-4 relative">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.5 }}
-              className="text-center mb-8"
-            >
-              <span className="inline-block px-3 py-0.5 rounded-full bg-[#cca72f]/15 text-[#895033] text-xs font-semibold uppercase tracking-wider mb-2">Kata Mereka</span>
-              <h2 className="text-2xl md:text-3xl font-bold text-gradient-emerald">Testimoni</h2>
-              <div className="w-20 h-1 bg-gradient-to-r from-[#003527] to-[#cca72f] mx-auto mt-2 rounded-full" />
-            </motion.div>
+            <KratonSectionHeader
+              badge="Kata Mereka"
+              title="Testimoni"
+              align="center"
+            />
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -1095,17 +1058,11 @@ export default function BerandaSection() {
       {events.length > 0 && (
         <section className="bg-[#cca72f]/5 py-12">
           <div className="container mx-auto px-4">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.5 }}
-              className="text-center mb-8"
-            >
-              <span className="inline-block px-3 py-0.5 rounded-full bg-[#064e3b]/15 text-[#003527] text-xs font-semibold uppercase tracking-wider mb-2">Agenda</span>
-              <h2 className="text-2xl md:text-3xl font-bold text-gradient-emerald">Kegiatan Mendatang</h2>
-              <div className="w-20 h-1 bg-gradient-to-r from-[#003527] to-[#cca72f] mx-auto mt-2 rounded-full" />
-            </motion.div>
+            <KratonSectionHeader
+              badge="Agenda"
+              title="Kegiatan Mendatang"
+              align="center"
+            />
             <div className="grid md:grid-cols-3 gap-6">
               {events.map((event: { id: string; title: string; description?: string; date: string; location?: string }, idx: number) => (
                 <motion.div
