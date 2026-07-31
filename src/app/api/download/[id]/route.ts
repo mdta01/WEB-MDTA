@@ -83,16 +83,37 @@ export async function GET(
     const isRaw = fileUrl.includes('/raw/upload/')
     const resourceType = isRaw ? 'raw' : 'image'
 
-    // Generate signed delivery URL — this bypasses Cloudinary access control
-    // by signing the URL with our API secret. Signed URLs work even when
-    // direct public access is denied (strict mode / ACL).
-    const signedUrl = cloudinary.url(publicId, {
-      resource_type: resourceType,
-      sign_url: true,
-      secure: true,
-      // For raw files, no transformations — deliver as-is
-      ...(isRaw ? {} : { fetch_format: 'auto', quality: 'auto' }),
-    })
+    // Generate authenticated download URL — uses Cloudinary API to create
+    // a signed URL that bypasses access control (ACL/strict mode).
+    // private_download_url works for both raw files and images.
+    let signedUrl: string
+    try {
+      if (isRaw) {
+        // For raw files (PDF, DOC, etc.) — use private_download_url
+        // which generates a time-limited signed URL with API authentication.
+        signedUrl = cloudinary.utils.private_download_url(publicId, ext, {
+          resource_type: 'raw',
+          secure: true,
+          // URL valid for 1 hour
+          expires_at: Math.floor(Date.now() / 1000) + 3600,
+        })
+      } else {
+        // For images — use signed url() with sign_url
+        signedUrl = cloudinary.url(publicId, {
+          resource_type: 'image',
+          sign_url: true,
+          secure: true,
+          fetch_format: 'auto',
+          quality: 'auto',
+        })
+      }
+    } catch (signError) {
+      console.error('[Download Proxy] Signed URL generation failed:', signError)
+      return NextResponse.json(
+        { error: 'Gagal generate URL download. Coba lagi.' },
+        { status: 500 }
+      )
+    }
 
     console.log(`[Download Proxy] Fetching: ${publicId} (${resourceType})`)
 

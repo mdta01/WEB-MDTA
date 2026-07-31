@@ -74,13 +74,33 @@ export async function GET(
     const isRaw = fileUrl.includes('/raw/upload/')
     const resourceType = isRaw ? 'raw' : 'image'
 
-    // Generate signed delivery URL — bypasses Cloudinary access control
-    const signedUrl = cloudinary.url(publicId, {
-      resource_type: resourceType,
-      sign_url: true,
-      secure: true,
-      ...(isRaw ? {} : { fetch_format: 'auto', quality: 'auto' }),
-    })
+    // Generate authenticated download URL — bypasses Cloudinary access control.
+    let signedUrl: string
+    try {
+      if (isRaw) {
+        // For raw files (PDF, DOC, etc.) — use private_download_url
+        signedUrl = cloudinary.utils.private_download_url(publicId, ext, {
+          resource_type: 'raw',
+          secure: true,
+          expires_at: Math.floor(Date.now() / 1000) + 3600,
+        })
+      } else {
+        // For images — use signed url() with sign_url
+        signedUrl = cloudinary.url(publicId, {
+          resource_type: 'image',
+          sign_url: true,
+          secure: true,
+          fetch_format: 'auto',
+          quality: 'auto',
+        })
+      }
+    } catch (signError) {
+      console.error('[Preview Proxy] Signed URL generation failed:', signError)
+      return NextResponse.json(
+        { error: 'Gagal generate URL preview. Coba lagi.' },
+        { status: 500 }
+      )
+    }
 
     console.log(`[Preview Proxy] Fetching: ${publicId} (${resourceType})`)
 
