@@ -176,7 +176,9 @@ export default function DownloadSection() {
                     viewport={{ once: true, margin: "-50px" }}
                     transition={{ delay: idx * 0.05, duration: 0.5 }}
                   >
-                    <Card className="border border-[#e4e2de] shadow-premium card-hover rounded-2xl bg-[#ffffff] min-w-0 max-w-full overflow-hidden">
+                    {/* Wrapper div constrains card to grid column width (prevents overflow) */}
+                    <div className="min-w-0 max-w-full">
+                    <Card className="border border-[#e4e2de] shadow-premium card-hover rounded-2xl bg-[#ffffff] w-full overflow-hidden">
                       <CardContent className="p-3 sm:p-4 min-w-0">
                         {/* Mobile: stack vertical. Desktop: horizontal row. */}
                         <div className="flex items-center gap-3 sm:gap-4 min-w-0">
@@ -218,6 +220,7 @@ export default function DownloadSection() {
                         </div>
                       </CardContent>
                     </Card>
+                    </div>
                   </motion.div>
                 )
               })}
