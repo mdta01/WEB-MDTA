@@ -17,7 +17,7 @@ export default function AlumniSection() {
   const alumni = Array.isArray(data) ? data : (data?.alumni || [])
 
   return (
-    <div className="space-y-8">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8">
       <div className="text-center mb-8">
         <h2 className="text-2xl md:text-3xl font-bold text-[#003527]">Alumni</h2>
         <div className="w-20 h-1 bg-[#cca72f] mx-auto mt-2 rounded-full" />

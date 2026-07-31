@@ -138,7 +138,7 @@ export default function PPDBSection() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8">
       <div className="text-center mb-8">
         <h2 className="text-2xl md:text-3xl font-bold text-[#003527]">
           Pendaftaran Peserta Didik Baru (PPDB)

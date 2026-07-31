@@ -149,7 +149,7 @@ export default function ProgramSection() {
   const ekskulPrograms = programs.filter((p: { category: string }) => p.category === 'ekstrakurikuler')
 
   return (
-    <div className="space-y-8">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8">
       <div className="text-center mb-8">
         <motion.span
           initial={{ opacity: 0, y: 10 }}

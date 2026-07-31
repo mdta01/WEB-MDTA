@@ -61,7 +61,7 @@ export default function KelembagaanSection() {
   const isLoading = institutionLoading || settingsLoading
 
   return (
-    <div className="space-y-8">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8">
       <KratonSectionHeader
         badge="Profil Lembaga"
         title="Kelembagaan"

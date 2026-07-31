@@ -376,7 +376,7 @@ export default function BerandaSection() {
   }
 
   return (
-    <div className="space-y-16">
+    <div className="space-y-16 pb-8">
       {/* Hero Section — modern startup style */}
       <section className="relative overflow-hidden">
         <div className="bg-[#003527] text-white min-h-[420px] sm:min-h-[480px] flex items-center">
@@ -402,7 +402,7 @@ export default function BerandaSection() {
           <div className="absolute inset-0 kraton-pattern opacity-[0.04] pointer-events-none" aria-hidden />
 
           {/* Centered hero content */}
-          <div className="container mx-auto px-4 py-20 md:py-28 relative">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28 relative">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -506,7 +506,7 @@ export default function BerandaSection() {
               viewBox="0 0 1440 60"
               preserveAspectRatio="none"
               className="w-full h-[40px] md:h-[60px]"
-              fill="#ffffff"
+              fill="#fbf9f5"
             >
               <path d="M0,32 C240,60 480,60 720,40 C960,20 1200,20 1440,40 L1440,60 L0,60 Z" />
             </svg>
@@ -515,7 +515,7 @@ export default function BerandaSection() {
       </section>
 
       {/* Sambutan Kepala Madrasah */}
-      <section className="container mx-auto px-4">
+      <section className="container mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -565,7 +565,7 @@ export default function BerandaSection() {
       </section>
 
       {/* Statistics */}
-      <section className="container mx-auto px-4">
+      <section className="container mx-auto px-4 sm:px-6 lg:px-8">
         <KratonSectionHeader
           badge="Statistik"
           title="Data Madrasah"
@@ -591,7 +591,7 @@ export default function BerandaSection() {
       </section>
 
       {/* Latest News */}
-      <section className="container mx-auto px-4">
+      <section className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between mb-6 gap-4">
           <KratonSectionHeader
             badge="Update Terkini"
@@ -701,7 +701,7 @@ export default function BerandaSection() {
       </section>
 
       {/* Dakwah & Kajian Terbaru */}
-      <section className="container mx-auto px-4">
+      <section className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between mb-6 gap-4">
           <KratonSectionHeader
             badge="Inspirasi Islami"
@@ -842,7 +842,7 @@ export default function BerandaSection() {
       </section>
 
       {/* Kalender Hijriyah & Masehi — Professional Calendar Cards */}
-      <section className="container mx-auto px-4">
+      <section className="container mx-auto px-4 sm:px-6 lg:px-8">
         <KratonSectionHeader
           badge="Penanggalan"
           title="Kalender"
@@ -998,7 +998,7 @@ export default function BerandaSection() {
         <section className="relative bg-mesh-emerald py-12 overflow-hidden">
           {/* Decorative glow */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#064e3b]/20 rounded-full blur-3xl pointer-events-none" aria-hidden />
-          <div className="container mx-auto px-4 relative">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
             <KratonSectionHeader
               badge="Kata Mereka"
               title="Testimoni"
@@ -1057,7 +1057,7 @@ export default function BerandaSection() {
       {/* Upcoming Events */}
       {events.length > 0 && (
         <section className="bg-[#cca72f]/5 py-12">
-          <div className="container mx-auto px-4">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <KratonSectionHeader
               badge="Agenda"
               title="Kegiatan Mendatang"
