@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
 import {
   CreditCard, Bell, Calendar, MessageSquare,
-  Send, Clock, AlertCircle, MapPin, X,
+  Send, Clock, AlertCircle, MapPin, X, Megaphone, ChevronRight,
 } from 'lucide-react'
 import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
@@ -126,47 +126,99 @@ export default function WaliSantriSection() {
             </Card>
           </motion.div>
 
-          {/* Announcements for Parents */}
+          {/* Announcements for Parents — prominent, urgent highlight */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-            <Card className="border border-[#e4e2de] shadow-md card-hover rounded-2xl bg-[#ffffff]">
-              <CardContent className="p-6">
-                <h3 className="text-lg font-bold text-[#003527] flex items-center gap-2 mb-4">
-                  <Bell className="h-5 w-5 text-[#cca72f]" />
-                  Pengumuman untuk Wali Santri
-                </h3>
+            <Card className="border border-[#e4e2de] shadow-premium-lg wood-carved-shadow rounded-2xl bg-[#ffffff] overflow-hidden">
+              {/* Top accent strip — gold for importance */}
+              <div className="h-1 bg-gradient-to-r from-[#003527] via-[#cca72f] to-[#003527]" aria-hidden />
+              <CardContent className="p-5 sm:p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-bold text-[#003527] flex items-center gap-2 font-display">
+                    <span className="w-8 h-8 rounded-lg bg-[#cca72f]/15 flex items-center justify-center">
+                      <Bell className="h-4 w-4 text-[#895033]" />
+                    </span>
+                    Pengumuman Wali Santri
+                  </h3>
+                  {announcements.length > 0 && (
+                    <span className="text-xs text-[#404944]/70 bg-[#f5f3ef] px-2 py-1 rounded-full">
+                      {announcements.length} pengumuman
+                    </span>
+                  )}
+                </div>
+
+                {/* Helper text — guide parents */}
+                {announcements.length > 0 && (
+                  <p className="text-xs text-[#895033] bg-[#cca72f]/8 px-3 py-2 rounded-lg mb-4 flex items-start gap-2">
+                    <AlertCircle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+                    <span>Klik pengumuman untuk membaca selengkapnya. Pastikan Anda membaca semua pengumuman penting di bawah ini.</span>
+                  </p>
+                )}
+
                 {announcementsLoading ? (
                   <div className="space-y-3">
                     {[1, 2, 3].map(i => <Skeleton key={i} className="h-16 w-full" />)}
                   </div>
                 ) : announcements.length > 0 ? (
-                  <div className="space-y-3 max-h-64 overflow-y-auto">
-                    {announcements.map((a: { id: string; title: string; content?: string; type: string; createdAt: string }) => (
-                      <button
-                        key={a.id}
-                        type="button"
-                        onClick={() => setSelectedAnnouncement(a)}
-                        className="w-full text-left flex items-start gap-3 p-3 bg-[#cca72f]/5 hover:bg-[#cca72f]/10 rounded-lg transition-colors cursor-pointer"
-                      >
-                        <AlertCircle className="h-4 w-4 text-[#cca72f] mt-0.5 shrink-0" />
-                        <div className="min-w-0 flex-1">
-                          <p className="text-sm font-medium text-[#003527]">{a.title}</p>
-                          {a.content && (
-                            <p className="text-xs text-[#404944] mt-0.5 line-clamp-2">{a.content}</p>
-                          )}
-                          <p className="text-xs text-[#404944]/70 mt-1">
-                            {new Date(a.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
-                          </p>
-                          {a.content && a.content.length > 120 && (
-                            <span className="inline-block mt-1 text-xs text-[#003527] font-semibold hover:underline">
-                              Baca selengkapnya →
-                            </span>
-                          )}
-                        </div>
-                      </button>
-                    ))}
+                  <div className="space-y-2.5">
+                    {announcements.map((a: { id: string; title: string; content?: string; type: string; createdAt: string }, idx: number) => {
+                      // First 2 announcements marked as "new/urgent" visually
+                      const isRecent = idx < 2
+                      return (
+                        <button
+                          key={a.id}
+                          type="button"
+                          onClick={() => setSelectedAnnouncement(a)}
+                          className={`w-full text-left flex items-start gap-3 p-3 sm:p-4 rounded-xl transition-all cursor-pointer group ${
+                            isRecent
+                              ? 'bg-[#003527]/5 hover:bg-[#003527]/8 border border-[#003527]/15'
+                              : 'bg-[#f5f3ef] hover:bg-[#cca72f]/8 border border-transparent'
+                          }`}
+                        >
+                          {/* Icon — alert for recent, megaphone for others */}
+                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                            isRecent ? 'bg-[#cca72f]/20 text-[#895033]' : 'bg-[#003527]/10 text-[#003527]'
+                          }`}>
+                            {isRecent ? <AlertCircle className="h-4 w-4" /> : <Megaphone className="h-4 w-4" />}
+                          </div>
+
+                          <div className="min-w-0 flex-1">
+                            {/* Title row with "Baru" badge for recent */}
+                            <div className="flex items-center gap-2 mb-0.5">
+                              <p className="text-sm font-semibold text-[#003527] leading-tight">{a.title}</p>
+                              {isRecent && (
+                                <span className="inline-flex items-center px-1.5 py-0.5 rounded-full bg-[#cca72f] text-[#003527] text-[9px] font-bold uppercase tracking-wide shrink-0">
+                                  Baru
+                                </span>
+                              )}
+                            </div>
+                            {/* Content preview */}
+                            {a.content && (
+                              <p className="text-xs text-[#404944] mt-0.5 line-clamp-2">{a.content}</p>
+                            )}
+                            {/* Date + read more */}
+                            <div className="flex items-center justify-between mt-1.5">
+                              <span className="text-[10px] text-[#404944]/70 flex items-center gap-1">
+                                <Clock className="h-2.5 w-2.5" />
+                                {new Date(a.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                              </span>
+                              {a.content && a.content.length > 120 && (
+                                <span className="text-[10px] text-[#003527] font-semibold group-hover:underline flex items-center gap-0.5">
+                                  Baca selengkapnya
+                                  <ChevronRight className="h-2.5 w-2.5" />
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </button>
+                      )
+                    })}
                   </div>
                 ) : (
-                  <p className="text-[#404944]/70 text-sm">Belum ada pengumuman untuk wali santri</p>
+                  <div className="text-center py-8">
+                    <Bell className="h-10 w-10 text-[#064e3b]/30 mx-auto mb-2" />
+                    <p className="text-sm text-[#404944]">Belum ada pengumuman untuk wali santri</p>
+                    <p className="text-xs text-[#404944]/60 mt-1">Periksa kembali secara berkala</p>
+                  </div>
                 )}
               </CardContent>
             </Card>
