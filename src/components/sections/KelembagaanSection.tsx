@@ -139,24 +139,36 @@ export default function KelembagaanSection() {
             </div>
           </div>
           {!allValuesEmpty ? (
-            <div className="p-6 bg-[#fbf9f5]">
-              <div className="border-2 border-[#cca72f]/40 rounded-xl p-6 bg-[#ffffff] relative">
+            <div className="p-4 sm:p-6 bg-[#fbf9f5]">
+              <div className="border-2 border-[#cca72f]/40 rounded-xl p-4 sm:p-6 bg-[#ffffff] relative">
                 {/* Corner ornaments */}
-                <span className="absolute top-2 left-2 h-2 w-2 rotate-45 bg-[#cca72f]/40" aria-hidden />
-                <span className="absolute top-2 right-2 h-2 w-2 rotate-45 bg-[#cca72f]/40" aria-hidden />
-                <span className="absolute bottom-2 left-2 h-2 w-2 rotate-45 bg-[#cca72f]/40" aria-hidden />
-                <span className="absolute bottom-2 right-2 h-2 w-2 rotate-45 bg-[#cca72f]/40" aria-hidden />
+                <span className="absolute top-1.5 left-1.5 sm:top-2 sm:left-2 h-1.5 w-1.5 sm:h-2 sm:w-2 rotate-45 bg-[#cca72f]/40" aria-hidden />
+                <span className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 h-1.5 w-1.5 sm:h-2 sm:w-2 rotate-45 bg-[#cca72f]/40" aria-hidden />
+                <span className="absolute bottom-1.5 left-1.5 sm:bottom-2 sm:left-2 h-1.5 w-1.5 sm:h-2 sm:w-2 rotate-45 bg-[#cca72f]/40" aria-hidden />
+                <span className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 h-1.5 w-1.5 sm:h-2 sm:w-2 rotate-45 bg-[#cca72f]/40" aria-hidden />
 
                 <div className="text-center mb-4">
                   <p className="text-xs text-[#404944]/70 uppercase tracking-widest font-body">Dokumen Resmi</p>
                   <h4 className="text-lg font-bold text-[#003527] mt-1 font-display">Identitas Madrasah</h4>
                   <KratonDivider variant="minimal" align="center" className="mt-2" />
                 </div>
-                <div className="space-y-3">
+                <div className="space-y-1">
                   {displayData.filter(item => item.value).map((item) => (
-                    <div key={item.key} className="flex justify-between items-center py-2 border-b border-dashed border-[#e4e2de] last:border-0">
-                      <span className="text-sm text-[#404944] font-body">{item.label}</span>
-                      <span className="text-sm font-medium text-[#003527] text-right font-body">{item.value}</span>
+                    <div
+                      key={item.key}
+                      className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-0.5 sm:gap-4 py-2 border-b border-dashed border-[#e4e2de] last:border-0"
+                    >
+                      {/* Label — nowrap + shrink-0 so it never breaks letter-by-letter.
+                          On mobile: sits above value (flex-col stack).
+                          On desktop: sits left (flex-row). */}
+                      <span className="text-xs sm:text-sm text-[#404944] font-body whitespace-nowrap shrink-0 uppercase tracking-wide font-medium">
+                        {item.label}
+                      </span>
+                      {/* Value — flex-1 + min-w-0 so it wraps properly without overflow.
+                          text-right on desktop, text-left on mobile. */}
+                      <span className="text-sm font-medium text-[#003527] text-left sm:text-right font-body break-words min-w-0">
+                        {item.value}
+                      </span>
                     </div>
                   ))}
                 </div>
