@@ -586,65 +586,110 @@ export default function BerandaSection() {
         </div>
       </section>
 
-      {/* Sambutan Kepala Madrasah */}
+      {/* Sambutan Kepala Madrasah — formal layout with ornaments + signature */}
       <section className="container mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
+          viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <Card className="overflow-hidden border-0 shadow-premium-lg rounded-2xl">
+          <Card className="overflow-hidden border border-[#e4e2de] shadow-premium-lg wood-carved-shadow rounded-2xl bg-[#ffffff]">
             <div className="grid md:grid-cols-3 gap-0">
-              <div className="bg-gradient-to-br from-[#064e3b] to-[#003527] p-8 flex flex-col items-center justify-center text-white relative overflow-hidden">
-                {/* Decorative Kraton pattern */}
-                <div className="absolute inset-0 kraton-pattern opacity-5" />
-                <div className="relative">
-                  <div className="w-32 h-32 md:w-36 md:h-36 rounded-full overflow-hidden mb-4 border-4 border-[#cca72f] shadow-xl ring-4 ring-white/20 bg-white/10">
-                    {settingsLoading ? (
-                      <div className="w-full h-full bg-white/20 animate-pulse" />
-                    ) : (
-                      <img
-                        src={getSetting('madrasah_principal_photo') || '/images/kepala-madrasah.png'}
-                        alt="Kepala Madrasah"
-                        className="w-full h-full object-cover"
-                      />
-                    )}
+              {/* LEFT — Photo panel with gold frame + name plate (formal, berwibawa) */}
+              <div className="bg-gradient-to-br from-[#003527] to-[#064e3b] p-6 md:p-8 flex flex-col items-center justify-center text-white relative overflow-hidden">
+                {/* Kraton pattern overlay */}
+                <div className="absolute inset-0 kraton-pattern opacity-[0.06] pointer-events-none" aria-hidden />
+                {/* Top gold accent strip */}
+                <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-[#cca72f] via-[#ffe088] to-[#cca72f]" aria-hidden />
+
+                <div className="relative z-10 flex flex-col items-center">
+                  {/* Photo with gold frame + glow */}
+                  <div className="relative mb-4">
+                    {/* Outer gold ring glow */}
+                    <div className="absolute -inset-1 bg-[#cca72f]/30 rounded-full blur-md" aria-hidden />
+                    <div className="relative w-28 h-28 md:w-36 md:h-36 rounded-full overflow-hidden border-4 border-[#cca72f] shadow-xl ring-4 ring-white/15 bg-white/10">
+                      {settingsLoading ? (
+                        <div className="w-full h-full bg-white/20 animate-pulse" />
+                      ) : (
+                        <img
+                          src={getSetting('madrasah_principal_photo') || '/images/kepala-madrasah.png'}
+                          alt="Kepala Madrasah"
+                          className="w-full h-full object-cover"
+                        />
+                      )}
+                    </div>
                   </div>
+                  {/* Name plate — formal, with gold divider */}
+                  <h3 className="font-display font-bold text-base md:text-lg text-center leading-tight">
+                    {getSetting('madrasah_principals_name') || 'Kepala Madrasah'}
+                  </h3>
+                  {/* Gold divider under name */}
+                  <div className="flex items-center gap-2 mt-2 mb-2">
+                    <span className="h-px w-8 bg-gradient-to-r from-transparent to-[#cca72f]" />
+                    <span className="rotate-45 inline-block w-1.5 h-1.5 bg-[#ffe088]" aria-hidden />
+                    <span className="h-px w-8 bg-gradient-to-l from-transparent to-[#cca72f]" />
+                  </div>
+                  <p className="text-[#ffe088] text-xs md:text-sm font-medium text-center tracking-wide uppercase">
+                    Kepala Madrasah
+                  </p>
                 </div>
-                <h3 className="font-bold text-lg text-center relative">Kepala Madrasah</h3>
-                <p className="text-[#ffe088] text-sm mt-1 font-medium text-center relative">
-                  {getSetting('madrasah_principals_name') || 'Kepala Madrasah'}
-                </p>
               </div>
-              <div className="md:col-span-2 p-8">
-                <h3 className="font-bold text-[#003527] text-lg mb-4 flex items-center gap-2">
-                  <Quote className="h-5 w-5 text-[#cca72f]" />
-                  Sambutan Kepala Madrasah
-                </h3>
-                {/* Arabic salam (opening) — centered, RTL, slightly smaller to sync with body */}
+
+              {/* RIGHT — Sambutan text panel */}
+              <div className="md:col-span-2 p-6 md:p-8 relative">
+                {/* Header — CENTERED with ornaments (sync dengan Bismillah) */}
+                <div className="text-center mb-6">
+                  {/* Top ornament: gold diamonds + line */}
+                  <div className="flex items-center justify-center gap-2 mb-3">
+                    <span className="h-px w-12 bg-gradient-to-r from-transparent to-[#cca72f]" />
+                    <Quote className="h-4 w-4 text-[#cca72f]" />
+                    <span className="rotate-45 inline-block w-1.5 h-1.5 bg-[#cca72f]" aria-hidden />
+                    <span className="h-px w-12 bg-gradient-to-l from-transparent to-[#cca72f]" />
+                  </div>
+                  <h3 className="font-display font-bold text-[#003527] text-lg md:text-xl">
+                    Sambutan Kepala Madrasah
+                  </h3>
+                </div>
+
+                {/* Arabic salam (opening) — CENTERED, RTL */}
                 <p
                   dir="rtl"
                   lang="ar"
-                  className="text-base md:text-lg text-[#003527] font-semibold mb-4 leading-relaxed text-center"
+                  className="text-base md:text-lg text-[#003527] font-semibold mb-5 leading-relaxed text-center"
                   style={{ fontFamily: '"Traditional Arabic", "Scheherazade New", "Amiri", serif' }}
                 >
                   السَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللَّهِ وَبَرَكَاتُهُ
                 </p>
-                <div className="text-[#404944] text-sm text-center">
-                  <MarkdownRenderer
-                    content={getSetting('madrasah_welcome') || "Puji syukur kehadirat Allah SWT yang telah memberikan rahmat dan karunia-Nya. MDTA Miftahul Ulum 01 berkomitmen untuk memberikan pendidikan Islam yang terbaik bagi putra-putri Anda. Dengan kurikulum yang berpusat pada Al-Quran dan As-Sunnah, kami berharap dapat mencetak generasi yang berilmu, berakhlak mulia, dan bermanfaat bagi agama, bangsa, dan negara. Selamat datang di keluarga besar Miftahul Ulum 01."}
-                  />
+
+                {/* Body text — LEFT/justify aligned (not centered), readable.
+                    Decorative gold left border for formal feel. */}
+                <div className="relative pl-4 md:pl-5 border-l-2 border-[#cca72f]/40">
+                  <div className="text-[#404944] text-sm md:text-base text-justify leading-relaxed">
+                    <MarkdownRenderer
+                      content={getSetting('madrasah_welcome') || "Puji syukur kehadirat Allah SWT yang telah memberikan rahmat dan karunia-Nya. MDTA Miftahul Ulum 01 berkomitmen untuk memberikan pendidikan Islam yang terbaik bagi putra-putri Anda. Dengan kurikulum yang berpusat pada Al-Quran dan As-Sunnah, kami berharap dapat mencetak generasi yang berilmu, berakhlak mulia, dan bermanfaat bagi agama, bangsa, dan negara. Selamat datang di keluarga besar Miftahul Ulum 01."}
+                    />
+                  </div>
                 </div>
-                {/* Arabic closing — centered, RTL, slightly smaller to sync with body */}
+
+                {/* Arabic closing — CENTERED, RTL */}
                 <p
                   dir="rtl"
                   lang="ar"
-                  className="text-base md:text-lg text-[#003527] font-semibold mt-4 leading-relaxed text-center"
+                  className="text-base md:text-lg text-[#003527] font-semibold mt-5 mb-4 leading-relaxed text-center"
                   style={{ fontFamily: '"Traditional Arabic", "Scheherazade New", "Amiri", serif' }}
                 >
                   وَالسَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللَّهِ وَبَرَكَاتُهُ
                 </p>
+
+                {/* Signature block — right-aligned with gold line (formal, berwibawa) */}
+                <div className="flex flex-col items-end mt-4">
+                  <div className="h-px w-24 bg-gradient-to-l from-[#cca72f] to-transparent mb-2" />
+                  <p className="font-display font-semibold text-[#003527] text-sm md:text-base">
+                    {getSetting('madrasah_principals_name') || 'Kepala Madrasah'}
+                  </p>
+                  <p className="text-xs text-[#404944] mt-0.5">Kepala Madrasah MDTA Miftahul Ulum 01</p>
+                </div>
               </div>
             </div>
           </Card>
