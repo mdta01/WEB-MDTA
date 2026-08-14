@@ -1,28 +1,13 @@
 import type { Metadata, Viewport } from "next";
-import { Playfair_Display, Montserrat } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { NotificationManager } from "@/components/layout/NotificationManager";
-
-const playfair = Playfair_Display({
-  variable: "--font-display",
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
-});
-
-const montserrat = Montserrat({
-  variable: "--font-body",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
 
 export const metadata: Metadata = {
   title: "MDTA Miftahul Ulum 01 - Madrasah Diniyah Takmiliyah Awaliyah",
   description: "Website resmi MDTA Miftahul Ulum 01 - Madrasah Diniyah Takmiliyah Awaliyah. Mencetak generasi Muslim yang berilmu, berakhlak mulia, dan berprestasi.",
   keywords: ["MDTA", "Miftahul Ulum", "Madrasah Diniyah", "Pondok Pesantren", "Tahfidz Quran", "Pendidikan Islam"],
   authors: [{ name: "MDTA Miftahul Ulum 01" }],
-  // Favicon: Next.js 16 auto-detects src/app/icon.png and serves it at /icon
-  // Logo displayed in header/footer comes from admin-uploaded 'madrasah_logo' setting
   openGraph: {
     title: "MDTA Miftahul Ulum 01",
     description: "Mencetak generasi Muslim yang berilmu, berakhlak mulia, dan berprestasi",
@@ -30,9 +15,6 @@ export const metadata: Metadata = {
   },
 };
 
-// Viewport — disable pinch zoom & set maximumScale=1 for native app feel.
-// userScalable=false prevents zoom on mobile (iOS Safari + Android Chrome).
-// viewportFit=cover respects safe-area insets (notch, home indicator).
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
@@ -50,9 +32,15 @@ export default function RootLayout({
   return (
     <html lang="id" suppressHydrationWarning>
       <head>
-        {/* ChunkLoadError auto-reload — when Next.js chunk fails to load
-            (common after new deploy with different chunk hashes),
-            automatically reload page once to fetch fresh chunks. */}
+        {/* Google Fonts — loaded via CDN (avoids Turbopack next/font build error).
+            CSS variables --font-display and --font-body are defined in globals.css. */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Montserrat:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+        {/* ChunkLoadError auto-reload */}
         <script dangerouslySetInnerHTML={{ __html: `
           (function() {
             var reloaded = false;
@@ -81,9 +69,7 @@ export default function RootLayout({
           })();
         `}} />
       </head>
-      <body
-        className={`${playfair.variable} ${montserrat.variable} antialiased bg-background text-foreground font-body`}
-      >
+      <body className="antialiased bg-background text-foreground font-body">
         {children}
         <Toaster richColors position="top-center" />
         <NotificationManager />

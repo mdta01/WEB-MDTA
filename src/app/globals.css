@@ -66,6 +66,9 @@
 
 :root {
   --radius: 0.5rem;
+  /* Font families — loaded via Google Fonts CDN in layout.tsx <head> */
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body: 'Montserrat', system-ui, sans-serif;
   /* Kraton Islamic Heritage Color System */
   --background: #fbf9f5;           /* Warm Parchment */
   --foreground: #1b1c1a;           /* On Surface */
