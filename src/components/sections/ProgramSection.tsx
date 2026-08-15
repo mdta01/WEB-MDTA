@@ -223,8 +223,8 @@ export default function ProgramSection() {
           <p className="text-sm text-[#404944] mt-3">
             Hari belajar: <span className="font-semibold text-[#003527]">Sabtu – Kamis</span>
             <span className="mx-2 text-[#404944]/50">•</span>
-            <span className="inline-flex items-center gap-1 text-red-600 font-medium">
-              <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
+            <span className="inline-flex items-center gap-1 text-[#ba1a1a] font-medium">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#ba1a1a]" />
               Jumat Libur
             </span>
           </p>

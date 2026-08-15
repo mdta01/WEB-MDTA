@@ -51,7 +51,7 @@ export default function WhatsAppButton() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 20, scale: 0.9 }}
               transition={{ duration: 0.2 }}
-              className="fixed bottom-24 right-6 z-50 w-72 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden"
+              className="fixed bottom-24 right-6 z-50 w-72 bg-[#ffffff] rounded-2xl shadow-2xl border border-[#e4e2de] overflow-hidden"
             >
               {/* Header */}
               <div className="bg-gradient-to-r from-green-500 to-green-600 p-4 text-white relative">
@@ -82,7 +82,7 @@ export default function WhatsAppButton() {
                       <div className="w-9 h-9 rounded-full bg-green-100 flex items-center justify-center shrink-0 group-hover:bg-green-200 transition-colors">
                         <Icon className="h-4 w-4 text-green-600" />
                       </div>
-                      <span className="text-sm font-medium text-gray-700 group-hover:text-green-700">
+                      <span className="text-sm font-medium text-[#404944] group-hover:text-green-700">
                         {opt.label}
                       </span>
                     </button>
@@ -90,8 +90,8 @@ export default function WhatsAppButton() {
                 })}
               </div>
               {/* Footer */}
-              <div className="border-t border-gray-100 px-4 py-2.5 text-center">
-                <p className="text-[10px] text-gray-400">MDTA Miftahul Ulum 01</p>
+              <div className="border-t border-[#e4e2de] px-4 py-2.5 text-center">
+                <p className="text-[10px] text-[#404944]/70">MDTA Miftahul Ulum 01</p>
               </div>
             </motion.div>
           </>
@@ -111,7 +111,7 @@ export default function WhatsAppButton() {
       >
         {showMenu ? <X className="h-7 w-7" /> : <MessageCircle className="h-7 w-7" />}
         {!showMenu && (
-          <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse" />
+          <span className="absolute -top-1 -right-1 w-3 h-3 bg-[#ba1a1a] rounded-full animate-pulse" />
         )}
       </motion.button>
     </>

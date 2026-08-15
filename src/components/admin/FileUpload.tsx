@@ -169,16 +169,16 @@ export function FileUpload({
           disabled={uploading}
         />
       ) : value ? (
-        <div className="flex items-center gap-3 p-3 rounded-lg border bg-emerald-50/50 border-emerald-200">
-          <div className="p-2 rounded-lg bg-red-100 shrink-0">
-            <FileText className="h-5 w-5 text-red-600" />
+        <div className="flex items-center gap-3 p-3 rounded-lg border bg-[#064e3b]/8/50 border-[#e4e2de]">
+          <div className="p-2 rounded-lg bg-[#ba1a1a]/10 shrink-0">
+            <FileText className="h-5 w-5 text-[#ba1a1a]" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-emerald-900 truncate flex items-center gap-1">
-              <FileCheck2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+            <p className="text-sm font-medium text-[#003527] truncate flex items-center gap-1">
+              <FileCheck2 className="h-3.5 w-3.5 text-[#064e3b] shrink-0" />
               <span className="truncate">{displayName}</span>
             </p>
-            <p className="text-xs text-gray-500 truncate mt-0.5" title={value}>
+            <p className="text-xs text-[#404944] truncate mt-0.5" title={value}>
               {value}
             </p>
           </div>
@@ -198,13 +198,13 @@ export function FileUpload({
               variant="ghost"
               onClick={handleClear}
               disabled={uploading}
-              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+              className="text-[#ba1a1a] hover:text-[#ba1a1a] hover:bg-[#ba1a1a]/8"
             >
               <X className="h-4 w-4" />
             </Button>
           </div>
           {uploading && (
-            <Loader2 className="h-4 w-4 animate-spin text-emerald-600 shrink-0" />
+            <Loader2 className="h-4 w-4 animate-spin text-[#064e3b] shrink-0" />
           )}
         </div>
       ) : (
@@ -212,22 +212,22 @@ export function FileUpload({
           onClick={() => fileInputRef.current?.click()}
           className={`cursor-pointer rounded-lg border-2 border-dashed p-6 flex flex-col items-center justify-center gap-2 transition-colors ${
             uploading
-              ? 'border-emerald-400 bg-emerald-50 pointer-events-none opacity-70'
+              ? 'border-emerald-400 bg-[#064e3b]/8 pointer-events-none opacity-70'
               : 'border-muted-foreground/30 hover:border-emerald-400 hover:bg-muted/50'
           }`}
         >
           {uploading ? (
             <>
-              <Loader2 className="h-6 w-6 animate-spin text-emerald-600" />
+              <Loader2 className="h-6 w-6 animate-spin text-[#064e3b]" />
               <p className="text-xs text-muted-foreground">Mengupload PDF...</p>
             </>
           ) : (
             <>
-              <div className="p-3 rounded-full bg-red-100">
-                <FileText className="h-6 w-6 text-red-600" />
+              <div className="p-3 rounded-full bg-[#ba1a1a]/10">
+                <FileText className="h-6 w-6 text-[#ba1a1a]" />
               </div>
               <p className="text-sm text-muted-foreground text-center">
-                Klik untuk pilih file <span className="font-medium text-red-600">PDF</span>
+                Klik untuk pilih file <span className="font-medium text-[#ba1a1a]">PDF</span>
               </p>
               <p className="text-[10px] text-muted-foreground/70">Maksimal 25 MB • PDF, DOC, DOCX, XLS, PPT, ZIP, TXT</p>
             </>

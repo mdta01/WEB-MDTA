@@ -111,10 +111,10 @@ export function GPSLocationSetup() {
     <Card className="border-0 shadow-md">
       <CardHeader>
         <CardTitle className="text-base flex items-center gap-2">
-          <MapPin className="h-5 w-5 text-emerald-600" />
+          <MapPin className="h-5 w-5 text-[#064e3b]" />
           Lokasi GPS Madrasah
         </CardTitle>
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-[#404944]">
           Setup lokasi GPS yang akan otomatis tampil di halaman Kontak dan Beranda.
         </p>
       </CardHeader>
@@ -124,7 +124,7 @@ export function GPSLocationSetup() {
           <Button
             onClick={detectLocation}
             disabled={detecting}
-            className="bg-emerald-700 hover:bg-emerald-800 text-white flex-1"
+            className="bg-[#003527] hover:bg-[#003527] text-white flex-1"
           >
             {detecting ? (
               <>
@@ -151,7 +151,7 @@ export function GPSLocationSetup() {
         {/* Coordinates input */}
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-1.5">
-            <Label className="text-xs text-gray-500">Latitude</Label>
+            <Label className="text-xs text-[#404944]">Latitude</Label>
             <Input
               value={lat}
               onChange={(e) => handleManualChange('lat', e.target.value)}
@@ -160,7 +160,7 @@ export function GPSLocationSetup() {
             />
           </div>
           <div className="space-y-1.5">
-            <Label className="text-xs text-gray-500">Longitude</Label>
+            <Label className="text-xs text-[#404944]">Longitude</Label>
             <Input
               value={lng}
               onChange={(e) => handleManualChange('lng', e.target.value)}
@@ -172,7 +172,7 @@ export function GPSLocationSetup() {
 
         {/* Map preview */}
         {hasCoords && (
-          <div className="rounded-lg overflow-hidden border border-gray-200">
+          <div className="rounded-lg overflow-hidden border border-[#e4e2de]">
             <iframe
               src={mapsEmbedUrl}
               width="100%"
@@ -188,12 +188,12 @@ export function GPSLocationSetup() {
         {/* Status + Save */}
         <div className="flex items-center justify-between">
           {hasCoords ? (
-            <span className="text-xs text-emerald-600 flex items-center gap-1">
+            <span className="text-xs text-[#064e3b] flex items-center gap-1">
               <Check className="h-3 w-3" />
               Lokasi tersimpan: {lat}, {lng}
             </span>
           ) : (
-            <span className="text-xs text-gray-400">
+            <span className="text-xs text-[#404944]/70">
               Belum ada lokasi GPS. Klik tombol di atas untuk mendeteksi.
             </span>
           )}
@@ -201,7 +201,7 @@ export function GPSLocationSetup() {
             onClick={handleSave}
             disabled={!hasChanges || saveMutation.isPending}
             size="sm"
-            className="bg-emerald-700 hover:bg-emerald-800 text-white"
+            className="bg-[#003527] hover:bg-[#003527] text-white"
           >
             {saveMutation.isPending ? (
               <Loader2 className="h-4 w-4 mr-1 animate-spin" />

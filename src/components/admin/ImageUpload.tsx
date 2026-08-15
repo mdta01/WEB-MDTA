@@ -242,18 +242,18 @@ export function ImageUpload({
           onDragLeave={handleDragLeave}
           className={`cursor-pointer ${aspectClass} w-full rounded-lg border-2 border-dashed flex flex-col items-center justify-center gap-2 transition-colors ${
             dragOver
-              ? 'border-emerald-500 bg-emerald-50'
+              ? 'border-emerald-500 bg-[#064e3b]/8'
               : 'border-muted-foreground/30 hover:border-emerald-400 hover:bg-muted/50'
           } ${uploading ? 'pointer-events-none opacity-60' : ''}`}
         >
           {uploading ? (
             <>
-              <Loader2 className="h-6 w-6 animate-spin text-emerald-600" />
+              <Loader2 className="h-6 w-6 animate-spin text-[#064e3b]" />
               <p className="text-xs text-muted-foreground">Mengupload...</p>
             </>
           ) : imgError && value ? (
             <>
-              <AlertCircle className="h-6 w-6 text-amber-500" />
+              <AlertCircle className="h-6 w-6 text-[#895033]" />
               <p className="text-xs text-muted-foreground text-center px-2">
                 Gambar tidak dapat dimuat. Klik untuk upload ulang.
               </p>

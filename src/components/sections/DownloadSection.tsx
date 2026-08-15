@@ -36,18 +36,18 @@ const fileTypeIcons: Record<string, React.ElementType> = {
 }
 
 const fileTypeColors: Record<string, string> = {
-  'pdf': 'bg-red-100 text-red-600',
-  'doc': 'bg-blue-100 text-blue-600',
-  'docx': 'bg-blue-100 text-blue-600',
+  'pdf': 'bg-[#ba1a1a]/10 text-[#ba1a1a]',
+  'doc': 'bg-[#003527]/10 text-[#003527]',
+  'docx': 'bg-[#003527]/10 text-[#003527]',
   'xls': 'bg-green-100 text-green-600',
   'xlsx': 'bg-green-100 text-green-600',
   'ppt': 'bg-orange-100 text-orange-600',
   'pptx': 'bg-orange-100 text-orange-600',
   'zip': 'bg-[#cca72f]/20 text-[#895033]',
-  'txt': 'bg-gray-100 text-gray-600',
-  'jpg': 'bg-purple-100 text-purple-600',
-  'png': 'bg-purple-100 text-purple-600',
-  'default': 'bg-gray-100 text-gray-600',
+  'txt': 'bg-[#f5f3ef] text-[#404944]',
+  'jpg': 'bg-[#895033]/10 text-[#895033]',
+  'png': 'bg-[#895033]/10 text-[#895033]',
+  'default': 'bg-[#f5f3ef] text-[#404944]',
 }
 
 const fileTypeLabels: Record<string, string> = {

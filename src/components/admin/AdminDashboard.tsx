@@ -39,8 +39,8 @@ function StatCard({ title, value, icon, color, delay, onClick }: StatCardProps) 
         <CardContent className="p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500">{title}</p>
-              <p className="text-2xl font-bold text-gray-900 mt-1">{value}</p>
+              <p className="text-sm text-[#404944]">{title}</p>
+              <p className="text-2xl font-bold text-[#1b1c1a] mt-1">{value}</p>
             </div>
             <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${color}`}>
               {icon}
@@ -191,7 +191,7 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
       title: 'Total Berita',
       value: newsLoading ? '...' : news.length,
       icon: <Newspaper className="h-6 w-6 text-white" />,
-      color: 'bg-emerald-600',
+      color: 'bg-[#064e3b]',
       delay: 0,
       onClick: () => onNavigate('news'),
     },
@@ -199,7 +199,7 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
       title: 'Pengumuman',
       value: announcements.length,
       icon: <Megaphone className="h-6 w-6 text-white" />,
-      color: 'bg-amber-600',
+      color: 'bg-[#cca72f]',
       delay: 0.05,
       onClick: () => onNavigate('announcements'),
     },
@@ -207,7 +207,7 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
       title: 'Guru',
       value: teachers.length,
       icon: <Users className="h-6 w-6 text-white" />,
-      color: 'bg-blue-600',
+      color: 'bg-[#003527]',
       delay: 0.1,
       onClick: () => onNavigate('teachers'),
     },
@@ -215,7 +215,7 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
       title: 'Santri',
       value: students.length,
       icon: <GraduationCap className="h-6 w-6 text-white" />,
-      color: 'bg-purple-600',
+      color: 'bg-[#895033]',
       delay: 0.15,
       onClick: () => onNavigate('students'),
     },
@@ -239,7 +239,7 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
       title: 'Galeri',
       value: gallery.length,
       icon: <ImageIcon className="h-6 w-6 text-white" />,
-      color: 'bg-teal-600',
+      color: 'bg-[#064e3b]',
       delay: 0.3,
       onClick: () => onNavigate('gallery'),
     },
@@ -263,7 +263,7 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
       title: 'Download',
       value: 0,
       icon: <Download className="h-6 w-6 text-white" />,
-      color: 'bg-gray-600',
+      color: 'bg-[#404944]',
       delay: 0.45,
       onClick: () => onNavigate('downloads'),
     },
@@ -294,20 +294,20 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
         className="bg-gradient-to-r from-emerald-700 to-emerald-800 rounded-xl p-6 text-white"
       >
         <h1 className="text-2xl font-bold">Dashboard Admin</h1>
-        <p className="text-emerald-200 mt-1">
+        <p className="text-[#b0f0d6] mt-1">
           Selamat datang di panel admin MDTA Miftahul Ulum 01
         </p>
         <div className="flex gap-4 mt-4">
           <div className="bg-white/10 rounded-lg px-4 py-2">
-            <p className="text-xs text-emerald-200">Berita Dipublikasi</p>
+            <p className="text-xs text-[#b0f0d6]">Berita Dipublikasi</p>
             <p className="text-lg font-bold">{publishedNews}</p>
           </div>
           <div className="bg-white/10 rounded-lg px-4 py-2">
-            <p className="text-xs text-emerald-200">Pesan Belum Dibaca</p>
+            <p className="text-xs text-[#b0f0d6]">Pesan Belum Dibaca</p>
             <p className="text-lg font-bold">{unreadContacts + unreadSuggestions}</p>
           </div>
           <div className="bg-white/10 rounded-lg px-4 py-2">
-            <p className="text-xs text-emerald-200">PPDB Menunggu</p>
+            <p className="text-xs text-[#b0f0d6]">PPDB Menunggu</p>
             <p className="text-lg font-bold">{pendingPPDB}</p>
           </div>
         </div>
@@ -327,13 +327,13 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base font-semibold flex items-center gap-2">
-                <GraduationCap className="h-5 w-5 text-emerald-600" />
+                <GraduationCap className="h-5 w-5 text-[#064e3b]" />
                 Pendaftaran PPDB Terbaru
               </CardTitle>
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-emerald-600 hover:text-emerald-700"
+                className="text-[#064e3b] hover:text-[#003527]"
                 onClick={() => onNavigate('ppdb')}
               >
                 Lihat Semua
@@ -342,7 +342,7 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
           </CardHeader>
           <CardContent>
             {recentPPDB.length === 0 ? (
-              <p className="text-sm text-gray-500 text-center py-4">Belum ada pendaftaran</p>
+              <p className="text-sm text-[#404944] text-center py-4">Belum ada pendaftaran</p>
             ) : (
               <div className="space-y-3">
                 {recentPPDB.map((reg: Record<string, unknown>) => (
@@ -351,10 +351,10 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
                     className="flex items-center justify-between border-b pb-2 last:border-0"
                   >
                     <div>
-                      <p className="text-sm font-medium text-gray-900">
+                      <p className="text-sm font-medium text-[#1b1c1a]">
                         {reg.name as string}
                       </p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-[#404944]">
                         {reg.parentName as string} •{' '}
                         {reg.createdAt
                           ? new Date(reg.createdAt as string).toLocaleDateString('id-ID')
@@ -364,10 +364,10 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
                     <Badge
                       className={
                         reg.status === 'accepted'
-                          ? 'bg-emerald-100 text-emerald-800'
+                          ? 'bg-[#064e3b]/12 text-[#003527]'
                           : reg.status === 'rejected'
-                          ? 'bg-red-100 text-red-800'
-                          : 'bg-amber-100 text-amber-800'
+                          ? 'bg-[#ba1a1a]/10 text-[#ba1a1a]'
+                          : 'bg-[#cca72f]/15 text-[#895033]'
                       }
                     >
                       {reg.status === 'accepted'
@@ -388,13 +388,13 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base font-semibold flex items-center gap-2">
-                <Mail className="h-5 w-5 text-amber-600" />
+                <Mail className="h-5 w-5 text-[#895033]" />
                 Pesan Kontak Terbaru
               </CardTitle>
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-amber-600 hover:text-amber-700"
+                className="text-[#895033] hover:text-[#895033]"
                 onClick={() => onNavigate('contact-messages')}
               >
                 Lihat Semua
@@ -403,7 +403,7 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
           </CardHeader>
           <CardContent>
             {recentContacts.length === 0 ? (
-              <p className="text-sm text-gray-500 text-center py-4">Belum ada pesan</p>
+              <p className="text-sm text-[#404944] text-center py-4">Belum ada pesan</p>
             ) : (
               <div className="space-y-3">
                 {recentContacts.map((msg: Record<string, unknown>) => (
@@ -413,18 +413,18 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
                   >
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <p className="text-sm font-medium text-gray-900 truncate">
+                        <p className="text-sm font-medium text-[#1b1c1a] truncate">
                           {msg.name as string}
                         </p>
                         {!msg.isRead && (
-                          <span className="w-2 h-2 rounded-full bg-amber-500 flex-shrink-0" />
+                          <span className="w-2 h-2 rounded-full bg-[#cca72f] flex-shrink-0" />
                         )}
                       </div>
-                      <p className="text-xs text-gray-500 truncate">
+                      <p className="text-xs text-[#404944] truncate">
                         {(msg.subject as string) || (msg.message as string)?.slice(0, 60)}
                       </p>
                     </div>
-                    <span className="text-xs text-gray-400 flex-shrink-0 ml-2">
+                    <span className="text-xs text-[#404944]/70 flex-shrink-0 ml-2">
                       {msg.createdAt
                         ? new Date(msg.createdAt as string).toLocaleDateString('id-ID')
                         : '-'}
@@ -441,7 +441,7 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-base font-semibold flex items-center gap-2">
-            <Clock className="h-5 w-5 text-gray-600" />
+            <Clock className="h-5 w-5 text-[#404944]" />
             Aksi Cepat
           </CardTitle>
         </CardHeader>
@@ -449,7 +449,7 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <Button
               variant="outline"
-              className="h-auto py-3 flex flex-col items-center gap-1 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700"
+              className="h-auto py-3 flex flex-col items-center gap-1 hover:bg-[#064e3b]/8 hover:border-[#064e3b]/30 hover:text-[#003527]"
               onClick={() => onNavigate('news')}
             >
               <Newspaper className="h-5 w-5" />
@@ -457,7 +457,7 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
             </Button>
             <Button
               variant="outline"
-              className="h-auto py-3 flex flex-col items-center gap-1 hover:bg-amber-50 hover:border-amber-300 hover:text-amber-700"
+              className="h-auto py-3 flex flex-col items-center gap-1 hover:bg-[#cca72f]/8 hover:border-[#cca72f]/30 hover:text-[#895033]"
               onClick={() => onNavigate('announcements')}
             >
               <Megaphone className="h-5 w-5" />
@@ -465,7 +465,7 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
             </Button>
             <Button
               variant="outline"
-              className="h-auto py-3 flex flex-col items-center gap-1 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700"
+              className="h-auto py-3 flex flex-col items-center gap-1 hover:bg-[#003527]/8 hover:border-blue-300 hover:text-[#003527]"
               onClick={() => onNavigate('ppdb')}
             >
               <GraduationCap className="h-5 w-5" />
@@ -473,7 +473,7 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
             </Button>
             <Button
               variant="outline"
-              className="h-auto py-3 flex flex-col items-center gap-1 hover:bg-purple-50 hover:border-purple-300 hover:text-purple-700"
+              className="h-auto py-3 flex flex-col items-center gap-1 hover:bg-[#895033]/8 hover:border-[#895033]/30 hover:text-[#895033]"
               onClick={() => onNavigate('settings')}
             >
               <FileText className="h-5 w-5" />

@@ -102,13 +102,13 @@ export function NotificationPermission() {
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 2, type: 'spring', stiffness: 200, damping: 15 }}
         onClick={() => setShowPrompt(true)}
-        className="fixed bottom-24 right-6 z-40 w-12 h-12 rounded-full bg-emerald-700 text-white shadow-lg hover:bg-emerald-800 hover:scale-110 transition-all flex items-center justify-center"
+        className="fixed bottom-24 right-6 z-40 w-12 h-12 rounded-full bg-[#003527] text-white shadow-lg hover:bg-[#003527] hover:scale-110 transition-all flex items-center justify-center"
         aria-label="Aktifkan notifikasi"
         title="Aktifkan notifikasi"
       >
         <Bell className="h-5 w-5" />
         {/* Pulse ring */}
-        <span className="absolute inset-0 rounded-full bg-emerald-500 animate-ping opacity-30" />
+        <span className="absolute inset-0 rounded-full bg-[#064e3b]/80 animate-ping opacity-30" />
       </motion.button>
 
       {/* Permission prompt card */}
@@ -119,7 +119,7 @@ export function NotificationPermission() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.25 }}
-            className="fixed bottom-40 right-6 z-50 w-[calc(100vw-2rem)] sm:w-80 bg-white rounded-2xl shadow-2xl border border-emerald-100 overflow-hidden"
+            className="fixed bottom-40 right-6 z-50 w-[calc(100vw-2rem)] sm:w-80 bg-[#ffffff] rounded-2xl shadow-2xl border border-emerald-100 overflow-hidden"
           >
             {/* Header */}
             <div className="bg-gradient-to-r from-emerald-700 to-emerald-800 p-4 text-white relative">
@@ -131,33 +131,33 @@ export function NotificationPermission() {
                 <X className="h-4 w-4" />
               </button>
               <div className="flex items-center gap-2 mb-1">
-                <Bell className="h-5 w-5 text-amber-300" />
+                <Bell className="h-5 w-5 text-[#cca72f]" />
                 <h3 className="font-bold text-sm">Aktifkan Notifikasi</h3>
               </div>
-              <p className="text-xs text-emerald-100/90">
+              <p className="text-xs text-[#b0f0d6]/90">
                 Dapatkan pemberitahuan instan saat ada berita, pengumuman, atau kegiatan baru.
               </p>
             </div>
 
             {/* Body */}
             <div className="p-4 space-y-3">
-              <ul className="space-y-2 text-xs text-gray-600">
+              <ul className="space-y-2 text-xs text-[#404944]">
                 <li className="flex items-start gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" />
+                  <CheckCircle2 className="h-4 w-4 text-[#064e3b] mt-0.5 shrink-0" />
                   <span>Berita &amp; pengumuman terbaru</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" />
+                  <CheckCircle2 className="h-4 w-4 text-[#064e3b] mt-0.5 shrink-0" />
                   <span>Kegiatan &amp; event madrasah</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" />
+                  <CheckCircle2 className="h-4 w-4 text-[#064e3b] mt-0.5 shrink-0" />
                   <span>Prestasi santri &amp; galeri foto</span>
                 </li>
               </ul>
 
               {permission === 'denied' && (
-                <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-lg p-2 text-xs text-amber-800">
+                <div className="flex items-start gap-2 bg-[#cca72f]/8 border border-amber-200 rounded-lg p-2 text-xs text-[#895033]">
                   <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
                   <span>
                     Notifikasi diblokir di browser. Aktifkan via ikon kunci di address bar → Site settings → Notifications → Allow.
@@ -169,7 +169,7 @@ export function NotificationPermission() {
                 <Button
                   onClick={handleEnable}
                   disabled={requesting || permission === 'denied'}
-                  className="flex-1 bg-emerald-700 hover:bg-emerald-800 text-white text-sm h-9"
+                  className="flex-1 bg-[#003527] hover:bg-[#003527] text-white text-sm h-9"
                   size="sm"
                 >
                   {requesting ? (
@@ -193,7 +193,7 @@ export function NotificationPermission() {
                   onClick={handleDismiss}
                   variant="outline"
                   size="sm"
-                  className="text-gray-600 h-9"
+                  className="text-[#404944] h-9"
                 >
                   Nanti
                 </Button>

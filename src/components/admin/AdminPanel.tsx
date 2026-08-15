@@ -369,7 +369,7 @@ const entityConfigs: Record<string, EntityConfig> = {
         return (
           <a href={url} target="_blank" rel="noopener noreferrer" download
             className="inline-flex items-center gap-1 text-xs text-[#003527] hover:text-[#064e3b] hover:underline max-w-[180px] truncate">
-            <FileText className="h-3 w-3 shrink-0 text-red-600" />
+            <FileText className="h-3 w-3 shrink-0 text-[#ba1a1a]" />
             <span className="truncate">{fileName}</span>
           </a>
         )
@@ -798,8 +798,8 @@ function PPDBManager() {
               </div>
             </div>
             <div className="bg-[#ffffff] rounded-lg border p-4 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-red-100 flex items-center justify-center shrink-0">
-                <UserX className="h-5 w-5 text-red-700" />
+              <div className="w-10 h-10 rounded-lg bg-[#ba1a1a]/10 flex items-center justify-center shrink-0">
+                <UserX className="h-5 w-5 text-[#ba1a1a]" />
               </div>
               <div className="min-w-0">
                 <p className="text-2xl font-bold text-[#1b1c1a] leading-none">{stats.rejected}</p>
@@ -875,7 +875,7 @@ function PPDBManager() {
                               reg.status === 'accepted'
                                 ? 'bg-[#003527]/15 text-[#003527]'
                                 : reg.status === 'rejected'
-                                ? 'bg-red-100 text-red-800'
+                                ? 'bg-[#ba1a1a]/10 text-[#ba1a1a]'
                                 : 'bg-[#cca72f]/20 text-[#895033]'
                             }
                           >
@@ -890,7 +890,7 @@ function PPDBManager() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 h-8"
+                              className="text-[#003527] hover:text-[#003527] hover:bg-[#003527]/8 h-8"
                               onClick={() => setDetailReg(reg)}
                               title="Lihat detail"
                             >
@@ -965,7 +965,7 @@ function PPDBManager() {
                             <Button variant="ghost" size="sm" className="text-[#003527] hover:bg-[#f5f3ef] h-8" onClick={() => openEditSchedule(s)}>
                               <Pencil className="h-4 w-4" />
                             </Button>
-                            <Button variant="ghost" size="sm" className="text-red-600 hover:bg-red-50 h-8" onClick={() => setDeleteSchedule(s)}>
+                            <Button variant="ghost" size="sm" className="text-[#ba1a1a] hover:bg-[#ba1a1a]/8 h-8" onClick={() => setDeleteSchedule(s)}>
                               <Trash2 className="h-4 w-4" />
                             </Button>
                           </div>
@@ -1047,7 +1047,7 @@ function PPDBManager() {
           <AlertDialogFooter>
             <AlertDialogCancel>Batal</AlertDialogCancel>
             <AlertDialogAction
-              className="bg-red-600 hover:bg-red-700 text-white"
+              className="bg-[#ba1a1a] hover:bg-[#ba1a1a] text-white"
               onClick={() => deleteSchedule && deleteScheduleMutation.mutate(deleteSchedule.id as string)}
             >
               {deleteScheduleMutation.isPending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
@@ -1574,7 +1574,7 @@ function WaliSantriManager() {
                             <Button variant="ghost" size="sm" className="text-[#003527] hover:bg-[#f5f3ef] h-8" onClick={() => openEditMeeting(m)}>
                               <Pencil className="h-4 w-4" />
                             </Button>
-                            <Button variant="ghost" size="sm" className="text-red-600 hover:bg-red-50 h-8" onClick={() => setDeleteMeeting(m)}>
+                            <Button variant="ghost" size="sm" className="text-[#ba1a1a] hover:bg-[#ba1a1a]/8 h-8" onClick={() => setDeleteMeeting(m)}>
                               <Trash2 className="h-4 w-4" />
                             </Button>
                           </div>
@@ -1630,7 +1630,7 @@ function WaliSantriManager() {
                             <Button variant="ghost" size="sm" className="text-[#003527] hover:bg-[#f5f3ef] h-8" onClick={() => openEditAnnouncement(a)}>
                               <Pencil className="h-4 w-4" />
                             </Button>
-                            <Button variant="ghost" size="sm" className="text-red-600 hover:bg-red-50 h-8" onClick={() => setDeleteAnnouncement(a)}>
+                            <Button variant="ghost" size="sm" className="text-[#ba1a1a] hover:bg-[#ba1a1a]/8 h-8" onClick={() => setDeleteAnnouncement(a)}>
                               <Trash2 className="h-4 w-4" />
                             </Button>
                           </div>
@@ -1749,7 +1749,7 @@ function WaliSantriManager() {
           <AlertDialogFooter>
             <AlertDialogCancel>Batal</AlertDialogCancel>
             <AlertDialogAction
-              className="bg-red-600 hover:bg-red-700 text-white"
+              className="bg-[#ba1a1a] hover:bg-[#ba1a1a] text-white"
               onClick={() => deleteMeeting && deleteMeetingMutation.mutate(deleteMeeting.id as string)}
             >
               {deleteMeetingMutation.isPending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
@@ -1768,7 +1768,7 @@ function WaliSantriManager() {
           <AlertDialogFooter>
             <AlertDialogCancel>Batal</AlertDialogCancel>
             <AlertDialogAction
-              className="bg-red-600 hover:bg-red-700 text-white"
+              className="bg-[#ba1a1a] hover:bg-[#ba1a1a] text-white"
               onClick={() => deleteAnnouncement && deleteAnnouncementMutation.mutate(deleteAnnouncement.id as string)}
             >
               {deleteAnnouncementMutation.isPending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
@@ -1873,7 +1873,7 @@ function ContactMessagesManager() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-8 w-8 text-blue-600 hover:text-blue-800"
+                          className="h-8 w-8 text-[#003527] hover:text-[#003527]"
                           onClick={() => setSelectedMsg(msg)}
                         >
                           <FileText className="h-4 w-4" />
@@ -2054,7 +2054,7 @@ function SuggestionsManager() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-8 w-8 text-blue-600"
+                          className="h-8 w-8 text-[#003527]"
                           onClick={() => setSelectedItem(item)}
                         >
                           <FileText className="h-4 w-4" />

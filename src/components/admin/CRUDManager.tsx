@@ -359,8 +359,8 @@ export default function CRUDManager({
     return (
       <Card>
         <CardContent className="p-6 text-center">
-          <AlertTriangle className="h-12 w-12 text-amber-500 mx-auto mb-3" />
-          <p className="text-gray-600">Gagal memuat data. Silakan coba lagi.</p>
+          <AlertTriangle className="h-12 w-12 text-[#895033] mx-auto mb-3" />
+          <p className="text-[#404944]">Gagal memuat data. Silakan coba lagi.</p>
           <Button
             variant="outline"
             className="mt-3"
@@ -378,13 +378,13 @@ export default function CRUDManager({
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h2 className="text-xl font-bold text-gray-900">{title}</h2>
-          <p className="text-sm text-gray-500">Kelola data {itemName.toLowerCase()}</p>
+          <h2 className="text-xl font-bold text-[#1b1c1a]">{title}</h2>
+          <p className="text-sm text-[#404944]">Kelola data {itemName.toLowerCase()}</p>
         </div>
         {canCreate && (
           <Button
             onClick={openCreateForm}
-            className="bg-emerald-700 hover:bg-emerald-800 text-white"
+            className="bg-[#003527] hover:bg-[#003527] text-white"
           >
             <Plus className="h-4 w-4 mr-2" />
             Tambah {itemName}
@@ -394,7 +394,7 @@ export default function CRUDManager({
 
       {/* Search */}
       <div className="relative max-w-sm">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#404944]/70" />
         <Input
           placeholder={`Cari ${itemName.toLowerCase()}...`}
           value={search}
@@ -404,11 +404,11 @@ export default function CRUDManager({
       </div>
 
       {/* Table */}
-      <div className="border rounded-lg bg-white overflow-hidden">
+      <div className="border rounded-lg bg-[#ffffff] overflow-hidden">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow className="bg-gray-50">
+              <TableRow className="bg-[#fbf9f5]">
                 <TableHead className="w-12 text-center">#</TableHead>
                 {columns
                   .filter((c) => !c.hidden)
@@ -425,8 +425,8 @@ export default function CRUDManager({
                     colSpan={columns.filter((c) => !c.hidden).length + 2}
                     className="text-center py-12"
                   >
-                    <Loader2 className="h-6 w-6 animate-spin mx-auto text-emerald-600" />
-                    <p className="text-sm text-gray-500 mt-2">Memuat data...</p>
+                    <Loader2 className="h-6 w-6 animate-spin mx-auto text-[#064e3b]" />
+                    <p className="text-sm text-[#404944] mt-2">Memuat data...</p>
                   </TableCell>
                 </TableRow>
               ) : paginatedItems.length === 0 ? (
@@ -435,7 +435,7 @@ export default function CRUDManager({
                     colSpan={columns.filter((c) => !c.hidden).length + 2}
                     className="text-center py-12"
                   >
-                    <p className="text-gray-500">
+                    <p className="text-[#404944]">
                       {search ? 'Tidak ada data yang cocok' : `Belum ada data ${itemName.toLowerCase()}`}
                     </p>
                   </TableCell>
@@ -443,7 +443,7 @@ export default function CRUDManager({
               ) : (
                 paginatedItems.map((item, idx) => (
                   <TableRow key={(item.id as string) || idx}>
-                    <TableCell className="text-center text-gray-400 text-xs">
+                    <TableCell className="text-center text-[#404944]/70 text-xs">
                       {(page - 1) * pageSize + idx + 1}
                     </TableCell>
                     {columns
@@ -460,7 +460,7 @@ export default function CRUDManager({
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-8 w-8 text-blue-600 hover:text-blue-800 hover:bg-blue-50"
+                          className="h-8 w-8 text-[#003527] hover:text-[#003527] hover:bg-[#003527]/8"
                           onClick={() => setViewItem(item)}
                           title="Lihat detail"
                         >
@@ -470,7 +470,7 @@ export default function CRUDManager({
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 text-emerald-600 hover:text-emerald-800 hover:bg-emerald-50"
+                            className="h-8 w-8 text-[#064e3b] hover:text-[#003527] hover:bg-[#064e3b]/8"
                             onClick={() => openEditForm(item)}
                             title="Edit"
                           >
@@ -481,7 +481,7 @@ export default function CRUDManager({
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 text-red-600 hover:text-red-800 hover:bg-red-50"
+                            className="h-8 w-8 text-[#ba1a1a] hover:text-[#ba1a1a] hover:bg-[#ba1a1a]/8"
                             onClick={() => setDeleteItem(item)}
                             title="Hapus"
                           >
@@ -499,8 +499,8 @@ export default function CRUDManager({
 
         {/* Pagination */}
         {filteredItems.length > pageSize && (
-          <div className="flex items-center justify-between px-4 py-3 border-t bg-gray-50">
-            <p className="text-sm text-gray-500">
+          <div className="flex items-center justify-between px-4 py-3 border-t bg-[#fbf9f5]">
+            <p className="text-sm text-[#404944]">
               Menampilkan {(page - 1) * pageSize + 1}-{Math.min(page * pageSize, filteredItems.length)} dari {filteredItems.length} data
             </p>
             <div className="flex items-center gap-1">
@@ -642,7 +642,7 @@ export default function CRUDManager({
             <Button
               onClick={handleFormSubmit}
               disabled={isSaving}
-              className="bg-emerald-700 hover:bg-emerald-800 text-white"
+              className="bg-[#003527] hover:bg-[#003527] text-white"
             >
               {isSaving ? (
                 <>
@@ -676,7 +676,7 @@ export default function CRUDManager({
                   deleteMutation.mutate(deleteItem.id as string)
                 }
               }}
-              className="bg-red-600 hover:bg-red-700 text-white"
+              className="bg-[#ba1a1a] hover:bg-[#ba1a1a] text-white"
             >
               {deleteMutation.isPending ? (
                 <>
@@ -700,14 +700,14 @@ export default function CRUDManager({
           <div className="space-y-3">
             {viewItem && formFields.map((field) => (
               <div key={field.name} className="flex flex-col sm:flex-row sm:items-start gap-1 border-b pb-2">
-                <span className="text-sm font-medium text-gray-500 sm:w-40 shrink-0">
+                <span className="text-sm font-medium text-[#404944] sm:w-40 shrink-0">
                   {field.label}
                 </span>
-                <span className="text-sm text-gray-900">
+                <span className="text-sm text-[#1b1c1a]">
                   {field.type === 'image'
                     ? (viewItem[field.name]
                       ? <img src={String(viewItem[field.name])} alt={field.label} className="max-h-24 rounded border" />
-                      : <span className="text-gray-400">-</span>)
+                      : <span className="text-[#404944]/70">-</span>)
                     : field.type === 'switch'
                       ? (viewItem[field.name] ? 'Ya' : 'Tidak')
                       : field.type === 'select' && field.options
@@ -731,19 +731,19 @@ export default function CRUDManager({
 // --- Default Cell Renderer ---
 
 function renderDefaultCell(value: unknown, key: string) {
-  if (value === null || value === undefined) return <span className="text-gray-400">-</span>
+  if (value === null || value === undefined) return <span className="text-[#404944]/70">-</span>
 
   if (typeof value === 'boolean') {
     return value
-      ? <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100">Ya</Badge>
-      : <Badge variant="secondary" className="bg-gray-100 text-gray-600 hover:bg-gray-100">Tidak</Badge>
+      ? <Badge className="bg-[#064e3b]/12 text-[#003527] hover:bg-[#064e3b]/12">Ya</Badge>
+      : <Badge variant="secondary" className="bg-[#f5f3ef] text-[#404944] hover:bg-[#f5f3ef]">Tidak</Badge>
   }
 
   if (key === 'status') {
     const statusMap: Record<string, { label: string; className: string }> = {
-      pending: { label: 'Menunggu', className: 'bg-amber-100 text-amber-800' },
-      accepted: { label: 'Diterima', className: 'bg-emerald-100 text-emerald-800' },
-      rejected: { label: 'Ditolak', className: 'bg-red-100 text-red-800' },
+      pending: { label: 'Menunggu', className: 'bg-[#cca72f]/15 text-[#895033]' },
+      accepted: { label: 'Diterima', className: 'bg-[#064e3b]/12 text-[#003527]' },
+      rejected: { label: 'Ditolak', className: 'bg-[#ba1a1a]/10 text-[#ba1a1a]' },
     }
     const s = statusMap[String(value)]
     if (s) return <Badge className={s.className}>{s.label}</Badge>
@@ -751,8 +751,8 @@ function renderDefaultCell(value: unknown, key: string) {
 
   if (key === 'isRead') {
     return value
-      ? <Badge className="bg-gray-100 text-gray-600 hover:bg-gray-100">Dibaca</Badge>
-      : <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100">Baru</Badge>
+      ? <Badge className="bg-[#f5f3ef] text-[#404944] hover:bg-[#f5f3ef]">Dibaca</Badge>
+      : <Badge className="bg-[#cca72f]/15 text-[#895033] hover:bg-[#cca72f]/15">Baru</Badge>
   }
 
   if (key === 'category' || key === 'type' || key === 'level' || key === 'role') {
@@ -761,8 +761,8 @@ function renderDefaultCell(value: unknown, key: string) {
 
   if (key === 'isPublished' || key === 'isActive') {
     return value
-      ? <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-100">Aktif</Badge>
-      : <Badge variant="secondary" className="bg-gray-100 text-gray-600 hover:bg-gray-100">Nonaktif</Badge>
+      ? <Badge className="bg-[#064e3b]/12 text-[#003527] hover:bg-[#064e3b]/12">Aktif</Badge>
+      : <Badge variant="secondary" className="bg-[#f5f3ef] text-[#404944] hover:bg-[#f5f3ef]">Nonaktif</Badge>
   }
 
   const strVal = formatCellValue(value)
