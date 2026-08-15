@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 import { useState } from 'react'
 import {
   Bell, FileText, CalendarDays, GraduationCap, AlertCircle,
-  Megaphone, Clock, ChevronDown, ChevronUp, Pin,
+  Megaphone, Clock, ChevronDown, ChevronUp, Sparkles,
 } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -18,7 +18,7 @@ const typeConfig: Record<string, { icon: React.ElementType; color: string; label
   'libur': { icon: CalendarDays, color: 'text-[#895033]', label: 'Libur', bg: 'bg-[#cca72f]/15' },
   'kegiatan': { icon: Bell, color: 'text-[#003527]', label: 'Kegiatan', bg: 'bg-[#003527]/12' },
   'ppdb': { icon: GraduationCap, color: 'text-[#895033]', label: 'PPDB', bg: 'bg-[#895033]/12' },
-  'penting': { icon: AlertCircle, color: 'text-[#ba1a1a]', label: 'Penting', bg: 'bg-[#ba1a1a]/10' },
+  'penting': { icon: AlertCircle, color: 'text-[#895033]', label: 'Penting', bg: 'bg-[#cca72f]/15' },
   'general': { icon: Megaphone, color: 'text-[#404944]', label: 'Umum', bg: 'bg-[#f5f3ef]' },
 }
 
@@ -42,7 +42,7 @@ export default function PengumumanSection() {
     })
   }
 
-  // Sort: priority desc (urgent first), then newest first
+  // Sort: priority desc (featured first), then newest first
   const sortedAnnouncements = [...announcements].sort((a: { priority?: number; createdAt: string }, b: { priority?: number; createdAt: string }) => {
     const pa = a.priority || 0
     const pb = b.priority || 0
@@ -50,14 +50,11 @@ export default function PengumumanSection() {
     return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   })
 
-  // Split: high priority (>=3) vs normal
-  const urgentAnnouncements = sortedAnnouncements.filter((a: { priority?: number }) => (a.priority || 0) >= 3)
-  const normalAnnouncements = sortedAnnouncements.filter((a: { priority?: number }) => (a.priority || 0) < 3)
-
   const renderAnnouncement = (item: { id: string; title: string; content: string; type: string; createdAt: string; priority: number }, idx: number) => {
     const config = typeConfig[item.type] || typeConfig['general']
     const TypeIcon = config.icon
-    const isUrgent = item.priority >= 3
+    // Featured = high priority (>=3) — shown first, with subtle gold accent (not red/alarmist)
+    const isFeatured = item.priority >= 3
     const isExpanded = expandedIds.has(item.id)
     const contentPreview = item.content?.length > 200 ? item.content.substring(0, 200) + '...' : item.content
     const isLongContent = item.content?.length > 200
@@ -71,12 +68,17 @@ export default function PengumumanSection() {
         transition={{ delay: Math.min(idx * 0.05, 0.3), duration: 0.4 }}
       >
         <Card
-          className={`border rounded-2xl bg-[#ffffff] card-hover overflow-hidden ${
-            isUrgent
-              ? 'border-l-4 border-l-[#ba1a1a] border-y-[#e4e2de] border-r-[#e4e2de] shadow-premium-lg'
+          className={`border rounded-2xl bg-[#ffffff] card-hover overflow-hidden relative ${
+            isFeatured
+              ? 'border-[#cca72f]/40 shadow-premium-lg'
               : 'border-[#e4e2de] shadow-premium'
           }`}
         >
+          {/* Featured: subtle gold left accent bar (eye-catching, not alarmist) */}
+          {isFeatured && (
+            <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#cca72f] via-[#ffe088] to-[#cca72f]" aria-hidden />
+          )}
+
           <CardContent className="p-4 sm:p-5">
             <div className="flex items-start gap-3 sm:gap-4">
               {/* Icon with type-colored bg */}
@@ -87,10 +89,10 @@ export default function PengumumanSection() {
               <div className="flex-1 min-w-0">
                 {/* Badges row */}
                 <div className="flex items-center gap-2 flex-wrap mb-1.5">
-                  {isUrgent && (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#ba1a1a] text-white text-[10px] font-bold uppercase tracking-wide">
-                      <Pin className="h-2.5 w-2.5" />
-                      Penting
+                  {isFeatured && (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#cca72f]/15 text-[#895033] text-[10px] font-bold uppercase tracking-wide">
+                      <Sparkles className="h-2.5 w-2.5" />
+                      Utama
                     </span>
                   )}
                   <Badge variant="outline" className={`text-[10px] uppercase tracking-wide border-0 ${config.bg} ${config.color}`}>
@@ -102,8 +104,8 @@ export default function PengumumanSection() {
                   </span>
                 </div>
 
-                {/* Title */}
-                <h4 className={`font-semibold text-sm sm:text-base leading-tight mb-2 ${isUrgent ? 'text-[#ba1a1a]' : 'text-[#003527]'}`}>
+                {/* Title — emerald for all (not red) */}
+                <h4 className="font-semibold text-sm sm:text-base leading-tight mb-2 text-[#003527]">
                   {item.title}
                 </h4>
 
@@ -139,7 +141,7 @@ export default function PengumumanSection() {
       <KratonSectionHeader
         badge="Pemberitahuan Resmi"
         title="Pengumuman"
-        subtitle="Informasi penting seputar kegiatan madrasah — wajib dibaca oleh wali santri dan santri"
+        subtitle="Informasi terkini seputar kegiatan madrasah — silakan baca dengan saksama"
         align="center"
       />
 
@@ -159,33 +161,9 @@ export default function PengumumanSection() {
           ))}
         </div>
       ) : announcements.length > 0 ? (
-        <>
-          {/* Urgent announcements banner (priority >= 3) */}
-          {urgentAnnouncements.length > 0 && (
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 text-[#ba1a1a]">
-                <AlertCircle className="h-4 w-4" />
-                <span className="text-xs font-bold uppercase tracking-wider">Pengumuman Mendesak</span>
-                <span className="h-px flex-1 bg-[#ba1a1a]/20" />
-              </div>
-              {urgentAnnouncements.map((item: { id: string; title: string; content: string; type: string; createdAt: string; priority: number }, idx: number) => renderAnnouncement(item, idx))}
-            </div>
-          )}
-
-          {/* Normal announcements */}
-          {normalAnnouncements.length > 0 && (
-            <div className="space-y-3">
-              {urgentAnnouncements.length > 0 && (
-                <div className="flex items-center gap-2 text-[#003527]/60">
-                  <Megaphone className="h-4 w-4" />
-                  <span className="text-xs font-bold uppercase tracking-wider">Pengumuman Lainnya</span>
-                  <span className="h-px flex-1 bg-[#003527]/15" />
-                </div>
-              )}
-              {normalAnnouncements.map((item: { id: string; title: string; content: string; type: string; createdAt: string; priority: number }, idx: number) => renderAnnouncement(item, idx))}
-            </div>
-          )}
-        </>
+        <div className="space-y-3">
+          {sortedAnnouncements.map((item: { id: string; title: string; content: string; type: string; createdAt: string; priority: number }, idx: number) => renderAnnouncement(item, idx))}
+        </div>
       ) : (
         <Card className="p-12 text-center border border-[#e4e2de] rounded-2xl bg-[#ffffff] wood-carved-shadow">
           <Megaphone className="h-12 w-12 text-[#064e3b]/40 mx-auto mb-3" />
