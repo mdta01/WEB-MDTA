@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { NotificationManager } from "@/components/layout/NotificationManager";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata: Metadata = {
   title: "MDTA Miftahul Ulum 01 - Madrasah Diniyah Takmiliyah Awaliyah",
@@ -73,6 +74,7 @@ export default function RootLayout({
         {children}
         <Toaster richColors position="top-center" />
         <NotificationManager />
+        <SpeedInsights />
       </body>
     </html>
   );
