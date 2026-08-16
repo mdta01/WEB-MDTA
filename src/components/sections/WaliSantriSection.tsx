@@ -85,126 +85,161 @@ export default function WaliSantriSection() {
       <div className="grid lg:grid-cols-2 gap-8">
         {/* Left Column — Announcements + Meeting Schedule FIRST (most important for parents) */}
         <div className="space-y-6">
-          {/* Announcements for Parents — Retro Window Kraton style */}
+          {/* Announcements for Parents — Retro Window Kraton style (enhanced, not plain) */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <article className="border-2 border-[#003527] bg-[#ffffff] text-[#1b1c1a] shadow-[4px_4px_0_0_#003527,8px_8px_0_0_#cca72f] rounded-lg overflow-hidden">
-              {/* Retro header bar — gold tint */}
-              <div className="bg-[#cca72f]/20 p-3 border-b-2 border-[#003527]">
+              {/* Retro header bar — gold gradient + icon box */}
+              <div className="bg-gradient-to-r from-[#cca72f]/25 via-[#cca72f]/15 to-[#cca72f]/25 p-3 border-b-2 border-[#003527]">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Bell className="h-3.5 w-3.5 text-[#003527]" />
-                    <strong className="text-xs font-bold uppercase tracking-wider text-[#003527]">Pengumuman Wali Santri</strong>
+                  <div className="flex items-center gap-2.5">
+                    {/* Icon box with border — retro style */}
+                    <div className="w-7 h-7 border-2 border-[#003527] bg-[#ffffff] rounded-md flex items-center justify-center">
+                      <Bell className="h-3.5 w-3.5 text-[#003527]" />
+                    </div>
+                    <div className="flex flex-col">
+                      <strong className="text-xs font-bold uppercase tracking-wider text-[#003527] leading-none">Pengumuman Wali Santri</strong>
+                      <span className="text-[9px] text-[#895033] mt-0.5">Informasi penting dari madrasah</span>
+                    </div>
                   </div>
-                  {/* Decorative window dots — Kraton style */}
-                  <div className="flex gap-1">
-                    <div className="w-3 h-3 border-2 border-[#003527] bg-[#ffffff] rounded-sm" />
-                    <div className="w-3 h-3 border-2 border-[#003527] bg-[#cca72f] rounded-sm" />
+                  <div className="flex items-center gap-2">
+                    {/* Count badge — shows total announcements */}
+                    {announcements.length > 0 && (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-[#003527] text-[#ffe088] text-[10px] font-bold border border-[#003527]">
+                        {announcements.length}
+                      </span>
+                    )}
+                    {/* Decorative window dots */}
+                    <div className="flex gap-1">
+                      <div className="w-3 h-3 border-2 border-[#003527] bg-[#ffffff] rounded-sm" />
+                      <div className="w-3 h-3 border-2 border-[#003527] bg-[#cca72f] rounded-sm" />
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Body */}
-              <div className="p-4 sm:p-5">
-                {announcements.length > 0 && (
-                  <p className="text-xs text-[#895033] bg-[#cca72f]/8 px-3 py-2 rounded-lg mb-4 flex items-start gap-2 border border-[#cca72f]/20">
-                    <AlertCircle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
-                    <span>Klik pengumuman untuk membaca selengkapnya.</span>
-                  </p>
-                )}
+              {/* Body — with subtle pattern bg + better spacing */}
+              <div className="p-4 sm:p-5 relative">
+                {/* Subtle kraton pattern overlay (very low opacity, adds texture not plain) */}
+                <div className="absolute inset-0 kraton-pattern opacity-[0.02] pointer-events-none" aria-hidden />
 
-                {announcementsLoading ? (
-                  <div className="space-y-3">
-                    {[1, 2, 3].map(i => <Skeleton key={i} className="h-16 w-full" />)}
-                  </div>
-                ) : announcements.length > 0 ? (
-                  <div className="space-y-2.5">
-                    {announcements.map((a: { id: string; title: string; content?: string; type: string; createdAt: string }, idx: number) => {
-                      const isRecent = idx < 2
-                      return (
-                        <button
-                          key={a.id}
-                          type="button"
-                          onClick={() => setSelectedAnnouncement(a)}
-                          className={`w-full text-left flex items-start gap-3 p-3 rounded-lg transition-all cursor-pointer group border-2 ${
-                            isRecent
-                              ? 'bg-[#003527]/5 hover:bg-[#003527]/8 border-[#003527]/20'
-                              : 'bg-[#f5f3ef] hover:bg-[#cca72f]/8 border-[#e4e2de] hover:border-[#cca72f]/30'
-                          }`}
-                        >
-                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border-2 ${
-                            isRecent ? 'border-[#cca72f] bg-[#cca72f]/15 text-[#895033]' : 'border-[#003527]/20 bg-[#003527]/8 text-[#003527]'
-                          }`}>
-                            {isRecent ? <AlertCircle className="h-4 w-4" /> : <Megaphone className="h-4 w-4" />}
-                          </div>
+                <div className="relative">
+                  {/* Helper text banner — gold tinted, with border */}
+                  {announcements.length > 0 && (
+                    <div className="flex items-start gap-2 px-3 py-2 mb-4 bg-[#cca72f]/8 border border-[#cca72f]/25 rounded-lg">
+                      <AlertCircle className="h-3.5 w-3.5 mt-0.5 shrink-0 text-[#895033]" />
+                      <p className="text-xs text-[#895033] leading-relaxed">
+                        Klik pengumuman untuk membaca selengkapnya. Pastikan Anda membaca semua pengumuman di bawah ini.
+                      </p>
+                    </div>
+                  )}
 
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-center gap-2 mb-0.5">
-                              <p className="text-sm font-semibold text-[#003527] leading-tight">{a.title}</p>
-                              {isRecent && (
-                                <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-[#cca72f] text-[#003527] text-[9px] font-bold uppercase tracking-wide shrink-0 border border-[#003527]">
-                                  Baru
-                                </span>
-                              )}
+                  {announcementsLoading ? (
+                    <div className="space-y-3">
+                      {[1, 2, 3].map(i => <Skeleton key={i} className="h-16 w-full" />)}
+                    </div>
+                  ) : announcements.length > 0 ? (
+                    <div className="space-y-2.5">
+                      {announcements.map((a: { id: string; title: string; content?: string; type: string; createdAt: string }, idx: number) => {
+                        const isRecent = idx < 2
+                        return (
+                          <button
+                            key={a.id}
+                            type="button"
+                            onClick={() => setSelectedAnnouncement(a)}
+                            className={`w-full text-left flex items-start gap-3 p-3 rounded-lg transition-all cursor-pointer group border-2 ${
+                              isRecent
+                                ? 'bg-[#003527]/5 hover:bg-[#003527]/8 border-[#003527]/20'
+                                : 'bg-[#f5f3ef] hover:bg-[#cca72f]/8 border-[#e4e2de] hover:border-[#cca72f]/30'
+                            }`}
+                          >
+                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border-2 ${
+                              isRecent ? 'border-[#cca72f] bg-[#cca72f]/15 text-[#895033]' : 'border-[#003527]/20 bg-[#003527]/8 text-[#003527]'
+                            }`}>
+                              {isRecent ? <AlertCircle className="h-4 w-4" /> : <Megaphone className="h-4 w-4" />}
                             </div>
-                            {a.content && (
-                              <p className="text-xs text-[#404944] mt-0.5 line-clamp-2">{a.content}</p>
-                            )}
-                            <div className="flex items-center justify-between mt-1.5">
-                              <span className="text-[10px] text-[#404944]/70 flex items-center gap-1">
-                                <Clock className="h-2.5 w-2.5" />
-                                {new Date(a.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
-                              </span>
-                              {a.content && a.content.length > 120 && (
-                                <span className="text-[10px] text-[#003527] font-semibold group-hover:underline flex items-center gap-0.5">
-                                  Baca selengkapnya <ChevronRight className="h-2.5 w-2.5" />
-                                </span>
+
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-center gap-2 mb-0.5">
+                                <p className="text-sm font-semibold text-[#003527] leading-tight">{a.title}</p>
+                                {isRecent && (
+                                  <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-[#cca72f] text-[#003527] text-[9px] font-bold uppercase tracking-wide shrink-0 border border-[#003527]">
+                                    Baru
+                                  </span>
+                                )}
+                              </div>
+                              {a.content && (
+                                <p className="text-xs text-[#404944] mt-0.5 line-clamp-2 leading-relaxed">{a.content}</p>
                               )}
+                              <div className="flex items-center justify-between mt-1.5">
+                                <span className="text-[10px] text-[#404944]/70 flex items-center gap-1">
+                                  <Clock className="h-2.5 w-2.5" />
+                                  {new Date(a.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                </span>
+                                {a.content && a.content.length > 120 && (
+                                  <span className="text-[10px] text-[#003527] font-semibold group-hover:underline flex items-center gap-0.5">
+                                    Baca selengkapnya <ChevronRight className="h-2.5 w-2.5" />
+                                  </span>
+                                )}
+                              </div>
                             </div>
-                          </div>
-                        </button>
-                      )
-                    })}
-                  </div>
-                ) : (
-                  <div className="text-center py-8">
-                    <Bell className="h-10 w-10 text-[#064e3b]/30 mx-auto mb-2" />
-                    <p className="text-sm text-[#404944]">Belum ada pengumuman untuk wali santri</p>
-                    <p className="text-xs text-[#404944]/60 mt-1">Periksa kembali secara berkala</p>
-                  </div>
-                )}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <Bell className="h-10 w-10 text-[#064e3b]/30 mx-auto mb-2" />
+                      <p className="text-sm text-[#404944]">Belum ada pengumuman untuk wali santri</p>
+                      <p className="text-xs text-[#404944]/60 mt-1">Periksa kembali secara berkala</p>
+                    </div>
+                  )}
+                </div>
               </div>
             </article>
           </motion.div>
 
-          {/* Meeting Schedule — Retro Window Kraton style */}
+          {/* Meeting Schedule — Retro Window Kraton style (enhanced) */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
             <article className="border-2 border-[#003527] bg-[#ffffff] text-[#1b1c1a] shadow-[4px_4px_0_0_#003527,8px_8px_0_0_#cca72f] rounded-lg overflow-hidden">
-              {/* Retro header bar */}
-              <div className="bg-[#cca72f]/20 p-3 border-b-2 border-[#003527]">
+              {/* Retro header bar — gold gradient + icon box */}
+              <div className="bg-gradient-to-r from-[#cca72f]/25 via-[#cca72f]/15 to-[#cca72f]/25 p-3 border-b-2 border-[#003527]">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-3.5 w-3.5 text-[#003527]" />
-                    <strong className="text-xs font-bold uppercase tracking-wider text-[#003527]">Jadwal Pertemuan Wali Santri</strong>
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-7 h-7 border-2 border-[#003527] bg-[#ffffff] rounded-md flex items-center justify-center">
+                      <Calendar className="h-3.5 w-3.5 text-[#003527]" />
+                    </div>
+                    <div className="flex flex-col">
+                      <strong className="text-xs font-bold uppercase tracking-wider text-[#003527] leading-none">Jadwal Pertemuan Wali Santri</strong>
+                      <span className="text-[9px] text-[#895033] mt-0.5">Agenda rapat & pertemuan</span>
+                    </div>
                   </div>
-                  <div className="flex gap-1">
-                    <div className="w-3 h-3 border-2 border-[#003527] bg-[#ffffff] rounded-sm" />
-                    <div className="w-3 h-3 border-2 border-[#003527] bg-[#cca72f] rounded-sm" />
+                  <div className="flex items-center gap-2">
+                    {meetings.length > 0 && (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-[#003527] text-[#ffe088] text-[10px] font-bold border border-[#003527]">
+                        {meetings.length}
+                      </span>
+                    )}
+                    <div className="flex gap-1">
+                      <div className="w-3 h-3 border-2 border-[#003527] bg-[#ffffff] rounded-sm" />
+                      <div className="w-3 h-3 border-2 border-[#003527] bg-[#cca72f] rounded-sm" />
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Body */}
-              <div className="p-4 sm:p-5">
-                <div className="space-y-3">
+              {/* Body — with subtle pattern + better card styling */}
+              <div className="p-4 sm:p-5 relative">
+                <div className="absolute inset-0 kraton-pattern opacity-[0.02] pointer-events-none" aria-hidden />
+                <div className="relative space-y-3">
                   {meetingsLoading ? (
                     <div className="space-y-3">
                       {[1, 2].map(i => <Skeleton key={i} className="h-20 w-full" />)}
                     </div>
                   ) : meetings.length > 0 ? (
                     meetings.map((m: { id: string; title: string; date: string; time: string; location?: string; description?: string }) => (
-                      <div key={m.id} className="p-3 bg-[#064e3b]/5 rounded-lg border-l-4 border-[#cca72f]">
-                        <p className="font-medium text-sm text-[#003527]">{m.title}</p>
-                        <div className="flex flex-wrap items-center gap-3 mt-1.5 text-xs text-[#404944]">
+                      <div key={m.id} className="p-3 bg-[#064e3b]/5 rounded-lg border border-[#e4e2de] border-l-4 border-l-[#cca72f] hover:bg-[#064e3b]/8 transition-colors">
+                        <p className="font-semibold text-sm text-[#003527] leading-tight">{m.title}</p>
+                        <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-[#404944]">
                           <span className="flex items-center gap-1">
                             <Calendar className="h-3 w-3 text-[#cca72f]" />
                             {new Date(m.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
@@ -221,12 +256,16 @@ export default function WaliSantriSection() {
                           )}
                         </div>
                         {m.description && (
-                          <p className="text-xs text-[#404944] mt-2 line-clamp-2">{m.description}</p>
+                          <p className="text-xs text-[#404944] mt-2 line-clamp-2 leading-relaxed">{m.description}</p>
                         )}
                       </div>
                     ))
                   ) : (
-                    <p className="text-[#404944]/70 text-sm">Jadwal pertemuan belum tersedia</p>
+                    <div className="text-center py-8">
+                      <Calendar className="h-10 w-10 text-[#064e3b]/30 mx-auto mb-2" />
+                      <p className="text-sm text-[#404944]">Jadwal pertemuan belum tersedia</p>
+                      <p className="text-xs text-[#404944]/60 mt-1">Periksa kembali secara berkala</p>
+                    </div>
                   )}
                 </div>
               </div>
