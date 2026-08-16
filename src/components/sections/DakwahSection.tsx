@@ -164,7 +164,7 @@ export default function DakwahSection() {
 
       {/* Detail Dialog */}
       <Dialog open={!!selectedItem} onOpenChange={() => setSelectedItem(null)}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto" showCloseButton={false}>
           <DialogClose asChild>
             <Button variant="ghost" size="icon" className="absolute right-4 top-4 z-10">
               <X className="h-4 w-4" />

@@ -798,7 +798,7 @@ export default function BerandaSection() {
 
         {/* News Detail Dialog */}
         <Dialog open={!!selectedNews} onOpenChange={() => setSelectedNews(null)}>
-          <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+          <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto" showCloseButton={false}>
             <DialogClose asChild>
               <Button variant="ghost" size="icon" className="absolute right-4 top-4 z-10">
                 <X className="h-4 w-4" />
@@ -928,7 +928,7 @@ export default function BerandaSection() {
 
         {/* Dakwah Detail Dialog */}
         <Dialog open={!!selectedDakwah} onOpenChange={() => setSelectedDakwah(null)}>
-          <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+          <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto" showCloseButton={false}>
             <DialogClose asChild>
               <Button variant="ghost" size="icon" className="absolute right-4 top-4 z-10">
                 <X className="h-4 w-4" />

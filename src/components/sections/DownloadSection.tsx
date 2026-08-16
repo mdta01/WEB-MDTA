@@ -238,7 +238,7 @@ export default function DownloadSection() {
           For images, uses direct URL in img tag.
           For other files (DOC/XLS), falls back to download. */}
       <Dialog open={!!previewItem} onOpenChange={() => setPreviewItem(null)}>
-        <DialogContent className="!max-w-5xl w-[95vw] h-[90vh] p-0 overflow-hidden flex flex-col">
+        <DialogContent className="!max-w-5xl w-[95vw] h-[90vh] p-0 overflow-hidden flex flex-col" showCloseButton={false}>
           <DialogTitle className="sr-only">Preview: {previewItem?.title}</DialogTitle>
           {previewItem && (
             <div className="flex flex-col h-full min-h-0">
