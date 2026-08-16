@@ -124,7 +124,7 @@ export default function DakwahSection() {
                         {item.category}
                       </Badge>
                     )}
-                    <h4 className="font-display font-semibold text-[#003527] text-sm sm:text-base mb-2 group-hover:text-[#064e3b] transition-colors line-clamp-2 leading-tight">
+                    <h4 className="font-body font-semibold text-[#003527] text-sm sm:text-base mb-2 group-hover:text-[#064e3b] transition-colors line-clamp-2 leading-snug">
                       {item.title}
                     </h4>
                     <p className="text-xs sm:text-sm text-[#404944] line-clamp-3 mb-3 leading-relaxed">

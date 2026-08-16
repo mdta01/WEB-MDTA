@@ -155,7 +155,7 @@ export default function BeritaSection() {
                     </div>
 
                     {/* Title — font-display for hierarchy */}
-                    <h3 className="font-display font-semibold text-[#003527] text-sm sm:text-base line-clamp-2 mb-2 group-hover:text-[#064e3b] transition-colors leading-tight">
+                    <h3 className="font-body font-semibold text-[#003527] text-sm sm:text-base line-clamp-2 mb-2 group-hover:text-[#064e3b] transition-colors leading-snug">
                       {item.title}
                     </h3>
 
