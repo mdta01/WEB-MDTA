@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
-import { BookOpen, Calendar, X, ChevronLeft, ChevronRight } from 'lucide-react'
+import { BookOpen, Calendar, X, ChevronLeft, ChevronRight, Clock } from 'lucide-react'
 import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -10,6 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Dialog, DialogContent, DialogTitle, DialogClose } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { MarkdownRenderer } from '@/components/sections/MarkdownRenderer'
+import { KratonSectionHeader } from '@/components/kraton'
 
 const categories = [
   { value: '', label: 'Semua' },
@@ -70,44 +71,26 @@ export default function BeritaSection() {
   }
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8">
-      <div className="text-center mb-8">
-        <motion.span
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.4 }}
-          className="inline-block px-3 py-0.5 rounded-full bg-[#064e3b]/15 text-[#003527] text-xs font-semibold uppercase tracking-wider mb-2"
-        >
-          Informasi Publik
-        </motion.span>
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.5 }}
-          className="text-2xl md:text-3xl font-bold text-gradient-emerald"
-        >
-          Berita & Kegiatan
-        </motion.h2>
-        <div className="w-20 h-1 bg-gradient-to-r from-[#003527] to-[#cca72f] mx-auto mt-2 rounded-full" />
-        <p className="text-sm text-[#404944] mt-3">
-          {allNews.length > 0
-            ? `Menampilkan ${startIndex + 1}-${Math.min(endIndex, allNews.length)} dari ${allNews.length} berita`
-            : ''}
-        </p>
-      </div>
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
+      <KratonSectionHeader
+        badge="Informasi Publik"
+        title="Berita & Kegiatan"
+        subtitle={allNews.length > 0
+          ? `Menampilkan ${startIndex + 1}-${Math.min(endIndex, allNews.length)} dari ${allNews.length} berita`
+          : 'Kabar terkini seputar kegiatan madrasah'}
+        align="center"
+      />
 
-      {/* Category Filter */}
+      {/* Category Filter — pill style with Kraton colors */}
       <div className="flex flex-wrap gap-2 justify-center">
         {categories.map((cat) => (
           <button
             key={cat.value}
             onClick={() => handleCategoryChange(cat.value)}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 border-2 ${
               selectedCategory === cat.value
-                ? 'bg-[#003527] text-white shadow-md shadow-[#003527]/30 scale-105'
-                : 'bg-[#f5f3ef] text-[#003527] hover:bg-[#efeeea] hover:scale-105'
+                ? 'bg-[#003527] text-white border-[#003527] shadow-premium scale-105'
+                : 'bg-[#ffffff] text-[#003527] border-[#e4e2de] hover:border-[#cca72f]/40 hover:bg-[#f5f3ef] hover:scale-105'
             }`}
           >
             {cat.label}
@@ -117,9 +100,9 @@ export default function BeritaSection() {
 
       {/* News Grid */}
       {isLoading ? (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-[minmax(0,1fr)] md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3, 4, 5, 6].map(i => (
-            <Card key={i} className="overflow-hidden border-0">
+            <Card key={i} className="overflow-hidden border border-[#e4e2de] rounded-2xl">
               <Skeleton className="h-48 w-full" />
               <div className="p-4 space-y-2">
                 <Skeleton className="h-4 w-20" />
@@ -132,42 +115,57 @@ export default function BeritaSection() {
         </div>
       ) : news.length > 0 ? (
         <>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-[minmax(0,1fr)] md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {news.map((item: { id: string; title: string; content: string; excerpt?: string; category: string; createdAt: string; image?: string }, idx: number) => (
               <motion.div
                 key={item.id}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ delay: idx * 0.05, duration: 0.5 }}
+                viewport={{ once: true }}
+                transition={{ delay: Math.min(idx * 0.05, 0.3), duration: 0.4 }}
               >
                 <Card
-                  className="overflow-hidden border border-[#e4e2de] shadow-premium card-hover cursor-pointer group h-full flex flex-col rounded-2xl bg-[#ffffff]"
+                  className="overflow-hidden border border-[#e4e2de] shadow-premium wood-carved-shadow card-hover cursor-pointer group h-full flex flex-col rounded-2xl bg-[#ffffff] relative"
                   onClick={() => setSelectedNews(item)}
                 >
-                  <div className="h-48 bg-gradient-to-br from-[#064e3b] to-[#003527] relative overflow-hidden">
+                  {/* Top gold accent bar — appears on hover */}
+                  <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-[#cca72f] via-[#ffe088] to-[#cca72f] opacity-0 group-hover:opacity-100 transition-opacity z-10" aria-hidden />
+
+                  {/* Image area */}
+                  <div className="h-44 sm:h-48 bg-gradient-to-br from-[#064e3b] to-[#003527] relative overflow-hidden">
                     {item.image ? (
-                      <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                      <img src={item.image} alt={item.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <BookOpen className="h-12 w-12 text-white/50" />
+                        <BookOpen className="h-12 w-12 text-white/40" />
                       </div>
                     )}
-                    <Badge className={`absolute top-3 left-3 text-xs backdrop-blur-sm ${categoryColors[item.category] || 'bg-[#f5f3ef] text-[#404944]'} shadow-md`}>
+                    {/* Gradient overlay at bottom of image for text readability */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#003527]/40 via-transparent to-transparent" />
+                    <Badge className={`absolute top-3 left-3 text-[10px] uppercase tracking-wide backdrop-blur-sm ${categoryColors[item.category] || 'bg-[#f5f3ef] text-[#404944]'} shadow-md border-0`}>
                       {item.category}
                     </Badge>
                   </div>
+
                   <CardContent className="p-4 flex-1 flex flex-col">
-                    <div className="flex items-center gap-2 text-xs text-[#404944]/70 mb-2">
-                      <Calendar className="h-3 w-3" />
-                      {new Date(item.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+                    {/* Date — with Clock icon */}
+                    <div className="flex items-center gap-1.5 text-[10px] text-[#404944]/70 mb-2">
+                      <Clock className="h-3 w-3 text-[#cca72f]" />
+                      {new Date(item.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                     </div>
-                    <h3 className="font-semibold text-[#003527] line-clamp-2 mb-2 group-hover:text-[#064e3b] transition-colors">
+
+                    {/* Title — font-display for hierarchy */}
+                    <h3 className="font-display font-semibold text-[#003527] text-sm sm:text-base line-clamp-2 mb-2 group-hover:text-[#064e3b] transition-colors leading-tight">
                       {item.title}
                     </h3>
-                    <p className="text-sm text-[#404944] line-clamp-3 mt-auto">{item.excerpt || item.content?.substring(0, 120) + '...'}</p>
-                    <span className="mt-3 text-xs text-[#003527] font-medium inline-flex items-center gap-1 group-hover:gap-2 transition-all">
-                      Baca selengkapnya <ChevronRight className="h-3 w-3" />
+
+                    {/* Excerpt — leading-relaxed for readability */}
+                    <p className="text-xs sm:text-sm text-[#404944] line-clamp-3 mt-auto leading-relaxed">{item.excerpt || item.content?.substring(0, 120) + '...'}</p>
+
+                    {/* Read more — with gold accent */}
+                    <span className="mt-3 text-xs text-[#003527] font-semibold inline-flex items-center gap-1 group-hover:gap-2 transition-all">
+                      Baca selengkapnya
+                      <ChevronRight className="h-3 w-3 text-[#cca72f]" />
                     </span>
                   </CardContent>
                 </Card>
