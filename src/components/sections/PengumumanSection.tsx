@@ -146,11 +146,12 @@ export default function PengumumanSection() {
       />
 
       {isLoading ? (
-        <div className="space-y-4">
+        /* Skeleton loading — adaptive grid matching the actual layout */
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {[1, 2, 3, 4].map(i => (
-            <Card key={i} className="p-5 border border-[#e4e2de] rounded-2xl">
+            <Card key={i} className={`p-5 border border-[#e4e2de] rounded-2xl ${i === 1 ? 'md:col-span-2' : ''}`}>
               <div className="flex items-start gap-4">
-                <Skeleton className="w-10 h-10 rounded-xl" />
+                <Skeleton className="w-10 h-10 rounded-xl shrink-0" />
                 <div className="flex-1 space-y-2">
                   <Skeleton className="h-4 w-1/3" />
                   <Skeleton className="h-4 w-full" />
@@ -161,8 +162,19 @@ export default function PengumumanSection() {
           ))}
         </div>
       ) : announcements.length > 0 ? (
-        <div className="space-y-3">
-          {sortedAnnouncements.map((item: { id: string; title: string; content: string; type: string; createdAt: string; priority: number }, idx: number) => renderAnnouncement(item, idx))}
+        /* Flexible grid + adaptive stack:
+           - Featured (priority ≥3): full-width row (md:col-span-2) — prominent, eye-catching
+           - Normal: 2-column on desktop (md:grid-cols-2), stack on mobile/tablet
+           - minmax(0,1fr) prevents overflow from long content */
+        <div className="grid grid-cols-[minmax(0,1fr)] md:grid-cols-2 gap-3 sm:gap-4">
+          {sortedAnnouncements.map((item: { id: string; title: string; content: string; type: string; createdAt: string; priority: number }, idx: number) => {
+            const isFeatured = item.priority >= 3
+            return (
+              <div key={item.id} className={isFeatured ? 'md:col-span-2' : ''}>
+                {renderAnnouncement(item, idx)}
+              </div>
+            )
+          })}
         </div>
       ) : (
         <Card className="p-12 text-center border border-[#e4e2de] rounded-2xl bg-[#ffffff] wood-carved-shadow">
