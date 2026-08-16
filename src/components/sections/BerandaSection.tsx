@@ -311,7 +311,7 @@ function HeroContent({ getSetting, typedDescription, typingDone, setCurrentPage 
         className="inline-flex items-center gap-2 bg-white/10 border border-white/20 text-[#ffe088] px-4 py-1.5 rounded-full mb-6 md:mb-8 backdrop-blur-sm"
       >
         <span className="text-xs leading-none text-[#ffe088]/60">✦</span>
-        <span className="font-arabic text-sm md:text-base tracking-wide">
+        <span className="font-arabic text-sm md:text-base tracking-wide" dir="rtl" lang="ar">
           بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
         </span>
         <span className="text-xs leading-none text-[#ffe088]/60">✦</span>

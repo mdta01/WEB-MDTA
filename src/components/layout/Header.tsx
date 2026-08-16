@@ -161,6 +161,7 @@ export default function Header() {
                 variant="ghost"
                 size="icon"
                 onClick={handleSearch}
+                aria-label="Cari"
                 className="text-[#003527] hover:text-[#064e3b] hover:bg-[#f5f3ef] hover:scale-110 h-9 w-9 rounded-full transition-all duration-300"
               >
                 <Search className="h-4 w-4" />
@@ -171,6 +172,7 @@ export default function Header() {
                   <Button
                     variant="ghost"
                     size="icon"
+                    aria-label="Buka menu navigasi"
                     className="xl:hidden text-[#003527] hover:text-[#064e3b] hover:bg-[#f5f3ef] hover:scale-110 h-9 w-9 rounded-full transition-all duration-300"
                   >
                     <Menu className="h-5 w-5" />

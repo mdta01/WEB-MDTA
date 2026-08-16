@@ -2,7 +2,7 @@
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useState, Suspense, lazy } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, MotionConfig } from 'framer-motion'
 import { useAppStore } from '@/store/useAppStore'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
@@ -106,16 +106,28 @@ export default function Home() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      {/* MotionConfig — respect user's prefers-reduced-motion setting.
+          If user has reduced motion enabled (OS setting), all framer-motion
+          animations are reduced to instant transitions. */}
+      <MotionConfig reducedMotion="user">
       <div className="min-h-screen flex flex-col bg-background overflow-x-hidden">
+        {/* Skip to main content — keyboard accessibility (Tab key reveals link) */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-[#003527] focus:text-white focus:rounded-lg focus:shadow-lg"
+        >
+          Lewati ke konten utama
+        </a>
         <Header />
         <LiveAnnouncement />
-        <main className="flex-1 w-full overflow-x-hidden">
+        <main id="main-content" className="flex-1 w-full overflow-x-hidden" tabIndex={-1}>
           <SectionRenderer />
         </main>
         <Footer />
         <WhatsAppButton />
       </div>
       <Toaster position="top-right" richColors />
+      </MotionConfig>
     </QueryClientProvider>
   )
 }
