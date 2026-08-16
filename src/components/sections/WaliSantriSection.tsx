@@ -83,10 +83,158 @@ export default function WaliSantriSection() {
       </div>
 
       <div className="grid lg:grid-cols-2 gap-8">
-        {/* Left Column */}
+        {/* Left Column — Announcements + Meeting Schedule FIRST (most important for parents) */}
         <div className="space-y-6">
-          {/* Payment Info */}
+          {/* Announcements for Parents — Retro Window Kraton style */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+            <article className="border-2 border-[#003527] bg-[#ffffff] text-[#1b1c1a] shadow-[4px_4px_0_0_#003527,8px_8px_0_0_#cca72f] rounded-lg overflow-hidden">
+              {/* Retro header bar — gold tint */}
+              <div className="bg-[#cca72f]/20 p-3 border-b-2 border-[#003527]">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Bell className="h-3.5 w-3.5 text-[#003527]" />
+                    <strong className="text-xs font-bold uppercase tracking-wider text-[#003527]">Pengumuman Wali Santri</strong>
+                  </div>
+                  {/* Decorative window dots — Kraton style */}
+                  <div className="flex gap-1">
+                    <div className="w-3 h-3 border-2 border-[#003527] bg-[#ffffff] rounded-sm" />
+                    <div className="w-3 h-3 border-2 border-[#003527] bg-[#cca72f] rounded-sm" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Body */}
+              <div className="p-4 sm:p-5">
+                {announcements.length > 0 && (
+                  <p className="text-xs text-[#895033] bg-[#cca72f]/8 px-3 py-2 rounded-lg mb-4 flex items-start gap-2 border border-[#cca72f]/20">
+                    <AlertCircle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+                    <span>Klik pengumuman untuk membaca selengkapnya.</span>
+                  </p>
+                )}
+
+                {announcementsLoading ? (
+                  <div className="space-y-3">
+                    {[1, 2, 3].map(i => <Skeleton key={i} className="h-16 w-full" />)}
+                  </div>
+                ) : announcements.length > 0 ? (
+                  <div className="space-y-2.5">
+                    {announcements.map((a: { id: string; title: string; content?: string; type: string; createdAt: string }, idx: number) => {
+                      const isRecent = idx < 2
+                      return (
+                        <button
+                          key={a.id}
+                          type="button"
+                          onClick={() => setSelectedAnnouncement(a)}
+                          className={`w-full text-left flex items-start gap-3 p-3 rounded-lg transition-all cursor-pointer group border-2 ${
+                            isRecent
+                              ? 'bg-[#003527]/5 hover:bg-[#003527]/8 border-[#003527]/20'
+                              : 'bg-[#f5f3ef] hover:bg-[#cca72f]/8 border-[#e4e2de] hover:border-[#cca72f]/30'
+                          }`}
+                        >
+                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border-2 ${
+                            isRecent ? 'border-[#cca72f] bg-[#cca72f]/15 text-[#895033]' : 'border-[#003527]/20 bg-[#003527]/8 text-[#003527]'
+                          }`}>
+                            {isRecent ? <AlertCircle className="h-4 w-4" /> : <Megaphone className="h-4 w-4" />}
+                          </div>
+
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-2 mb-0.5">
+                              <p className="text-sm font-semibold text-[#003527] leading-tight">{a.title}</p>
+                              {isRecent && (
+                                <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-[#cca72f] text-[#003527] text-[9px] font-bold uppercase tracking-wide shrink-0 border border-[#003527]">
+                                  Baru
+                                </span>
+                              )}
+                            </div>
+                            {a.content && (
+                              <p className="text-xs text-[#404944] mt-0.5 line-clamp-2">{a.content}</p>
+                            )}
+                            <div className="flex items-center justify-between mt-1.5">
+                              <span className="text-[10px] text-[#404944]/70 flex items-center gap-1">
+                                <Clock className="h-2.5 w-2.5" />
+                                {new Date(a.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                              </span>
+                              {a.content && a.content.length > 120 && (
+                                <span className="text-[10px] text-[#003527] font-semibold group-hover:underline flex items-center gap-0.5">
+                                  Baca selengkapnya <ChevronRight className="h-2.5 w-2.5" />
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </button>
+                      )
+                    })}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <Bell className="h-10 w-10 text-[#064e3b]/30 mx-auto mb-2" />
+                    <p className="text-sm text-[#404944]">Belum ada pengumuman untuk wali santri</p>
+                    <p className="text-xs text-[#404944]/60 mt-1">Periksa kembali secara berkala</p>
+                  </div>
+                )}
+              </div>
+            </article>
+          </motion.div>
+
+          {/* Meeting Schedule — Retro Window Kraton style */}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+            <article className="border-2 border-[#003527] bg-[#ffffff] text-[#1b1c1a] shadow-[4px_4px_0_0_#003527,8px_8px_0_0_#cca72f] rounded-lg overflow-hidden">
+              {/* Retro header bar */}
+              <div className="bg-[#cca72f]/20 p-3 border-b-2 border-[#003527]">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-3.5 w-3.5 text-[#003527]" />
+                    <strong className="text-xs font-bold uppercase tracking-wider text-[#003527]">Jadwal Pertemuan Wali Santri</strong>
+                  </div>
+                  <div className="flex gap-1">
+                    <div className="w-3 h-3 border-2 border-[#003527] bg-[#ffffff] rounded-sm" />
+                    <div className="w-3 h-3 border-2 border-[#003527] bg-[#cca72f] rounded-sm" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Body */}
+              <div className="p-4 sm:p-5">
+                <div className="space-y-3">
+                  {meetingsLoading ? (
+                    <div className="space-y-3">
+                      {[1, 2].map(i => <Skeleton key={i} className="h-20 w-full" />)}
+                    </div>
+                  ) : meetings.length > 0 ? (
+                    meetings.map((m: { id: string; title: string; date: string; time: string; location?: string; description?: string }) => (
+                      <div key={m.id} className="p-3 bg-[#064e3b]/5 rounded-lg border-l-4 border-[#cca72f]">
+                        <p className="font-medium text-sm text-[#003527]">{m.title}</p>
+                        <div className="flex flex-wrap items-center gap-3 mt-1.5 text-xs text-[#404944]">
+                          <span className="flex items-center gap-1">
+                            <Calendar className="h-3 w-3 text-[#cca72f]" />
+                            {new Date(m.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Clock className="h-3 w-3 text-[#cca72f]" />
+                            {m.time}
+                          </span>
+                          {m.location && (
+                            <span className="flex items-center gap-1">
+                              <MapPin className="h-3 w-3 text-[#cca72f]" />
+                              {m.location}
+                            </span>
+                          )}
+                        </div>
+                        {m.description && (
+                          <p className="text-xs text-[#404944] mt-2 line-clamp-2">{m.description}</p>
+                        )}
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-[#404944]/70 text-sm">Jadwal pertemuan belum tersedia</p>
+                  )}
+                </div>
+              </div>
+            </article>
+          </motion.div>
+
+          {/* Payment Info — moved to bottom (less urgent than announcements/meetings) */}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
             <Card className="border border-[#e4e2de] shadow-md card-hover rounded-2xl bg-[#ffffff]">
               <CardContent className="p-6">
                 <h3 className="text-lg font-bold text-[#003527] flex items-center gap-2 mb-4">
@@ -122,150 +270,6 @@ export default function WaliSantriSection() {
                 ) : (
                   <p className="text-[#404944]/70 text-sm">Informasi pembayaran belum tersedia</p>
                 )}
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Announcements for Parents — prominent, urgent highlight */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-            <Card className="border border-[#e4e2de] shadow-premium-lg wood-carved-shadow rounded-2xl bg-[#ffffff] overflow-hidden">
-              {/* Top accent strip — gold for importance */}
-              <div className="h-1 bg-gradient-to-r from-[#003527] via-[#cca72f] to-[#003527]" aria-hidden />
-              <CardContent className="p-5 sm:p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-bold text-[#003527] flex items-center gap-2 font-display">
-                    <span className="w-8 h-8 rounded-lg bg-[#cca72f]/15 flex items-center justify-center">
-                      <Bell className="h-4 w-4 text-[#895033]" />
-                    </span>
-                    Pengumuman Wali Santri
-                  </h3>
-                  {announcements.length > 0 && (
-                    <span className="text-xs text-[#404944]/70 bg-[#f5f3ef] px-2 py-1 rounded-full">
-                      {announcements.length} pengumuman
-                    </span>
-                  )}
-                </div>
-
-                {/* Helper text — guide parents */}
-                {announcements.length > 0 && (
-                  <p className="text-xs text-[#895033] bg-[#cca72f]/8 px-3 py-2 rounded-lg mb-4 flex items-start gap-2">
-                    <AlertCircle className="h-3.5 w-3.5 mt-0.5 shrink-0" />
-                    <span>Klik pengumuman untuk membaca selengkapnya. Pastikan Anda membaca semua pengumuman penting di bawah ini.</span>
-                  </p>
-                )}
-
-                {announcementsLoading ? (
-                  <div className="space-y-3">
-                    {[1, 2, 3].map(i => <Skeleton key={i} className="h-16 w-full" />)}
-                  </div>
-                ) : announcements.length > 0 ? (
-                  <div className="space-y-2.5">
-                    {announcements.map((a: { id: string; title: string; content?: string; type: string; createdAt: string }, idx: number) => {
-                      // First 2 announcements marked as "new/urgent" visually
-                      const isRecent = idx < 2
-                      return (
-                        <button
-                          key={a.id}
-                          type="button"
-                          onClick={() => setSelectedAnnouncement(a)}
-                          className={`w-full text-left flex items-start gap-3 p-3 sm:p-4 rounded-xl transition-all cursor-pointer group ${
-                            isRecent
-                              ? 'bg-[#003527]/5 hover:bg-[#003527]/8 border border-[#003527]/15'
-                              : 'bg-[#f5f3ef] hover:bg-[#cca72f]/8 border border-transparent'
-                          }`}
-                        >
-                          {/* Icon — alert for recent, megaphone for others */}
-                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
-                            isRecent ? 'bg-[#cca72f]/20 text-[#895033]' : 'bg-[#003527]/10 text-[#003527]'
-                          }`}>
-                            {isRecent ? <AlertCircle className="h-4 w-4" /> : <Megaphone className="h-4 w-4" />}
-                          </div>
-
-                          <div className="min-w-0 flex-1">
-                            {/* Title row with "Baru" badge for recent */}
-                            <div className="flex items-center gap-2 mb-0.5">
-                              <p className="text-sm font-semibold text-[#003527] leading-tight">{a.title}</p>
-                              {isRecent && (
-                                <span className="inline-flex items-center px-1.5 py-0.5 rounded-full bg-[#cca72f] text-[#003527] text-[9px] font-bold uppercase tracking-wide shrink-0">
-                                  Baru
-                                </span>
-                              )}
-                            </div>
-                            {/* Content preview */}
-                            {a.content && (
-                              <p className="text-xs text-[#404944] mt-0.5 line-clamp-2">{a.content}</p>
-                            )}
-                            {/* Date + read more */}
-                            <div className="flex items-center justify-between mt-1.5">
-                              <span className="text-[10px] text-[#404944]/70 flex items-center gap-1">
-                                <Clock className="h-2.5 w-2.5" />
-                                {new Date(a.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
-                              </span>
-                              {a.content && a.content.length > 120 && (
-                                <span className="text-[10px] text-[#003527] font-semibold group-hover:underline flex items-center gap-0.5">
-                                  Baca selengkapnya
-                                  <ChevronRight className="h-2.5 w-2.5" />
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        </button>
-                      )
-                    })}
-                  </div>
-                ) : (
-                  <div className="text-center py-8">
-                    <Bell className="h-10 w-10 text-[#064e3b]/30 mx-auto mb-2" />
-                    <p className="text-sm text-[#404944]">Belum ada pengumuman untuk wali santri</p>
-                    <p className="text-xs text-[#404944]/60 mt-1">Periksa kembali secara berkala</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Meeting Schedule */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
-            <Card className="border border-[#e4e2de] shadow-md card-hover rounded-2xl bg-[#ffffff]">
-              <CardContent className="p-6">
-                <h3 className="text-lg font-bold text-[#003527] flex items-center gap-2 mb-4">
-                  <Calendar className="h-5 w-5 text-[#cca72f]" />
-                  Jadwal Pertemuan Wali Santri
-                </h3>
-                <div className="space-y-3">
-                  {meetingsLoading ? (
-                    <div className="space-y-3">
-                      {[1, 2].map(i => <Skeleton key={i} className="h-20 w-full" />)}
-                    </div>
-                  ) : meetings.length > 0 ? (
-                    meetings.map((m: { id: string; title: string; date: string; time: string; location?: string; description?: string }) => (
-                      <div key={m.id} className="p-3 bg-[#064e3b]/5 rounded-lg border-l-4 border-[#cca72f]">
-                        <p className="font-medium text-sm text-[#003527]">{m.title}</p>
-                        <div className="flex flex-wrap items-center gap-3 mt-1.5 text-xs text-[#404944]">
-                          <span className="flex items-center gap-1">
-                            <Calendar className="h-3 w-3 text-[#cca72f]" />
-                            {new Date(m.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Clock className="h-3 w-3 text-[#cca72f]" />
-                            {m.time}
-                          </span>
-                          {m.location && (
-                            <span className="flex items-center gap-1">
-                              <MapPin className="h-3 w-3 text-[#cca72f]" />
-                              {m.location}
-                            </span>
-                          )}
-                        </div>
-                        {m.description && (
-                          <p className="text-xs text-[#404944] mt-2 line-clamp-2">{m.description}</p>
-                        )}
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-[#404944]/70 text-sm">Jadwal pertemuan belum tersedia</p>
-                  )}
-                </div>
               </CardContent>
             </Card>
           </motion.div>
