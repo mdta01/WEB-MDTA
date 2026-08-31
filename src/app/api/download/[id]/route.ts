@@ -4,7 +4,6 @@ import { db } from '@/lib/db'
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
-// Content type mapping for common file extensions
 const CONTENT_TYPES: Record<string, string> = {
   pdf: 'application/pdf',
   doc: 'application/msword',
@@ -22,18 +21,6 @@ const CONTENT_TYPES: Record<string, string> = {
   webp: 'image/webp',
 }
 
-/**
- * GET /api/download/[id] — proxy download from Cloudinary.
- *
- * Now that Cloudinary account access control is disabled (public access allowed),
- * we simply fetch the direct fileUrl from DB and stream it to client.
- * This is fast, simple, and reliable.
- *
- * Returns:
- *  - 200: file stream with Content-Disposition: attachment
- *  - 404: download record not found in DB
- *  - 502: Cloudinary fetch failed
- */
 export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -51,54 +38,83 @@ export async function GET(
 
     const fileUrl = download.fileUrl
 
-    // If it's a local file (not Cloudinary), redirect directly
-    if (!fileUrl.includes('cloudinary.com')) {
-      return NextResponse.redirect(fileUrl)
-    }
+    // Determine if local or Cloudinary URL
+    const isCloudinary = fileUrl.includes('cloudinary.com')
+    const isLocalPath = fileUrl.startsWith('/') || fileUrl.startsWith('./')
 
-    // Extract extension from URL or filename
+    // Extract extension
     const extMatch = fileUrl.match(/\.([a-zA-Z0-9]+)(?:\?|$)/)
     const ext = extMatch ? extMatch[1].toLowerCase() : 'pdf'
 
-    console.log(`[Download Proxy] Fetching direct URL: ${fileUrl.substring(0, 100)}...`)
+    // For local files — check if they exist by trying to fetch from same origin.
+    // If file doesn't exist, return clear error (not 500).
+    if (!isCloudinary && isLocalPath) {
+      // Try to fetch local file from same origin
+      const origin = _request.nextUrl.origin
+      const localUrl = `${origin}${fileUrl}`
 
-    // Fetch directly from Cloudinary (public access now enabled)
-    const response = await fetch(fileUrl, {
-      signal: AbortSignal.timeout(60000),
-    })
-
-    if (!response.ok) {
-      console.error('[Download Proxy] Direct fetch failed:', {
-        status: response.status,
-        statusText: response.statusText,
+      const localResponse = await fetch(localUrl, {
+        signal: AbortSignal.timeout(15000),
       })
-      return NextResponse.json(
-        {
-          error: `File tidak dapat diunduh (HTTP ${response.status})`,
-          hint: 'Coba beberapa saat lagi atau hubungi admin.',
+
+      if (!localResponse.ok) {
+        // Local file doesn't exist — return clear error
+        return NextResponse.json(
+          {
+            error: 'File belum tersedia',
+            hint: 'File ini belum diupload. Hubungi admin untuk upload file.',
+            fileUrl: fileUrl,
+          },
+          { status: 404 }
+        )
+      }
+
+      const buffer = Buffer.from(await localResponse.arrayBuffer())
+      const contentType = CONTENT_TYPES[ext] || 'application/octet-stream'
+      const safeFilename = download.title.replace(/[^a-zA-Z0-9._-]/g, '_').substring(0, 60) + '.' + ext
+
+      return new NextResponse(buffer, {
+        status: 200,
+        headers: {
+          'Content-Type': contentType,
+          'Content-Disposition': `attachment; filename="${safeFilename}"`,
+          'Content-Length': buffer.length.toString(),
+          'Cache-Control': 'public, max-age=3600',
         },
-        { status: 502 }
-      )
+      })
     }
 
-    const buffer = Buffer.from(await response.arrayBuffer())
-    const contentType = CONTENT_TYPES[ext] || 'application/octet-stream'
+    // For Cloudinary URLs — fetch directly (public access enabled)
+    if (isCloudinary) {
+      const response = await fetch(fileUrl, {
+        signal: AbortSignal.timeout(60000),
+      })
 
-    // Generate safe filename with extension
-    const safeFilename = download.title
-      .replace(/[^a-zA-Z0-9._-]/g, '_')
-      .substring(0, 60) + '.' + ext
+      if (!response.ok) {
+        return NextResponse.json(
+          { error: `File tidak dapat diunduh (HTTP ${response.status})` },
+          { status: 502 }
+        )
+      }
 
-    return new NextResponse(buffer, {
-      status: 200,
-      headers: {
-        'Content-Type': contentType,
-        'Content-Disposition': `attachment; filename="${safeFilename}"`,
-        'Content-Length': buffer.length.toString(),
-        'Cache-Control': 'public, max-age=3600',
-        'Access-Control-Allow-Origin': '*',
-      },
-    })
+      const buffer = Buffer.from(await response.arrayBuffer())
+      const contentType = CONTENT_TYPES[ext] || 'application/octet-stream'
+      const safeFilename = download.title.replace(/[^a-zA-Z0-9._-]/g, '_').substring(0, 60) + '.' + ext
+
+      return new NextResponse(buffer, {
+        status: 200,
+        headers: {
+          'Content-Type': contentType,
+          'Content-Disposition': `attachment; filename="${safeFilename}"`,
+          'Content-Length': buffer.length.toString(),
+          'Cache-Control': 'public, max-age=3600',
+          'Access-Control-Allow-Origin': '*',
+        },
+      })
+    }
+
+    // Unknown URL format — try redirect
+    return NextResponse.redirect(fileUrl)
   } catch (error) {
     console.error('[Download Proxy] Error:', error)
     return NextResponse.json(
