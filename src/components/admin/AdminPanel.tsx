@@ -179,6 +179,7 @@ const entityConfigs: Record<string, EntityConfig> = {
       { name: 'priority', label: 'Prioritas', type: 'number', placeholder: '0' },
       { name: 'isActive', label: 'Aktif', type: 'switch' },
       { name: 'content', label: 'Konten', type: 'richtext', required: true, placeholder: 'Tulis pengumuman dengan format...', colSpan: 2 },
+      { name: 'attachmentUrl', label: 'Lampiran (Surat/Gambar Pengumuman)', type: 'image', uploadFolder: 'mdta/announcements', aspectRatio: 'portrait', colSpan: 2, hint: 'Upload gambar surat pengumuman, atau klik "Mode URL" untuk paste URL PDF dari Cloudinary' },
     ],
   },
   teachers: {

@@ -28,10 +28,17 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { title, content, type, isActive, priority, attachmentUrl, attachmentType } = body
+    const { title, content, type, isActive, priority, attachmentUrl } = body
 
     if (!title || !content) {
       return NextResponse.json({ error: 'Judul dan konten harus diisi' }, { status: 400 })
+    }
+
+    // Auto-detect attachment type from URL extension
+    let attachmentType: string | null = null
+    if (attachmentUrl) {
+      const extMatch = attachmentUrl.match(/\.(pdf|doc|docx|xls|xlsx|ppt|pptx|zip|txt)(\?|$)/i)
+      attachmentType = extMatch ? 'pdf' : 'image'
     }
 
     const announcement = await db.announcement.create({
@@ -42,7 +49,7 @@ export async function POST(request: NextRequest) {
         isActive: isActive !== undefined ? isActive : true,
         priority: priority || 0,
         attachmentUrl: attachmentUrl || null,
-        attachmentType: attachmentType || null,
+        attachmentType,
       },
     })
 

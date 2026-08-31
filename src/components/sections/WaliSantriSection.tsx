@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import {
   CreditCard, Bell, Calendar, MessageSquare,
   Send, Clock, AlertCircle, MapPin, X, Megaphone, ChevronRight,
+  FileText, Eye, Download,
 } from 'lucide-react'
 import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
@@ -417,6 +418,66 @@ export default function WaliSantriSection() {
                   ? <MarkdownRenderer content={selectedAnnouncement.content} />
                   : <p className="text-sm text-[#404944]/70 italic">Tidak ada isi pengumuman.</p>}
               </div>
+
+              {/* Attachment — Surat Pengumuman (image or PDF) */}
+              {(selectedAnnouncement as { attachmentUrl?: string; attachmentType?: string }).attachmentUrl && (
+                <div className="mt-4 pt-4 border-t border-[#e4e2de]">
+                  {(selectedAnnouncement as { attachmentType?: string }).attachmentType === 'image' ? (
+                    <div className="space-y-2">
+                      <p className="text-xs font-semibold text-[#895033] uppercase tracking-wide flex items-center gap-1.5">
+                        <FileText className="h-3 w-3" />
+                        Surat Pengumuman
+                      </p>
+                      <div className="rounded-lg overflow-hidden border-2 border-[#e4e2de] shadow-premium bg-[#fbf9f5]">
+                        <img
+                          src={(selectedAnnouncement as { attachmentUrl?: string }).attachmentUrl}
+                          alt={`Surat pengumuman: ${selectedAnnouncement.title}`}
+                          loading="lazy"
+                          className="w-full h-auto object-contain max-h-[500px]"
+                        />
+                      </div>
+                      <a
+                        href={(selectedAnnouncement as { attachmentUrl?: string }).attachmentUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        download
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#003527] hover:text-[#064e3b] transition-colors"
+                      >
+                        <Download className="h-3 w-3" />
+                        Download surat pengumuman
+                      </a>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <p className="text-xs font-semibold text-[#895033] uppercase tracking-wide flex items-center gap-1.5">
+                        <FileText className="h-3 w-3" />
+                        Dokumen Pengumuman (PDF)
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <a
+                          href={(selectedAnnouncement as { attachmentUrl?: string }).attachmentUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#003527]/8 text-[#003527] text-xs font-semibold hover:bg-[#003527]/12 transition-colors"
+                        >
+                          <Eye className="h-3.5 w-3.5" />
+                          Lihat PDF
+                        </a>
+                        <a
+                          href={(selectedAnnouncement as { attachmentUrl?: string }).attachmentUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          download
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#cca72f]/15 text-[#895033] text-xs font-semibold hover:bg-[#cca72f]/25 transition-colors"
+                        >
+                          <Download className="h-3.5 w-3.5" />
+                          Download
+                        </a>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </>
           )}
         </DialogContent>

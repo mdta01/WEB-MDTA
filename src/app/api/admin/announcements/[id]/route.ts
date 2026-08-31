@@ -39,6 +39,16 @@ export async function PUT(
     const { id } = await params
     const body = await request.json()
 
+    // Auto-detect attachment type from URL extension
+    if (body.attachmentUrl !== undefined) {
+      if (body.attachmentUrl) {
+        const extMatch = body.attachmentUrl.match(/\.(pdf|doc|docx|xls|xlsx|ppt|pptx|zip|txt)(\?|$)/i)
+        body.attachmentType = extMatch ? 'pdf' : 'image'
+      } else {
+        body.attachmentType = null
+      }
+    }
+
     const announcement = await db.announcement.update({
       where: { id },
       data: body,
