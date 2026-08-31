@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Skeleton } from '@/components/ui/skeleton'
+import { KratonSectionHeader } from '@/components/kraton'
 
 export default function AlumniSection() {
   const { data, isLoading } = useQuery({
@@ -18,11 +19,12 @@ export default function AlumniSection() {
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8">
-      <div className="text-center mb-8">
-        <h2 className="text-2xl md:text-3xl font-bold text-[#003527]">Alumni</h2>
-        <div className="w-20 h-1 bg-[#cca72f] mx-auto mt-2 rounded-full" />
-        <p className="text-[#404944] mt-3 text-sm">Para alumni MDTA Miftahul Ulum 01 yang telah berkontribusi</p>
-      </div>
+      <KratonSectionHeader
+        badge="Jejaring"
+        title="Alumni"
+        align="center"
+        subtitle="Para alumni MDTA Miftahul Ulum 01 yang telah berkontribusi"
+      />
 
       {isLoading ? (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -45,7 +47,7 @@ export default function AlumniSection() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.05 }}
             >
-              <Card className="border border-[#e4e2de] shadow-md hover:shadow-lg card-hover transition-shadow h-full rounded-2xl bg-[#ffffff]">
+              <Card className="border border-[#e4e2de] shadow-premium wood-carved-shadow card-hover h-full rounded-2xl bg-[#ffffff]">
                 <CardContent className="p-6 text-center">
                   <Avatar className="w-16 h-16 mx-auto mb-3">
                     {item.image ? (

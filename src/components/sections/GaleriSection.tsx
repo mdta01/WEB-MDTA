@@ -6,6 +6,7 @@ import { Image as ImageIcon, Play, X, ChevronLeft, ChevronRight, Calendar, ZoomI
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
+import { KratonSectionHeader } from '@/components/kraton'
 
 type GalleryItem = {
   id: string
@@ -102,32 +103,12 @@ export default function GaleriSection() {
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8">
       {/* Header */}
-      <div className="text-center mb-8">
-        <motion.span
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.4 }}
-          className="inline-block px-3 py-0.5 rounded-full bg-[#064e3b]/15 text-[#003527] text-xs font-semibold uppercase tracking-wider mb-2"
-        >
-          Dokumentasi
-        </motion.span>
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.5 }}
-          className="text-2xl md:text-3xl font-bold text-gradient-emerald"
-        >
-          Galeri
-        </motion.h2>
-        <div className="w-20 h-1 bg-gradient-to-r from-[#003527] to-[#cca72f] mx-auto mt-2 rounded-full" />
-        {filteredGallery.length > 0 && (
-          <p className="text-sm text-[#404944] mt-3">
-            {filteredGallery.length} foto
-          </p>
-        )}
-      </div>
+      <KratonSectionHeader
+        badge="Dokumentasi"
+        title="Galeri Kegiatan"
+        align="center"
+        subtitle={filteredGallery.length > 0 ? `${filteredGallery.length} foto` : undefined}
+      />
 
       {/* Filters — Category + Year */}
       <div className="space-y-3">

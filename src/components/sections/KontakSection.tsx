@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
+import { KratonSectionHeader } from '@/components/kraton'
 
 export default function KontakSection() {
   const [formData, setFormData] = useState({
@@ -86,27 +87,11 @@ export default function KontakSection() {
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8">
-      <div className="text-center mb-8">
-        <motion.span
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.4 }}
-          className="inline-block px-3 py-0.5 rounded-full bg-[#064e3b]/15 text-[#003527] text-xs font-semibold uppercase tracking-wider mb-2"
-        >
-          Get In Touch
-        </motion.span>
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.5 }}
-          className="text-2xl md:text-3xl font-bold text-gradient-emerald"
-        >
-          Hubungi Kami
-        </motion.h2>
-        <div className="w-20 h-1 bg-gradient-to-r from-[#003527] to-[#cca72f] mx-auto mt-2 rounded-full" />
-      </div>
+      <KratonSectionHeader
+        badge="Hubungi Kami"
+        title="Kontak"
+        align="center"
+      />
 
       {/* Contact Info Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

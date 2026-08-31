@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
+import { KratonSectionHeader } from '@/components/kraton'
 
 const categories = [
   { value: '', label: 'Semua' },
@@ -102,28 +103,12 @@ export default function DownloadSection() {
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8">
-      <div className="text-center mb-8">
-        <motion.span
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.4 }}
-          className="inline-block px-3 py-0.5 rounded-full bg-[#064e3b]/15 text-[#003527] text-xs font-semibold uppercase tracking-wider mb-2"
-        >
-          Pusat Unduhan
-        </motion.span>
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.5 }}
-          className="text-2xl md:text-3xl font-bold text-gradient-emerald"
-        >
-          Download
-        </motion.h2>
-        <div className="w-20 h-1 bg-gradient-to-r from-[#003527] to-[#cca72f] mx-auto mt-2 rounded-full" />
-        <p className="text-[#404944] mt-3 text-sm">Unduh formulir, jadwal, materi, dan dokumen lainnya</p>
-      </div>
+      <KratonSectionHeader
+        badge="Pusat Unduhan"
+        title="Download File"
+        align="center"
+        subtitle="Unduh formulir, jadwal, materi, dan dokumen lainnya"
+      />
 
       {/* Category Filter */}
       <div className="flex flex-wrap gap-2 justify-center">

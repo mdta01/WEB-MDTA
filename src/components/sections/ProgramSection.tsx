@@ -11,6 +11,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
+import { KratonSectionHeader } from '@/components/kraton'
 
 const iconMap: Record<string, React.ElementType> = {
   'quran': BookHeart,
@@ -150,34 +151,18 @@ export default function ProgramSection() {
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8">
-      <div className="text-center mb-8">
-        <motion.span
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.4 }}
-          className="inline-block px-3 py-0.5 rounded-full bg-[#064e3b]/15 text-[#003527] text-xs font-semibold uppercase tracking-wider mb-2"
-        >
-          Akademik
-        </motion.span>
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.5 }}
-          className="text-2xl md:text-3xl font-bold text-gradient-emerald"
-        >
-          Program Pendidikan
-        </motion.h2>
-        <div className="w-20 h-1 bg-gradient-to-r from-[#003527] to-[#cca72f] mx-auto mt-2 rounded-full" />
-      </div>
+      <KratonSectionHeader
+        badge="Pendidikan"
+        title="Program Pendidikan"
+        align="center"
+      />
 
       <Tabs defaultValue="kelas" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 mb-6 bg-[#f5f3ef] rounded-2xl p-1.5">
-          <TabsTrigger value="kelas" className="data-[state=active]:bg-[#003527] data-[state=active]:text-white data-[state=active]:shadow-md rounded-xl text-xs md:text-sm transition-all">Kelas</TabsTrigger>
-          <TabsTrigger value="kurikulum" className="data-[state=active]:bg-[#003527] data-[state=active]:text-white data-[state=active]:shadow-md rounded-xl text-xs md:text-sm transition-all">Kurikulum</TabsTrigger>
-          <TabsTrigger value="unggulan" className="data-[state=active]:bg-[#003527] data-[state=active]:text-white data-[state=active]:shadow-md rounded-xl text-xs md:text-sm transition-all">Unggulan</TabsTrigger>
-          <TabsTrigger value="ekskul" className="data-[state=active]:bg-[#003527] data-[state=active]:text-white data-[state=active]:shadow-md rounded-xl text-xs md:text-sm transition-all">Ekskul</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-4 mb-6 bg-[#f5f3ef] border border-[#e4e2de] rounded-2xl p-1.5">
+          <TabsTrigger value="kelas" className="data-[state=active]:bg-[#003527] data-[state=active]:text-white data-[state=active]:shadow-premium rounded-xl text-xs md:text-sm transition-all">Kelas</TabsTrigger>
+          <TabsTrigger value="kurikulum" className="data-[state=active]:bg-[#003527] data-[state=active]:text-white data-[state=active]:shadow-premium rounded-xl text-xs md:text-sm transition-all">Kurikulum</TabsTrigger>
+          <TabsTrigger value="unggulan" className="data-[state=active]:bg-[#003527] data-[state=active]:text-white data-[state=active]:shadow-premium rounded-xl text-xs md:text-sm transition-all">Unggulan</TabsTrigger>
+          <TabsTrigger value="ekskul" className="data-[state=active]:bg-[#003527] data-[state=active]:text-white data-[state=active]:shadow-premium rounded-xl text-xs md:text-sm transition-all">Ekskul</TabsTrigger>
         </TabsList>
 
         <TabsContent value="kelas">

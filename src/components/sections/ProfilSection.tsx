@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { MarkdownRenderer } from '@/components/sections/MarkdownRenderer'
+import { KratonSectionHeader } from '@/components/kraton'
 
 export default function ProfilSection() {
   const { data: settingsData } = useQuery({
@@ -55,27 +56,11 @@ export default function ProfilSection() {
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-16">
       {/* Sejarah */}
       <section>
-        <div className="text-center mb-8">
-          <motion.span
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4 }}
-            className="inline-block px-3 py-0.5 rounded-full bg-[#064e3b]/15 text-[#003527] text-xs font-semibold uppercase tracking-wider mb-2"
-          >
-            Sejarah
-          </motion.span>
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="text-2xl md:text-3xl font-bold text-gradient-emerald"
-          >
-            Sejarah Madrasah
-          </motion.h2>
-          <div className="w-20 h-1 bg-gradient-to-r from-[#003527] to-[#cca72f] mx-auto mt-2 rounded-full" />
-        </div>
+        <KratonSectionHeader
+          badge="Sejarah"
+          title="Sejarah Madrasah"
+          align="center"
+        />
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -105,27 +90,11 @@ export default function ProfilSection() {
 
       {/* Visi Misi Tujuan */}
       <section>
-        <div className="text-center mb-8">
-          <motion.span
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4 }}
-            className="inline-block px-3 py-0.5 rounded-full bg-[#cca72f]/15 text-[#895033] text-xs font-semibold uppercase tracking-wider mb-2"
-          >
-            Landasan
-          </motion.span>
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="text-2xl md:text-3xl font-bold text-gradient-emerald"
-          >
-            Visi, Misi & Tujuan
-          </motion.h2>
-          <div className="w-20 h-1 bg-gradient-to-r from-[#003527] to-[#cca72f] mx-auto mt-2 rounded-full" />
-        </div>
+        <KratonSectionHeader
+          badge="Landasan"
+          title="Visi, Misi & Tujuan"
+          align="center"
+        />
         <div className="grid md:grid-cols-3 gap-6">
           <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
             <Card className="border border-[#e4e2de] shadow-premium wood-carved-shadow card-hover h-full rounded-2xl bg-[#ffffff]">
@@ -179,27 +148,11 @@ export default function ProfilSection() {
 
       {/* Struktur Organisasi */}
       <section>
-        <div className="text-center mb-8">
-          <motion.span
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4 }}
-            className="inline-block px-3 py-0.5 rounded-full bg-[#064e3b]/15 text-[#003527] text-xs font-semibold uppercase tracking-wider mb-2"
-          >
-            Organisasi
-          </motion.span>
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="text-2xl md:text-3xl font-bold text-gradient-emerald"
-          >
-            Struktur Organisasi
-          </motion.h2>
-          <div className="w-20 h-1 bg-gradient-to-r from-[#003527] to-[#cca72f] mx-auto mt-2 rounded-full" />
-        </div>
+        <KratonSectionHeader
+          badge="Organisasi"
+          title="Struktur Organisasi"
+          align="center"
+        />
         <Card className="border border-[#e4e2de] shadow-premium-lg wood-carved-shadow rounded-2xl bg-[#ffffff]">
           <CardContent className="p-8">
             {struktur && struktur.length > 0 ? (
@@ -248,32 +201,16 @@ export default function ProfilSection() {
 
       {/* Data Guru — Premium Teacher Cards */}
       <section>
-        <div className="text-center mb-8">
-          <motion.span
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4 }}
-            className="inline-block px-3 py-0.5 rounded-full bg-[#cca72f]/15 text-[#895033] text-xs font-semibold uppercase tracking-wider mb-2"
-          >
-            Edukator
-          </motion.span>
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="text-2xl md:text-3xl font-bold text-gradient-emerald"
-          >
-            Tenaga Pengajar
-          </motion.h2>
-          <div className="w-20 h-1 bg-gradient-to-r from-[#003527] to-[#cca72f] mx-auto mt-2 rounded-full" />
-          <p className="text-sm text-[#404944] mt-3">
-            {teachers.length > 0
+        <KratonSectionHeader
+          badge="Edukator"
+          title="Tenaga Pengajar"
+          align="center"
+          subtitle={
+            teachers.length > 0
               ? `${teachers.filter((t: { isActive?: boolean }) => t.isActive !== false).length} guru pengajar`
-              : ''}
-          </p>
-        </div>
+              : undefined
+          }
+        />
         {teachersLoading ? (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
             {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (

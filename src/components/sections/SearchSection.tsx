@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useAppStore } from '@/store/useAppStore'
+import { KratonSectionHeader } from '@/components/kraton'
 
 interface SearchResult {
   id: string
@@ -106,10 +107,11 @@ export default function SearchSection() {
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8">
-      <div className="text-center mb-8">
-        <h2 className="text-2xl md:text-3xl font-bold text-[#003527]">Pencarian</h2>
-        <div className="w-20 h-1 bg-[#cca72f] mx-auto mt-2 rounded-full" />
-      </div>
+      <KratonSectionHeader
+        badge="Pencarian"
+        title="Cari Informasi"
+        align="center"
+      />
 
       {/* Search Input */}
       <div className="max-w-xl mx-auto relative">
@@ -185,11 +187,11 @@ export default function SearchSection() {
             })}
           </div>
         ) : (
-          <Card className="p-12 text-center border-0 max-w-md mx-auto">
-            <Search className="h-12 w-12 text-[#064e3b]/40 mx-auto mb-3" />
+          <div className="text-center py-12 max-w-xl mx-auto">
+            <Search className="h-12 w-12 text-[#064e3b]/30 mx-auto mb-3" />
             <p className="text-[#404944]">Tidak ditemukan hasil untuk &ldquo;{searchQuery}&rdquo;</p>
-            <p className="text-[#404944]/70 text-sm mt-1">Coba kata kunci yang berbeda</p>
-          </Card>
+            <p className="text-xs text-[#404944]/60 mt-1">Coba kata kunci lain</p>
+          </div>
         )
       ) : (
         <Card className="p-12 text-center border-0 max-w-md mx-auto">
