@@ -91,9 +91,19 @@ export async function subscribeToPushNotifications(): Promise<boolean> {
     // Check if already subscribed
     let subscription = await registration.pushManager.getSubscription()
     if (subscription) {
-      // Re-send to server in case it was lost
-      await sendSubscriptionToServer(subscription)
-      return true
+      // Check if subscription has expired (browser may rotate keys)
+      const isExpired =
+        subscription.expirationTime !== null &&
+        subscription.expirationTime < Date.now()
+      if (isExpired) {
+        // Unsubscribe expired subscription and re-subscribe below
+        await subscription.unsubscribe()
+        subscription = null
+      } else {
+        // Re-send to server in case it was lost
+        await sendSubscriptionToServer(subscription)
+        return true
+      }
     }
 
     // Get VAPID public key from server
@@ -116,6 +126,32 @@ export async function subscribeToPushNotifications(): Promise<boolean> {
     return true
   } catch (error) {
     console.error('[Push] Subscribe failed:', error)
+    return false
+  }
+}
+
+/**
+ * Verify push subscription is still active. Re-subscribe if expired.
+ * Call this on page load (in NotificationManager) to ensure
+ * background notifications work even after browser restart.
+ */
+export async function ensurePushSubscription(): Promise<boolean> {
+  if (typeof window === 'undefined') return false
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return false
+  if (Notification.permission !== 'granted') return false
+
+  try {
+    const registration = await navigator.serviceWorker.ready
+    let subscription = await registration.pushManager.getSubscription()
+
+    if (!subscription) {
+      // No subscription — try to subscribe
+      return await subscribeToPushNotifications()
+    }
+
+    return true
+  } catch (error) {
+    console.error('[Push] Ensure subscription failed:', error)
     return false
   }
 }

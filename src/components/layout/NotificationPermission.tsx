@@ -119,10 +119,10 @@ export function NotificationPermission() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.25 }}
-            className="fixed bottom-40 right-6 z-50 w-[calc(100vw-2rem)] sm:w-80 bg-[#ffffff] rounded-2xl shadow-2xl border border-emerald-100 overflow-hidden"
+            className="fixed bottom-40 right-6 z-50 w-[calc(100vw-2rem)] sm:w-80 bg-[#ffffff] rounded-2xl shadow-2xl border border-[#e4e2de] overflow-hidden"
           >
             {/* Header */}
-            <div className="bg-gradient-to-r from-emerald-700 to-emerald-800 p-4 text-white relative">
+            <div className="bg-gradient-to-r from-[#003527] to-[#064e3b] p-4 text-white relative">
               <button
                 onClick={handleDismiss}
                 className="absolute top-2 right-2 text-white/70 hover:text-white"
@@ -157,7 +157,7 @@ export function NotificationPermission() {
               </ul>
 
               {permission === 'denied' && (
-                <div className="flex items-start gap-2 bg-[#cca72f]/8 border border-amber-200 rounded-lg p-2 text-xs text-[#895033]">
+                <div className="flex items-start gap-2 bg-[#cca72f]/8 border border-[#cca72f]/25 rounded-lg p-2 text-xs text-[#895033]">
                   <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
                   <span>
                     Notifikasi diblokir di browser. Aktifkan via ikon kunci di address bar → Site settings → Notifications → Allow.
