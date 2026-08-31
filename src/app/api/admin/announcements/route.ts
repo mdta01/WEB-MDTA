@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { title, content, type, isActive, priority } = body
+    const { title, content, type, isActive, priority, attachmentUrl, attachmentType } = body
 
     if (!title || !content) {
       return NextResponse.json({ error: 'Judul dan konten harus diisi' }, { status: 400 })
@@ -41,6 +41,8 @@ export async function POST(request: NextRequest) {
         type: type || 'general',
         isActive: isActive !== undefined ? isActive : true,
         priority: priority || 0,
+        attachmentUrl: attachmentUrl || null,
+        attachmentType: attachmentType || null,
       },
     })
 

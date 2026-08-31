@@ -55,6 +55,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import CRUDManager, { type FormFieldConfig, type ColumnConfig } from './CRUDManager'
 import { ImageUpload } from './ImageUpload'
+import { FileUpload } from './FileUpload'
 import { RichTextEditor } from './RichTextEditor'
 import AdminDashboard from './AdminDashboard'
 
@@ -1353,6 +1354,8 @@ function WaliSantriManager() {
     content: string
     priority: number
     isActive: boolean
+    attachmentUrl?: string
+    attachmentType?: string
   } | null>(null)
   const [deleteAnnouncement, setDeleteAnnouncement] = useState<Record<string, unknown> | null>(null)
 
@@ -1479,7 +1482,7 @@ function WaliSantriManager() {
   }
 
   const openCreateAnnouncement = () => {
-    setAnnouncementForm({ title: '', content: '', priority: 0, isActive: true })
+    setAnnouncementForm({ title: '', content: '', priority: 0, isActive: true, attachmentUrl: '', attachmentType: '' })
   }
   const openEditAnnouncement = (a: Record<string, unknown>) => {
     setAnnouncementForm({
@@ -1488,6 +1491,8 @@ function WaliSantriManager() {
       content: a.content as string,
       priority: (a.priority as number) || 0,
       isActive: a.isActive !== false,
+      attachmentUrl: (a.attachmentUrl as string) || '',
+      attachmentType: (a.attachmentType as string) || '',
     })
   }
 
@@ -1698,7 +1703,7 @@ function WaliSantriManager() {
 
       {/* Announcement Form Dialog */}
       <Dialog open={!!announcementForm} onOpenChange={(open) => { if (!open) setAnnouncementForm(null) }}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{announcementForm?.id ? 'Edit Pengumuman' : 'Tambah Pengumuman'}</DialogTitle>
             <DialogDescription>Pengumuman khusus untuk wali santri</DialogDescription>
@@ -1713,6 +1718,30 @@ function WaliSantriManager() {
                 <Label className="text-sm">Konten *</Label>
                 <Textarea value={announcementForm.content} onChange={(e) => setAnnouncementForm({ ...announcementForm, content: e.target.value })} rows={4} placeholder="Isi pengumuman..." />
               </div>
+
+              {/* Attachment — Upload Gambar (surat/photo pengumuman) */}
+              <div className="space-y-1.5">
+                <Label className="text-sm">Lampiran Gambar (Surat Pengumuman)</Label>
+                <ImageUpload
+                  value={announcementForm.attachmentUrl || ''}
+                  onChange={(url) => setAnnouncementForm({ ...announcementForm, attachmentUrl: url, attachmentType: url ? 'image' : '' })}
+                  folder="mdta/announcements"
+                  aspectRatio="portrait"
+                  hint="Upload scan surat pengumuman atau gambar pengumuman resmi (JPG/PNG, maks 10MB)"
+                />
+              </div>
+
+              {/* Attachment — Upload PDF */}
+              <div className="space-y-1.5">
+                <Label className="text-sm">Lampiran PDF (Dokumen Resmi)</Label>
+                <FileUpload
+                  value={announcementForm.attachmentType === 'pdf' ? announcementForm.attachmentUrl || '' : ''}
+                  onChange={(url) => setAnnouncementForm({ ...announcementForm, attachmentUrl: url, attachmentType: url ? 'pdf' : '' })}
+                  folder="mdta/announcements"
+                  hint="Upload dokumen PDF pengumuman resmi (maks 25MB)"
+                />
+              </div>
+
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <Label className="text-sm">Prioritas</Label>

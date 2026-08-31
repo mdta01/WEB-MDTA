@@ -5,7 +5,7 @@ import { motion } from 'framer-motion'
 import { useState } from 'react'
 import {
   Bell, FileText, CalendarDays, GraduationCap, AlertCircle,
-  Megaphone, Clock, ChevronDown, ChevronUp, Sparkles,
+  Megaphone, Clock, ChevronDown, ChevronUp, Sparkles, Eye, Download,
 } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -50,7 +50,7 @@ export default function PengumumanSection() {
     return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   })
 
-  const renderAnnouncement = (item: { id: string; title: string; content: string; type: string; createdAt: string; priority: number }, idx: number) => {
+  const renderAnnouncement = (item: { id: string; title: string; content: string; type: string; createdAt: string; priority: number; attachmentUrl?: string; attachmentType?: string }, idx: number) => {
     const config = typeConfig[item.type] || typeConfig['general']
     const TypeIcon = config.icon
     // Featured = high priority (>=3) — shown first, with subtle gold accent (not red/alarmist)
@@ -128,6 +128,69 @@ export default function PengumumanSection() {
                     )}
                   </button>
                 )}
+
+                {/* Attachment — Surat Pengumuman (image or PDF) */}
+                {item.attachmentUrl && (
+                  <div className="mt-4 pt-3 border-t border-[#e4e2de]">
+                    {/* Image attachment — surat pengumuman */}
+                    {item.attachmentType === 'image' && (
+                      <div className="space-y-2">
+                        <p className="text-xs font-semibold text-[#895033] uppercase tracking-wide flex items-center gap-1.5">
+                          <FileText className="h-3 w-3" />
+                          Surat Pengumuman
+                        </p>
+                        <div className="rounded-lg overflow-hidden border-2 border-[#e4e2de] shadow-premium bg-[#fbf9f5]">
+                          <img
+                            src={item.attachmentUrl}
+                            alt={`Surat pengumuman: ${item.title}`}
+                            loading="lazy"
+                            className="w-full h-auto object-contain max-h-[600px]"
+                          />
+                        </div>
+                        <a
+                          href={item.attachmentUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          download
+                          className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#003527] hover:text-[#064e3b] transition-colors"
+                        >
+                          <Download className="h-3 w-3" />
+                          Download surat pengumuman
+                        </a>
+                      </div>
+                    )}
+                    {/* PDF attachment — dokumen resmi */}
+                    {item.attachmentType === 'pdf' && (
+                      <div className="space-y-2">
+                        <p className="text-xs font-semibold text-[#895033] uppercase tracking-wide flex items-center gap-1.5">
+                          <FileText className="h-3 w-3" />
+                          Dokumen Pengumuman (PDF)
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <a
+                            href={item.attachmentUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#003527]/8 text-[#003527] text-xs font-semibold hover:bg-[#003527]/12 transition-colors"
+                          >
+                            <Eye className="h-3.5 w-3.5" />
+                            Lihat PDF
+                          </a>
+                          <a
+                            href={item.attachmentUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            download
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#cca72f]/15 text-[#895033] text-xs font-semibold hover:bg-[#cca72f]/25 transition-colors"
+                          >
+                            <Download className="h-3.5 w-3.5" />
+                            Download
+                          </a>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </CardContent>
@@ -167,7 +230,7 @@ export default function PengumumanSection() {
            - Normal: 2-column on desktop (md:grid-cols-2), stack on mobile/tablet
            - minmax(0,1fr) prevents overflow from long content */
         <div className="grid grid-cols-[minmax(0,1fr)] md:grid-cols-2 gap-3 sm:gap-4">
-          {sortedAnnouncements.map((item: { id: string; title: string; content: string; type: string; createdAt: string; priority: number }, idx: number) => {
+          {sortedAnnouncements.map((item: { id: string; title: string; content: string; type: string; createdAt: string; priority: number; attachmentUrl?: string; attachmentType?: string }, idx: number) => {
             const isFeatured = item.priority >= 3
             return (
               <div key={item.id} className={isFeatured ? 'md:col-span-2' : ''}>
