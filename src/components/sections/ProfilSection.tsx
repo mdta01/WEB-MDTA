@@ -79,20 +79,25 @@ function HistoryBook({ history, madrasahName, historyYear }: { history: string; 
   }
 
   return (
-    <Card className="border border-[#e4e2de] shadow-premium-lg wood-carved-shadow overflow-hidden rounded-2xl bg-[#ffffff]">
+    <Card className="border border-[#e4e2de] shadow-premium-lg wood-carved-shadow overflow-hidden rounded-2xl bg-[#ffffff] mb-20 md:mb-0">
       <div className="grid grid-cols-1 md:grid-cols-5 gap-0">
-        {/* Left — Book cover (always visible) */}
-        <div className="bg-gradient-to-br from-[#003527] to-[#064e3b] p-6 md:p-8 flex flex-col items-center justify-center md:min-h-[350px] relative overflow-hidden">
+        {/* Left — Book cover (compact on mobile, full on desktop) */}
+        <div className="bg-gradient-to-br from-[#003527] to-[#064e3b] p-4 sm:p-6 md:p-8 flex flex-col items-center justify-center md:min-h-[350px] relative overflow-hidden py-6 sm:py-8">
           <div className="absolute inset-0 kraton-pattern opacity-[0.05]" aria-hidden />
           <div className="relative text-center text-white">
-            <div className="w-16 h-16 rounded-2xl bg-[#cca72f]/15 flex items-center justify-center mx-auto mb-4 ring-2 ring-[#cca72f]/30">
-              <BookOpen className="h-8 w-8 text-[#cca72f]" />
+            {/* Compact horizontal layout on mobile, vertical on desktop */}
+            <div className="flex md:flex-col items-center gap-3 md:gap-0">
+              <div className="w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl bg-[#cca72f]/15 flex items-center justify-center shrink-0 ring-2 ring-[#cca72f]/30">
+                <BookOpen className="h-6 w-6 md:h-8 md:w-8 text-[#cca72f]" />
+              </div>
+              <div className="text-left md:text-center">
+                <h3 className="text-base md:text-xl lg:text-2xl font-bold mb-0 md:mb-2 font-display leading-tight">{madrasahName}</h3>
+                <p className="text-[#b0f0d6] text-xs md:text-sm">Berdiri sejak tahun {historyYear}</p>
+              </div>
             </div>
-            <h3 className="text-xl md:text-2xl font-bold mb-2 font-display">{madrasahName}</h3>
-            <p className="text-[#b0f0d6] text-sm">Berdiri sejak tahun {historyYear}</p>
             {/* Page indicator */}
             {totalPages > 1 && (
-              <div className="mt-4 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 border border-white/20">
+              <div className="mt-3 md:mt-4 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 border border-white/20">
                 <span className="text-[#ffe088] text-xs font-semibold">Hal {currentPage + 1} / {totalPages}</span>
               </div>
             )}
@@ -100,9 +105,9 @@ function HistoryBook({ history, madrasahName, historyYear }: { history: string; 
         </div>
 
         {/* Right — Book page content (paginated with slide animation) */}
-        <div className="md:col-span-3 p-5 sm:p-6 md:p-8 flex flex-col min-h-[250px] md:min-h-[350px]">
-          {/* Page content — slides on page change */}
-          <div className="flex-1 overflow-hidden">
+        <div className="md:col-span-3 p-4 sm:p-6 md:p-8 flex flex-col">
+          {/* Page content — slides on page change, allow scroll if needed */}
+          <div className="flex-1 overflow-y-auto">
             <AnimatePresence mode="wait" custom={direction}>
               <motion.div
                 key={currentPage}
@@ -112,34 +117,35 @@ function HistoryBook({ history, madrasahName, historyYear }: { history: string; 
                 animate="center"
                 exit="exit"
                 transition={{ duration: 0.3, ease: 'easeInOut' }}
+                className="text-justify"
               >
-                <MarkdownRenderer content={pages[currentPage]} className="text-sm" />
+                <MarkdownRenderer content={pages[currentPage]} className="text-sm text-justify leading-relaxed" />
               </motion.div>
             </AnimatePresence>
           </div>
 
-          {/* Navigation — prev/next + page dots */}
+          {/* Navigation — prev/next + page dots (fixed at bottom, not cut off) */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between mt-6 pt-4 border-t border-[#e4e2de]">
-              {/* Prev button */}
+            <div className="flex items-center justify-between gap-2 mt-4 pt-4 border-t border-[#e4e2de] shrink-0">
+              {/* Prev button — icon only on mobile, text+icon on desktop */}
               <button
                 onClick={prevPage}
                 disabled={currentPage === 0}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold text-[#003527] bg-[#f5f3ef] hover:bg-[#064e3b]/8 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                className="inline-flex items-center gap-1 px-2 sm:px-3 py-1.5 rounded-lg text-xs font-semibold text-[#003527] bg-[#f5f3ef] hover:bg-[#064e3b]/8 disabled:opacity-30 disabled:cursor-not-allowed transition-colors shrink-0"
               >
                 <ChevronLeft className="h-3.5 w-3.5" />
-                Sebelumnya
+                <span className="hidden sm:inline">Sebelumnya</span>
               </button>
 
               {/* Page dots */}
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1.5 shrink-0">
                 {pages.map((_, i) => (
                   <button
                     key={i}
                     onClick={() => goToPage(i)}
                     className={`h-2 rounded-full transition-all ${
                       i === currentPage
-                        ? 'w-6 bg-[#003527]'
+                        ? 'w-5 sm:w-6 bg-[#003527]'
                         : 'w-2 bg-[#e4e2de] hover:bg-[#cca72f]/40'
                     }`}
                     aria-label={`Halaman ${i + 1}`}
@@ -147,13 +153,13 @@ function HistoryBook({ history, madrasahName, historyYear }: { history: string; 
                 ))}
               </div>
 
-              {/* Next button */}
+              {/* Next button — icon only on mobile, text+icon on desktop */}
               <button
                 onClick={nextPage}
                 disabled={currentPage === totalPages - 1}
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold text-[#003527] bg-[#f5f3ef] hover:bg-[#064e3b]/8 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                className="inline-flex items-center gap-1 px-2 sm:px-3 py-1.5 rounded-lg text-xs font-semibold text-[#003527] bg-[#f5f3ef] hover:bg-[#064e3b]/8 disabled:opacity-30 disabled:cursor-not-allowed transition-colors shrink-0"
               >
-                Selanjutnya
+                <span className="hidden sm:inline">Selanjutnya</span>
                 <ChevronRight className="h-3.5 w-3.5" />
               </button>
             </div>
