@@ -80,9 +80,9 @@ function HistoryBook({ history, madrasahName, historyYear }: { history: string; 
 
   return (
     <Card className="border border-[#e4e2de] shadow-premium-lg wood-carved-shadow overflow-hidden rounded-2xl bg-[#ffffff]">
-      <div className="grid md:grid-cols-5 gap-0">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-0">
         {/* Left — Book cover (always visible) */}
-        <div className="md:col-span-2 bg-gradient-to-br from-[#003527] to-[#064e3b] p-6 md:p-8 flex flex-col items-center justify-center md:min-h-[350px] relative overflow-hidden">
+        <div className="bg-gradient-to-br from-[#003527] to-[#064e3b] p-6 md:p-8 flex flex-col items-center justify-center md:min-h-[350px] relative overflow-hidden">
           <div className="absolute inset-0 kraton-pattern opacity-[0.05]" aria-hidden />
           <div className="relative text-center text-white">
             <div className="w-16 h-16 rounded-2xl bg-[#cca72f]/15 flex items-center justify-center mx-auto mb-4 ring-2 ring-[#cca72f]/30">
@@ -100,7 +100,7 @@ function HistoryBook({ history, madrasahName, historyYear }: { history: string; 
         </div>
 
         {/* Right — Book page content (paginated with slide animation) */}
-        <div className="md:col-span-3 p-6 md:p-8 flex flex-col min-h-[350px]">
+        <div className="md:col-span-3 p-5 sm:p-6 md:p-8 flex flex-col min-h-[250px] md:min-h-[350px]">
           {/* Page content — slides on page change */}
           <div className="flex-1 overflow-hidden">
             <AnimatePresence mode="wait" custom={direction}>
@@ -359,7 +359,7 @@ export default function ProfilSection() {
           }
         />
         {teachersLoading ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+          <div className="grid grid-cols-[minmax(0,1fr)] sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
             {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
               <Card key={i} className="overflow-hidden border-0">
                 <Skeleton className="aspect-[3/4] w-full" />
@@ -372,7 +372,7 @@ export default function ProfilSection() {
             ))}
           </div>
         ) : teachers.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+          <div className="grid grid-cols-[minmax(0,1fr)] sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
             {teachers.map((teacher: { id: string; name: string; position: string; subject?: string; image?: string; phone?: string }, idx: number) => (
               <motion.div
                 key={teacher.id}
@@ -404,7 +404,7 @@ export default function ProfilSection() {
                   </div>
 
                   {/* Info section below photo: jabatan → nama → mata pelajaran */}
-                  <div className="flex-1 flex flex-col items-center text-center p-4 pt-3 bg-[#ffffff]">
+                  <div className="flex-1 flex flex-col items-center text-center p-3 sm:p-4 pt-3 bg-[#ffffff] min-w-0">
                     {/* Jabatan */}
                     <span className="inline-block bg-[#cca72f]/20 text-[#895033] text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full mb-2">
                       {teacher.position}
@@ -415,9 +415,9 @@ export default function ProfilSection() {
                     </h4>
                     {/* Mata pelajaran */}
                     {teacher.subject && (
-                      <p className="text-xs text-[#404944] mt-1 flex items-center justify-center gap-1">
+                      <p className="text-[10px] sm:text-xs text-[#404944] mt-1 flex items-center justify-center gap-1 min-w-0">
                         <BookOpen className="h-3 w-3 shrink-0 text-[#003527]" />
-                        <span className="truncate">{teacher.subject}</span>
+                        <span className="line-clamp-2 text-center leading-tight">{teacher.subject}</span>
                       </p>
                     )}
                   </div>
