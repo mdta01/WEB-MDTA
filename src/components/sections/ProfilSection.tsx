@@ -1,13 +1,168 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
-import { motion } from 'framer-motion'
-import { BookOpen, Eye, Target, Users, Award, Phone, UserCircle2 } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { BookOpen, Eye, Target, Users, Award, Phone, UserCircle2, ChevronLeft, ChevronRight } from 'lucide-react'
+import { useState, useMemo } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { MarkdownRenderer } from '@/components/sections/MarkdownRenderer'
 import { KratonSectionHeader } from '@/components/kraton'
+
+// Split history text into "pages" — each page = ~2 paragraphs (or ~300 chars if no paragraph breaks)
+function splitIntoPages(text: string, charsPerPage = 600): string[] {
+  if (!text) return []
+  // Split by double newline (paragraph breaks)
+  const paragraphs = text.split(/\n\n+/).filter(p => p.trim())
+  if (paragraphs.length <= 1) {
+    // No paragraph breaks — split by char count
+    const chunks: string[] = []
+    for (let i = 0; i < text.length; i += charsPerPage) {
+      chunks.push(text.slice(i, i + charsPerPage))
+    }
+    return chunks.length > 0 ? chunks : [text]
+  }
+  // Group paragraphs into pages (~2 paragraphs per page, or until charsPerPage reached)
+  const pages: string[] = []
+  let currentPage = ''
+  let paraCount = 0
+  for (const para of paragraphs) {
+    if (currentPage.length + para.length > charsPerPage && currentPage) {
+      pages.push(currentPage.trim())
+      currentPage = para
+      paraCount = 1
+    } else {
+      currentPage += (currentPage ? '\n\n' : '') + para
+      paraCount++
+      if (paraCount >= 2 && currentPage.length > charsPerPage / 2) {
+        pages.push(currentPage.trim())
+        currentPage = ''
+        paraCount = 0
+      }
+    }
+  }
+  if (currentPage.trim()) pages.push(currentPage.trim())
+  return pages.length > 0 ? pages : [text]
+}
+
+// Book component — paginated history with flip animation
+function HistoryBook({ history, madrasahName, historyYear }: { history: string; madrasahName: string; historyYear: string }) {
+  const pages = useMemo(() => splitIntoPages(history), [history])
+  const [currentPage, setCurrentPage] = useState(0)
+  const [direction, setDirection] = useState(0) // 1 = next, -1 = prev
+
+  const totalPages = pages.length
+
+  const goToPage = (page: number) => {
+    if (page < 0 || page >= totalPages) return
+    setDirection(page > currentPage ? 1 : -1)
+    setCurrentPage(page)
+  }
+
+  const nextPage = () => goToPage(currentPage + 1)
+  const prevPage = () => goToPage(currentPage - 1)
+
+  const slideVariants = {
+    enter: (dir: number) => ({
+      x: dir > 0 ? 50 : -50,
+      opacity: 0,
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+    },
+    exit: (dir: number) => ({
+      x: dir > 0 ? -50 : 50,
+      opacity: 0,
+    }),
+  }
+
+  return (
+    <Card className="border border-[#e4e2de] shadow-premium-lg wood-carved-shadow overflow-hidden rounded-2xl bg-[#ffffff]">
+      <div className="grid md:grid-cols-5 gap-0">
+        {/* Left — Book cover (always visible) */}
+        <div className="md:col-span-2 bg-gradient-to-br from-[#003527] to-[#064e3b] p-6 md:p-8 flex flex-col items-center justify-center md:min-h-[350px] relative overflow-hidden">
+          <div className="absolute inset-0 kraton-pattern opacity-[0.05]" aria-hidden />
+          <div className="relative text-center text-white">
+            <div className="w-16 h-16 rounded-2xl bg-[#cca72f]/15 flex items-center justify-center mx-auto mb-4 ring-2 ring-[#cca72f]/30">
+              <BookOpen className="h-8 w-8 text-[#cca72f]" />
+            </div>
+            <h3 className="text-xl md:text-2xl font-bold mb-2 font-display">{madrasahName}</h3>
+            <p className="text-[#b0f0d6] text-sm">Berdiri sejak tahun {historyYear}</p>
+            {/* Page indicator */}
+            {totalPages > 1 && (
+              <div className="mt-4 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 border border-white/20">
+                <span className="text-[#ffe088] text-xs font-semibold">Hal {currentPage + 1} / {totalPages}</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Right — Book page content (paginated with slide animation) */}
+        <div className="md:col-span-3 p-6 md:p-8 flex flex-col min-h-[350px]">
+          {/* Page content — slides on page change */}
+          <div className="flex-1 overflow-hidden">
+            <AnimatePresence mode="wait" custom={direction}>
+              <motion.div
+                key={currentPage}
+                custom={direction}
+                variants={slideVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ duration: 0.3, ease: 'easeInOut' }}
+              >
+                <MarkdownRenderer content={pages[currentPage]} className="text-sm" />
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          {/* Navigation — prev/next + page dots */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-between mt-6 pt-4 border-t border-[#e4e2de]">
+              {/* Prev button */}
+              <button
+                onClick={prevPage}
+                disabled={currentPage === 0}
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold text-[#003527] bg-[#f5f3ef] hover:bg-[#064e3b]/8 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronLeft className="h-3.5 w-3.5" />
+                Sebelumnya
+              </button>
+
+              {/* Page dots */}
+              <div className="flex items-center gap-1.5">
+                {pages.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => goToPage(i)}
+                    className={`h-2 rounded-full transition-all ${
+                      i === currentPage
+                        ? 'w-6 bg-[#003527]'
+                        : 'w-2 bg-[#e4e2de] hover:bg-[#cca72f]/40'
+                    }`}
+                    aria-label={`Halaman ${i + 1}`}
+                  />
+                ))}
+              </div>
+
+              {/* Next button */}
+              <button
+                onClick={nextPage}
+                disabled={currentPage === totalPages - 1}
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold text-[#003527] bg-[#f5f3ef] hover:bg-[#064e3b]/8 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              >
+                Selanjutnya
+                <ChevronRight className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </Card>
+  )
+}
 
 export default function ProfilSection() {
   const { data: settingsData } = useQuery({
@@ -54,7 +209,7 @@ export default function ProfilSection() {
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-16">
-      {/* Sejarah */}
+      {/* Sejarah — Book style with pagination */}
       <section>
         <KratonSectionHeader
           badge="Sejarah"
@@ -67,24 +222,16 @@ export default function ProfilSection() {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <Card className="border border-[#e4e2de] shadow-premium-lg wood-carved-shadow overflow-hidden rounded-2xl bg-[#ffffff]">
-            <div className="grid md:grid-cols-5 gap-0">
-              <div className="md:col-span-2 bg-gradient-to-br from-[#003527] to-[#064e3b] p-6 md:p-8 flex items-center justify-center md:min-h-[300px]">
-                <div className="text-center text-white">
-                  <BookOpen className="h-16 w-16 text-[#cca72f] mx-auto mb-4" />
-                  <h3 className="text-2xl font-bold mb-2">{madrasahName}</h3>
-                  <p className="text-[#b0f0d6] text-sm">Berdiri sejak tahun {historyYear}</p>
-                </div>
-              </div>
-              <div className="md:col-span-3 p-8">
-                {history ? (
-                  <MarkdownRenderer content={history} className="text-sm" />
-                ) : (
-                  <p className="text-[#404944]/70 italic">Sejarah madrasah belum tersedia.</p>
-                )}
-              </div>
-            </div>
-          </Card>
+          {history ? (
+            <HistoryBook history={history} madrasahName={madrasahName} historyYear={historyYear} />
+          ) : (
+            <Card className="border border-[#e4e2de] shadow-premium-lg wood-carved-shadow rounded-2xl bg-[#ffffff]">
+              <CardContent className="p-8 text-center">
+                <BookOpen className="h-12 w-12 text-[#064e3b]/30 mx-auto mb-3" />
+                <p className="text-[#404944]/70 italic">Sejarah madrasah belum tersedia.</p>
+              </CardContent>
+            </Card>
+          )}
         </motion.div>
       </section>
 
