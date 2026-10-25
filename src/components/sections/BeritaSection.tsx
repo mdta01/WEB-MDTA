@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogTitle, DialogClose } from '@/components/ui
 import { Button } from '@/components/ui/button'
 import { MarkdownRenderer } from '@/components/sections/MarkdownRenderer'
 import { KratonSectionHeader } from '@/components/kraton'
+import { SocialBar } from '@/components/social/SocialBar'
 
 const categories = [
   { value: '', label: 'Semua' },
@@ -167,6 +168,11 @@ export default function BeritaSection() {
                       Baca selengkapnya
                       <ChevronRight className="h-3 w-3 text-[#cca72f]" />
                     </span>
+
+                    {/* Social bar — Share, Like, Comment */}
+                    <div onClick={(e) => e.stopPropagation()}>
+                      <SocialBar itemType="news" itemId={item.id} itemTitle={item.title} />
+                    </div>
                   </CardContent>
                 </Card>
               </motion.div>

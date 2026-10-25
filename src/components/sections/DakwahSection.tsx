@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { KratonSectionHeader } from '@/components/kraton'
 import { MarkdownRenderer } from '@/components/sections/MarkdownRenderer'
+import { SocialBar } from '@/components/social/SocialBar'
 
 const categoryTabs = [
   { value: 'artikel', label: 'Artikel', icon: FileText },
@@ -139,6 +140,11 @@ export default function DakwahSection() {
                         <Clock className="h-3 w-3 text-[#cca72f]" />
                         {new Date(item.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                       </div>
+                    </div>
+
+                    {/* Social bar — Share, Like, Comment */}
+                    <div onClick={(e) => e.stopPropagation()}>
+                      <SocialBar itemType="dakwah" itemId={item.id} itemTitle={item.title} />
                     </div>
                   </CardContent>
                 </Card>

@@ -317,3 +317,41 @@ model Statistic {
   value String @db.VarChar(50)
   label String @db.VarChar(255)
 }
+
+// === Social Features — Likes & Comments ===
+
+model NewsLike {
+  id        String   @id @default(cuid())
+  newsId    String
+  sessionId String   @db.VarChar(100)
+  createdAt DateTime @default(now())
+
+  @@unique([newsId, sessionId])
+}
+
+model NewsComment {
+  id        String   @id @default(cuid())
+  newsId    String
+  name      String   @db.VarChar(100)
+  content   String   @db.Text
+  parentId  String?  @db.VarChar(50)
+  createdAt DateTime @default(now())
+}
+
+model DakwahLike {
+  id        String   @id @default(cuid())
+  dakwahId  String
+  sessionId String   @db.VarChar(100)
+  createdAt DateTime @default(now())
+
+  @@unique([dakwahId, sessionId])
+}
+
+model DakwahComment {
+  id        String   @id @default(cuid())
+  dakwahId  String
+  name      String   @db.VarChar(100)
+  content   String   @db.Text
+  parentId  String?  @db.VarChar(50)
+  createdAt DateTime @default(now())
+}
