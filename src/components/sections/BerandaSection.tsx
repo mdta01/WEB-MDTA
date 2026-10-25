@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Dialog, DialogContent, DialogTitle, DialogClose } from '@/components/ui/dialog'
+import { SocialBar } from '@/components/social/SocialBar'
 import { CalendarModal } from '@/components/sections/CalendarModal'
 import { MarkdownRenderer } from '@/components/sections/MarkdownRenderer'
 import { useAppStore } from '@/store/useAppStore'
@@ -784,6 +785,10 @@ export default function BerandaSection() {
                     </p>
                     <h3 className="font-semibold text-[#003527] line-clamp-2 mb-2 group-hover:text-[#064e3b] transition-colors">{item.title}</h3>
                     <p className="text-sm text-[#404944] line-clamp-2">{item.excerpt || ''}</p>
+                    {/* Social bar — Share, Like, Comment */}
+                    <div onClick={(e) => e.stopPropagation()}>
+                      <SocialBar itemType="news" itemId={item.id} itemTitle={item.title} />
+                    </div>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -913,6 +918,10 @@ export default function BerandaSection() {
                         <Calendar className="h-3 w-3" />
                         {new Date(item.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                       </span>
+                    </div>
+                    {/* Social bar — Share, Like, Comment */}
+                    <div onClick={(e) => e.stopPropagation()}>
+                      <SocialBar itemType="dakwah" itemId={item.id} itemTitle={item.title} />
                     </div>
                   </CardContent>
                 </Card>
