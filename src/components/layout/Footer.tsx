@@ -2,18 +2,6 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { Facebook, Instagram, Youtube, MapPin, Phone, Mail, Clock } from 'lucide-react'
-import { useAppStore, type PageSection } from '@/store/useAppStore'
-
-const quickLinks: { label: string; page: PageSection }[] = [
-  { label: 'Profil Madrasah', page: 'profil' },
-  { label: 'Program Pendidikan', page: 'program' },
-  { label: 'Pendaftaran (PPDB)', page: 'ppdb' },
-  { label: 'Berita & Kegiatan', page: 'berita' },
-  { label: 'Prestasi', page: 'prestasi' },
-  { label: 'Galeri', page: 'galeri' },
-  { label: 'Pengumuman', page: 'pengumuman' },
-  { label: 'Kontak', page: 'kontak' },
-]
 
 const socialLinks = [
   { icon: Facebook, label: 'Facebook', key: 'madrasah_facebook' },
@@ -22,8 +10,6 @@ const socialLinks = [
 ]
 
 export default function Footer() {
-  const { setCurrentPage } = useAppStore()
-
   const { data: settingsData } = useQuery({
     queryKey: ['settings'],
     queryFn: () => fetch('/api/settings').then(r => r.json()),
@@ -35,11 +21,6 @@ export default function Footer() {
   const madrasahName = getSetting('madrasah_name') || 'MDTA Miftahul Ulum 01'
   const madrasahSubtitle = getSetting('madrasah_subtitle') || 'Madrasah Diniyah Takmiliyah Awaliyah'
   const madrasahLogo = getSetting('madrasah_logo') || '/images/logo-madin-warna.png'
-
-  const handleNav = (page: PageSection) => {
-    setCurrentPage(page)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
 
   return (
     <footer className="relative bg-[#003527] text-[#b0f0d6] mt-auto overflow-hidden">
@@ -54,7 +35,7 @@ export default function Footer() {
       <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-[#cca72f]/10 rounded-full blur-3xl pointer-events-none" aria-hidden />
 
       <div className="container mx-auto px-4 py-14 relative">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
           {/* Tentang Kami */}
           <div>
             <div className="flex items-center gap-3 mb-4">
@@ -69,27 +50,6 @@ export default function Footer() {
             <p className="text-[#b0f0d6]/90 text-sm leading-relaxed">
               {getSetting('madrasah_footer_description') || 'Mencetak generasi Muslim yang berilmu, berakhlak mulia, dan berprestasi melalui pendidikan Islam yang berkualitas.'}
             </p>
-          </div>
-
-          {/* Link Cepat */}
-          <div>
-            <h3 className="font-bold text-white text-lg mb-5 flex items-center gap-2">
-              <div className="w-1.5 h-6 bg-gradient-to-b from-[#cca72f] to-[#895033] rounded-full" />
-              Link Cepat
-            </h3>
-            <ul className="space-y-2.5">
-              {quickLinks.map((link) => (
-                <li key={link.page}>
-                  <button
-                    onClick={() => handleNav(link.page)}
-                    className="text-[#b0f0d6]/90 hover:text-[#ffe088] text-sm transition-all duration-300 hover:pl-2 flex items-center gap-1.5 group"
-                  >
-                    <span className="w-1 h-1 rounded-full bg-[#064e3b]/80 group-hover:bg-[#cca72f] transition-colors" />
-                    {link.label}
-                  </button>
-                </li>
-              ))}
-            </ul>
           </div>
 
           {/* Kontak */}
