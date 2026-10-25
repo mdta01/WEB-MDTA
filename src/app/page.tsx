@@ -120,7 +120,7 @@ export default function Home() {
         </a>
         <Header />
         <LiveAnnouncement />
-        <main id="main-content" className="flex-1 w-full overflow-x-hidden" tabIndex={-1}>
+        <main id="main-content" className="flex-1 w-full overflow-x-hidden pb-16 lg:pb-0" tabIndex={-1}>
           <SectionRenderer />
         </main>
         <Footer />

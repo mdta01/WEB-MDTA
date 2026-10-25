@@ -84,6 +84,7 @@ export default function Header() {
   const madrasahLogo = getSetting('madrasah_logo') || '/images/logo-madin-warna.png'
 
   return (
+    <>
     <header
       className={`sticky top-0 z-50 transition-all duration-500 bg-[#ffffff] border-b border-[#e4e2de] ${
         scrolled ? 'shadow-premium-lg' : 'shadow-sm'
@@ -275,5 +276,55 @@ export default function Header() {
         </div>
       </div>
     </header>
+
+    {/* Mobile Bottom Navigation — fixed at bottom, always accessible when scrolling */}
+    <nav
+      className="lg:hidden fixed bottom-0 inset-x-0 z-50 bg-[#ffffff] border-t border-[#e4e2de] shadow-premium-lg"
+      aria-label="Navigasi cepat"
+    >
+      {/* Top gold accent */}
+      <div className="h-0.5 bg-gradient-to-r from-transparent via-[#cca72f]/60 to-transparent" />
+
+      <div className="grid grid-cols-5 h-14">
+        {/* 5 quick nav items */}
+        {[
+          { label: 'Beranda', page: 'beranda' as PageSection, icon: Home },
+          { label: 'Berita', page: 'berita' as PageSection, icon: Newspaper },
+          { label: 'Pengumuman', page: 'pengumuman' as PageSection, icon: Megaphone },
+          { label: 'Galeri', page: 'galeri' as PageSection, icon: ImageIcon },
+          { label: 'Menu', page: null, icon: Menu },
+        ].map((item) => {
+          const Icon = item.icon
+          const isActive = item.page && currentPage === item.page
+          return (
+            <button
+              key={item.label}
+              onClick={() => {
+                if (item.page) {
+                  handleNav(item.page)
+                } else {
+                  // Open full menu sidebar
+                  setMobileOpen(true)
+                }
+              }}
+              className={`flex flex-col items-center justify-center gap-0.5 transition-colors relative ${
+                isActive
+                  ? 'text-[#003527]'
+                  : 'text-[#404944] hover:text-[#003527]'
+              }`}
+              aria-label={item.label}
+            >
+              {/* Active indicator dot */}
+              {isActive && (
+                <span className="absolute top-0.5 w-1 h-1 rounded-full bg-[#cca72f]" aria-hidden />
+              )}
+              <Icon className={`h-4 w-4 ${isActive ? 'text-[#003527]' : 'text-[#404944]/70'}`} />
+              <span className="text-[9px] font-medium leading-none">{item.label}</span>
+            </button>
+          )
+        })}
+      </div>
+    </nav>
+    </>
   )
 }

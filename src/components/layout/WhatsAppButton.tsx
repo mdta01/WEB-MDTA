@@ -98,10 +98,10 @@ export default function WhatsAppButton() {
         )}
       </AnimatePresence>
 
-      {/* Floating WhatsApp Button */}
+      {/* Floating WhatsApp Button — positioned above bottom nav on mobile */}
       <motion.button
         onClick={() => setShowMenu(!showMenu)}
-        className="fixed bottom-6 right-6 z-40 w-14 h-14 bg-green-500 hover:bg-green-600 text-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow"
+        className="fixed bottom-20 right-4 lg:bottom-6 lg:right-6 z-40 w-12 h-12 lg:w-14 lg:h-14 bg-[#064e3b] hover:bg-[#003527] text-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
         initial={{ scale: 0, opacity: 0 }}
