@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import {
-  Menu, Search, ChevronDown, Home, Info, BookOpen, Newspaper, Award,
+  Menu, Search, Home, Info, BookOpen, Newspaper, Award,
   Image as ImageIcon, Megaphone, GraduationCap, HelpCircle, Download,
   BookMarked, Building2, Users, Phone, Mail, X,
 } from 'lucide-react'
@@ -96,13 +96,13 @@ export default function Header() {
       {/* Main header */}
       <div>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 md:h-20">
+          <div className="flex items-center justify-between h-14 md:h-16">
             {/* Logo & Name */}
             <button
               onClick={() => handleNav('beranda')}
               className="flex items-center gap-3 group"
             >
-              <div className="w-11 h-11 md:w-13 md:h-13 group-hover:scale-110 group-active:scale-95 transition-all duration-300 shrink-0">
+              <div className="w-10 h-10 md:w-11 md:h-11 group-hover:scale-110 group-active:scale-95 transition-all duration-300 shrink-0">
                 <img
                   src={madrasahLogo}
                   alt={`Logo ${madrasahName}`}
@@ -110,53 +110,14 @@ export default function Header() {
                 />
               </div>
               <div className="flex flex-col">
-                <span className="font-bold text-sm md:text-lg leading-tight uppercase tracking-wide text-[#003527] group-hover:text-[#895033] transition-colors duration-300">{madrasahName}</span>
+                <span className="font-bold text-sm md:text-base leading-tight uppercase tracking-wide text-[#003527] group-hover:text-[#895033] transition-colors duration-300">{madrasahName}</span>
                 <span className="text-[#404944] text-[10px] md:text-xs hidden sm:block">
                   {madrasahSubtitle}
                 </span>
               </div>
             </button>
 
-            {/* Desktop Navigation */}
-            <nav className="hidden xl:flex items-center gap-1">
-              {navItems.slice(0, 8).map((item) => (
-                <button
-                  key={item.page}
-                  onClick={() => handleNav(item.page)}
-                  className={`px-3 py-2 rounded-full text-xs font-medium transition-all duration-300 ${
-                    currentPage === item.page
-                      ? 'bg-[#003527] text-white shadow-md shadow-[#003527]/20'
-                      : 'text-[#003527] hover:bg-[#f5f3ef] hover:text-[#064e3b] hover:scale-105'
-                  }`}
-                >
-                  {item.label}
-                </button>
-              ))}
-              <div className="relative group">
-                <button className="px-3 py-2 rounded-full text-xs font-medium text-[#003527] hover:bg-[#f5f3ef] hover:text-[#064e3b] hover:scale-105 flex items-center gap-1 transition-all duration-300">
-                  Lainnya <ChevronDown className="h-3 w-3 group-hover:rotate-180 transition-transform duration-300" />
-                </button>
-                <div className="absolute right-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                  <div className="bg-[#ffffff]/95 backdrop-blur-xl rounded-2xl shadow-premium-lg py-2 min-w-[200px] border border-[#e4e2de] overflow-hidden">
-                    {navItems.slice(8).map((item) => (
-                      <button
-                        key={item.page}
-                        onClick={() => handleNav(item.page)}
-                        className={`block w-full text-left px-4 py-2 text-sm transition-all duration-200 ${
-                          currentPage === item.page
-                            ? 'bg-[#f5f3ef] text-[#003527] font-medium border-l-2 border-[#cca72f]'
-                            : 'text-[#404944] hover:bg-[#f5f3ef] hover:text-[#003527] hover:pl-5'
-                        }`}
-                      >
-                        {item.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </nav>
-
-            {/* Action buttons */}
+            {/* Action buttons — search + hamburger menu (all viewports) */}
             <div className="flex items-center gap-2">
               <Button
                 variant="ghost"
@@ -167,14 +128,14 @@ export default function Header() {
               >
                 <Search className="h-4 w-4" />
               </Button>
-              {/* Mobile menu — Premium sidebar */}
+              {/* Menu — hamburger for ALL viewports (mobile bottom nav + desktop sidebar) */}
               <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
                 <SheetTrigger asChild>
                   <Button
                     variant="ghost"
                     size="icon"
                     aria-label="Buka menu navigasi"
-                    className="xl:hidden text-[#003527] hover:text-[#064e3b] hover:bg-[#f5f3ef] hover:scale-110 h-9 w-9 rounded-full transition-all duration-300"
+                    className="text-[#003527] hover:text-[#064e3b] hover:bg-[#f5f3ef] hover:scale-110 h-9 w-9 rounded-full transition-all duration-300"
                   >
                     <Menu className="h-5 w-5" />
                   </Button>
