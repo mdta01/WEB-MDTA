@@ -117,7 +117,7 @@ export default function Header() {
               </div>
             </button>
 
-            {/* Action buttons — search + hamburger menu (all viewports) */}
+            {/* Action buttons — search only (mobile bottom nav handles menu) */}
             <div className="flex items-center gap-2">
               <Button
                 variant="ghost"
@@ -128,14 +128,14 @@ export default function Header() {
               >
                 <Search className="h-4 w-4" />
               </Button>
-              {/* Menu — hamburger for ALL viewports (mobile bottom nav + desktop sidebar) */}
+              {/* Hamburger menu — hidden on mobile (use bottom nav), visible on desktop */}
               <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
                 <SheetTrigger asChild>
                   <Button
                     variant="ghost"
                     size="icon"
                     aria-label="Buka menu navigasi"
-                    className="text-[#003527] hover:text-[#064e3b] hover:bg-[#f5f3ef] hover:scale-110 h-9 w-9 rounded-full transition-all duration-300"
+                    className="hidden lg:flex text-[#003527] hover:text-[#064e3b] hover:bg-[#f5f3ef] hover:scale-110 h-9 w-9 rounded-full transition-all duration-300"
                   >
                     <Menu className="h-5 w-5" />
                   </Button>
