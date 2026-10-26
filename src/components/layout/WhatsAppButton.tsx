@@ -36,6 +36,11 @@ export default function WhatsAppButton() {
 
   return (
     <>
+      {/* Floating WhatsApp Button — positioned above bottom nav on mobile.
+          Uses calc() with env(safe-area-inset-bottom) so the button stays
+          tappable above the iOS home indicator and Facebook/Instagram/TikTok
+          in-app browser bottom toolbars. */}
+
       {/* Service Menu Popup */}
       <AnimatePresence>
         {showMenu && (
@@ -45,13 +50,14 @@ export default function WhatsAppButton() {
               className="fixed inset-0 z-40"
               onClick={() => setShowMenu(false)}
             />
-            {/* Menu Card */}
+            {/* Menu Card — bottom offset matches WhatsApp button + safe area */}
             <motion.div
               initial={{ opacity: 0, y: 20, scale: 0.9 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 20, scale: 0.9 }}
               transition={{ duration: 0.2 }}
-              className="fixed bottom-24 right-6 z-50 w-72 bg-[#ffffff] rounded-2xl shadow-2xl border border-[#e4e2de] overflow-hidden"
+              className="fixed right-4 lg:right-6 z-50 w-72 bg-[#ffffff] rounded-2xl shadow-2xl border border-[#e4e2de] overflow-hidden"
+              style={{ bottom: 'calc(5.5rem + env(safe-area-inset-bottom, 0px))' }}
             >
               {/* Header */}
               <div className="bg-gradient-to-r from-green-500 to-green-600 p-4 text-white relative">
@@ -98,10 +104,14 @@ export default function WhatsAppButton() {
         )}
       </AnimatePresence>
 
-      {/* Floating WhatsApp Button — positioned above bottom nav on mobile */}
+      {/* Floating WhatsApp Button — positioned above bottom nav on mobile.
+          Uses calc() with env(safe-area-inset-bottom) so the button stays
+          tappable above the iOS home indicator and Facebook/Instagram/TikTok
+          in-app browser bottom toolbars. */}
       <motion.button
         onClick={() => setShowMenu(!showMenu)}
-        className="fixed bottom-20 right-4 lg:bottom-6 lg:right-6 z-40 w-12 h-12 lg:w-14 lg:h-14 bg-[#064e3b] hover:bg-[#003527] text-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all"
+        className="fixed right-4 lg:right-6 z-40 w-12 h-12 lg:w-14 lg:h-14 bg-[#064e3b] hover:bg-[#003527] text-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all"
+        style={{ bottom: 'calc(5rem + env(safe-area-inset-bottom, 0px))' }}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
         initial={{ scale: 0, opacity: 0 }}

@@ -72,13 +72,13 @@ function SectionRenderer() {
   }
 
   return (
-    <AnimatePresence mode="wait">
+    <AnimatePresence mode="wait" initial={false}>
       <motion.div
         key={currentPage}
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -10 }}
-        transition={{ duration: 0.2 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.15, ease: 'easeOut' }}
       >
         <Suspense fallback={<SectionLoading />}>
           {sections[currentPage] || <BerandaSection />}
@@ -110,7 +110,11 @@ export default function Home() {
           If user has reduced motion enabled (OS setting), all framer-motion
           animations are reduced to instant transitions. */}
       <MotionConfig reducedMotion="user">
-      <div className="min-h-screen flex flex-col bg-background overflow-x-hidden">
+      {/* min-h-screen-fb-safe uses 100dvh (dynamic viewport height) when supported.
+          This is critical for Facebook In-App Browser, Instagram, TikTok WebView,
+          which all render top/bottom toolbars that eat into 100vh.
+          100dvh adjusts to the *visible* area only — no more clipped content. */}
+      <div className="min-h-screen-fb-safe flex flex-col bg-background overflow-x-clip">
         {/* Skip to main content — keyboard accessibility (Tab key reveals link) */}
         <a
           href="#main-content"
@@ -120,7 +124,16 @@ export default function Home() {
         </a>
         <Header />
         <LiveAnnouncement />
-        <main id="main-content" className="flex-1 w-full overflow-x-hidden pb-16 lg:pb-0" tabIndex={-1}>
+        {/* Padding-bottom reserves space for the mobile bottom nav (h-14 = 3.5rem)
+            PLUS the iOS home indicator / Facebook in-app browser bottom toolbar
+            (env(safe-area-inset-bottom)). On lg+ the bottom nav is hidden so
+            padding resets to 0 (handled in .fb-safe-bottom media query).
+            Without this, content gets hidden behind the nav in FB/IG/TikTok WebView. */}
+        <main
+          id="main-content"
+          className="fb-safe-bottom flex-1 w-full overflow-x-clip"
+          tabIndex={-1}
+        >
           <SectionRenderer />
         </main>
         <Footer />

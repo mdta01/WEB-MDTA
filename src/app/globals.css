@@ -129,8 +129,11 @@
     @apply border-border outline-ring/50;
   }
   html {
-    /* Prevent horizontal scroll on mobile — kill the "page shift" bug */
-    overflow-x: hidden;
+    /* Prevent horizontal scroll on mobile WITHOUT breaking position:sticky/fixed.
+       `overflow-x: clip` is the modern fix — it doesn't create a scroll container
+       (unlike `overflow-x: hidden`), so sticky/fixed elements keep working
+       inside Facebook In-App Browser, Instagram, TikTok WebView, etc. */
+    overflow-x: clip;
     /* Native app feel: prevent text auto-adjust on rotation (iOS) */
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
@@ -140,16 +143,19 @@
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-body), Montserrat, system-ui, sans-serif;
-    /* Double-lock horizontal overflow (html + body) */
-    overflow-x: hidden;
+    /* Same reason as html — use clip, not hidden, to keep sticky/fixed working */
+    overflow-x: clip;
     /* Optimize touch scrolling on iOS — momentum scrolling */
     -webkit-overflow-scrolling: touch;
     /* Prevent tap highlight (native app feel) */
     -webkit-tap-highlight-color: transparent;
     /* Prevent text selection on long press for UI elements (native feel) */
     -webkit-touch-callout: none;
-    /* Respect safe-area insets (notch, home indicator) */
-    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    /* NOTE: safe-area-inset padding is intentionally NOT applied to body.
+       Applying it to body shifts the entire layout inward, which combined
+       with Facebook In-App Browser's toolbars causes visual asymmetry.
+       Safe-area is handled on individual fixed/sticky elements instead
+       (header, footer, bottom nav) where it's actually needed. */
   }
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display), 'Playfair Display', Georgia, serif;
@@ -369,6 +375,33 @@
 }
 
 section { scroll-margin-top: 80px; }
+
+/* ===== Facebook In-App Browser / in-app WebView fixes =====
+   FB/Instagram/TikTok in-app browsers render a top address bar and bottom
+   toolbar that eat into the viewport. `100vh` includes those areas, so any
+   element sized with vh gets clipped. We use the modern dynamic viewport
+   units (dvh/dvw) which adjust to the *visible* area only.
+   Fallbacks below ensure older WebViews (which don't support dvh) still get
+   a reasonable layout via vh. */
+@supports (height: 100dvh) {
+  .min-h-screen-fb-safe { min-height: 100vh; min-height: 100dvh; }
+  .h-screen-fb-safe    { height: 100vh; height: 100dvh; }
+}
+@supports not (height: 100dvh) {
+  .min-h-screen-fb-safe { min-height: 100vh; }
+  .h-screen-fb-safe    { height: 100vh; }
+}
+
+/* Reserve space at the bottom for fixed bottom-nav + iOS home indicator
+   + Facebook's bottom toolbar. Used on <main> so content never gets
+   hidden behind the bottom nav in any in-app browser.
+   Resets to 0 on lg+ where the bottom nav is hidden (desktop uses Sheet). */
+.fb-safe-bottom {
+  padding-bottom: calc(3.5rem /* h-14 bottom nav */ + env(safe-area-inset-bottom, 0px));
+}
+@media (min-width: 1024px) {
+  .fb-safe-bottom { padding-bottom: 0; }
+}
 
 /* ===== Hero scroll indicator (mouse with moving dot) ===== */
 /* Mouse shape: vertical capsule outline.

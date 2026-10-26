@@ -242,9 +242,13 @@ export default function Header() {
       </div>
     </header>
 
-    {/* Mobile Bottom Navigation — fixed at bottom, always accessible when scrolling */}
+    {/* Mobile Bottom Navigation — fixed at bottom, always accessible when scrolling.
+        padding-bottom: env(safe-area-inset-bottom) pushes the nav above the iOS home
+        indicator AND above Facebook/Instagram/TikTok in-app browser bottom toolbars.
+        Without this, the "Menu" button (rightmost) gets covered and users can't navigate. */}
     <nav
       className="lg:hidden fixed bottom-0 inset-x-0 z-50 bg-[#ffffff] border-t border-[#e4e2de] shadow-premium-lg"
+      style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
       aria-label="Navigasi cepat"
     >
       {/* Top gold accent */}
