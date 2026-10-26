@@ -1,7 +1,7 @@
 'use client'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { useState, Suspense, lazy } from 'react'
+import { useState, useEffect, Suspense, lazy } from 'react'
 import { motion, AnimatePresence, MotionConfig } from 'framer-motion'
 import { useAppStore } from '@/store/useAppStore'
 import Header from '@/components/layout/Header'
@@ -103,6 +103,24 @@ export default function Home() {
         },
       })
   )
+
+  // Defense-in-depth: ensure the page is scrolled to top on FIRST mount only.
+  // The inline script in layout.tsx already handles this BEFORE React hydrates,
+  // but this useEffect catches edge cases:
+  //   - React hydration might shift layout (images, fonts loading) causing
+  //     the viewport to drift after hydration completes.
+  //   - Some browsers (older Safari, Facebook WebView) don't fully respect
+  //     history.scrollRestoration = 'manual'.
+  // Runs ONCE on mount — does NOT run on subsequent page state changes
+  // (those are handled by Header's handleNav with smooth scroll).
+  useEffect(() => {
+    // Use scrollTop directly (instant) — NOT window.scrollTo({behavior:'smooth'})
+    // because CSS scroll-behavior:smooth would animate it.
+    if (typeof window !== 'undefined') {
+      document.documentElement.scrollTop = 0
+      document.body.scrollTop = 0 // Safari
+    }
+  }, [])
 
   return (
     <QueryClientProvider client={queryClient}>

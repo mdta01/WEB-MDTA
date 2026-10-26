@@ -70,6 +70,34 @@ export default function RootLayout({
             });
           })();
         `}} />
+        {/* Disable browser scroll restoration + force scroll to top on initial load.
+            CRITICAL FIX: Without this, browsers (especially Facebook In-App Browser,
+            Chrome mobile, Safari) restore the *previous* scroll position from the
+            last session. If the user previously scrolled down to "Berita" / "Dakwah" /
+            "Footer" and reopened the page, the browser would scroll back to that
+            position — making it look like the page "didn't land on the hero".
+
+            Setting history.scrollRestoration = 'manual' tells the browser: "don't
+            auto-restore scroll position, I'll handle it myself."
+
+            We also use document.documentElement.scrollTop = 0 (NOT window.scrollTo)
+            because direct property assignment is INSTANT and is NOT affected by
+            CSS `scroll-behavior: smooth` — guaranteeing the page is at the top
+            before React even hydrates. */}
+        <script dangerouslySetInnerHTML={{ __html: `
+          (function() {
+            try {
+              if ('scrollRestoration' in history) {
+                history.scrollRestoration = 'manual';
+              }
+              // Instant scroll to top — bypasses CSS scroll-behavior: smooth.
+              // Runs BEFORE React hydrates, so user always sees the hero first.
+              document.documentElement.scrollTop = 0;
+              document.body.scrollTop = 0; // Safari fallback
+              window.scrollTo(0, 0);
+            } catch (e) {}
+          })();
+        `}} />
       </head>
       <body className="antialiased bg-background text-foreground font-body">
         {children}
