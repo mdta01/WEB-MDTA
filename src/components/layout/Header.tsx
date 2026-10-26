@@ -140,11 +140,11 @@ export default function Header() {
                     <Menu className="h-5 w-5" />
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="right" className="w-[85vw] max-w-sm bg-[#003527] text-white border-l border-[#064e3b] p-0 flex flex-col">
+                <SheetContent side="right" className="w-[85vw] max-w-sm bg-[#fbf9f5] text-[#1b1c1a] border-l border-[#e4e2de] p-0 flex flex-col">
                   <SheetTitle className="sr-only">Menu Navigasi</SheetTitle>
 
-                  {/* Header dengan gradient + pattern */}
-                  <div className="relative bg-[#003527] p-5 border-b border-[#064e3b]/50 overflow-hidden">
+                  {/* Header — emerald dengan pattern (konsisten dengan hero/footer) */}
+                  <div className="relative bg-gradient-to-br from-[#003527] to-[#064e3b] p-5 border-b border-[#064e3b] overflow-hidden shrink-0">
                     {/* Kraton pattern overlay */}
                     <div className="absolute inset-0 kraton-pattern opacity-[0.06] pointer-events-none" aria-hidden />
                     {/* Top gold strip */}
@@ -167,18 +167,18 @@ export default function Header() {
                         />
                       </div>
                       <div className="min-w-0">
-                        <p className="font-bold text-sm uppercase tracking-wide leading-tight">{madrasahName}</p>
+                        <p className="font-bold text-sm uppercase tracking-wide leading-tight text-white">{madrasahName}</p>
                         <p className="text-[10px] text-[#ffe088]/80 mt-0.5">{madrasahSubtitle}</p>
                       </div>
                     </div>
                   </div>
 
-                  {/* Nav items grouped with section labels */}
-                  <div className="flex-1 overflow-y-auto py-3">
+                  {/* Nav items — parchment bg (konsisten dengan halaman utama) */}
+                  <div className="flex-1 overflow-y-auto py-3 bg-[#fbf9f5]">
                     {navGroups.map((group) => (
                       <div key={group.group} className="mb-3">
-                        {/* Group label */}
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-[#ffe088]/70 px-5 py-2">
+                        {/* Group label — gold accent */}
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-[#895033] px-5 py-2">
                           {group.group}
                         </p>
                         {/* Nav items */}
@@ -189,14 +189,18 @@ export default function Header() {
                             <button
                               key={item.page}
                               onClick={() => handleNav(item.page)}
-                              className={`w-full flex items-center gap-3 px-5 py-2.5 text-sm font-medium transition-colors relative ${
+                              className={`w-full flex items-center gap-3 px-5 py-2.5 text-sm font-medium transition-all relative ${
                                 isActive
-                                  ? 'active-nav-pill bg-[#064e3b] text-[#ffe088]'
-                                  : 'text-[#b0f0d6] hover:bg-[#064e3b]/30 hover:text-white'
+                                  ? 'bg-[#003527] text-white shadow-premium'
+                                  : 'text-[#003527] hover:bg-[#f5f3ef] hover:text-[#064e3b]'
                               }`}
                             >
-                              <Icon className={`h-4 w-4 shrink-0 ${isActive ? 'text-[#ffe088]' : 'text-[#b0f0d6]/80'}`} />
+                              <Icon className={`h-4 w-4 shrink-0 ${isActive ? 'text-[#ffe088]' : 'text-[#003527]/70'}`} />
                               <span>{item.label}</span>
+                              {/* Active indicator — gold left bar */}
+                              {isActive && (
+                                <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 rounded-r bg-[#cca72f]" />
+                              )}
                             </button>
                           )
                         })}
@@ -204,14 +208,14 @@ export default function Header() {
                     ))}
                   </div>
 
-                  {/* Footer dengan kontak info */}
-                  <div className="border-t border-[#064e3b]/50 bg-[#003527]/40 p-4 space-y-2">
+                  {/* Footer — emerald (konsisten dengan footer utama) */}
+                  <div className="border-t border-[#e4e2de] bg-[#003527] p-4 space-y-2 shrink-0">
                     <a
                       href={`tel:${getSetting('madrasah_phone') || ''}`}
                       className="flex items-center gap-2.5 text-xs text-[#b0f0d6] hover:text-[#ffe088] transition-colors"
                     >
-                      <div className="w-7 h-7 rounded-full bg-[#064e3b]/50 flex items-center justify-center shrink-0">
-                        <Phone className="h-3 w-3" />
+                      <div className="w-7 h-7 rounded-full bg-[#064e3b]/60 flex items-center justify-center shrink-0">
+                        <Phone className="h-3 w-3 text-[#cca72f]" />
                       </div>
                       <span className="truncate">{getSetting('madrasah_phone') || '(021) 123-4567'}</span>
                     </a>
@@ -219,8 +223,8 @@ export default function Header() {
                       href={`mailto:${getSetting('madrasah_email') || ''}`}
                       className="flex items-center gap-2.5 text-xs text-[#b0f0d6] hover:text-[#ffe088] transition-colors"
                     >
-                      <div className="w-7 h-7 rounded-full bg-[#064e3b]/50 flex items-center justify-center shrink-0">
-                        <Mail className="h-3 w-3" />
+                      <div className="w-7 h-7 rounded-full bg-[#064e3b]/60 flex items-center justify-center shrink-0">
+                        <Mail className="h-3 w-3 text-[#cca72f]" />
                       </div>
                       <span className="truncate">{getSetting('madrasah_email') || 'info@mdta.sch.id'}</span>
                     </a>
