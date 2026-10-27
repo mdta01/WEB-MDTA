@@ -3,6 +3,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { NotificationManager } from "@/components/layout/NotificationManager";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import VisitorTracker from "@/components/layout/VisitorTracker";
 
 export const metadata: Metadata = {
   title: "MDTA Miftahul Ulum 01 - Madrasah Diniyah Takmiliyah Awaliyah",
@@ -101,6 +102,10 @@ export default function RootLayout({
       </head>
       <body className="antialiased bg-background text-foreground font-body">
         {children}
+        {/* Visitor traffic tracker — fires on every route change, sends
+            fire-and-forget POST to /api/track-visitor. Mounted at root so
+            it tracks ALL pages. Skips admin routes (don't count admin views). */}
+        <VisitorTracker />
         <Toaster richColors position="top-center" />
         <NotificationManager />
         <SpeedInsights />

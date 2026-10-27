@@ -355,3 +355,51 @@ model DakwahComment {
   parentId  String?  @db.VarChar(50)
   createdAt DateTime @default(now())
 }
+
+// === Visitor Traffic Analytics ===
+
+/// Each row = one visit by a unique visitor (anonymized hash of IP+UA).
+/// Used to compute realtime + daily/weekly/monthly traffic stats in admin.
+/// Hashes — never store raw IP/UA. Privacy-preserving.
+model Visitor {
+  id           String   @id @default(cuid())
+  /// SHA-256 hash of IP address (privacy-preserving, deterministic)
+  visitorHash  String   @unique @db.VarChar(64)
+  /// SHA-256 hash of User-Agent + IP (for session dedup)
+  sessionHash  String?  @db.VarChar(64)
+  /// Visitor's country/city (from IP, optional)
+  country      String?  @db.VarChar(64)
+  city         String?  @db.VarChar(64)
+  /// Referrer URL (truncated)
+  referrer     String?  @db.VarChar(255)
+  /// Page they landed on
+  path         String?  @db.VarChar(255)
+  /// First visit time
+  firstSeen    DateTime @default(now())
+  /// Last visit time (updated on each new visit by same visitorHash)
+  lastSeen     DateTime @default(now())
+  /// Total page views by this visitor
+  visitCount   Int      @default(1)
+  /// Index for fast daily/weekly/monthly aggregation queries
+  createdAt    DateTime @default(now())
+
+  @@index([lastSeen])
+  @@index([createdAt])
+}
+
+/// Lightweight pageview counter — one row per page load.
+/// Used for "realtime online visitors" (last 5 minutes count).
+/// Pruned periodically to keep table small.
+model PageView {
+  id        String   @id @default(cuid())
+  /// SHA-256 hash of IP (same as Visitor.visitorHash) for joining
+  visitorHash String @db.VarChar(64)
+  path      String   @db.VarChar(255)
+  /// ISO date string "YYYY-MM-DD" — indexed for fast daily aggregations
+  day       String   @db.VarChar(10)
+  createdAt DateTime @default(now())
+
+  @@index([day])
+  @@index([createdAt])
+  @@index([visitorHash])
+}

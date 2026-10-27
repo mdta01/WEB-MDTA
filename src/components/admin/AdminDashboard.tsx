@@ -9,6 +9,7 @@ import {
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { GPSLocationSetup } from '@/components/admin/GPSLocationSetup'
+import TrafficStats from '@/components/admin/TrafficStats'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 
@@ -312,6 +313,9 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
           </div>
         </div>
       </motion.div>
+
+      {/* Realtime Visitor Traffic Stats */}
+      <TrafficStats />
 
       {/* Stats Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
