@@ -403,6 +403,119 @@ section { scroll-margin-top: 80px; }
   .fb-safe-bottom { padding-bottom: 0; }
 }
 
+/* ===== Floating Action Buttons (FAB) positioning system =====
+   WhatsApp button + Notification bell button are both fixed in bottom-right.
+   They're vertically stacked with a CONSISTENT 12px gap so they NEVER overlap
+   on any screen size or in any browser (including Facebook In-App Browser).
+
+   Layout (mobile, lg < 1024px — bottom nav h-14 = 56px is visible):
+     ┌─────────────────────┐
+     │  Bell (44x44)       │ ← bottom 140px (+ safe-area)
+     │  ↕ 12px gap         │
+     │  WhatsApp (48x48)   │ ← bottom 80px  (+ safe-area)
+     │  ↕ 24px gap         │
+     │  [Bottom nav h-14]  │ ← 0..56px (+ safe-area)
+     └─────────────────────┘
+
+   Layout (desktop, lg ≥ 1024px — no bottom nav):
+     ┌─────────────────────┐
+     │  Bell (48x48)       │ ← bottom 100px (+ safe-area)
+     │  ↕ 12px gap         │
+     │  WhatsApp (56x56)   │ ← bottom 32px  (+ safe-area)
+     └─────────────────────┘
+
+   Popup cards (WA menu / Bell prompt) sit ABOVE their trigger button,
+   also with 8px gap, so they never cover the other FAB.
+*/
+
+/* WhatsApp FAB position */
+.fab-wa {
+  position: fixed;
+  right: 1rem;            /* 16px mobile */
+  bottom: calc(5rem + env(safe-area-inset-bottom, 0px));   /* 80px above bottom nav */
+  z-index: 40;
+}
+@media (min-width: 1024px) {
+  .fab-wa {
+    right: 1.5rem;        /* 24px desktop */
+    bottom: calc(2rem + env(safe-area-inset-bottom, 0px)); /* 32px, no bottom nav */
+  }
+}
+
+/* Bell FAB position — stacked 12px above WhatsApp button */
+.fab-bell {
+  position: fixed;
+  right: 1rem;
+  bottom: calc(8.75rem + env(safe-area-inset-bottom, 0px)); /* 140px = 80 + 48 + 12 gap */
+  z-index: 40;
+}
+@media (min-width: 1024px) {
+  .fab-bell {
+    right: 1.5rem;
+    bottom: calc(6.25rem + env(safe-area-inset-bottom, 0px)); /* 100px = 32 + 56 + 12 gap */
+  }
+}
+
+/* WhatsApp menu popup — sits above WhatsApp button (8px gap) */
+.fab-wa-menu {
+  position: fixed;
+  right: 1rem;
+  bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px)); /* 88px = 80 + 8 gap */
+  z-index: 50;
+}
+@media (min-width: 1024px) {
+  .fab-wa-menu {
+    right: 1.5rem;
+    bottom: calc(2.5rem + env(safe-area-inset-bottom, 0px)); /* 40px = 32 + 8 gap */
+  }
+}
+
+/* Bell prompt popup — sits above bell button (8px gap), never covers WhatsApp */
+.fab-bell-prompt {
+  position: fixed;
+  right: 1rem;
+  bottom: calc(11.5rem + env(safe-area-inset-bottom, 0px)); /* 184px = 140 + 44 + 0 */
+  z-index: 50;
+}
+@media (min-width: 1024px) {
+  .fab-bell-prompt {
+    right: 1.5rem;
+    bottom: calc(9.25rem + env(safe-area-inset-bottom, 0px)); /* 148px = 100 + 48 + 0 */
+  }
+}
+
+/* ===== FAB visibility coordination =====
+   When the WhatsApp service menu is open, it's tall (~420px) and would
+   visually cover the bell button. We auto-hide the bell when WA menu is open
+   so the user can focus on the menu without visual clutter.
+
+   Uses CSS :has() selector (supported in Chrome 105+, Safari 15.4+, Firefox 121+).
+   !important is needed because framer-motion sets inline `opacity` and `transform`
+   on the bell button (inline styles normally beat CSS class rules).
+
+   The bell smoothly fades+scales out via the transition on .fab-bell. */
+.fab-bell {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+body:has(.fab-wa-menu) .fab-bell {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: scale(0.5) translateY(20px) !important;
+}
+
+/* Similarly, when the bell prompt is open, hide the WhatsApp button.
+   The bell prompt is shorter (~240px) and doesn't naturally cover WA on most
+   viewports, but we hide WA anyway for visual cleanliness and to avoid
+   overlap on very short viewports (e.g., landscape mobile). */
+.fab-wa {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+body:has(.fab-bell-prompt) .fab-wa {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: scale(0.5) translateY(20px) !important;
+}
+
 /* ===== Hero scroll indicator (mouse with moving dot) ===== */
 /* Mouse shape: vertical capsule outline.
    Dot inside animates top → bottom → loop, indicating "scroll down". */

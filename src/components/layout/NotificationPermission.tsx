@@ -96,13 +96,14 @@ export function NotificationPermission() {
   // Don't render if dismissed (but still allow re-showing via bell icon click)
   return (
     <>
-      {/* Floating bell button (always visible if not granted) */}
+      {/* Floating bell button — uses .fab-bell class for coordinated positioning
+          with the WhatsApp button (.fab-wa). 12px gap maintained between them. */}
       <motion.button
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 2, type: 'spring', stiffness: 200, damping: 15 }}
         onClick={() => setShowPrompt(true)}
-        className="fixed bottom-24 right-6 z-40 w-12 h-12 rounded-full bg-[#003527] text-white shadow-lg hover:bg-[#003527] hover:scale-110 transition-all flex items-center justify-center"
+        className="fab-bell w-11 h-11 lg:w-12 lg:h-12 rounded-full bg-[#003527] text-white shadow-lg hover:bg-[#003527] hover:scale-110 transition-all flex items-center justify-center"
         aria-label="Aktifkan notifikasi"
         title="Aktifkan notifikasi"
       >
@@ -111,7 +112,8 @@ export function NotificationPermission() {
         <span className="absolute inset-0 rounded-full bg-[#064e3b]/80 animate-ping opacity-30" />
       </motion.button>
 
-      {/* Permission prompt card */}
+      {/* Permission prompt card — uses .fab-bell-prompt for coordinated positioning
+          (sits above bell button, never covers WhatsApp button) */}
       <AnimatePresence>
         {showPrompt && (
           <motion.div
@@ -119,7 +121,7 @@ export function NotificationPermission() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.25 }}
-            className="fixed bottom-40 right-6 z-50 w-[calc(100vw-2rem)] sm:w-80 bg-[#ffffff] rounded-2xl shadow-2xl border border-[#e4e2de] overflow-hidden"
+            className="fab-bell-prompt w-[calc(100vw-2rem)] sm:w-80 bg-[#ffffff] rounded-2xl shadow-2xl border border-[#e4e2de] overflow-hidden"
           >
             {/* Header */}
             <div className="bg-gradient-to-r from-[#003527] to-[#064e3b] p-4 text-white relative">
