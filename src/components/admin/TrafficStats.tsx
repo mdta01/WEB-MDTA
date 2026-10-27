@@ -1,12 +1,13 @@
 'use client'
 
 import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
 import {
   Users, Eye, MousePointerClick, TrendingUp, Activity,
-  Calendar, Clock, RefreshCw,
+  Calendar, Clock, RefreshCw, Database,
 } from 'lucide-react'
+import { toast } from 'sonner'
 import {
   ResponsiveContainer, AreaChart, Area, XAxis, YAxis,
   CartesianGrid, Tooltip, BarChart, Bar,
@@ -52,6 +53,7 @@ interface TrafficData {
 export default function TrafficStats() {
   const [range, setRange] = useState<Range>('daily')
   const [isLive, setIsLive] = useState(true)
+  const queryClient = useQueryClient()
 
   // Fetch traffic data — refetches when range changes
   const { data, isLoading, refetch, isFetching } = useQuery<TrafficData>({
@@ -62,6 +64,36 @@ export default function TrafficStats() {
       return res.json()
     },
     refetchInterval: isLive ? 30000 : false, // 30s refresh when live
+  })
+
+  // Migrate DB mutation — runs `prisma db push` server-side
+  const migrateMutation = useMutation({
+    mutationFn: async () => {
+      const res = await fetch('/api/admin/migrate-db', { method: 'POST' })
+      const data = await res.json()
+      if (!res.ok && !data?.success) {
+        throw new Error(data?.error || 'Gagal migrate database')
+      }
+      return data
+    },
+    onSuccess: (data) => {
+      toast.success('Database berhasil di-migrate!', {
+        description: 'Tabel Visitor & PageView sudah dibuat. Data traffic akan mulai terkumpul.',
+        duration: 6000,
+      })
+      // Refetch traffic data after migration
+      queryClient.invalidateQueries({ queryKey: ['admin', 'traffic'] })
+      // Show output in console for debugging
+      if (data.output) console.log('[migrate-db]', data.output)
+    },
+    onError: (error: Error & { hint?: string }) => {
+      const hint = (error as { hint?: string }).hint
+      toast.error('Migrate database gagal', {
+        description: hint || error.message,
+        duration: 10000,
+      })
+      console.error('[migrate-db] error:', error)
+    },
   })
 
   // Compute peak/min for context (cheap operation, no memo needed)
@@ -96,6 +128,28 @@ export default function TrafficStats() {
         </div>
 
         <div className="flex items-center gap-2">
+          {/* Migrate DB button — creates Visitor & PageView tables */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => migrateMutation.mutate()}
+            disabled={migrateMutation.isPending}
+            className="h-8 px-2.5 text-xs border-[#cca72f]/30 text-[#895033] hover:bg-[#cca72f]/10 hover:border-[#cca72f]/50"
+            title="Buat tabel Visitor & PageView di database production (prisma db push)"
+          >
+            {migrateMutation.isPending ? (
+              <>
+                <RefreshCw className="h-3.5 w-3.5 mr-1.5 animate-spin" />
+                Migrating...
+              </>
+            ) : (
+              <>
+                <Database className="h-3.5 w-3.5 mr-1.5" />
+                Migrate DB
+              </>
+            )}
+          </Button>
+
           {/* Live toggle */}
           <button
             onClick={() => setIsLive((v) => !v)}
@@ -215,7 +269,10 @@ export default function TrafficStats() {
           {isLoading ? (
             <ChartSkeleton />
           ) : !data?.series || data.series.length === 0 ? (
-            <EmptyState />
+            <EmptyState
+              onMigrate={() => migrateMutation.mutate()}
+              migrating={migrateMutation.isPending}
+            />
           ) : (
             <div className="space-y-4">
               {/* Visitors Area Chart */}
@@ -363,7 +420,7 @@ function ChartSkeleton() {
   )
 }
 
-function EmptyState() {
+function EmptyState({ onMigrate, migrating }: { onMigrate: () => void; migrating: boolean }) {
   return (
     <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
       <div className="w-16 h-16 rounded-full bg-[#003527]/8 flex items-center justify-center mb-3">
@@ -371,9 +428,26 @@ function EmptyState() {
       </div>
       <p className="text-sm font-semibold text-[#1b1c1a]">Belum ada data traffic</p>
       <p className="text-xs text-[#404944] mt-1 max-w-sm">
-        Data pengunjung akan muncul di sini setelah ada yang mengunjungi website.
-        Pastikan database sudah di-migrate dengan <code className="px-1 py-0.5 bg-[#f5f3ef] rounded text-[10px]">bun run db:push</code>.
+        Data pengunjung akan muncul setelah tabel Visitor & PageView dibuat di database.
+        Klik tombol di bawah untuk migrate schema.
       </p>
+      <Button
+        onClick={onMigrate}
+        disabled={migrating}
+        className="mt-4 bg-[#003527] hover:bg-[#064e3b] text-white h-9"
+      >
+        {migrating ? (
+          <>
+            <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+            Sedang migrate...
+          </>
+        ) : (
+          <>
+            <Database className="h-4 w-4 mr-2" />
+            Migrate Database
+          </>
+        )}
+      </Button>
     </div>
   )
 }
