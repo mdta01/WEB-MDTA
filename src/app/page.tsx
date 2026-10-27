@@ -10,6 +10,7 @@ import WhatsAppButton from '@/components/layout/WhatsAppButton'
 import LiveAnnouncement from '@/components/layout/LiveAnnouncement'
 import { Toaster } from '@/components/ui/sonner'
 import { Skeleton } from '@/components/ui/skeleton'
+import { CommentPanel } from '@/components/social/CommentPanel'
 
 // BerandaSection is the default/largest — load eagerly (above the fold)
 import BerandaSection from '@/components/sections/BerandaSection'
@@ -156,6 +157,10 @@ export default function Home() {
         </main>
         <Footer />
         <WhatsAppButton />
+        {/* Floating Comment Panel — mounted once at root.
+            Opens when user clicks "Komentar" on any news/dakwah card.
+            Reads state from useCommentStore so only one panel can exist app-wide. */}
+        <CommentPanel />
       </div>
       <Toaster position="top-right" richColors />
       </MotionConfig>
