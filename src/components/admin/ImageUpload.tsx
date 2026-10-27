@@ -5,6 +5,11 @@ import { UploadCloud, X, Loader2, ImageIcon, Link2, AlertCircle } from 'lucide-r
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
+import {
+  uploadToCloudinaryDirect,
+  CLOUDINARY_LIMITS,
+  formatBytes,
+} from '@/lib/cloudinary-direct'
 
 interface ImageUploadProps {
   value: string
@@ -30,6 +35,7 @@ export function ImageUpload({
 }: ImageUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState(0)
   const [dragOver, setDragOver] = useState(false)
   const [showUrlMode, setShowUrlMode] = useState(false)
   const [imgError, setImgError] = useState(false)
@@ -50,106 +56,55 @@ export function ImageUpload({
         toast.error('File harus berupa gambar')
         return
       }
-      // Vercel serverless body size limit is 4.5MB on Hobby plan.
-      // Multipart form data has overhead (~200 bytes), so use 4.4MB as safe limit.
-      // Files larger than this will be rejected by Vercel edge network with
-      // HTTP 413 FUNCTION_PAYLOAD_TOO_LARGE before reaching our API.
-      const VERCEL_BODY_LIMIT = 4.4 * 1024 * 1024 // 4.4 MB
-      if (file.size > VERCEL_BODY_LIMIT) {
-        toast.error('Ukuran gambar melebihi batas server', {
-          description: `File: ${(file.size / 1024 / 1024).toFixed(2)} MB. Maksimal 4.4 MB (batasan serverless). Kompres gambar dulu atau gunakan resolusi lebih kecil.`,
+      // Cloudinary free plan limit: 10MB for images
+      // (Direct upload bypasses Vercel's 4.5MB body limit)
+      if (file.size > CLOUDINARY_LIMITS.image) {
+        toast.error('Ukuran gambar melebihi batas Cloudinary', {
+          description: `File: ${formatBytes(file.size)}. Maksimal ${formatBytes(CLOUDINARY_LIMITS.image)}. Kompres gambar dulu atau gunakan resolusi lebih kecil.`,
           duration: 6000,
         })
         return
       }
 
       setUploading(true)
+      setUploadProgress(0)
       setImgError(false)
 
-      // Retry logic — network errors are common on slow connections
-      const maxRetries = 2
-      let lastError: string = 'Gagal upload'
-      let success = false
-
       try {
-        for (let attempt = 1; attempt <= maxRetries; attempt++) {
-          try {
-            const formData = new FormData()
-            formData.append('file', file)
-            formData.append('folder', folder)
+        // Direct upload to Cloudinary (bypasses Vercel 4.5MB limit)
+        const result = await uploadToCloudinaryDirect(file, folder, 'image', (pct) => {
+          setUploadProgress(pct)
+        })
 
-            const res = await fetch('/api/upload', {
-              method: 'POST',
-              body: formData,
-              // Don't set Content-Type — browser sets it with boundary for FormData
-            })
+        onChange(result.url)
+        toast.success('Gambar berhasil diupload', {
+          description: `${formatBytes(file.size)} → ${result.format?.toUpperCase()} ${result.width}×${result.height}`,
+        })
+      } catch (error) {
+        const errMsg = error instanceof Error ? error.message : 'Gagal upload'
+        console.error('[ImageUpload] direct upload failed:', errMsg)
 
-            // Handle non-OK responses
-            if (!res.ok) {
-              let errorMsg: string
-              const responseText = await res.text().catch(() => '')
-
-              // Vercel returns plain text "FUNCTION_PAYLOAD_TOO_LARGE" for 413
-              // (edge network rejects before our API runs)
-              if (res.status === 413 || responseText.includes('PAYLOAD_TOO_LARGE')) {
-                errorMsg = `File terlalu besar untuk server (maks 4.4 MB). File Anda: ${(file.size / 1024 / 1024).toFixed(2)} MB.`
-                toast.error('Upload ditolak server', { description: errorMsg, duration: 6000 })
-                return // Don't retry — won't help
-              }
-
-              // Try to parse JSON error from our API
-              try {
-                const data = JSON.parse(responseText)
-                errorMsg = data.error || data.detail || `Upload gagal (HTTP ${res.status})`
-              } catch {
-                errorMsg = responseText || `Upload gagal (HTTP ${res.status})`
-              }
-
-              // Don't retry on client errors (4xx) — only retry on server errors (5xx)
-              if (res.status >= 400 && res.status < 500) {
-                toast.error('Upload gagal', { description: errorMsg, duration: 5000 })
-                return
-              }
-              throw new Error(errorMsg)
-            }
-
-            const data = await res.json()
-
-            onChange(data.url)
-            toast.success('Gambar berhasil diupload', {
-              description: `${(file.size / 1024).toFixed(0)} KB → ${data.format?.toUpperCase()} ${data.width}×${data.height}`,
-            })
-            success = true
-            return // Success — exit retry loop
-          } catch (error) {
-            lastError = error instanceof Error ? error.message : 'Gagal upload'
-            console.error(`[ImageUpload] attempt ${attempt}/${maxRetries} failed:`, lastError)
-
-            if (attempt < maxRetries) {
-              // Show retry toast
-              toast.loading(`Upload gagal, mencoba ulang (${attempt + 1}/${maxRetries})...`, {
-                id: 'upload-retry',
-              })
-              // Wait before retry (1s, 2s)
-              await new Promise(resolve => setTimeout(resolve, 1000 * attempt))
-            }
-          }
+        // Show clear error message with possible causes
+        let title = 'Upload gagal'
+        let description = errMsg
+        if (errMsg.includes('timed out') || errMsg.includes('timeout')) {
+          title = 'Upload timeout'
+          description = 'File terlalu besar atau koneksi lambat. Coba file lebih kecil.'
+        } else if (errMsg.includes('Unauthorized') || errMsg.includes('signature')) {
+          title = 'Auth gagal'
+          description = 'Sesi admin berakhir. Refresh halaman & login ulang.'
+        } else if (errMsg.includes('File size')) {
+          title = 'File terlalu besar'
+          description = 'Cloudinary menolak file. Maksimal 10 MB untuk gambar.'
         }
 
-        // All retries exhausted
-        toast.dismiss('upload-retry')
-        toast.error('Upload gagal setelah beberapa percobaan', {
-          description: lastError + '. Coba file lebih kecil atau periksa koneksi internet.',
-        })
+        toast.error(title, { description, duration: 6000 })
       } finally {
         setUploading(false)
+        setUploadProgress(0)
         // Reset input so same file can be re-selected
         if (fileInputRef.current) {
           fileInputRef.current.value = ''
-        }
-        // Dismiss retry toast if still showing
-        if (!success) {
-          toast.dismiss('upload-retry')
         }
       }
     },
@@ -247,8 +202,19 @@ export function ImageUpload({
               </Button>
             </div>
             {uploading && (
-              <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+              <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-2">
                 <Loader2 className="h-6 w-6 animate-spin text-white" />
+                {uploadProgress > 0 && (
+                  <div className="w-24 h-1.5 bg-white/20 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-[#cca72f] transition-all duration-300"
+                      style={{ width: `${uploadProgress}%` }}
+                    />
+                  </div>
+                )}
+                {uploadProgress > 0 && (
+                  <p className="text-[10px] text-white/80">{uploadProgress}%</p>
+                )}
               </div>
             )}
           </div>
@@ -267,7 +233,15 @@ export function ImageUpload({
           {uploading ? (
             <>
               <Loader2 className="h-6 w-6 animate-spin text-[#064e3b]" />
-              <p className="text-xs text-muted-foreground">Mengupload...</p>
+              <p className="text-xs text-muted-foreground">Mengupload... {uploadProgress > 0 ? `${uploadProgress}%` : ''}</p>
+              {uploadProgress > 0 && (
+                <div className="w-32 h-1.5 bg-[#e4e2de] rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-[#003527] to-[#064e3b] transition-all duration-300"
+                    style={{ width: `${uploadProgress}%` }}
+                  />
+                </div>
+              )}
             </>
           ) : imgError && value ? (
             <>
@@ -284,7 +258,7 @@ export function ImageUpload({
               <p className="text-xs text-muted-foreground text-center px-2">
                 Klik atau drag gambar ke sini
               </p>
-              <p className="text-[10px] text-muted-foreground/70">JPEG, PNG, WebP, GIF (maks 4.4 MB)</p>
+              <p className="text-[10px] text-muted-foreground/70">JPEG, PNG, WebP, GIF (maks 10 MB)</p>
             </>
           )}
         </div>

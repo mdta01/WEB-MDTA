@@ -5,6 +5,11 @@ import { UploadCloud, X, Loader2, FileText, Link2, AlertCircle, FileCheck2 } fro
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
+import {
+  uploadToCloudinaryDirect,
+  CLOUDINARY_LIMITS,
+  formatBytes,
+} from '@/lib/cloudinary-direct'
 
 interface FileUploadProps {
   value: string
@@ -25,6 +30,7 @@ export function FileUpload({
 }: FileUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState(0)
   const [showUrlMode, setShowUrlMode] = useState(false)
   const [fileName, setFileName] = useState<string>('')
 
@@ -41,98 +47,52 @@ export function FileUpload({
         })
         return
       }
-      // Vercel serverless body size limit is 4.5MB on Hobby plan.
-      // Use 4.4MB as safe limit to account for multipart form overhead.
-      // Files >4.4MB will be rejected by Vercel edge with HTTP 413 FUNCTION_PAYLOAD_TOO_LARGE.
-      const VERCEL_BODY_LIMIT = 4.4 * 1024 * 1024 // 4.4 MB
-      if (file.size > VERCEL_BODY_LIMIT) {
-        toast.error('Ukuran file melebihi batas server', {
-          description: `File: ${(file.size / 1024 / 1024).toFixed(2)} MB. Maksimal 4.4 MB (batasan serverless). Kompres atau pecah file jadi lebih kecil.`,
+      // Cloudinary free plan limit: 100MB for raw files
+      // (Direct upload bypasses Vercel's 4.5MB body limit)
+      if (file.size > CLOUDINARY_LIMITS.raw) {
+        toast.error('Ukuran file melebihi batas Cloudinary', {
+          description: `File: ${formatBytes(file.size)}. Maksimal ${formatBytes(CLOUDINARY_LIMITS.raw)}.`,
           duration: 6000,
         })
         return
       }
 
       setUploading(true)
-
-      // Retry logic — network errors are common on slow connections
-      const maxRetries = 2
-      let lastError: string = 'Gagal upload'
-      let success = false
+      setUploadProgress(0)
 
       try {
-        for (let attempt = 1; attempt <= maxRetries; attempt++) {
-          try {
-            const formData = new FormData()
-            formData.append('file', file)
-            formData.append('folder', folder)
+        // Direct upload to Cloudinary as raw resource (bypasses Vercel 4.5MB limit)
+        // Use resource_type 'raw' for documents (PDF, DOCX, etc.)
+        // Cloudinary returns URL with original filename preserved
+        const result = await uploadToCloudinaryDirect(file, folder, 'raw', (pct) => {
+          setUploadProgress(pct)
+        })
 
-            const res = await fetch('/api/upload', {
-              method: 'POST',
-              body: formData,
-            })
+        onChange(result.url)
+        setFileName(file.name)
+        toast.success('File berhasil diupload', {
+          description: `${file.name} (${formatBytes(file.size)})`,
+        })
+      } catch (error) {
+        const errMsg = error instanceof Error ? error.message : 'Gagal upload'
+        console.error('[FileUpload] direct upload failed:', errMsg)
 
-            // Handle non-OK responses
-            if (!res.ok) {
-              let errorMsg: string
-              const responseText = await res.text().catch(() => '')
-
-              // Vercel returns plain text "FUNCTION_PAYLOAD_TOO_LARGE" for 413
-              if (res.status === 413 || responseText.includes('PAYLOAD_TOO_LARGE')) {
-                errorMsg = `File terlalu besar untuk server (maks 4.4 MB). File Anda: ${(file.size / 1024 / 1024).toFixed(2)} MB.`
-                toast.error('Upload ditolak server', { description: errorMsg, duration: 6000 })
-                return
-              }
-
-              try {
-                const data = JSON.parse(responseText)
-                errorMsg = data.error || data.detail || `Upload gagal (HTTP ${res.status})`
-              } catch {
-                errorMsg = responseText || `Upload gagal (HTTP ${res.status})`
-              }
-
-              // Don't retry on client errors (4xx)
-              if (res.status >= 400 && res.status < 500) {
-                toast.error('Upload gagal', { description: errorMsg, duration: 5000 })
-                return
-              }
-              throw new Error(errorMsg)
-            }
-
-            const data = await res.json()
-
-            onChange(data.url)
-            setFileName(file.name)
-            toast.success('File berhasil diupload', {
-              description: `${file.name} (${(file.size / 1024).toFixed(0)} KB)`,
-            })
-            success = true
-            return // Success — exit retry loop
-          } catch (error) {
-            lastError = error instanceof Error ? error.message : 'Gagal upload'
-            console.error(`[FileUpload] attempt ${attempt}/${maxRetries} failed:`, lastError)
-
-            if (attempt < maxRetries) {
-              toast.loading(`Upload gagal, mencoba ulang (${attempt + 1}/${maxRetries})...`, {
-                id: 'file-upload-retry',
-              })
-              await new Promise(resolve => setTimeout(resolve, 1000 * attempt))
-            }
-          }
+        let title = 'Upload gagal'
+        let description = errMsg
+        if (errMsg.includes('timed out') || errMsg.includes('timeout')) {
+          title = 'Upload timeout'
+          description = 'File terlalu besar atau koneksi lambat.'
+        } else if (errMsg.includes('Unauthorized') || errMsg.includes('signature')) {
+          title = 'Auth gagal'
+          description = 'Sesi admin berakhir. Refresh halaman & login ulang.'
         }
 
-        // All retries exhausted
-        toast.dismiss('file-upload-retry')
-        toast.error('Upload gagal setelah beberapa percobaan', {
-          description: lastError + '. Coba file lebih kecil atau periksa koneksi internet.',
-        })
+        toast.error(title, { description, duration: 6000 })
       } finally {
         setUploading(false)
+        setUploadProgress(0)
         if (fileInputRef.current) {
           fileInputRef.current.value = ''
-        }
-        if (!success) {
-          toast.dismiss('file-upload-retry')
         }
       }
     },
@@ -219,7 +179,17 @@ export function FileUpload({
             </Button>
           </div>
           {uploading && (
-            <Loader2 className="h-4 w-4 animate-spin text-[#064e3b] shrink-0" />
+            <>
+              <Loader2 className="h-4 w-4 animate-spin text-[#064e3b] shrink-0" />
+              {uploadProgress > 0 && (
+                <div className="w-16 h-1 bg-[#e4e2de] rounded-full overflow-hidden shrink-0">
+                  <div
+                    className="h-full bg-gradient-to-r from-[#003527] to-[#064e3b] transition-all duration-300"
+                    style={{ width: `${uploadProgress}%` }}
+                  />
+                </div>
+              )}
+            </>
           )}
         </div>
       ) : (
@@ -234,7 +204,15 @@ export function FileUpload({
           {uploading ? (
             <>
               <Loader2 className="h-6 w-6 animate-spin text-[#064e3b]" />
-              <p className="text-xs text-muted-foreground">Mengupload PDF...</p>
+              <p className="text-xs text-muted-foreground">Mengupload PDF... {uploadProgress > 0 ? `${uploadProgress}%` : ''}</p>
+              {uploadProgress > 0 && (
+                <div className="w-32 h-1.5 bg-[#e4e2de] rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-[#003527] to-[#064e3b] transition-all duration-300"
+                    style={{ width: `${uploadProgress}%` }}
+                  />
+                </div>
+              )}
             </>
           ) : (
             <>
@@ -244,7 +222,7 @@ export function FileUpload({
               <p className="text-sm text-muted-foreground text-center">
                 Klik untuk pilih file <span className="font-medium text-[#ba1a1a]">PDF</span>
               </p>
-              <p className="text-[10px] text-muted-foreground/70">Maksimal 4.4 MB • PDF, DOC, DOCX, XLS, PPT, ZIP, TXT</p>
+              <p className="text-[10px] text-muted-foreground/70">Maksimal 100 MB • PDF, DOC, DOCX, XLS, PPT, ZIP, TXT</p>
             </>
           )}
         </div>
