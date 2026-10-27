@@ -41,9 +41,14 @@ export function FileUpload({
         })
         return
       }
-      if (file.size > 25 * 1024 * 1024) {
-        toast.error('Ukuran file maksimal 25 MB', {
-          description: `File Anda: ${(file.size / 1024 / 1024).toFixed(1)} MB`,
+      // Vercel serverless body size limit is 4.5MB on Hobby plan.
+      // Use 4.4MB as safe limit to account for multipart form overhead.
+      // Files >4.4MB will be rejected by Vercel edge with HTTP 413 FUNCTION_PAYLOAD_TOO_LARGE.
+      const VERCEL_BODY_LIMIT = 4.4 * 1024 * 1024 // 4.4 MB
+      if (file.size > VERCEL_BODY_LIMIT) {
+        toast.error('Ukuran file melebihi batas server', {
+          description: `File: ${(file.size / 1024 / 1024).toFixed(2)} MB. Maksimal 4.4 MB (batasan serverless). Kompres atau pecah file jadi lebih kecil.`,
+          duration: 6000,
         })
         return
       }
@@ -70,15 +75,25 @@ export function FileUpload({
             // Handle non-OK responses
             if (!res.ok) {
               let errorMsg: string
-              try {
-                const data = await res.json()
-                errorMsg = data.error || `Upload gagal (HTTP ${res.status})`
-              } catch {
-                errorMsg = `Upload gagal (HTTP ${res.status})`
+              const responseText = await res.text().catch(() => '')
+
+              // Vercel returns plain text "FUNCTION_PAYLOAD_TOO_LARGE" for 413
+              if (res.status === 413 || responseText.includes('PAYLOAD_TOO_LARGE')) {
+                errorMsg = `File terlalu besar untuk server (maks 4.4 MB). File Anda: ${(file.size / 1024 / 1024).toFixed(2)} MB.`
+                toast.error('Upload ditolak server', { description: errorMsg, duration: 6000 })
+                return
               }
-              // Don't retry on client errors (4xx) — only retry on server errors (5xx)
+
+              try {
+                const data = JSON.parse(responseText)
+                errorMsg = data.error || data.detail || `Upload gagal (HTTP ${res.status})`
+              } catch {
+                errorMsg = responseText || `Upload gagal (HTTP ${res.status})`
+              }
+
+              // Don't retry on client errors (4xx)
               if (res.status >= 400 && res.status < 500) {
-                toast.error('Upload gagal', { description: errorMsg })
+                toast.error('Upload gagal', { description: errorMsg, duration: 5000 })
                 return
               }
               throw new Error(errorMsg)
@@ -229,7 +244,7 @@ export function FileUpload({
               <p className="text-sm text-muted-foreground text-center">
                 Klik untuk pilih file <span className="font-medium text-[#ba1a1a]">PDF</span>
               </p>
-              <p className="text-[10px] text-muted-foreground/70">Maksimal 25 MB • PDF, DOC, DOCX, XLS, PPT, ZIP, TXT</p>
+              <p className="text-[10px] text-muted-foreground/70">Maksimal 4.4 MB • PDF, DOC, DOCX, XLS, PPT, ZIP, TXT</p>
             </>
           )}
         </div>

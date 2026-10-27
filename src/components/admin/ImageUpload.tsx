@@ -50,9 +50,15 @@ export function ImageUpload({
         toast.error('File harus berupa gambar')
         return
       }
-      if (file.size > 10 * 1024 * 1024) {
-        toast.error('Ukuran gambar maksimal 10 MB', {
-          description: `File Anda: ${(file.size / 1024 / 1024).toFixed(1)} MB`,
+      // Vercel serverless body size limit is 4.5MB on Hobby plan.
+      // Multipart form data has overhead (~200 bytes), so use 4.4MB as safe limit.
+      // Files larger than this will be rejected by Vercel edge network with
+      // HTTP 413 FUNCTION_PAYLOAD_TOO_LARGE before reaching our API.
+      const VERCEL_BODY_LIMIT = 4.4 * 1024 * 1024 // 4.4 MB
+      if (file.size > VERCEL_BODY_LIMIT) {
+        toast.error('Ukuran gambar melebihi batas server', {
+          description: `File: ${(file.size / 1024 / 1024).toFixed(2)} MB. Maksimal 4.4 MB (batasan serverless). Kompres gambar dulu atau gunakan resolusi lebih kecil.`,
+          duration: 6000,
         })
         return
       }
@@ -81,15 +87,27 @@ export function ImageUpload({
             // Handle non-OK responses
             if (!res.ok) {
               let errorMsg: string
-              try {
-                const data = await res.json()
-                errorMsg = data.error || `Upload gagal (HTTP ${res.status})`
-              } catch {
-                errorMsg = `Upload gagal (HTTP ${res.status})`
+              const responseText = await res.text().catch(() => '')
+
+              // Vercel returns plain text "FUNCTION_PAYLOAD_TOO_LARGE" for 413
+              // (edge network rejects before our API runs)
+              if (res.status === 413 || responseText.includes('PAYLOAD_TOO_LARGE')) {
+                errorMsg = `File terlalu besar untuk server (maks 4.4 MB). File Anda: ${(file.size / 1024 / 1024).toFixed(2)} MB.`
+                toast.error('Upload ditolak server', { description: errorMsg, duration: 6000 })
+                return // Don't retry — won't help
               }
+
+              // Try to parse JSON error from our API
+              try {
+                const data = JSON.parse(responseText)
+                errorMsg = data.error || data.detail || `Upload gagal (HTTP ${res.status})`
+              } catch {
+                errorMsg = responseText || `Upload gagal (HTTP ${res.status})`
+              }
+
               // Don't retry on client errors (4xx) — only retry on server errors (5xx)
               if (res.status >= 400 && res.status < 500) {
-                toast.error('Upload gagal', { description: errorMsg })
+                toast.error('Upload gagal', { description: errorMsg, duration: 5000 })
                 return
               }
               throw new Error(errorMsg)
@@ -266,7 +284,7 @@ export function ImageUpload({
               <p className="text-xs text-muted-foreground text-center px-2">
                 Klik atau drag gambar ke sini
               </p>
-              <p className="text-[10px] text-muted-foreground/70">JPEG, PNG, WebP, GIF (maks 10MB)</p>
+              <p className="text-[10px] text-muted-foreground/70">JPEG, PNG, WebP, GIF (maks 4.4 MB)</p>
             </>
           )}
         </div>
