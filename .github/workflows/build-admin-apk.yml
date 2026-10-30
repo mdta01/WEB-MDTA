@@ -80,60 +80,59 @@ jobs:
             echo "app_name=${{ github.event.inputs.app_name }}" >> $GITHUB_OUTPUT
             echo "app_version=${{ github.event.inputs.app_version }}" >> $GITHUB_OUTPUT
           fi
+          # Compute version code (integers only from version string)
+          VERSION="${{ github.event.inputs.app_version || '1.0.0' }}"
+          VERSION_CODE=$(echo "$VERSION" | tr -cd '[:digit:]')
+          if [ -z "$VERSION_CODE" ] || [ "$VERSION_CODE" -lt 1 ]; then VERSION_CODE=1; fi
+          echo "app_version_code=$VERSION_CODE" >> $GITHUB_OUTPUT
 
       - name: 🏗️ Create TWA manifest manually
         run: |
-          # Create twa-manifest.json manually (avoids bubblewrap init interactive issues)
-          cat > twa-manifest.json << 'EOFMANIFEST'
-          {
-            "packageId": "id.sch.mdta.miftahululum01.admin",
-            "host": "mdta-tawangsari.vercel.app",
-            "name": "MDTA Admin",
-            "themeColor": "#003527",
-            "navigationColor": "#003527",
-            "navigationColorDark": "#003527",
-            "navigationDividerColor": "#003527",
-            "navigationDividerColorDark": "#003527",
-            "backgroundColor": "#003527",
-            "enableNotifications": true,
-            "startUrl": "/admin",
-            "iconUrl": "https://mdta-tawangsari.vercel.app/icons/admin/icon-512.png",
-            "maskableIconUrl": "https://mdta-tawangsari.vercel.app/icons/admin/icon-512-maskable.png",
-            "splashScreenFadeOutDuration": 300,
-            "signingKey": {
-              "path": "android.keystore",
-              "alias": "mdta-admin"
-            },
-            "appVersionName": "${{ steps.inputs.outputs.app_version }}",
-            "appVersionCode": ${{ steps.inputs.outputs.app_version_code }},
-            "shortcuts": [
-              {"name": "Dashboard", "shortName": "Dashboard", "url": "/admin"},
-              {"name": "Kelola Berita", "shortName": "Berita", "url": "/admin#news"},
-              {"name": "Push Notifikasi", "shortName": "Push Notif", "url": "/admin#push-notif"},
-              {"name": "Pengaturan", "shortName": "Settings", "url": "/admin#settings"}
+          # Create twa-manifest.json using python (avoids heredoc indentation issues)
+          python3 -c "
+          import json
+          manifest = {
+            'packageId': 'id.sch.mdta.miftahululum01.admin',
+            'host': 'mdta-tawangsari.vercel.app',
+            'name': '${{ steps.inputs.outputs.app_name }}',
+            'themeColor': '#003527',
+            'navigationColor': '#003527',
+            'navigationColorDark': '#003527',
+            'navigationDividerColor': '#003527',
+            'navigationDividerColorDark': '#003527',
+            'backgroundColor': '#003527',
+            'enableNotifications': True,
+            'startUrl': '/admin',
+            'iconUrl': 'https://mdta-tawangsari.vercel.app/icons/admin/icon-512.png',
+            'maskableIconUrl': 'https://mdta-tawangsari.vercel.app/icons/admin/icon-512-maskable.png',
+            'splashScreenFadeOutDuration': 300,
+            'signingKey': {'path': 'android.keystore', 'alias': 'mdta-admin'},
+            'appVersionName': '${{ steps.inputs.outputs.app_version }}',
+            'appVersionCode': ${{ steps.inputs.outputs.app_version_code }},
+            'shortcuts': [
+              {'name': 'Dashboard', 'shortName': 'Dashboard', 'url': '/admin'},
+              {'name': 'Kelola Berita', 'shortName': 'Berita', 'url': '/admin#news'},
+              {'name': 'Push Notifikasi', 'shortName': 'Push Notif', 'url': '/admin#push-notif'},
+              {'name': 'Pengaturan', 'shortName': 'Settings', 'url': '/admin#settings'}
             ],
-            "generatorApp": "bubblewrap-cli",
-            "webManifestUrl": "https://mdta-tawangsari.vercel.app/admin-manifest.webmanifest",
-            "fallbackType": "customtabs",
-            "features": {
-              "locationDelegation": {"enabled": false},
-              "playBilling": {"enabled": false}
+            'generatorApp': 'bubblewrap-cli',
+            'webManifestUrl': 'https://mdta-tawangsari.vercel.app/admin-manifest.webmanifest',
+            'fallbackType': 'customtabs',
+            'features': {
+              'locationDelegation': {'enabled': False},
+              'playBilling': {'enabled': False}
             },
-            "alphaDependencies": {"enabled": false},
-            "enableSiteSettingsShortcut": false,
-            "isChromeOSOnly": false,
-            "isMetaQuest": false,
-            "fullScopeUrl": "https://mdta-tawangsari.vercel.app/admin/",
-            "minLinksQuality": 1
+            'alphaDependencies': {'enabled': False},
+            'enableSiteSettingsShortcut': False,
+            'isChromeOSOnly': False,
+            'isMetaQuest': False,
+            'fullScopeUrl': 'https://mdta-tawangsari.vercel.app/admin/',
+            'minLinksQuality': 1
           }
-          EOFMANIFEST
-
-          # Fix version code (extract numbers from version)
-          VERSION_CODE=$(echo "${{ steps.inputs.outputs.app_version }}" | tr -cd '[:digit:]')
-          if [ -z "$VERSION_CODE" ] || [ "$VERSION_CODE" -lt 1 ]; then VERSION_CODE=1; fi
-          sed -i "s/\${{ steps.inputs.outputs.app_version_code }}/$VERSION_CODE/" twa-manifest.json
-
-          echo "✅ Created twa-manifest.json:"
+          with open('twa-manifest.json', 'w') as f:
+            json.dump(manifest, f, indent=2)
+          print('✅ Created twa-manifest.json')
+          "
           cat twa-manifest.json | head -20
 
       - name: 🏗️ Build APK (debug)
