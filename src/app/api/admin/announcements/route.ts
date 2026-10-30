@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { isAdminAuthenticated } from '@/lib/auth'
-import { broadcastPushNotification } from '@/lib/webpush'
+import { notifyAnnouncementUpdate } from '@/lib/notification-broadcast'
 
 export async function GET() {
   try {
@@ -53,16 +53,11 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    // Send push notification — prefix depends on type
-    const isWaliSantri = (type || 'general') === 'wali_santri'
-    await broadcastPushNotification({
-      title: isWaliSantri
-        ? '👨‍👩 [PENGUMUMAN WALI SANTRI] ' + (title.length > 40 ? title.substring(0, 40) + '...' : title)
-        : '📢 [PENGUMUMAN] ' + (title.length > 60 ? title.substring(0, 60) + '...' : title),
-      body: title,
-      url: isWaliSantri ? '/?page=wali-santri' : '/?page=pengumuman',
-      tag: `mdta-ann-${announcement.id}`,
-    })
+    // Send push notification via FCM + VAPID (only if active)
+    // Fire-and-forget — don't break the create if push fails
+    notifyAnnouncementUpdate(announcement, 'created').catch((err) =>
+      console.error('[admin/announcements POST] notify failed:', err)
+    )
 
     return NextResponse.json(announcement, { status: 201 })
   } catch (error) {

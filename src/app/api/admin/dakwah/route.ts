@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { isAdminAuthenticated } from '@/lib/auth'
-import { broadcastPushNotification } from '@/lib/webpush'
+import { notifyDakwahUpdate } from '@/lib/notification-broadcast'
 
 export async function GET() {
   try {
@@ -46,13 +46,11 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    // Send push notification
-    await broadcastPushNotification({
-      title: '📖 [INFO DAKWAH] ' + (title.length > 50 ? title.substring(0, 50) + '...' : title),
-      body: title,
-      url: '/?page=dakwah',
-      tag: `mdta-dakwah-${dakwah.id}`,
-    })
+    // Send push notification via FCM + VAPID (only if published)
+    // Fire-and-forget — don't break the create if push fails
+    notifyDakwahUpdate(dakwah, 'created').catch((err) =>
+      console.error('[admin/dakwah POST] notify failed:', err)
+    )
 
     return NextResponse.json(dakwah, { status: 201 })
   } catch (error) {

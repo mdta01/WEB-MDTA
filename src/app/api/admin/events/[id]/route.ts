@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { isAdminAuthenticated } from '@/lib/auth'
+import { notifyEventUpdate } from '@/lib/notification-broadcast'
 
 export async function GET(
   _request: NextRequest,
@@ -47,6 +48,12 @@ export async function PUT(
       where: { id },
       data: body,
     })
+
+    // Send push notification via FCM + VAPID
+    // Fire-and-forget — don't break the update if push fails
+    notifyEventUpdate(event, 'updated').catch((err) =>
+      console.error('[admin/events PUT] notify failed:', err)
+    )
 
     return NextResponse.json(event)
   } catch (error) {

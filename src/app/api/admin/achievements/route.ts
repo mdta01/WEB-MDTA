@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { isAdminAuthenticated } from '@/lib/auth'
+import { notifyAchievementUpdate } from '@/lib/notification-broadcast'
 
 export async function GET() {
   try {
@@ -44,6 +45,12 @@ export async function POST(request: NextRequest) {
         image: image || null,
       },
     })
+
+    // Send push notification via FCM + VAPID
+    // Fire-and-forget — don't break the create if push fails
+    notifyAchievementUpdate(achievement, 'created').catch((err) =>
+      console.error('[admin/achievements POST] notify failed:', err)
+    )
 
     return NextResponse.json(achievement, { status: 201 })
   } catch (error) {

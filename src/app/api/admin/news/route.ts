@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { isAdminAuthenticated } from '@/lib/auth'
-import { broadcastPushNotification } from '@/lib/webpush'
+import { notifyNewsUpdate } from '@/lib/notification-broadcast'
 
 export async function GET() {
   try {
@@ -45,13 +45,11 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    // Send push notification to all subscribers
-    await broadcastPushNotification({
-      title: '📰 [BERITA] ' + (title.length > 60 ? title.substring(0, 60) + '...' : title),
-      body: title,
-      url: '/?page=berita',
-      tag: `mdta-news-${news.id}`,
-    })
+    // Send push notification via FCM + VAPID (only if published)
+    // Fire-and-forget — don't break the create if push fails
+    notifyNewsUpdate(news, 'created').catch((err) =>
+      console.error('[admin/news POST] notify failed:', err)
+    )
 
     return NextResponse.json(news, { status: 201 })
   } catch (error) {

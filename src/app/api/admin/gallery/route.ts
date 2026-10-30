@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { isAdminAuthenticated } from '@/lib/auth'
+import { notifyGalleryUpdate } from '@/lib/notification-broadcast'
 
 export async function GET() {
   try {
@@ -42,6 +43,12 @@ export async function POST(request: NextRequest) {
         type: type || 'foto',
       },
     })
+
+    // Send push notification via FCM + VAPID
+    // Fire-and-forget — don't break the create if push fails
+    notifyGalleryUpdate(gallery, 'created').catch((err) =>
+      console.error('[admin/gallery POST] notify failed:', err)
+    )
 
     return NextResponse.json(gallery, { status: 201 })
   } catch (error) {
