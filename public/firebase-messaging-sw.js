@@ -10,24 +10,23 @@
  * This SW must be in /public so it's served from site root.
  * It imports Firebase messaging compat lib from gstatic (Google CDN).
  *
- * Config is injected from env via build-time replacement. In dev (local),
- * the env values are read from window.__FIREBASE_CONFIG__ if available.
+ * Config is HARDCODED here because service workers can't access Next.js
+ * NEXT_PUBLIC_* env vars (they run in their own scope, not browser window).
+ * Update this if Firebase project changes.
  */
 
-// Try to read config from window (injected by client lib) — fallback to hardcoded env
-const firebaseConfig = (typeof self !== 'undefined' && self.__FIREBASE_CONFIG__)
-  ? self.__FIREBASE_CONFIG__
-  : {
-      apiKey: "REPLACE_ME",
-      authDomain: "REPLACE_ME",
-      projectId: "REPLACE_ME",
-      storageBucket: "REPLACE_ME",
-      messagingSenderId: "REPLACE_ME",
-      appId: "REPLACE_ME",
-    }
+// Firebase config — project: sim-madin
+const firebaseConfig = {
+  apiKey: "AIzaSyCX358pCRPAHJrEoZWihJC5zUCZIC0KDCg",
+  authDomain: "sim-madin.firebaseapp.com",
+  projectId: "sim-madin",
+  storageBucket: "sim-madin.firebasestorage.app",
+  messagingSenderId: "852941803453",
+  appId: "1:852941803453:web:caa08707361ba26ebe4cd4",
+}
 
 // Only import Firebase if config is valid (avoid errors in dev before env set)
-if (firebaseConfig.apiKey && firebaseConfig.apiKey !== 'REPLACE_ME') {
+if (firebaseConfig.apiKey) {
   importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js')
   importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js')
 
@@ -78,5 +77,5 @@ if (firebaseConfig.apiKey && firebaseConfig.apiKey !== 'REPLACE_ME') {
     )
   })
 } else {
-  console.warn('[firebase-messaging-sw.js] Firebase config not set. Set NEXT_PUBLIC_FIREBASE_* env vars.')
+  console.warn('[firebase-messaging-sw.js] Firebase config not set.')
 }

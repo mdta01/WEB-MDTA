@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   LayoutDashboard, Newspaper, Megaphone, Users, GraduationCap,
   BookOpen, Trophy, ImageIcon, Calendar, MessageSquare, FileText,
-  Download, Mail, Lightbulb, Settings, LogOut, Menu, X,
+  Download, Mail, Lightbulb, Settings, LogOut, Menu, X, Bell,
   ChevronRight, Shield, Loader2, Save, DollarSign, Clock, Star,
   UserCheck, UserX, UserPlus, Eye, Filter, ClipboardList, Phone, MapPin,
   Plus, Pencil, Trash2,
@@ -58,6 +58,7 @@ import { ImageUpload } from './ImageUpload'
 import { FileUpload } from './FileUpload'
 import { RichTextEditor } from './RichTextEditor'
 import AdminDashboard from './AdminDashboard'
+import PushNotifManager from './PushNotifManager'
 
 // --- Types ---
 
@@ -82,6 +83,7 @@ type AdminSection =
   | 'wali-santri'
   | 'contact-messages'
   | 'suggestions'
+  | 'push-notif'
   | 'settings'
 
 interface NavItem {
@@ -114,6 +116,7 @@ const navItems: NavItem[] = [
   { id: 'wali-santri', label: 'Wali Santri', icon: <Users className="h-4 w-4" />, group: 'Pendaftaran' },
   { id: 'contact-messages', label: 'Pesan Kontak', icon: <Mail className="h-4 w-4" />, group: 'Pesan' },
   { id: 'suggestions', label: 'Kritik & Saran', icon: <Lightbulb className="h-4 w-4" />, group: 'Pesan' },
+  { id: 'push-notif', label: 'Push Notifikasi', icon: <Bell className="h-4 w-4" />, group: 'Sistem' },
   { id: 'settings', label: 'Pengaturan Website', icon: <Settings className="h-4 w-4" />, group: 'Sistem' },
 ]
 
@@ -2627,6 +2630,9 @@ export default function AdminPanel({ adminName: adminNameProp, onLogout }: Admin
     }
     if (activeSection === 'suggestions') {
       return <SuggestionsManager />
+    }
+    if (activeSection === 'push-notif') {
+      return <PushNotifManager />
     }
     if (activeSection === 'settings') {
       return <SettingsManager />
