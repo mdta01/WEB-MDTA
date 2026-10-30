@@ -185,6 +185,14 @@ jobs:
               send "$env(JAVA_HOME)\r"
               exp_continue
             }
+            "Path to your existing Android SDK" {
+              send "$env(ANDROID_HOME)\r"
+              exp_continue
+            }
+            "versionName for the new App version" {
+              send "${{ steps.inputs.outputs.app_version }}\r"
+              exp_continue
+            }
             eof
           }
           EXPECT_EOF
