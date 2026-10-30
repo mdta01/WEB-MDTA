@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { isAdminAuthenticated } from '@/lib/auth'
 import { sendFcmToDevice, getMessaging } from '@/lib/firebase-admin'
 import { db } from '@/lib/db'
-import admin from 'firebase-admin'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -34,48 +33,7 @@ export async function POST(request: NextRequest) {
   // First, check if Firebase Admin is even configured
   const messaging = getMessaging()
   if (!messaging) {
-    // Try to get more info about why
-    const { getFirebaseAdmin } = await import('@/lib/firebase-admin')
-    const app = getFirebaseAdmin()
-    const apps = admin.getApps()
-
-    // Try to manually init to capture the EXACT error
-    let initError: string | null = null
-    let initErrorStack: string | null = null
-    try {
-      const projectId = process.env.FIREBASE_ADMIN_PROJECT_ID
-      const clientEmail = process.env.FIREBASE_ADMIN_CLIENT_EMAIL
-      const privateKeyRaw = process.env.FIREBASE_ADMIN_PRIVATE_KEY || ''
-
-      // Same processing as firebase-admin.ts
-      const privateKey = privateKeyRaw.replace(/\\n/g, '\n').trim()
-
-      // Try creating credential directly to isolate error
-      const cred = admin.credential.cert({
-        projectId,
-        clientEmail,
-        privateKey,
-      })
-      console.log('[debug] credential.cert succeeded, trying initializeApp...')
-
-      // Try init with a unique name so we can see if conflict
-      try {
-        const testApp = admin.initializeApp(
-          { credential: cred, projectId },
-          'test-' + Date.now()
-        )
-        console.log('[debug] initializeApp succeeded!', testApp.name)
-        // Clean up test app
-        await testApp.delete()
-      } catch (e) {
-        initError = e instanceof Error ? e.message : String(e)
-        initErrorStack = e instanceof Error ? e.stack : null
-      }
-    } catch (e) {
-      initError = e instanceof Error ? e.message : String(e)
-      initErrorStack = e instanceof Error ? e.stack : null
-    }
-
+    // Get debug info without re-importing firebase-admin directly (causes issues)
     return NextResponse.json({
       success: false,
       error: 'Firebase Admin SDK not configured (getMessaging returned null)',
@@ -93,12 +51,9 @@ export async function POST(request: NextRequest) {
         ) || null,
       },
       debug: {
-        appIsNull: app === null,
-        existingAppsCount: apps.length,
         nodeEnv: process.env.NODE_ENV,
         isVercel: !!process.env.VERCEL,
-        initError,
-        initErrorStack: initErrorStack?.substring(0, 1000),
+        hint: 'Check Vercel function logs for [Firebase Admin] Init FAILED message',
       },
     }, { status: 500 })
   }

@@ -1,4 +1,8 @@
-import admin from 'firebase-admin'
+// Use require() (CommonJS) instead of import to avoid Next.js Turbopack
+// tree-shaking issues that cause admin.credential to be undefined.
+// firebase-admin v14 exposes credential functions directly at module root.
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const admin = require('firebase-admin') as typeof import('firebase-admin')
 
 /**
  * Firebase Admin SDK - server-side initialization for FCM push notifications.
@@ -11,7 +15,7 @@ import admin from 'firebase-admin'
  * If env vars not set, returns null - callers should fall back to VAPID.
  */
 
-let adminApp: admin.app.App | null = null
+let adminApp: typeof import('firebase-admin').default.app.App | null = null
 
 /**
  * Get or initialize the Firebase Admin app.
@@ -24,7 +28,7 @@ let adminApp: admin.app.App | null = null
  * If already initialized successfully, returns cached app (fast path).
  * If env vars missing OR init fails, returns null (caller falls back to VAPID).
  */
-export function getFirebaseAdmin(): admin.app.App | null {
+export function getFirebaseAdmin() {
   // Fast path: already initialized successfully
   if (adminApp) return adminApp
 
@@ -51,7 +55,7 @@ export function getFirebaseAdmin(): admin.app.App | null {
     }
 
     // Reuse existing app if already initialized (HMR in dev, repeated calls in lambda)
-    const existingApps = admin.getApps()
+    const existingApps = (admin as typeof import('firebase-admin')).getApps()
     if (existingApps.length > 0) {
       adminApp = existingApps[0]
       console.info('[Firebase Admin] Reusing existing app for project:', projectId)
@@ -67,12 +71,15 @@ export function getFirebaseAdmin(): admin.app.App | null {
       )
     }
 
-    adminApp = admin.initializeApp({
-      credential: admin.credential.cert({
-        projectId,
-        clientEmail,
-        privateKey,
-      }),
+    // firebase-admin v14+ exposes `cert` directly (not admin.credential.cert)
+    const cred = (admin as typeof import('firebase-admin')).cert({
+      projectId,
+      clientEmail,
+      privateKey,
+    })
+
+    adminApp = (admin as typeof import('firebase-admin')).initializeApp({
+      credential: cred,
       projectId,
     })
 
@@ -91,7 +98,7 @@ export function getFirebaseAdmin(): admin.app.App | null {
   }
 }
 
-export function getMessaging(): admin.messaging.Messaging | null {
+export function getMessaging() {
   const app = getFirebaseAdmin()
   if (!app) return null
   try {
@@ -121,14 +128,8 @@ export interface FcmPayload {
  * - android (high priority, notification channel, click action)
  * - apns (iOS-specific: alert, sound, priority 10, push-type alert)
  * - data (custom data for onBackgroundMessage handler)
- *
- * This is the most reliable format that ensures delivery:
- * - High priority -> Android/iOS shows notification even in Doze mode
- * - apns-priority 10 -> iOS delivers immediately
- * - Urgency high -> browser wakes up to deliver even when tab closed
- * - click_action / link -> notification click opens URL
  */
-function buildMessage(token: string, payload: FcmPayload): admin.messaging.Message {
+function buildMessage(token: string, payload: FcmPayload) {
   const icon = payload.icon || '/images/logo-madin-warna.png'
   const badge = payload.badge || '/images/logo-madin-warna.png'
   const tag = payload.tag || 'mdta-update'
@@ -158,14 +159,12 @@ function buildMessage(token: string, payload: FcmPayload): admin.messaging.Messa
         },
       },
       headers: {
-        // Urgency: high -> browser wakes up to deliver even when tab closed
         Urgency: 'high',
-        // Topic: group notifications with same tag (replace vs stack)
         Topic: tag,
       },
     },
     android: {
-      priority: 'high', // critical for background delivery on Android
+      priority: 'high' as const,
       notification: {
         title: payload.title,
         body: payload.body,
@@ -177,7 +176,6 @@ function buildMessage(token: string, payload: FcmPayload): admin.messaging.Messa
         defaultSound: true,
         defaultVibrateTimings: true,
         visibility: 'public' as const,
-        // Click action for Android - opens app with URL
         clickAction: url,
       },
       data: {
@@ -188,34 +186,26 @@ function buildMessage(token: string, payload: FcmPayload): admin.messaging.Messa
     apns: {
       payload: {
         aps: {
-          // alert object -> iOS shows notification banner
           alert: {
             title: payload.title,
             body: payload.body,
           },
-          // sound -> iOS plays default notification sound
           sound: 'default',
-          // badge -> iOS app icon badge (set 0 to clear)
           badge: 0,
-          // thread-id -> group notifications (like tag)
           'thread-id': tag,
-          // mutable-content -> allows Notification Service Extension to modify
           mutableContent: 1,
         },
-        // Custom data accessible in notification extension
         url,
         ...(payload.data || {}),
       },
       headers: {
-        // apns-priority: 10 = high priority (immediate delivery)
         'apns-priority': '10',
-        // apns-push-type: alert = visible notification
         'apns-push-type': 'alert',
       },
     },
     data: {
       url,
-      title: payload.title, // duplicate in data for onBackgroundMessage fallback
+      title: payload.title,
       body: payload.body,
       tag,
       ...(payload.data || {}),
@@ -242,7 +232,6 @@ export async function sendFcmToDevice(token: string, payload: FcmPayload): Promi
     const errMsg = error instanceof Error ? error.message : String(error)
     const errCode = (error as { code?: string })?.code || ''
 
-    // Token invalid -> caller should remove from DB
     if (
       errMsg.includes('UNREGISTERED') ||
       errMsg.includes('invalid-registration-token') ||
@@ -271,7 +260,6 @@ export async function sendFcmMulticast(
     return { success: 0, failure: 0, invalidTokens: [] }
   }
 
-  // Process in parallel batches of 100 (FCM API limit per request)
   const BATCH_SIZE = 100
   let totalSuccess = 0
   let totalFailure = 0
@@ -280,7 +268,6 @@ export async function sendFcmMulticast(
   for (let i = 0; i < tokens.length; i += BATCH_SIZE) {
     const batch = tokens.slice(i, i + BATCH_SIZE)
 
-    // Send each token in parallel within the batch
     const results = await Promise.allSettled(
       batch.map((token) => messaging.send(buildMessage(token, payload)))
     )
@@ -293,7 +280,6 @@ export async function sendFcmMulticast(
         const errMsg = reason instanceof Error ? reason.message : String(reason)
         const errCode = (reason as { code?: string })?.code || ''
 
-        // Detect invalid token (unregistered, expired, malformed)
         if (
           errMsg.includes('UNREGISTERED') ||
           errMsg.includes('invalid-registration-token') ||
@@ -303,7 +289,6 @@ export async function sendFcmMulticast(
         ) {
           invalidTokens.push(batch[idx])
         } else {
-          // Other error (rate limit, server error, etc) - do not mark as invalid
           console.error(`[FCM] Send failed for token ${batch[idx].substring(0, 20)}...:`, errMsg)
         }
         totalFailure++
@@ -340,7 +325,6 @@ export async function broadcastFcm(payload: FcmPayload): Promise<number> {
       payload
     )
 
-    // Clean up invalid tokens (unsubscribed, app uninstalled, etc)
     if (result.invalidTokens.length > 0) {
       try {
         await db.fcmToken.deleteMany({
