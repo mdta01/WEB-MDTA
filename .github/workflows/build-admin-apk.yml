@@ -34,7 +34,7 @@ on:
 jobs:
   build-apk:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 25
     permissions:
       contents: write
 
@@ -158,6 +158,19 @@ jobs:
           # bubblewrap update uses inquirer.js which requires a TTY.
           # Piping stdin doesn't work — we need `expect` to simulate terminal.
           sudo apt-get install -y expect 2>/dev/null
+
+          # Fix twa-manifest.json: shortcuts need chosenIconUrl field
+          python3 -c "
+          import json
+          with open('twa-manifest.json') as f:
+            m = json.load(f)
+          icon_url = 'https://mdta-tawangsari.vercel.app/icons/admin/icon-192.png'
+          for s in m.get('shortcuts', []):
+            s['chosenIconUrl'] = {'iconUrl': icon_url, 'maskableIconUrl': icon_url}
+          with open('twa-manifest.json', 'w') as f:
+            json.dump(m, f, indent=2)
+          print('✅ Fixed shortcuts with chosenIconUrl')
+          "
 
           cat > /tmp/bw_update.exp << 'EXPECT_EOF'
           #!/usr/bin/expect -f
