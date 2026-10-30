@@ -1,0 +1,72 @@
+{
+  "name": "MDTA Admin Panel",
+  "short_name": "MDTA Admin",
+  "description": "Panel administrasi MDTA Miftahul Ulum 01 - kelola berita, pengumuman, dakwah, galeri, dan push notifikasi",
+  "start_url": "/admin",
+  "scope": "/admin",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#003527",
+  "theme_color": "#003527",
+  "categories": ["productivity", "business", "education"],
+  "lang": "id",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "/icons/admin/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/admin/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/admin/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/admin/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "Lihat statistik & traffic pengunjung",
+      "url": "/admin",
+      "icons": [{ "src": "/icons/admin/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Kelola Berita",
+      "short_name": "Berita",
+      "description": "Tambah/edit/hapus berita",
+      "url": "/admin#news",
+      "icons": [{ "src": "/icons/admin/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Push Notifikasi",
+      "short_name": "Push Notif",
+      "description": "Kirim push notifikasi ke subscriber",
+      "url": "/admin#push-notif",
+      "icons": [{ "src": "/icons/admin/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Pengaturan",
+      "short_name": "Settings",
+      "description": "Konfigurasi website",
+      "url": "/admin#settings",
+      "icons": [{ "src": "/icons/admin/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "screenshots": [],
+  "prefer_related_applications": false
+}
