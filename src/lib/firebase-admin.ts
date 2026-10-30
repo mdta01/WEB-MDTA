@@ -1,47 +1,57 @@
 import admin from 'firebase-admin'
 
 /**
- * Firebase Admin SDK — server-side initialization.
- *
- * Used for sending FCM push notifications from API routes.
- *
- * Init is lazy (only when first used) to avoid Vercel cold-start penalty.
+ * Firebase Admin SDK - server-side initialization for FCM push notifications.
  *
  * Required env vars:
- * — FIREBASE_ADMIN_PROJECT_ID
- * — FIREBASE_ADMIN_CLIENT_EMAIL
- * — FIREBASE_ADMIN_PRIVATE_KEY
+ * - FIREBASE_ADMIN_PROJECT_ID
+ * - FIREBASE_ADMIN_CLIENT_EMAIL
+ * - FIREBASE_ADMIN_PRIVATE_KEY
  *
- * If env vars not set, getAdminApp() returns null — callers should gracefully
- * fall back to VAPID web-push (existing system).
+ * If env vars not set, returns null - callers should fall back to VAPID.
  */
 
 let adminApp: admin.app.App | null = null
-let initAttempted = false
 
+/**
+ * Get or initialize the Firebase Admin app.
+ *
+ * IMPORTANT: We do NOT cache failure (no initAttempted flag).
+ * In Vercel serverless, env vars might not be loaded on the very first
+ * call (cold start race condition). Each call re-checks env vars and
+ * tries to init if not yet done successfully.
+ *
+ * If already initialized successfully, returns cached app (fast path).
+ * If env vars missing OR init fails, returns null (caller falls back to VAPID).
+ */
 export function getFirebaseAdmin(): admin.app.App | null {
-  if (initAttempted) return adminApp
-  initAttempted = true
+  // Fast path: already initialized successfully
+  if (adminApp) return adminApp
 
   const projectId = process.env.FIREBASE_ADMIN_PROJECT_ID
   const clientEmail = process.env.FIREBASE_ADMIN_CLIENT_EMAIL
   const privateKeyRaw = process.env.FIREBASE_ADMIN_PRIVATE_KEY
 
   if (!projectId || !clientEmail || !privateKeyRaw) {
-    console.warn(
-      '[Firebase Admin] Missing env vars. Set FIREBASE_ADMIN_PROJECT_ID, FIREBASE_ADMIN_CLIENT_EMAIL, FIREBASE_ADMIN_PRIVATE_KEY to enable FCM server-side push.'
-    )
+    if (process.env.NODE_ENV === 'production' && process.env.VERCEL) {
+      console.debug('[Firebase Admin] Env vars not yet loaded. Will retry on next call.')
+    }
     return null
   }
 
   try {
     // Handle different private key formats:
-    // — Vercel: keeps \n as literal characters → replace with real newlines
-    // — Local .env: may have actual newlines → use as-is
-    const privateKey = privateKeyRaw
-      .replace(/\\n/g, '\n')
-      .replace(/-----BEGIN PRIVATE KEY-----/, '-----BEGIN PRIVATE KEY-----')
-      .trim()
+    // - Vercel: keeps \n as literal characters, replace with real newlines
+    // - Local .env: may have actual newlines, use as-is
+    const privateKey = privateKeyRaw.replace(/\\n/g, '\n').trim()
+
+    // Reuse existing app if already initialized (HMR in dev, repeated calls in lambda)
+    const existingApps = admin.getApps()
+    if (existingApps.length > 0) {
+      adminApp = existingApps[0]
+      console.info('[Firebase Admin] Reusing existing app for project:', projectId)
+      return adminApp
+    }
 
     adminApp = admin.initializeApp({
       credential: admin.credential.cert({
@@ -56,6 +66,8 @@ export function getFirebaseAdmin(): admin.app.App | null {
     return adminApp
   } catch (error) {
     console.error('[Firebase Admin] Init failed:', error)
+    // Reset so next call retries (do not cache failure)
+    adminApp = null
     return null
   }
 }
@@ -85,16 +97,17 @@ export interface FcmPayload {
  * Build a complete FCM Message for a single device token.
  *
  * Includes:
- * — notification (auto-displayed by browser/OS)
- * — webpush (webpush-specific options: click_action, icon, badge, etc.)
- * — android (high priority, notification channel)
- * — apns (iOS-specific: content-available for background, sound)
- * — data (custom data for onBackgroundMessage handler)
+ * - notification (auto-displayed by browser/OS)
+ * - webpush (webpush-specific options: click_action, icon, badge, Urgency high)
+ * - android (high priority, notification channel, click action)
+ * - apns (iOS-specific: alert, sound, priority 10, push-type alert)
+ * - data (custom data for onBackgroundMessage handler)
  *
  * This is the most reliable format that ensures delivery:
- * — High priority → Android/iOS shows notification even in Doze
- * — content-available → iOS wakes app in background
- * — click_action → notification click opens URL
+ * - High priority -> Android/iOS shows notification even in Doze mode
+ * - apns-priority 10 -> iOS delivers immediately
+ * - Urgency high -> browser wakes up to deliver even when tab closed
+ * - click_action / link -> notification click opens URL
  */
 function buildMessage(token: string, payload: FcmPayload): admin.messaging.Message {
   const icon = payload.icon || '/images/logo-madin-warna.png'
@@ -119,8 +132,6 @@ function buildMessage(token: string, payload: FcmPayload): admin.messaging.Messa
         badge,
         tag,
         requireInteraction: false,
-        // Click action URL — older browsers need this for click to open URL
-        // (newer browsers use fcmOptions.link)
         actions: [],
         data: {
           url,
@@ -128,14 +139,14 @@ function buildMessage(token: string, payload: FcmPayload): admin.messaging.Messa
         },
       },
       headers: {
-        // Urgency: high → browser wakes up to deliver even when tab closed
+        // Urgency: high -> browser wakes up to deliver even when tab closed
         Urgency: 'high',
         // Topic: group notifications with same tag (replace vs stack)
         Topic: tag,
       },
     },
     android: {
-      priority: 'high', // ← critical for background delivery on Android
+      priority: 'high', // critical for background delivery on Android
       notification: {
         title: payload.title,
         body: payload.body,
@@ -147,7 +158,7 @@ function buildMessage(token: string, payload: FcmPayload): admin.messaging.Messa
         defaultSound: true,
         defaultVibrateTimings: true,
         visibility: 'public' as const,
-        // Click action for Android — opens app with URL
+        // Click action for Android - opens app with URL
         clickAction: url,
       },
       data: {
@@ -158,18 +169,18 @@ function buildMessage(token: string, payload: FcmPayload): admin.messaging.Messa
     apns: {
       payload: {
         aps: {
-          // alert object → iOS shows notification banner
+          // alert object -> iOS shows notification banner
           alert: {
             title: payload.title,
             body: payload.body,
           },
-          // sound → iOS plays default notification sound
+          // sound -> iOS plays default notification sound
           sound: 'default',
-          // badge → iOS app icon badge (number, but we set 0 to clear)
+          // badge -> iOS app icon badge (set 0 to clear)
           badge: 0,
-          // thread-id → group notifications (like tag)
+          // thread-id -> group notifications (like tag)
           'thread-id': tag,
-          // mutable-content → allows Notification Service Extension to modify
+          // mutable-content -> allows Notification Service Extension to modify
           mutableContent: 1,
         },
         // Custom data accessible in notification extension
@@ -212,7 +223,7 @@ export async function sendFcmToDevice(token: string, payload: FcmPayload): Promi
     const errMsg = error instanceof Error ? error.message : String(error)
     const errCode = (error as { code?: string })?.code || ''
 
-    // Token invalid → caller should remove from DB
+    // Token invalid -> caller should remove from DB
     if (
       errMsg.includes('UNREGISTERED') ||
       errMsg.includes('invalid-registration-token') ||
@@ -228,7 +239,6 @@ export async function sendFcmToDevice(token: string, payload: FcmPayload): Promi
 
 /**
  * Send FCM push notification to multiple device tokens.
- * Uses sendEach (not sendEachForMulticast — deprecated in firebase-admin v13+).
  * Sends per-token in parallel batches for maximum reliability & detailed error reporting.
  *
  * Returns: { success, failure, invalidTokens }
@@ -274,7 +284,7 @@ export async function sendFcmMulticast(
         ) {
           invalidTokens.push(batch[idx])
         } else {
-          // Other error (rate limit, server error, etc) — don't mark as invalid
+          // Other error (rate limit, server error, etc) - do not mark as invalid
           console.error(`[FCM] Send failed for token ${batch[idx].substring(0, 20)}...:`, errMsg)
         }
         totalFailure++
