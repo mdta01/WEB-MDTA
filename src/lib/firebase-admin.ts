@@ -43,7 +43,12 @@ export function getFirebaseAdmin(): admin.app.App | null {
     // Handle different private key formats:
     // - Vercel: keeps \n as literal characters, replace with real newlines
     // - Local .env: may have actual newlines, use as-is
-    const privateKey = privateKeyRaw.replace(/\\n/g, '\n').trim()
+    let privateKey = privateKeyRaw.replace(/\\n/g, '\n').trim()
+
+    // Some env var systems wrap the key in quotes — strip them
+    if (privateKey.startsWith('"') && privateKey.endsWith('"')) {
+      privateKey = privateKey.slice(1, -1).trim()
+    }
 
     // Reuse existing app if already initialized (HMR in dev, repeated calls in lambda)
     const existingApps = admin.getApps()
@@ -51,6 +56,15 @@ export function getFirebaseAdmin(): admin.app.App | null {
       adminApp = existingApps[0]
       console.info('[Firebase Admin] Reusing existing app for project:', projectId)
       return adminApp
+    }
+
+    // Detailed credential validation before initApp
+    if (!privateKey.includes('BEGIN PRIVATE KEY')) {
+      throw new Error(
+        `Private key format invalid. Expected "-----BEGIN PRIVATE KEY-----" header. ` +
+          `Got first 50 chars: "${privateKey.substring(0, 50)}". ` +
+          `Raw length: ${privateKeyRaw.length}, processed length: ${privateKey.length}`
+      )
     }
 
     adminApp = admin.initializeApp({
@@ -65,7 +79,12 @@ export function getFirebaseAdmin(): admin.app.App | null {
     console.info('[Firebase Admin] Initialized successfully for project:', projectId)
     return adminApp
   } catch (error) {
-    console.error('[Firebase Admin] Init failed:', error)
+    // Log the FULL error so we can see what went wrong
+    console.error('[Firebase Admin] Init FAILED:', error)
+    if (error instanceof Error) {
+      console.error('[Firebase Admin] Error message:', error.message)
+      console.error('[Firebase Admin] Error stack:', error.stack)
+    }
     // Reset so next call retries (do not cache failure)
     adminApp = null
     return null
