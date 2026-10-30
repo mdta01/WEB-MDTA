@@ -54,8 +54,8 @@ jobs:
       - name: 📱 Setup Android SDK
         uses: android-actions/setup-android@v3
         with:
-          api-level: 34
-          build-tools-version: "34.0.0"
+          packages: 'tools platform-tools platforms;android-34 build-tools;34.0.0'
+          accept-android-sdk-licenses: true
 
       - name: 🔧 Install Bubblewrap CLI
         run: npm install -g @bubblewrap/cli
