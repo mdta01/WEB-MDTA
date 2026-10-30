@@ -3,12 +3,11 @@
 // firebase-admin v14 exposes credential functions directly at module root.
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const admin = require('firebase-admin')
-// In firebase-admin v14+, messaging module must be explicitly required
-// to make app.messaging() available. Without this, app.messaging throws
-// "R.messaging is not a function" because the Messaging service is not
-// registered on the app instance.
+// In firebase-admin v14+, the Messaging service uses a functional API:
+//   getMessaging(app)  (instead of app.messaging())
+// This require registers the messaging service on the app instance.
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-require('firebase-admin/messaging')
+const { getMessaging: getMessagingFn } = require('firebase-admin/messaging')
 
 /**
  * Firebase Admin SDK - server-side initialization for FCM push notifications.
@@ -108,7 +107,9 @@ export function getMessaging() {
   const app = getFirebaseAdmin()
   if (!app) return null
   try {
-    return app.messaging()
+    // firebase-admin v14+ uses functional API: getMessaging(app)
+    // (NOT app.messaging() which is deprecated and returns undefined)
+    return getMessagingFn(app)
   } catch (error) {
     console.error('[Firebase Admin] getMessaging failed:', error)
     return null
