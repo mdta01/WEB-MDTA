@@ -12,11 +12,21 @@ import {
   dismissNotifPrompt,
   type NotifPermission,
 } from '@/lib/notification'
+import {
+  isFirebaseConfigured,
+  requestFcmToken,
+  onForegroundMessage,
+} from '@/lib/firebase-client'
 
 /**
  * Floating notification permission prompt.
  * Shows a small bell button in the bottom-right corner.
  * When clicked, asks browser for notification permission.
+ *
+ * If Firebase env vars are set: uses FCM (more reliable, supports iOS Safari,
+ * background delivery even when browser is closed).
+ * Falls back to VAPID web-push if Firebase not configured.
+ *
  * Once granted, hides itself and the polling hook takes over.
  */
 export function NotificationPermission() {
@@ -24,6 +34,9 @@ export function NotificationPermission() {
   const [dismissed, setDismissed] = useState(false)
   const [showPrompt, setShowPrompt] = useState(false)
   const [requesting, setRequesting] = useState(false)
+
+  // Detect which notification system is active
+  const fcmEnabled = isFirebaseConfigured()
 
   // Sync state on mount + when window refocuses (user may change permission in browser settings)
   useEffect(() => {
@@ -44,35 +57,86 @@ export function NotificationPermission() {
     return () => clearTimeout(timer)
   }, [permission, dismissed])
 
+  // Listen for foreground messages if FCM is enabled & permission granted
+  useEffect(() => {
+    if (permission !== 'granted' || !fcmEnabled) return
+
+    let unsub: (() => void) | null = null
+    onForegroundMessage((payload) => {
+      console.info('[FCM] Foreground message:', payload)
+      // Show in-app toast (since browser notification might be missed in foreground)
+      const title = payload.notification?.title || 'Update Baru'
+      const body = payload.notification?.body || ''
+      toast(title, {
+        description: body,
+        icon: <Bell className="h-4 w-4 text-[#cca72f]" />,
+        duration: 8000,
+      })
+    }).then((u) => {
+      unsub = u
+    })
+
+    return () => {
+      if (unsub) unsub()
+    }
+  }, [permission, fcmEnabled])
+
   const handleEnable = async () => {
     setRequesting(true)
+
+    // Step 1: Always request browser notification permission
     const result = await requestNotifPermission()
     setPermission(result)
-    setRequesting(false)
 
     if (result === 'granted') {
-      toast.success('Notifikasi diaktifkan!', {
-        description: 'Anda akan mendapat notifikasi saat admin memperbarui konten.',
-      })
-      // Subscribe to Web Push (background notifications via service worker)
-      setTimeout(() => {
-        import('@/lib/notification').then(({ showNotification, subscribeToPushNotifications }) => {
-          // Show test notification
-          showNotification({
-            title: 'Notifikasi Aktif',
-            body: 'Anda akan menerima update terbaru dari MDTA Miftahul Ulum 01.',
-            tag: 'mdta-test',
-          })
-          // Subscribe to push (enables background notifications)
-          subscribeToPushNotifications().then((ok) => {
-            if (ok) {
-              toast.success('Push notification aktif', {
-                description: 'Notifikasi akan tampil bahkan saat browser ditutup.',
-              })
-            }
-          })
+      // Step 2: Register for push notifications
+      // Try FCM first (if configured), fall back to VAPID web-push
+      if (fcmEnabled) {
+        toast.info('Mendaftarkan ke Firebase Cloud Messaging...', {
+          description: 'Notifikasi akan aktif bahkan saat browser ditutup.',
         })
-      }, 500)
+        const fcmToken = await requestFcmToken()
+
+        if (fcmToken) {
+          toast.success('Notifikasi diaktifkan via Firebase!', {
+            description: 'Anda akan mendapat notifikasi bahkan saat browser ditutup.',
+            duration: 5000,
+          })
+          // Show a test notification
+          import('@/lib/notification').then(({ showNotification }) => {
+            showNotification({
+              title: 'Notifikasi Aktif (Firebase)',
+              body: 'Anda akan menerima update terbaru dari MDTA Miftahul Ulum 01.',
+              tag: 'mdta-test',
+            })
+          })
+        } else {
+          // FCM failed — fall back to VAPID
+          toast.info('Fallback ke Web Push (VAPID)', {
+            description: 'FCM tidak tersedia di browser ini. Mencoba metode alternatif.',
+          })
+          import('@/lib/notification').then(({ subscribeToPushNotifications }) => {
+            subscribeToPushNotifications().then((ok) => {
+              if (ok) {
+                toast.success('Notifikasi diaktifkan via Web Push!')
+              } else {
+                toast.warning('Notifikasi aktif tapi push gagal', {
+                  description: 'Anda tetap akan mendapat notifikasi saat website dibuka.',
+                })
+              }
+            })
+          })
+        }
+      } else {
+        // Firebase not configured — use VAPID only
+        toast.success('Notifikasi diaktifkan!', {
+          description: 'Anda akan mendapat notifikasi saat admin memperbarui konten.',
+        })
+        import('@/lib/notification').then(({ subscribeToPushNotifications }) => {
+          subscribeToPushNotifications()
+        })
+      }
+
       setShowPrompt(false)
     } else if (result === 'denied') {
       toast.error('Notifikasi diblokir', {
@@ -80,6 +144,8 @@ export function NotificationPermission() {
       })
       setShowPrompt(false)
     }
+
+    setRequesting(false)
   }
 
   const handleDismiss = () => {
@@ -110,6 +176,13 @@ export function NotificationPermission() {
         <Bell className="h-5 w-5" />
         {/* Pulse ring */}
         <span className="absolute inset-0 rounded-full bg-[#064e3b]/80 animate-ping opacity-30" />
+        {/* FCM badge (subtle indicator that Firebase is active) */}
+        {fcmEnabled && (
+          <span
+            className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-[#cca72f] border border-white"
+            title="Firebase Cloud Messaging aktif"
+          />
+        )}
       </motion.button>
 
       {/* Permission prompt card — uses .fab-bell-prompt for coordinated positioning
@@ -156,6 +229,14 @@ export function NotificationPermission() {
                   <CheckCircle2 className="h-4 w-4 text-[#064e3b] mt-0.5 shrink-0" />
                   <span>Prestasi santri &amp; galeri foto</span>
                 </li>
+                {fcmEnabled && (
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-[#cca72f] mt-0.5 shrink-0" />
+                    <span className="text-[#895033]">
+                      <strong>Firebase Cloud Messaging aktif</strong> — notifikasi tetap masuk bahkan saat browser ditutup
+                    </span>
+                  </li>
+                )}
               </ul>
 
               {permission === 'denied' && (

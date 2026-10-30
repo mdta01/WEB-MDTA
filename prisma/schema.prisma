@@ -300,6 +300,28 @@ model PushSubscription {
   createdAt DateTime @default(now())
 }
 
+/// FCM device tokens — one per browser/device that granted notification permission.
+/// Used to send push notifications via Firebase Cloud Messaging (more reliable
+/// than VAPID web-push, especially on iOS Safari 16.4+ and Android).
+/// Multiple tokens per user are common (phone + laptop + tablet).
+model FcmToken {
+  id          String   @id @default(cuid())
+  /// Unique FCM registration token (long string from Firebase SDK)
+  token       String   @unique @db.VarChar(500)
+  /// Optional: link to admin user (for admin-specific notifications)
+  adminId     String?  @db.VarChar(50)
+  /// User agent (for device identification, e.g. "Chrome on Android")
+  userAgent   String?  @db.VarChar(500)
+  /// Platform (e.g. "Win32", "iPhone", "Linux x86_64")
+  platform    String?  @db.VarChar(100)
+  createdAt   DateTime @default(now())
+  /// Updated each time the token is refreshed (FCM tokens can rotate)
+  lastSeen    DateTime @default(now())
+
+  @@index([adminId])
+  @@index([lastSeen])
+}
+
 model Suggestion {
   id        String   @id @default(cuid())
   name      String   @db.VarChar(100)
