@@ -137,18 +137,9 @@ jobs:
           "
           cat twa-manifest.json | head -20
 
-      - name: 🏗️ Build APK (debug)
+      - name: 🏗️ Generate signing keystore
         run: |
-          # Build debug APK first (faster, no signing required)
-          bubblewrap build \
-            --no-interactive \
-            --skip-pwa-check || \
-          echo "Build with PWA check skip failed, trying without skip..."
-
-      - name: 🏗️ Build signed release APK
-        if: success() || failure()
-        run: |
-          # Generate signing keystore if not exists
+          # Generate signing keystore BEFORE bubblewrap update (so it's detected)
           if [ ! -f android.keystore ]; then
             keytool -genkeypair \
               -keystore android.keystore \
@@ -158,16 +149,43 @@ jobs:
               -keypass mdta-admin-2025 \
               -dname "CN=MDTA Miftahul Ulum 01, OU=Admin, O=MDTA, L=Tangerang, ST=Banten, C=ID"
             echo "✅ Generated signing keystore"
+          else
+            echo "✅ Keystore already exists"
           fi
 
+      - name: 📱 Generate Android project (bubblewrap update)
+        run: |
+          # bubblewrap update generates the Android project (gradle, java files)
+          # from twa-manifest.json. This step is REQUIRED before build.
+          # Pipe "n" to skip JDK install prompt (we already have Java 17).
+          echo "n" | bubblewrap update --no-interactive || {
+            echo "❌ bubblewrap update failed"
+            exit 1
+          }
+
+          echo "--- Android project files ---"
+          ls -la
+          echo ""
+          echo "--- app/src ---"
+          find app/src -type f 2>/dev/null | head -20 || echo "no app/src"
+
+      - name: 🔨 Build signed release APK
+        run: |
+          # Build the APK using gradle directly (more reliable than bubblewrap build)
+          # bubblewrap build wraps gradle but has interactive prompts we can't answer
+          echo "Building APK via Gradle..."
+
+          # Make gradlew executable
+          chmod +x ./gradlew 2>/dev/null || true
+
           # Build release APK
-          bubblewrap build \
-            --signing-key-path "android.keystore" \
-            --signing-key-alias "mdta-admin" \
-            --signing-key-password "mdta-admin-2025" \
-            --signing-store-password "mdta-admin-2025" \
-            --no-interactive || \
-          echo "Release build failed, falling back to debug APK"
+          ./gradlew assembleRelease --no-daemon -x lint --stacktrace || {
+            echo "❌ Release build failed, trying debug build..."
+            ./gradlew assembleDebug --no-daemon -x lint || {
+              echo "❌ Debug build also failed"
+              exit 1
+            }
+          }
 
       - name: 📋 List build output
         run: |
@@ -175,7 +193,11 @@ jobs:
           find . -name "*.apk" -type f 2>/dev/null | while read apk; do
             echo "Found: $apk"
             ls -la "$apk"
+            du -h "$apk"
           done
+          echo ""
+          echo "--- All build outputs ---"
+          find . -path "*/build/outputs/apk/*" -type f 2>/dev/null | head -10
 
       - name: 🔐 Compute SHA256 fingerprint
         id: sha
