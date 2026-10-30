@@ -51,11 +51,16 @@ jobs:
         with:
           node-version: "20"
 
-      - name: 📱 Setup Android SDK
-        uses: android-actions/setup-android@v3
-        with:
-          packages: 'tools platform-tools platforms;android-34 build-tools;34.0.0'
-          accept-android-sdk-licenses: true
+      - name: 📱 Verify Android SDK (pre-installed on ubuntu-latest)
+        run: |
+          echo "ANDROID_HOME: $ANDROID_HOME"
+          echo "ANDROID_SDK_ROOT: $ANDROID_SDK_ROOT"
+          ls -la $ANDROID_HOME/cmdline-tools/ 2>/dev/null || echo "No cmdline-tools"
+          ls -la $ANDROID_HOME/platforms/ 2>/dev/null || echo "No platforms"
+          ls -la $ANDROID_HOME/build-tools/ 2>/dev/null || echo "No build-tools"
+          # Accept licenses if not already accepted
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null 2>&1 || true
+          echo "✅ Android SDK ready"
 
       - name: 🔧 Install Bubblewrap CLI
         run: npm install -g @bubblewrap/cli
