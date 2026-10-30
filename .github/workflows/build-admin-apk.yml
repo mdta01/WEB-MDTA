@@ -157,14 +157,28 @@ jobs:
         run: |
           # bubblewrap update generates the Android project (gradle, java files)
           # from twa-manifest.json. This step is REQUIRED before build.
-          # Pipe "n" to skip JDK install prompt (we already have Java 17).
-          echo "n" | bubblewrap update --no-interactive || {
-            echo "❌ bubblewrap update failed"
-            exit 1
+          #
+          # Bubblewrap asks 2 interactive prompts even with --no-interactive:
+          # 1. "Do you want Bubblewrap to install the JDK? (Y/n)" → answer "n"
+          # 2. "Path to your existing JDK 17:" → answer $JAVA_HOME
+          #
+          # We pipe both answers via printf.
+          printf "n\n$JAVA_HOME\n" | bubblewrap update --no-interactive || {
+            echo "❌ bubblewrap update failed with piped input"
+            echo "Trying with JDK_PATH env var..."
+            export BUBBLEWRAP_JDK_PATH="$JAVA_HOME"
+            bubblewrap update --no-interactive || {
+              echo "❌ Still failed. Dumping twa-manifest.json for debug:"
+              cat twa-manifest.json
+              exit 1
+            }
           }
 
           echo "--- Android project files ---"
           ls -la
+          echo ""
+          echo "--- gradlew exists? ---"
+          ls -la gradlew 2>/dev/null || echo "no gradlew"
           echo ""
           echo "--- app/src ---"
           find app/src -type f 2>/dev/null | head -20 || echo "no app/src"
