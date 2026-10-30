@@ -81,45 +81,60 @@ jobs:
             echo "app_version=${{ github.event.inputs.app_version }}" >> $GITHUB_OUTPUT
           fi
 
-      - name: 🏗️ Init TWA project
+      - name: 🏗️ Create TWA manifest manually
         run: |
-          # Bubblewrap init from web manifest
-          # --manifest points to deployed PWA manifest
-          bubblewrap init \
-            --manifest "${{ steps.inputs.outputs.site_url }}/admin-manifest.webmanifest" \
-            --name "${{ steps.inputs.outputs.app_name }}" \
-            --package "id.sch.mdta.miftahululum01.admin" \
-            --icon "${{ steps.inputs.outputs.site_url }}/icons/admin/icon-512.png" \
-            --maskable-icon "${{ steps.inputs.outputs.site_url }}/icons/admin/icon-512-maskable.png" \
-            --splash-color "#003527" \
-            --theme-color "#003527" \
-            --orientation "portrait" \
-            --status-bar-color "#003527" \
-            --navigation-color "#003527" \
-            --signing-key-path "android.keystore" \
-            --signing-key-alias "mdta-admin" \
-            --no-interactive || \
-          # Fallback: init with prompts disabled using defaults
-          bubblewrap init \
-            --manifest "${{ steps.inputs.outputs.site_url }}/admin-manifest.webmanifest" \
-            --no-interactive
+          # Create twa-manifest.json manually (avoids bubblewrap init interactive issues)
+          cat > twa-manifest.json << 'EOFMANIFEST'
+          {
+            "packageId": "id.sch.mdta.miftahululum01.admin",
+            "host": "mdta-tawangsari.vercel.app",
+            "name": "MDTA Admin",
+            "themeColor": "#003527",
+            "navigationColor": "#003527",
+            "navigationColorDark": "#003527",
+            "navigationDividerColor": "#003527",
+            "navigationDividerColorDark": "#003527",
+            "backgroundColor": "#003527",
+            "enableNotifications": true,
+            "startUrl": "/admin",
+            "iconUrl": "https://mdta-tawangsari.vercel.app/icons/admin/icon-512.png",
+            "maskableIconUrl": "https://mdta-tawangsari.vercel.app/icons/admin/icon-512-maskable.png",
+            "splashScreenFadeOutDuration": 300,
+            "signingKey": {
+              "path": "android.keystore",
+              "alias": "mdta-admin"
+            },
+            "appVersionName": "${{ steps.inputs.outputs.app_version }}",
+            "appVersionCode": ${{ steps.inputs.outputs.app_version_code }},
+            "shortcuts": [
+              {"name": "Dashboard", "shortName": "Dashboard", "url": "/admin"},
+              {"name": "Kelola Berita", "shortName": "Berita", "url": "/admin#news"},
+              {"name": "Push Notifikasi", "shortName": "Push Notif", "url": "/admin#push-notif"},
+              {"name": "Pengaturan", "shortName": "Settings", "url": "/admin#settings"}
+            ],
+            "generatorApp": "bubblewrap-cli",
+            "webManifestUrl": "https://mdta-tawangsari.vercel.app/admin-manifest.webmanifest",
+            "fallbackType": "customtabs",
+            "features": {
+              "locationDelegation": {"enabled": false},
+              "playBilling": {"enabled": false}
+            },
+            "alphaDependencies": {"enabled": false},
+            "enableSiteSettingsShortcut": false,
+            "isChromeOSOnly": false,
+            "isMetaQuest": false,
+            "fullScopeUrl": "https://mdta-tawangsari.vercel.app/admin/",
+            "minLinksQuality": 1
+          }
+          EOFMANIFEST
 
-      - name: 🔍 Verify project structure
-        run: |
-          echo "--- TWA project files ---"
-          ls -la
-          echo ""
-          echo "--- twa-manifest.json ---"
-          cat twa-manifest.json 2>/dev/null | head -50 || echo "no twa-manifest.json"
+          # Fix version code (extract numbers from version)
+          VERSION_CODE=$(echo "${{ steps.inputs.outputs.app_version }}" | tr -cd '[:digit:]')
+          if [ -z "$VERSION_CODE" ] || [ "$VERSION_CODE" -lt 1 ]; then VERSION_CODE=1; fi
+          sed -i "s/\${{ steps.inputs.outputs.app_version_code }}/$VERSION_CODE/" twa-manifest.json
 
-      - name: 🔨 Update app version
-        run: |
-          # Update version in twa-manifest.json
-          if [ -f twa-manifest.json ]; then
-            jq --arg v "${{ steps.inputs.outputs.app_version }}" '.versionName = $v | .versionCode = ($v | gsub("[^0-9]"; "") | tonumber)' twa-manifest.json > tmp.json && mv tmp.json twa-manifest.json
-            echo "Updated version to ${{ steps.inputs.outputs.app_version }}"
-            cat twa-manifest.json
-          fi
+          echo "✅ Created twa-manifest.json:"
+          cat twa-manifest.json | head -20
 
       - name: 🏗️ Build APK (debug)
         run: |
