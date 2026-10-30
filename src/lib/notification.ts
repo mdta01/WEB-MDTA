@@ -78,25 +78,38 @@ export function showNotification(payload: NotifPayload): boolean {
 /**
  * Register service worker and subscribe to push notifications.
  * Called after user grants notification permission.
+ *
+ * Uses /firebase-messaging-sw.js (unified SW that handles BOTH Firebase
+ * messaging AND generic VAPID push). This avoids the previous conflict
+ * where /sw.js (VAPID) blocked Firebase SDK from registering its SW.
+ *
+ * Now both FCM and VAPID subscribers use the same SW file.
+ *
+ * VAPID key: prefer Firebase VAPID key (so FCM tokens work for this device too).
+ * Fall back to legacy VAPID_PUBLIC_KEY env if Firebase not configured.
  */
 export async function subscribeToPushNotifications(): Promise<boolean> {
   if (typeof window === 'undefined') return false
   if (!('serviceWorker' in navigator) || !('PushManager' in window)) return false
 
   try {
-    // Register service worker
-    const registration = await navigator.serviceWorker.register('/sw.js')
+    // Register unified SW (Firebase compat). updateViaCache ensures browser
+    // fetches fresh SW on each load (so updates take effect immediately).
+    const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js', {
+      scope: '/',
+      updateViaCache: 'none',
+    })
+    // Wait until SW is active
     await navigator.serviceWorker.ready
 
     // Check if already subscribed
     let subscription = await registration.pushManager.getSubscription()
     if (subscription) {
-      // Check if subscription has expired (browser may rotate keys)
+      // Check if subscription has expired
       const isExpired =
         subscription.expirationTime !== null &&
         subscription.expirationTime < Date.now()
       if (isExpired) {
-        // Unsubscribe expired subscription and re-subscribe below
         await subscription.unsubscribe()
         subscription = null
       } else {
@@ -106,16 +119,36 @@ export async function subscribeToPushNotifications(): Promise<boolean> {
       }
     }
 
-    // Get VAPID public key from server
-    const vapidResponse = await fetch('/api/notifications/vapid-public-key')
-    if (!vapidResponse.ok) return false
-    const { publicKey } = await vapidResponse.json()
-    if (!publicKey) return false
+    // Determine which VAPID key to use:
+    // — Prefer Firebase VAPID key (NEXT_PUBLIC_FIREBASE_VAPID_KEY) so that
+    //   this device can receive both FCM and VAPID pushes.
+    // — Fall back to legacy VAPID_PUBLIC_KEY (older env var) if Firebase not set.
+    const firebaseVapidKey = process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY
+    const legacyVapidKeyEndpoint = '/api/notifications/vapid-public-key'
+
+    let vapidKey: string | null = null
+    if (firebaseVapidKey) {
+      vapidKey = firebaseVapidKey
+    } else {
+      // Fetch legacy VAPID key from API
+      try {
+        const res = await fetch(legacyVapidKeyEndpoint)
+        if (res.ok) {
+          const data = await res.json()
+          vapidKey = data.publicKey
+        }
+      } catch {}
+    }
+
+    if (!vapidKey) {
+      console.warn('[Push] No VAPID key available')
+      return false
+    }
 
     // Convert VAPID key to Uint8Array
-    const convertedKey = urlBase64ToUint8Array(publicKey)
+    const convertedKey = urlBase64ToUint8Array(vapidKey)
 
-    // Subscribe
+    // Subscribe to push (using Firebase VAPID key if available)
     subscription = await registration.pushManager.subscribe({
       userVisibleOnly: true,
       applicationServerKey: convertedKey,
