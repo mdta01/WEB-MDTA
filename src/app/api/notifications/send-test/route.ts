@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { isAdminAuthenticated } from '@/lib/auth'
 import { sendFcmToDevice, getMessaging } from '@/lib/firebase-admin'
 import { db } from '@/lib/db'
-import * as admin from 'firebase-admin'
+import admin from 'firebase-admin'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
