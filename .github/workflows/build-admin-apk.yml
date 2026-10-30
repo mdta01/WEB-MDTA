@@ -153,25 +153,33 @@ jobs:
             echo "✅ Keystore already exists"
           fi
 
-      - name: 📱 Generate Android project (bubblewrap update)
+      - name: 📱 Generate Android project (bubblewrap update via expect)
         run: |
-          # bubblewrap update generates the Android project (gradle, java files)
-          # from twa-manifest.json. This step is REQUIRED before build.
-          #
-          # Bubblewrap asks 2 interactive prompts even with --no-interactive:
-          # 1. "Do you want Bubblewrap to install the JDK? (Y/n)" → answer "n"
-          # 2. "Path to your existing JDK 17:" → answer $JAVA_HOME
-          #
-          # We pipe both answers via printf.
-          printf "n\n$JAVA_HOME\n" | bubblewrap update --no-interactive || {
-            echo "❌ bubblewrap update failed with piped input"
-            echo "Trying with JDK_PATH env var..."
-            export BUBBLEWRAP_JDK_PATH="$JAVA_HOME"
-            bubblewrap update --no-interactive || {
-              echo "❌ Still failed. Dumping twa-manifest.json for debug:"
-              cat twa-manifest.json
-              exit 1
+          # bubblewrap update uses inquirer.js which requires a TTY.
+          # Piping stdin doesn't work — we need `expect` to simulate terminal.
+          sudo apt-get install -y expect 2>/dev/null
+
+          cat > /tmp/bw_update.exp << 'EXPECT_EOF'
+          #!/usr/bin/expect -f
+          set timeout 600
+          spawn bubblewrap update --no-interactive
+          expect {
+            "Do you want Bubblewrap to install the JDK" {
+              send "n\r"
+              exp_continue
             }
+            "Path to your existing JDK 17" {
+              send "$env(JAVA_HOME)\r"
+              exp_continue
+            }
+            eof
+          }
+          EXPECT_EOF
+
+          chmod +x /tmp/bw_update.exp
+          /tmp/bw_update.exp || {
+            echo "❌ bubblewrap update failed"
+            exit 1
           }
 
           echo "--- Android project files ---"
