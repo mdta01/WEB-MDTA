@@ -178,7 +178,9 @@ jobs:
           spawn bubblewrap update --no-interactive
           expect {
             "Do you want Bubblewrap to install the JDK" {
-              send "n\r"
+              # Answer "Y" to let bubblewrap install JDK itself.
+              # This avoids subsequent "Path to JDK" and "Path to Android SDK" prompts.
+              send "Y\r"
               exp_continue
             }
             "Path to your existing JDK 17" {
@@ -191,6 +193,9 @@ jobs:
             }
             "versionName for the new App version" {
               send "${{ steps.inputs.outputs.app_version }}\r"
+              exp_continue
+            }
+            "Downloading JDK" {
               exp_continue
             }
             eof
