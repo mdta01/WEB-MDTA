@@ -2,22 +2,17 @@ import { broadcastFcm } from '@/lib/firebase-admin'
 import { broadcastPushNotification } from '@/lib/webpush'
 
 /**
- * Reusable broadcast helper — sends push notification via both FCM and VAPID.
+ * Reusable broadcast helper — sends push notification via BOTH FCM and VAPID
+ * in parallel. This ensures maximum reach:
+ * — FCM: faster, more reliable, supports iOS Safari 16.4+, background delivery
+ * — VAPID: fallback for older browsers / users who haven't migrated yet
  *
- * Why this helper exists:
- * — Centralizes the "FCM first, VAPID fallback" logic so all admin CRUD routes
- *   get the same reliable delivery without duplicating code.
- * — Auto-truncates title/body to respect notification display limits.
- * — Never throws (push failure should NOT break the CRUD operation).
+ * Why both? Some users may have VAPID subscription (legacy) without FCM token.
+ * Sending to both ensures they all receive the notification.
+ * The SW's deduplication logic prevents showing 2 notifications on devices
+ * that somehow have both.
  *
- * Usage:
- *   import { notifySubscribers } from '@/lib/notification-broadcast'
- *   await notifySubscribers({
- *     title: '📰 Berita Baru',
- *     body: news.title,
- *     url: '/?page=berita',
- *     tag: `news-${news.id}`,
- *   })
+ * Never throws — push failure is logged but doesn't break the caller (CRUD op).
  */
 
 export interface NotifyPayload {
@@ -29,37 +24,38 @@ export interface NotifyPayload {
 }
 
 /**
- * Broadcast push notification to all subscribers (FCM + VAPID).
- * Returns combined stats. Never throws — push failure is logged but doesn't break caller.
+ * Broadcast push notification to ALL subscribers (FCM + VAPID) in parallel.
+ * Returns combined stats. Never throws.
  */
 export async function notifySubscribers(payload: NotifyPayload): Promise<{
   fcmSent: number
   vapidSent: number
   total: number
 }> {
-  // Truncate to notification display limits (FCM/VAPID have ~150 char title, ~200 body)
+  // Truncate to notification display limits
   const title = (payload.title || '').substring(0, 150)
   const body = (payload.body || '').substring(0, 200)
   const url = payload.url || '/'
   const tag = payload.tag || 'mdta-update'
   const icon = payload.icon || '/images/logo-madin-warna.png'
 
-  let fcmSent = 0
-  let vapidSent = 0
+  // Run FCM + VAPID broadcasts in PARALLEL for max speed
+  const [fcmResult, vapidResult] = await Promise.allSettled([
+    broadcastFcm({ title, body, url, tag, icon }),
+    broadcastPushNotification({ title, body, url, tag, icon }),
+  ])
 
-  // Try FCM first (more reliable, supports iOS Safari, background delivery)
-  try {
-    fcmSent = await broadcastFcm({ title, body, url, tag, icon })
-  } catch (error) {
-    console.error('[notifySubscribers] FCM broadcast failed:', error)
+  const fcmSent = fcmResult.status === 'fulfilled' ? fcmResult.value : 0
+  const vapidSent = vapidResult.status === 'fulfilled' ? vapidResult.value : 0
+
+  if (fcmResult.status === 'rejected') {
+    console.error('[notifySubscribers] FCM broadcast rejected:', fcmResult.reason)
+  }
+  if (vapidResult.status === 'rejected') {
+    console.error('[notifySubscribers] VAPID broadcast rejected:', vapidResult.reason)
   }
 
-  // Also send via VAPID web-push as fallback (covers older browsers)
-  try {
-    vapidSent = await broadcastPushNotification({ title, body, url, tag, icon })
-  } catch (error) {
-    console.error('[notifySubscribers] VAPID broadcast failed:', error)
-  }
+  console.info(`[notifySubscribers] Sent: FCM=${fcmSent}, VAPID=${vapidSent}, total=${fcmSent + vapidSent}`)
 
   return {
     fcmSent,
@@ -69,7 +65,6 @@ export async function notifySubscribers(payload: NotifyPayload): Promise<{
 }
 
 // ===== Convenience helpers for common entity types =====
-// These produce properly formatted payloads with emoji prefixes and truncation.
 
 /** Notify on news create/update (only if isPublished=true) */
 export async function notifyNewsUpdate(
@@ -153,3 +148,4 @@ export async function notifyGalleryUpdate(
     tag: `mdta-gallery-${gallery.id}`,
   })
 }
+

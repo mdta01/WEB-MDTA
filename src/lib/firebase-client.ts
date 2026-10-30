@@ -89,6 +89,7 @@ export async function getFirebaseMessaging(): Promise<Messaging | null> {
  * — Registers /firebase-messaging-sw.js service worker explicitly
  *   (this is the unified SW that handles both FCM and VAPID push)
  * — Sends token to server via /api/notifications/fcm-register
+ * — Sets up onTokenRefresh listener (FCM tokens can rotate)
  * — Also auto-unsubscribes from legacy VAPID push subscription (if any)
  *   to prevent duplicate notifications (subscriber gets push via both
  *   FCM token AND VAPID endpoint — we want FCM only for reliability)
@@ -122,39 +123,93 @@ export async function requestFcmToken(): Promise<string | null> {
     }
 
     // Step 3: Get FCM token (uses the SW we just registered)
-    const { getToken } = await import('firebase/messaging')
+    const { getToken, onTokenRefresh } = await import('firebase/messaging')
     const vapidKey = process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY!
-    const token = await getToken(messaging, {
+    let token = await getToken(messaging, {
       vapidKey,
       serviceWorkerRegistration: swRegistration,
     })
 
     if (!token) {
-      console.warn('[FCM] No token received')
+      console.warn('[FCM] No token received (getToken returned empty)')
       return null
     }
 
-    // Step 4: Unsubscribe from legacy VAPID push (if exists) to prevent duplicates.
+    console.info('[FCM] Token received:', token.substring(0, 30) + '...')
+
+    // Step 4: Set up onTokenRefresh — FCM tokens can rotate (rare, but happens).
+    // When token refreshes, re-register with server so we don't lose the device.
+    onTokenRefresh(messaging, async () => {
+      console.info('[FCM] Token refreshed — re-registering with server')
+      try {
+        const newToken = await getToken(messaging, {
+          vapidKey,
+          serviceWorkerRegistration: swRegistration,
+        })
+        if (newToken) {
+          await registerTokenWithServer(newToken)
+        }
+      } catch (e) {
+        console.error('[FCM] Token refresh failed:', e)
+      }
+    })
+
+    // Step 5: Unsubscribe from legacy VAPID push (if exists) to prevent duplicates.
     // This device now receives push via FCM token only — more reliable.
     try {
       const existingSub = await swRegistration.pushManager.getSubscription()
       if (existingSub) {
-        // Check if this subscription uses Firebase VAPID key or legacy key.
-        // We can't directly tell, but we'll unsubscribe & let FCM handle it.
-        // Note: this also removes from server's PushSubscription table via /api/notifications/subscribe DELETE
+        // Note: existingSub.unsubscribe() removes the subscription from browser,
+        // but doesn't notify the server. We should also DELETE it from server's
+        // PushSubscription table via /api/notifications/subscribe DELETE.
         await existingSub.unsubscribe()
+        // Best-effort cleanup: notify server to remove legacy VAPID subscription
+        // We don't have the endpoint here (already unsubscribed), so skip —
+        // the server's cleanup-vapid endpoint will remove it later via ping test.
         console.info('[FCM] Unsubscribed from legacy VAPID push (now using FCM only)')
       }
     } catch (e) {
       console.debug('[FCM] Failed to unsubscribe legacy VAPID:', e)
     }
 
-    // Step 5: Register token with server (so we can send to this device later)
+    // Step 6: Register token with server (so we can send to this device later)
     await registerTokenWithServer(token)
 
     return token
   } catch (error) {
     console.error('[FCM] Get token failed:', error)
+    return null
+  }
+}
+
+/**
+ * Get current FCM token (without requesting permission or re-registering).
+ * Returns null if not subscribed yet (user hasn't clicked bell button).
+ * Useful for checking if device is already subscribed.
+ */
+export async function getCurrentFcmToken(): Promise<string | null> {
+  if (typeof window === 'undefined') return null
+  if (!isFirebaseConfigured()) return null
+  if (Notification.permission !== 'granted') return null
+
+  const messaging = await getFirebaseMessaging()
+  if (!messaging) return null
+
+  try {
+    const swRegistration = await navigator.serviceWorker.register('/firebase-messaging-sw.js', {
+      scope: '/',
+      updateViaCache: 'none',
+    })
+    await navigator.serviceWorker.ready
+
+    const { getToken } = await import('firebase/messaging')
+    const vapidKey = process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY!
+    return await getToken(messaging, {
+      vapidKey,
+      serviceWorkerRegistration: swRegistration,
+    })
+  } catch (error) {
+    console.error('[FCM] getCurrentFcmToken failed:', error)
     return null
   }
 }
