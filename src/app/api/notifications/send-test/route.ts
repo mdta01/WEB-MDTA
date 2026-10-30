@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { isAdminAuthenticated } from '@/lib/auth'
 import { sendFcmToDevice, getMessaging } from '@/lib/firebase-admin'
 import { db } from '@/lib/db'
+import * as admin from 'firebase-admin'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -36,8 +37,7 @@ export async function POST(request: NextRequest) {
     // Try to get more info about why
     const { getFirebaseAdmin } = await import('@/lib/firebase-admin')
     const app = getFirebaseAdmin()
-    const fa = await import('firebase-admin')
-    const apps = fa.getApps()
+    const apps = admin.getApps()
 
     // Try to manually init to capture the EXACT error
     let initError: string | null = null
@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
       const privateKey = privateKeyRaw.replace(/\\n/g, '\n').trim()
 
       // Try creating credential directly to isolate error
-      const cred = fa.credential.cert({
+      const cred = admin.credential.cert({
         projectId,
         clientEmail,
         privateKey,
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
 
       // Try init with a unique name so we can see if conflict
       try {
-        const testApp = fa.initializeApp(
+        const testApp = admin.initializeApp(
           { credential: cred, projectId },
           'test-' + Date.now()
         )
