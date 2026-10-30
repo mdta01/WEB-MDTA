@@ -2,7 +2,13 @@
 // tree-shaking issues that cause admin.credential to be undefined.
 // firebase-admin v14 exposes credential functions directly at module root.
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const admin = require('firebase-admin') as typeof import('firebase-admin')
+const admin = require('firebase-admin')
+// In firebase-admin v14+, messaging module must be explicitly required
+// to make app.messaging() available. Without this, app.messaging throws
+// "R.messaging is not a function" because the Messaging service is not
+// registered on the app instance.
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+require('firebase-admin/messaging')
 
 /**
  * Firebase Admin SDK - server-side initialization for FCM push notifications.
