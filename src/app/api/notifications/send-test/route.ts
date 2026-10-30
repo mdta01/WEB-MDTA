@@ -36,7 +36,45 @@ export async function POST(request: NextRequest) {
     // Try to get more info about why
     const { getFirebaseAdmin } = await import('@/lib/firebase-admin')
     const app = getFirebaseAdmin()
-    const apps = (await import('firebase-admin')).getApps()
+    const fa = await import('firebase-admin')
+    const apps = fa.getApps()
+
+    // Try to manually init to capture the EXACT error
+    let initError: string | null = null
+    let initErrorStack: string | null = null
+    try {
+      const projectId = process.env.FIREBASE_ADMIN_PROJECT_ID
+      const clientEmail = process.env.FIREBASE_ADMIN_CLIENT_EMAIL
+      const privateKeyRaw = process.env.FIREBASE_ADMIN_PRIVATE_KEY || ''
+
+      // Same processing as firebase-admin.ts
+      const privateKey = privateKeyRaw.replace(/\\n/g, '\n').trim()
+
+      // Try creating credential directly to isolate error
+      const cred = fa.credential.cert({
+        projectId,
+        clientEmail,
+        privateKey,
+      })
+      console.log('[debug] credential.cert succeeded, trying initializeApp...')
+
+      // Try init with a unique name so we can see if conflict
+      try {
+        const testApp = fa.initializeApp(
+          { credential: cred, projectId },
+          'test-' + Date.now()
+        )
+        console.log('[debug] initializeApp succeeded!', testApp.name)
+        // Clean up test app
+        await testApp.delete()
+      } catch (e) {
+        initError = e instanceof Error ? e.message : String(e)
+        initErrorStack = e instanceof Error ? e.stack : null
+      }
+    } catch (e) {
+      initError = e instanceof Error ? e.message : String(e)
+      initErrorStack = e instanceof Error ? e.stack : null
+    }
 
     return NextResponse.json({
       success: false,
@@ -49,12 +87,18 @@ export async function POST(request: NextRequest) {
         privateKeyLength: process.env.FIREBASE_ADMIN_PRIVATE_KEY?.length || 0,
         privateKeyStartsWithBegin: process.env.FIREBASE_ADMIN_PRIVATE_KEY?.startsWith('-----BEGIN') || false,
         privateKeyHasEscapedNewlines: process.env.FIREBASE_ADMIN_PRIVATE_KEY?.includes('\\n') || false,
+        privateKeyFirst80: process.env.FIREBASE_ADMIN_PRIVATE_KEY?.substring(0, 80) || null,
+        privateKeyLast80: process.env.FIREBASE_ADMIN_PRIVATE_KEY?.substring(
+          (process.env.FIREBASE_ADMIN_PRIVATE_KEY?.length || 0) - 80
+        ) || null,
       },
       debug: {
         appIsNull: app === null,
         existingAppsCount: apps.length,
         nodeEnv: process.env.NODE_ENV,
         isVercel: !!process.env.VERCEL,
+        initError,
+        initErrorStack: initErrorStack?.substring(0, 1000),
       },
     }, { status: 500 })
   }
