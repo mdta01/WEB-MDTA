@@ -33,14 +33,28 @@ export async function POST(request: NextRequest) {
   // First, check if Firebase Admin is even configured
   const messaging = getMessaging()
   if (!messaging) {
+    // Try to get more info about why
+    const { getFirebaseAdmin } = await import('@/lib/firebase-admin')
+    const app = getFirebaseAdmin()
+    const apps = (await import('firebase-admin')).getApps()
+
     return NextResponse.json({
       success: false,
-      error: 'Firebase Admin SDK not configured',
-      details: 'Missing env vars: FIREBASE_ADMIN_PROJECT_ID, FIREBASE_ADMIN_CLIENT_EMAIL, FIREBASE_ADMIN_PRIVATE_KEY',
+      error: 'Firebase Admin SDK not configured (getMessaging returned null)',
       envCheck: {
         hasProjectId: !!process.env.FIREBASE_ADMIN_PROJECT_ID,
         hasClientEmail: !!process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
         hasPrivateKey: !!process.env.FIREBASE_ADMIN_PRIVATE_KEY,
+        projectId: process.env.FIREBASE_ADMIN_PROJECT_ID || null,
+        privateKeyLength: process.env.FIREBASE_ADMIN_PRIVATE_KEY?.length || 0,
+        privateKeyStartsWithBegin: process.env.FIREBASE_ADMIN_PRIVATE_KEY?.startsWith('-----BEGIN') || false,
+        privateKeyHasEscapedNewlines: process.env.FIREBASE_ADMIN_PRIVATE_KEY?.includes('\\n') || false,
+      },
+      debug: {
+        appIsNull: app === null,
+        existingAppsCount: apps.length,
+        nodeEnv: process.env.NODE_ENV,
+        isVercel: !!process.env.VERCEL,
       },
     }, { status: 500 })
   }
