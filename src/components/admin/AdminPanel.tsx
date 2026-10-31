@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -2590,33 +2590,42 @@ export default function AdminPanel({ adminName: adminNameProp, onLogout }: Admin
 
   const adminName = adminNameProp || 'Admin'
 
-  // Handle Android back button (TWA DelegationService forwards back press to web)
-  // Push initial state to history so back button doesn't exit app immediately.
-  // Instead, it closes sidebar / goes back to dashboard.
-  useEffect(() => {
-    // Push a state marker so we can detect back button
-    window.history.pushState({ adminSection: 'dashboard', sidebarOpen: false }, '')
+  // Use refs to track current state inside popstate handler (avoids re-running effect)
+  const activeSectionRef = useRef<AdminSection>('dashboard')
+  const sidebarOpenRef = useRef(false)
 
-    const handlePopState = (event: PopStateEvent) => {
-      // Back button pressed in TWA
-      if (sidebarOpen) {
-        // Sidebar is open → close it (don't exit app)
+  // Keep refs in sync with state
+  useEffect(() => {
+    activeSectionRef.current = activeSection
+  }, [activeSection])
+  useEffect(() => {
+    sidebarOpenRef.current = sidebarOpen
+  }, [sidebarOpen])
+
+  // Handle Android back button (TWA DelegationService forwards back press to web)
+  // This effect runs ONCE on mount (empty deps) to set up the popstate listener.
+  // It uses refs to read current state, so it doesn't re-run on every state change.
+  useEffect(() => {
+    // Push initial state so back button doesn't exit app immediately
+    window.history.pushState({ adminInit: true }, '')
+
+    const handlePopState = () => {
+      // Read current state from refs (not from closure)
+      if (sidebarOpenRef.current) {
+        // Sidebar is open → close it (stay in app)
         setSidebarOpen(false)
-        // Re-push state so next back also stays in app
-        window.history.pushState({ adminSection: activeSection, sidebarOpen: false }, '')
-      } else if (activeSection !== 'dashboard') {
-        // Not on dashboard → go back to dashboard (don't exit app)
+        window.history.pushState({ adminInit: true }, '')
+      } else if (activeSectionRef.current !== 'dashboard') {
+        // Not on dashboard → go back to dashboard (stay in app)
         setActiveSection('dashboard')
-        window.history.pushState({ adminSection: 'dashboard', sidebarOpen: false }, '')
-      } else {
-        // Already on dashboard with sidebar closed → let app exit
-        // Don't re-push state, allow default back behavior
+        window.history.pushState({ adminInit: true }, '')
       }
+      // If on dashboard with sidebar closed → don't re-push, let app exit
     }
 
     window.addEventListener('popstate', handlePopState)
     return () => window.removeEventListener('popstate', handlePopState)
-  }, [activeSection, sidebarOpen])
+  }, []) // EMPTY deps — run once only
 
   const handleLogout = async () => {
     try {
@@ -2634,8 +2643,6 @@ export default function AdminPanel({ adminName: adminNameProp, onLogout }: Admin
   const handleNavigate = (section: string) => {
     setActiveSection(section as AdminSection)
     setSidebarOpen(false)
-    // Push state so Android back button can return to previous section
-    window.history.pushState({ adminSection: section, sidebarOpen: false }, '')
   }
 
   // Get breadcrumb
@@ -2816,11 +2823,7 @@ export default function AdminPanel({ adminName: adminNameProp, onLogout }: Admin
                 variant="ghost"
                 size="icon"
                 className="lg:hidden h-9 w-9 shrink-0"
-                onClick={() => {
-                  setSidebarOpen(true)
-                  // Push state so back button closes sidebar instead of exiting
-                  window.history.pushState({ adminSection: activeSection, sidebarOpen: true }, '')
-                }}
+                onClick={() => setSidebarOpen(true)}
               >
                 <Menu className="h-5 w-5" />
               </Button>
