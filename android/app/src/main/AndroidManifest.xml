@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ============================================================================
+  AndroidManifest.xml — MDTA Admin Trusted Web Activity (TWA)
+  ============================================================================
+  Wraps the admin PWA at https://mdta-tawangsari.vercel.app/admin so it can be
+  launched full-screen (no browser address bar) when the Digital Asset Links
+  relationship is verified.
+
+  The relationship is declared two ways:
+    1. (App -> Web) Here, via the `asset_statements` meta-data which references
+       @string/assetStatements (the DigitalAssetLinks JSON embedded as a
+       string resource).
+    2. (Web -> App) On the web server, at
+       https://mdta-tawangsari.vercel.app/.well-known/assetlinks.json
+       which lists this app's SHA-256 signing fingerprint. The CI workflow
+       re-generates that file after every signing key change.
+
+  Both sides must match for the TWA to open without a browser URL bar.
+  ============================================================================
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/appName"
+        android:roundIcon="@mipmap/ic_launcher"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Launcher"
+        tools:targetApi="34">
+
+        <!--
+          Digital Asset Links declaration (app side).
+          Tells Android which web site this app is authorised to handle.
+        -->
+        <meta-data
+            android:name="asset_statements"
+            android:resource="@string/assetStatements" />
+
+        <activity
+            android:name="com.google.androidbrowserhelper.trusted.LauncherActivity"
+            android:exported="true"
+            android:label="@string/appName">
+
+            <!-- Default URL the TWA opens to. -->
+            <meta-data
+                android:name="android.support.customtabs.trusted.DEFAULT_URL"
+                android:value="@string/startUrl" />
+
+            <!-- Status bar + navigation bar colour, matching the web theme. -->
+            <meta-data
+                android:name="android.support.customtabs.trusted.STATUS_BAR_COLOR"
+                android:resource="@color/colorPrimary" />
+            <meta-data
+                android:name="android.support.customtabs.trusted.NAVIGATION_BAR_COLOR"
+                android:resource="@color/colorPrimary" />
+
+            <!-- Launcher icon in the app drawer. -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <!--
+              App-link / deep-link filter: when the user opens the host URL,
+              Android can route it straight into this TWA (auto-verified once
+              the Digital Asset Links match).
+            -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="https"
+                    android:host="@string/host" />
+            </intent-filter>
+        </activity>
+
+        <!--
+          FocusActivity: brings an already-running TWA back to the foreground
+          when the user taps the launcher icon again.
+        -->
+        <activity
+            android:name="com.google.androidbrowserhelper.trusted.FocusActivity"
+            android:exported="false" />
+
+    </application>
+</manifest>

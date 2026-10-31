@@ -1,0 +1,108 @@
+// ============================================================================
+// App module build file — MDTA Admin Trusted Web Activity (TWA)
+// ============================================================================
+plugins {
+    id 'com.android.application'
+}
+
+// ----------------------------------------------------------------------------
+// Version configuration
+// ----------------------------------------------------------------------------
+// Overridable from the command line / CI, e.g.:
+//   gradle assembleRelease -PappVersionCode=2 -PappVersionName=1.0.1
+// Falls back to sensible defaults when not provided.
+def appVersionCode = (project.hasProperty('appVersionCode')
+        ? project.getProperty('appVersionCode') : '1') as Integer
+def appVersionName = project.hasProperty('appVersionName')
+        ? project.getProperty('appVersionName') : '1.0.0'
+
+// ----------------------------------------------------------------------------
+// Signing configuration
+// ----------------------------------------------------------------------------
+// Release builds read keystore details from environment variables so secrets
+// never have to live in the repository:
+//
+//   KEYSTORE_PATH       Absolute or project-relative path to the .keystore/.jks
+//   KEYSTORE_PASSWORD   Keystore password
+//   KEY_ALIAS           Key alias inside the keystore
+//   KEY_PASSWORD        Password for that alias
+//
+// When those variables are not present (e.g. local dev builds), the release
+// variant falls back to the debug signing config so the APK can still be built.
+def keystorePath = System.getenv('KEYSTORE_PATH') ?: ''
+def keystorePassword = System.getenv('KEYSTORE_PASSWORD') ?: ''
+def keyAlias = System.getenv('KEY_ALIAS') ?: ''
+def keyPassword = System.getenv('KEY_PASSWORD') ?: ''
+def hasReleaseKeystore = !keystorePath.isEmpty()
+        && !keystorePassword.isEmpty()
+        && !keyAlias.isEmpty()
+        && !keyPassword.isEmpty()
+
+android {
+    namespace 'id.sch.mdta.miftahululum01.admin'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "id.sch.mdta.miftahululum01.admin"
+        minSdk 24
+        targetSdk 34
+        versionCode appVersionCode
+        versionName appVersionName
+    }
+
+    signingConfigs {
+        release {
+            if (hasReleaseKeystore) {
+                // rootProject.file() handles both absolute and project-relative
+                // paths correctly.
+                storeFile rootProject.file(keystorePath)
+                storePassword keystorePassword
+                keyAlias keyAlias
+                keyPassword keyPassword
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
+                    'proguard-rules.pro'
+            // Use the release keystore when configured, otherwise fall back to
+            // the debug signing config so local builds still produce an APK.
+            signingConfig hasReleaseKeystore
+                    ? signingConfigs.release
+                    : signingConfigs.debug
+        }
+        debug {
+            signingConfig signingConfigs.debug
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    packaging {
+        resources {
+            excludes += [
+                    'META-INF/DEPENDENCIES',
+                    'META-INF/LICENSE',
+                    'META-INF/LICENSE.txt',
+                    'META-INF/NOTICE',
+                    'META-INF/NOTICE.txt'
+            ]
+        }
+    }
+}
+
+// ----------------------------------------------------------------------------
+// Dependencies
+// ----------------------------------------------------------------------------
+// androidbrowserhelper provides the LauncherActivity / FocusActivity and all
+// the Trusted Web Activity plumbing. No app code is needed beyond the
+// AndroidManifest + resources.
+dependencies {
+    implementation 'com.google.androidbrowserhelper:androidbrowserhelper:2.5.0'
+}

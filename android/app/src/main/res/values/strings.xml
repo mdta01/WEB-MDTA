@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Display name shown under the launcher icon and on the recents screen. -->
+    <string name="appName">MDTA Admin</string>
+
+    <!-- Host (without scheme) that this TWA is authorised to handle. -->
+    <string name="host" translatable="false">mdta-tawangsari.vercel.app</string>
+
+    <!-- Default URL the TWA opens to. -->
+    <string name="startUrl" translatable="false">https://mdta-tawangsari.vercel.app/admin</string>
+
+    <!-- Primary brand colour (deep emerald green). -->
+    <string name="colorPrimary" translatable="false">#003527</string>
+
+    <!--
+      Digital Asset Links statement (app side) embedded as a string resource.
+      The `asset_statements` meta-data in AndroidManifest.xml references this.
+
+      NOTE: This is the placeholder / default. The CI workflow overwrites this
+      string (or regenerates the matching .well-known/assetlinks.json on the
+      web server) whenever the signing key changes, so the app's declared web
+      site always matches what the web server trusts back.
+    -->
+    <string name="assetStatements" translatable="false">[{
+  \"relation\": [\"delegate_permission/common.handle_all_urls\"],
+  \"target\": {
+    \"namespace\": \"web\",
+    \"site\": \"https://mdta-tawangsari.vercel.app\"}
+}]</string>
+</resources>

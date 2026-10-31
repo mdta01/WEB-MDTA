@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--
+      Theme.Launcher — the splash / launcher theme applied while the TWA
+      activity is being brought up. Based on the framework Material "NoActionBar"
+      theme (compatible with the browser-helper library) so there is no
+      title bar and the window is immediately filled with the brand colour,
+      giving a clean splash until Chrome Custom Tabs takes over the viewport.
+    -->
+    <style name="Theme.Launcher" parent="android:Theme.Material.NoActionBar">
+        <!-- Solid emerald background, also used as the adaptive-icon background. -->
+        <item name="android:windowBackground">@drawable/ic_launcher_background</item>
+        <item name="android:statusBarColor">@color/colorPrimary</item>
+        <item name="android:navigationBarColor">@color/colorPrimary</item>
+        <!-- White icons on the dark emerald status bar. -->
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+
+</resources>

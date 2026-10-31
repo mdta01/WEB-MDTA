@@ -1,0 +1,17 @@
+# ===========================================================================
+# local.properties.template — Android SDK location
+# ===========================================================================
+#
+# Copy this file to `local.properties` and point `sdk.dir` at your local
+# Android SDK installation:
+#
+#     cp local.properties.template local.properties
+#     # then edit the sdk.dir line below
+#
+# In GitHub Actions (CI) this file is generated automatically from
+# $ANDROID_HOME / $ANDROID_SDK_ROOT before invoking gradle, so you should
+# NOT commit a real `local.properties` — only this template.
+#
+# `local.properties` is already in .gitignore by convention.
+# ===========================================================================
+sdk.dir=/path/to/Android/Sdk

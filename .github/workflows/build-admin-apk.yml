@@ -1,28 +1,20 @@
 name: Build Admin APK
 
-# Build Android APK dari PWA admin panel menggunakan Bubblewrap (TWA).
-# APK bisa di-install di Android langsung (sideload) atau di-upload ke Play Store.
+# Build Android APK dari pre-generated TWA project template di /android.
+# Tidak pakai Bubblewrap CLI (yang problematic di CI) — hanya gradle build murni.
 #
 # Trigger:
-# - Manual: dari Actions tab → "Run workflow"
-# - Auto: setiap tag v* (mis. v1.0.0)
+# - Manual: Actions tab → "Run workflow"
+# - Auto: push tag v* (mis. v1.0.0)
 #
 # Output:
-# - app-release-signed.apk (signed, siap install/distribusi)
-# - SHA256 fingerprint (untuk update assetlinks.json)
+# - app-release.apk atau app-debug.apk (signed, siap install)
+# - SHA256 fingerprint (untuk assetlinks.json)
 # - Di-upload sebagai artifact (download dari Actions tab)
 
 on:
   workflow_dispatch:
     inputs:
-      site_url:
-        description: "URL production website (default: mdta-tawangsari.vercel.app)"
-        required: true
-        default: "https://mdta-tawangsari.vercel.app"
-      app_name:
-        description: "Nama aplikasi (default: MDTA Admin)"
-        required: true
-        default: "MDTA Admin"
       app_version:
         description: "Versi APK (default: 1.0.0)"
         required: true
@@ -34,7 +26,7 @@ on:
 jobs:
   build-apk:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 15
     permissions:
       contents: write
 
@@ -42,229 +34,94 @@ jobs:
       - name: 📥 Checkout repository
         uses: actions/checkout@v4
 
-      - name: ☕ Setup Java 17 (required by Android SDK)
+      - name: ☕ Setup Java 17
         uses: actions/setup-java@v4
         with:
           distribution: "temurin"
           java-version: "17"
 
-      - name: 📦 Setup Node.js 20
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-
-      - name: 📱 Verify Android SDK (pre-installed on ubuntu-latest)
-        run: |
-          echo "ANDROID_HOME: $ANDROID_HOME"
-          echo "ANDROID_SDK_ROOT: $ANDROID_SDK_ROOT"
-          ls -la $ANDROID_HOME/cmdline-tools/ 2>/dev/null || echo "No cmdline-tools"
-          ls -la $ANDROID_HOME/platforms/ 2>/dev/null || echo "No platforms"
-          ls -la $ANDROID_HOME/build-tools/ 2>/dev/null || echo "No build-tools"
-          # Accept licenses if not already accepted
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null 2>&1 || true
-          echo "✅ Android SDK ready"
-
-      - name: 🔧 Install Bubblewrap CLI
-        run: npm install -g @bubblewrap/cli
-
-      - name: 📝 Determine inputs
-        id: inputs
+      - name: 📝 Determine version
+        id: ver
         run: |
           if [ "${{ github.event_name }}" = "push" ]; then
-            # Tag trigger (v1.0.0)
             VERSION="${GITHUB_REF#refs/tags/v}"
-            echo "site_url=https://mdta-tawangsari.vercel.app" >> $GITHUB_OUTPUT
-            echo "app_name=MDTA Admin" >> $GITHUB_OUTPUT
-            echo "app_version=$VERSION" >> $GITHUB_OUTPUT
           else
-            # Manual trigger
-            echo "site_url=${{ github.event.inputs.site_url }}" >> $GITHUB_OUTPUT
-            echo "app_name=${{ github.event.inputs.app_name }}" >> $GITHUB_OUTPUT
-            echo "app_version=${{ github.event.inputs.app_version }}" >> $GITHUB_OUTPUT
+            VERSION="${{ github.event.inputs.app_version }}"
           fi
-          # Compute version code (integers only from version string)
-          VERSION="${{ github.event.inputs.app_version || '1.0.0' }}"
-          VERSION_CODE=$(echo "$VERSION" | tr -cd '[:digit:]')
-          if [ -z "$VERSION_CODE" ] || [ "$VERSION_CODE" -lt 1 ]; then VERSION_CODE=1; fi
-          echo "app_version_code=$VERSION_CODE" >> $GITHUB_OUTPUT
+          # Version code = digits only (1.0.0 → 100)
+          VC=$(echo "$VERSION" | tr -cd '[:digit:]')
+          if [ -z "$VC" ] || [ "$VC" -lt 1 ]; then VC=1; fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "code=$VC" >> $GITHUB_OUTPUT
+          echo "Build version: $VERSION (code: $VC)"
 
-      - name: 🏗️ Create TWA manifest manually
+      - name: ⚙️ Setup Android SDK path
         run: |
-          # Create twa-manifest.json using python (avoids heredoc indentation issues)
-          python3 -c "
-          import json
-          manifest = {
-            'packageId': 'id.sch.mdta.miftahululum01.admin',
-            'host': 'mdta-tawangsari.vercel.app',
-            'name': '${{ steps.inputs.outputs.app_name }}',
-            'themeColor': '#003527',
-            'navigationColor': '#003527',
-            'navigationColorDark': '#003527',
-            'navigationDividerColor': '#003527',
-            'navigationDividerColorDark': '#003527',
-            'backgroundColor': '#003527',
-            'enableNotifications': True,
-            'startUrl': '/admin',
-            'iconUrl': 'https://mdta-tawangsari.vercel.app/icons/admin/icon-512.png',
-            'maskableIconUrl': 'https://mdta-tawangsari.vercel.app/icons/admin/icon-512-maskable.png',
-            'splashScreenFadeOutDuration': 300,
-            'signingKey': {'path': 'android.keystore', 'alias': 'mdta-admin'},
-            'appVersionName': '${{ steps.inputs.outputs.app_version }}',
-            'appVersionCode': ${{ steps.inputs.outputs.app_version_code }},
-            'shortcuts': [
-              {'name': 'Dashboard', 'shortName': 'Dashboard', 'url': '/admin'},
-              {'name': 'Kelola Berita', 'shortName': 'Berita', 'url': '/admin#news'},
-              {'name': 'Push Notifikasi', 'shortName': 'Push Notif', 'url': '/admin#push-notif'},
-              {'name': 'Pengaturan', 'shortName': 'Settings', 'url': '/admin#settings'}
-            ],
-            'generatorApp': 'bubblewrap-cli',
-            'webManifestUrl': 'https://mdta-tawangsari.vercel.app/admin-manifest.webmanifest',
-            'fallbackType': 'customtabs',
-            'features': {
-              'locationDelegation': {'enabled': False},
-              'playBilling': {'enabled': False}
-            },
-            'alphaDependencies': {'enabled': False},
-            'enableSiteSettingsShortcut': False,
-            'isChromeOSOnly': False,
-            'isMetaQuest': False,
-            'fullScopeUrl': 'https://mdta-tawangsari.vercel.app/admin/',
-            'minLinksQuality': 1
-          }
-          with open('twa-manifest.json', 'w') as f:
-            json.dump(manifest, f, indent=2)
-          print('✅ Created twa-manifest.json')
-          "
-          cat twa-manifest.json | head -20
+          # Write local.properties (needed by gradle to find Android SDK)
+          echo "sdk.dir=$ANDROID_HOME" > android/local.properties
+          echo "✅ local.properties written:"
+          cat android/local.properties
 
-      - name: 🏗️ Generate signing keystore
+      - name: 🔑 Generate signing keystore
         run: |
-          # Generate signing keystore BEFORE bubblewrap update (so it's detected)
-          if [ ! -f android.keystore ]; then
+          cd android
+          if [ ! -f admin.keystore ]; then
             keytool -genkeypair \
-              -keystore android.keystore \
+              -keystore admin.keystore \
               -alias mdta-admin \
               -keyalg RSA -keysize 2048 -validity 10000 \
               -storepass mdta-admin-2025 \
               -keypass mdta-admin-2025 \
               -dname "CN=MDTA Miftahul Ulum 01, OU=Admin, O=MDTA, L=Tangerang, ST=Banten, C=ID"
             echo "✅ Generated signing keystore"
-          else
-            echo "✅ Keystore already exists"
           fi
 
-      - name: 📱 Generate Android project (bubblewrap update via expect)
-        run: |
-          # bubblewrap update uses inquirer.js which requires a TTY.
-          # Piping stdin doesn't work — we need `expect` to simulate terminal.
-          sudo apt-get install -y expect 2>/dev/null
-
-          # Fix twa-manifest.json: shortcuts need chosenIconUrl field
-          python3 -c "
-          import json
-          with open('twa-manifest.json') as f:
-            m = json.load(f)
-          icon_url = 'https://mdta-tawangsari.vercel.app/icons/admin/icon-192.png'
-          for s in m.get('shortcuts', []):
-            s['chosenIconUrl'] = {'iconUrl': icon_url, 'maskableIconUrl': icon_url}
-          with open('twa-manifest.json', 'w') as f:
-            json.dump(m, f, indent=2)
-          print('✅ Fixed shortcuts with chosenIconUrl')
-          "
-
-          cat > /tmp/bw_update.exp << 'EXPECT_EOF'
-          #!/usr/bin/expect -f
-          set timeout 600
-          spawn bubblewrap update --no-interactive
-          expect {
-            "Do you want Bubblewrap to install the JDK" {
-              # Answer "Y" to let bubblewrap install JDK itself.
-              # This avoids subsequent "Path to JDK" and "Path to Android SDK" prompts.
-              send "Y\r"
-              exp_continue
-            }
-            "Path to your existing JDK 17" {
-              send "$env(JAVA_HOME)\r"
-              exp_continue
-            }
-            "Path to your existing Android SDK" {
-              send "$env(ANDROID_HOME)\r"
-              exp_continue
-            }
-            "versionName for the new App version" {
-              send "${{ steps.inputs.outputs.app_version }}\r"
-              exp_continue
-            }
-            "Downloading JDK" {
-              exp_continue
-            }
-            eof
-          }
-          EXPECT_EOF
-
-          chmod +x /tmp/bw_update.exp
-          /tmp/bw_update.exp || {
-            echo "❌ bubblewrap update failed"
-            exit 1
-          }
-
-          echo "--- Android project files ---"
-          ls -la
-          echo ""
-          echo "--- gradlew exists? ---"
-          ls -la gradlew 2>/dev/null || echo "no gradlew"
-          echo ""
-          echo "--- app/src ---"
-          find app/src -type f 2>/dev/null | head -20 || echo "no app/src"
-
       - name: 🔨 Build signed release APK
+        working-directory: android
+        env:
+          KEYSTORE_PATH: admin.keystore
+          KEYSTORE_PASSWORD: mdta-admin-2025
+          KEY_ALIAS: mdta-admin
+          KEY_PASSWORD: mdta-admin-2025
         run: |
-          # Build the APK using gradle directly (more reliable than bubblewrap build)
-          # bubblewrap build wraps gradle but has interactive prompts we can't answer
-          echo "Building APK via Gradle..."
-
-          # Make gradlew executable
-          chmod +x ./gradlew 2>/dev/null || true
-
-          # Build release APK
-          ./gradlew assembleRelease --no-daemon -x lint --stacktrace || {
-            echo "❌ Release build failed, trying debug build..."
-            ./gradlew assembleDebug --no-daemon -x lint || {
-              echo "❌ Debug build also failed"
+          # Use system gradle (pre-installed on ubuntu-latest)
+          gradle assembleRelease \
+            -PappVersionCode=${{ steps.ver.outputs.code }} \
+            -PappVersionName=${{ steps.ver.outputs.version }} \
+            --no-daemon \
+            -x lint \
+            --stacktrace 2>&1 || {
+            echo "❌ Release build failed, trying debug..."
+            gradle assembleDebug \
+              -PappVersionCode=${{ steps.ver.outputs.code }} \
+              -PappVersionName=${{ steps.ver.outputs.version }} \
+              --no-daemon \
+              -x lint 2>&1 || {
+              echo "❌ Both release and debug builds failed"
               exit 1
             }
           }
 
-      - name: 📋 List build output
+      - name: 📋 List APK files
         run: |
-          echo "--- Looking for APK files ---"
-          find . -name "*.apk" -type f 2>/dev/null | while read apk; do
-            echo "Found: $apk"
+          echo "=== APK files ==="
+          find android -name "*.apk" -type f 2>/dev/null | while read apk; do
+            echo "📦 $apk"
             ls -la "$apk"
             du -h "$apk"
           done
-          echo ""
-          echo "--- All build outputs ---"
-          find . -path "*/build/outputs/apk/*" -type f 2>/dev/null | head -10
 
       - name: 🔐 Compute SHA256 fingerprint
         id: sha
         run: |
-          if [ -f android.keystore ]; then
-            SHA256=$(keytool -list -v -keystore android.keystore -storepass mdta-admin-2025 -alias mdta-admin | grep "SHA256:" | head -1 | awk '{print $2}')
-            echo "SHA256 fingerprint: $SHA256"
-            echo "sha256=$SHA256" >> $GITHUB_OUTPUT
-          else
-            echo "sha256=PLACEHOLDER" >> $GITHUB_OUTPUT
-          fi
+          cd android
+          SHA256=$(keytool -list -v -keystore admin.keystore -storepass mdta-admin-2025 -alias mdta-admin | grep "SHA256:" | head -1 | awk '{print $2}')
+          echo "SHA256: $SHA256"
+          echo "sha256=$SHA256" >> $GITHUB_OUTPUT
 
-      - name: 🔄 Update assetlinks.json with SHA256
-        if: steps.sha.outputs.sha256 != 'PLACEHOLDER'
+      - name: 🔄 Update assetlinks.json
         run: |
           SHA256="${{ steps.sha.outputs.sha256 }}"
-          echo "Updating assetlinks.json with SHA256: $SHA256"
-
-          # Update the assetlinks.json file
           cat > public/.well-known/assetlinks.json << EOF
           [
             {
@@ -272,58 +129,47 @@ jobs:
               "target": {
                 "namespace": "android_app",
                 "package_name": "id.sch.mdta.miftahululum01.admin",
-                "sha256_cert_fingerprints": [
-                  "$SHA256"
-                ]
+                "sha256_cert_fingerprints": ["$SHA256"]
               }
             }
           ]
           EOF
-
-          echo "Updated assetlinks.json:"
+          echo "✅ Updated assetlinks.json with SHA256: $SHA256"
           cat public/.well-known/assetlinks.json
 
-      - name: 💾 Commit updated assetlinks.json
-        if: steps.sha.outputs.sha256 != 'PLACEHOLDER'
+      - name: 💾 Commit assetlinks.json
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add public/.well-known/assetlinks.json
-          git commit -m "chore: update assetlinks.json with SHA256 fingerprint for APK signing" || echo "Nothing to commit"
-          git push
+          git commit -m "chore: update assetlinks.json SHA256 for v${{ steps.ver.outputs.version }}" || echo "Nothing to commit"
+          git push || echo "Push skipped (no changes)"
 
       - name: 📦 Upload APK artifact
-        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: mdta-admin-apk-${{ steps.inputs.outputs.app_version }}
+          name: mdta-admin-apk-${{ steps.ver.outputs.version }}
           path: |
-            **/*.apk
-            twa-manifest.json
-            android.keystore
+            android/app/build/outputs/apk/**/*.apk
+            android/admin.keystore
           retention-days: 90
-          if-no-files-found: warn
+          if-no-files-found: error
 
-      - name: 📊 Generate build summary
+      - name: 📊 Build summary
         if: always()
         run: |
           echo "## 📱 APK Build Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- **App Name:** ${{ steps.inputs.outputs.app_name }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Version:** ${{ steps.inputs.outputs.app_version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version:** ${{ steps.ver.outputs.version }} (code: ${{ steps.ver.outputs.code }})" >> $GITHUB_STEP_SUMMARY
           echo "- **Package:** \`id.sch.mdta.miftahululum01.admin\`" >> $GITHUB_STEP_SUMMARY
-          echo "- **Site URL:** ${{ steps.inputs.outputs.site_url }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **SHA256 Fingerprint:** \`${{ steps.sha.outputs.sha256 }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **SHA256:** \`${{ steps.sha.outputs.sha256 }}\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 📥 Download APK" >> $GITHUB_STEP_SUMMARY
-          echo "APK file dapat di-download dari **Artifacts** section di atas (klik artifact \`mdta-admin-apk-${{ steps.inputs.outputs.app_version }}\`)." >> $GITHUB_STEP_SUMMARY
+          echo "### 📥 Download" >> $GITHUB_STEP_SUMMARY
+          echo "Download artifact \`mdta-admin-apk-${{ steps.ver.outputs.version }}\` dari Artifacts section di atas." >> $GITHUB_STEP_SUMMARY
+          echo "Extract ZIP → cari file `app-release.apk` (atau `app-debug.apk`)." >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 🔧 Install di Android" >> $GITHUB_STEP_SUMMARY
-          echo "1. Download file \`app-release-signed.apk\` dari artifact" >> $GITHUB_STEP_SUMMARY
-          echo "2. Transfer ke HP Android (USB / Drive / dll)" >> $GITHUB_STEP_SUMMARY
-          echo "3. Buka file APK di Android → **Settings → Allow from this source**" >> $GITHUB_STEP_SUMMARY
-          echo "4. Install → buka app **MDTA Admin**" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 🔄 Update assetlinks.json (sudah otomatis)" >> $GITHUB_STEP_SUMMARY
-          echo "SHA256 fingerprint sudah di-commit ke \`public/.well-known/assetlinks.json\`." >> $GITHUB_STEP_SUMMARY
-          echo "Tunggu Vercel deploy (~1 menit) supaya APK bisa koneksi ke admin panel tanpa address bar." >> $GITHUB_STEP_SUMMARY
+          echo "### 📱 Install" >> $GITHUB_STEP_SUMMARY
+          echo "1. Transfer APK ke HP Android" >> $GITHUB_STEP_SUMMARY
+          echo "2. Buka APK → **Allow from this source**" >> $GITHUB_STEP_SUMMARY
+          echo "3. Install → buka **MDTA Admin**" >> $GITHUB_STEP_SUMMARY
+          echo "4. Login: \`mdta01\` / \`mdta@01\`" >> $GITHUB_STEP_SUMMARY

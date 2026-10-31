@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Primary brand colour: deep emerald green (#003527). -->
+    <color name="colorPrimary">#003527</color>
+    <!-- Slightly darker shade for the status bar. -->
+    <color name="colorPrimaryDark">#00251C</color>
+    <!-- Accent colour (kept in sync with the brand for a monochrome look). -->
+    <color name="colorAccent">#003527</color>
+</resources>

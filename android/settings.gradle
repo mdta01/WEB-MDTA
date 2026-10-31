@@ -1,0 +1,20 @@
+// Root settings for the MDTA Admin Trusted Web Activity (TWA) project.
+// Built directly with Gradle (no Bubblewrap CLI) via GitHub Actions.
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+rootProject.name = "MDTA Admin"
+include ':app'
