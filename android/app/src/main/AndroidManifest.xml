@@ -1,36 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ============================================================================
   AndroidManifest.xml — MDTA Admin Trusted Web Activity (TWA)
-  ============================================================================
-  Wraps the admin PWA at https://mdta-tawangsari.vercel.app/admin so it can be
-  launched full-screen (no browser address bar) when the Digital Asset Links
-  relationship is verified.
-
-  The relationship is declared two ways:
-    1. (App -> Web) Here, via the `asset_statements` meta-data which references
-       @string/assetStatements (the DigitalAssetLinks JSON embedded as a
-       string resource).
-    2. (Web -> App) On the web server, at
-       https://mdta-tawangsari.vercel.app/.well-known/assetlinks.json
-       which lists this app's SHA-256 signing fingerprint. The CI workflow
-       re-generates that file after every signing key change.
-
-  Both sides must match for the TWA to open without a browser URL bar.
-  ============================================================================
+  
+  TWA wraps the admin PWA at https://mdta-tawangsari.vercel.app/admin
+  so it launches full-screen (no browser address bar).
+  
+  Key features:
+  - LauncherActivity opens the PWA in Trusted Web Activity mode
+  - FocusActivity brings existing TWA back to foreground when tapping launcher icon
+  - DelegationService handles back button navigation (stays in PWA, doesn't exit)
+  - SplashScreen config for Android 12+ (proper splash with logo)
+  - Fullscreen display mode (no status bar visible initially)
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/appName"
-        android:roundIcon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Launcher"
+        android:usesCleartextTraffic="false"
         tools:targetApi="34">
 
         <!--
@@ -41,10 +36,17 @@
             android:name="asset_statements"
             android:resource="@string/assetStatements" />
 
+        <!--
+          LauncherActivity: the main entry point.
+          Opens https://mdta-tawangsari.vercel.app/admin in a TWA.
+        -->
         <activity
             android:name="com.google.androidbrowserhelper.trusted.LauncherActivity"
             android:exported="true"
-            android:label="@string/appName">
+            android:label="@string/appName"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|screenSize|keyboardHidden">
 
             <!-- Default URL the TWA opens to. -->
             <meta-data
@@ -59,6 +61,31 @@
                 android:name="android.support.customtabs.trusted.NAVIGATION_BAR_COLOR"
                 android:resource="@color/colorPrimary" />
 
+            <!--
+              Display mode: fullscreen hides the system bars for a truly
+              immersive experience. The web app controls its own UI.
+              Use 'immersive' so swiping from edge temporarily reveals bars.
+            -->
+            <meta-data
+                android:name="android.support.customtabs.trusted.DISPLAY_MODE"
+                android:value="immersive" />
+
+            <!--
+              Splash screen: shown while Chrome warms up.
+              Uses the launcher icon on emerald background.
+            -->
+            <meta-data
+                android:name="android.support.customtabs.trusted.SPLASH_SCREEN_DRAWABLE"
+                android:resource="@drawable/splash_background" />
+
+            <meta-data
+                android:name="android.support.customtabs.trusted.SPLASH_SCREEN_BACKGROUND_COLOR"
+                android:resource="@color/colorPrimary" />
+
+            <meta-data
+                android:name="android.support.customtabs.trusted.SPLASH_SCREEN_TRANSITION_DURATION"
+                android:value="300" />
+
             <!-- Launcher icon in the app drawer. -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -67,7 +94,7 @@
 
             <!--
               App-link / deep-link filter: when the user opens the host URL,
-              Android can route it straight into this TWA (auto-verified once
+              Android routes it straight into this TWA (auto-verified once
               the Digital Asset Links match).
             -->
             <intent-filter android:autoVerify="true">
@@ -82,11 +109,57 @@
 
         <!--
           FocusActivity: brings an already-running TWA back to the foreground
-          when the user taps the launcher icon again.
+          when the user taps the launcher icon again. This prevents the app
+          from restarting — it just resumes the existing session.
         -->
         <activity
             android:name="com.google.androidbrowserhelper.trusted.FocusActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:theme="@android:style/Theme.NoDisplay" />
+
+        <!--
+          DelegationService: CRITICAL for back button handling!
+          
+          This service receives delegated commands from the TWA (Chrome Custom Tabs).
+          Without it, pressing the Android "back" button exits the app entirely.
+          
+          With it, the back button is forwarded to the web page, so:
+          - If the web page has history (SPA navigation), it goes back one page
+          - If no more history, THEN it exits the app
+          
+          This is what makes the TWA feel like a native app.
+        -->
+        <service
+            android:name="com.google.androidbrowserhelper.trusted.DelegationService"
+            android:exported="false">
+
+            <!--
+              Receive back-button presses from the TWA so the web app
+              can handle them (e.g., close sidebar, go back in SPA history).
+            -->
+            <meta-data
+                android:name="android.support.customtabs.trusted.RECEIVE_BACK_PRESS_CALLBACK"
+                android:value="true" />
+
+            <intent-filter>
+                <action android:name="android.support.customtabs.trusted.TRUSTED_WEB_ACTIVITY_SERVICE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </service>
+
+        <!--
+          NotificationDelegationService: allows the web app to show
+          notifications via the Android notification system (not just
+          web notifications). Requires POST_NOTIFICATIONS permission.
+        -->
+        <service
+            android:name="com.google.androidbrowserhelper.trusted.NotificationDelegationService"
+            android:exported="false">
+            <meta-data
+                android:name="android.support.customtabs.trusted.CHANNEL_NAME"
+                android:value="@string/appName" />
+        </service>
 
     </application>
 </manifest>

@@ -2590,6 +2590,34 @@ export default function AdminPanel({ adminName: adminNameProp, onLogout }: Admin
 
   const adminName = adminNameProp || 'Admin'
 
+  // Handle Android back button (TWA DelegationService forwards back press to web)
+  // Push initial state to history so back button doesn't exit app immediately.
+  // Instead, it closes sidebar / goes back to dashboard.
+  useEffect(() => {
+    // Push a state marker so we can detect back button
+    window.history.pushState({ adminSection: 'dashboard', sidebarOpen: false }, '')
+
+    const handlePopState = (event: PopStateEvent) => {
+      // Back button pressed in TWA
+      if (sidebarOpen) {
+        // Sidebar is open → close it (don't exit app)
+        setSidebarOpen(false)
+        // Re-push state so next back also stays in app
+        window.history.pushState({ adminSection: activeSection, sidebarOpen: false }, '')
+      } else if (activeSection !== 'dashboard') {
+        // Not on dashboard → go back to dashboard (don't exit app)
+        setActiveSection('dashboard')
+        window.history.pushState({ adminSection: 'dashboard', sidebarOpen: false }, '')
+      } else {
+        // Already on dashboard with sidebar closed → let app exit
+        // Don't re-push state, allow default back behavior
+      }
+    }
+
+    window.addEventListener('popstate', handlePopState)
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [activeSection, sidebarOpen])
+
   const handleLogout = async () => {
     try {
       await fetch('/api/admin/logout', { method: 'POST' })
@@ -2606,6 +2634,8 @@ export default function AdminPanel({ adminName: adminNameProp, onLogout }: Admin
   const handleNavigate = (section: string) => {
     setActiveSection(section as AdminSection)
     setSidebarOpen(false)
+    // Push state so Android back button can return to previous section
+    window.history.pushState({ adminSection: section, sidebarOpen: false }, '')
   }
 
   // Get breadcrumb
@@ -2786,7 +2816,11 @@ export default function AdminPanel({ adminName: adminNameProp, onLogout }: Admin
                 variant="ghost"
                 size="icon"
                 className="lg:hidden h-9 w-9 shrink-0"
-                onClick={() => setSidebarOpen(true)}
+                onClick={() => {
+                  setSidebarOpen(true)
+                  // Push state so back button closes sidebar instead of exiting
+                  window.history.pushState({ adminSection: activeSection, sidebarOpen: true }, '')
+                }}
               >
                 <Menu className="h-5 w-5" />
               </Button>

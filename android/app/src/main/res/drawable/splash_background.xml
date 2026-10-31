@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  splash_background.xml — splash screen shown while Chrome warms up.
+  
+  Uses a layered drawable:
+  - Background: solid emerald (#003527)
+  - Logo: the madrasah logo (bitmap), centered
+  
+  This is referenced by AndroidManifest.xml via:
+  android:support.customtabs.trusted.SPLASH_SCREEN_DRAWABLE
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Solid emerald background -->
+    <item android:drawable="@drawable/ic_launcher_background" />
+    
+    <!-- Centered logo (uses the xxxhdpi foreground bitmap for best quality) -->
+    <item
+        android:gravity="center"
+        android:width="120dp"
+        android:height="120dp">
+        <bitmap
+            android:gravity="center"
+            android:src="@mipmap-xxxhdpi/ic_launcher_foreground" />
+    </item>
+</layer-list>
