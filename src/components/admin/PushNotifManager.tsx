@@ -129,7 +129,8 @@ export default function PushNotifManager() {
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-gradient-to-r from-[#003527] to-[#064e3b] rounded-xl p-4 sm:p-6 text-white"
+        className="rounded-xl p-4 sm:p-6 text-white"
+        style={{ background: 'linear-gradient(to right, #003527, #064e3b)' }}
       >
         <div className="flex items-center justify-between flex-wrap gap-3 sm:gap-4">
           <div>

@@ -292,7 +292,8 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-gradient-to-r from-emerald-700 to-emerald-800 rounded-xl p-4 sm:p-5 lg:p-6 text-white"
+        className="rounded-xl p-4 sm:p-5 lg:p-6 text-white"
+        style={{ background: 'linear-gradient(to right, #047857, #065f46)' }}
       >
         <h1 className="text-lg sm:text-xl lg:text-2xl font-bold">Dashboard Admin</h1>
         <p className="text-[#b0f0d6] mt-1 text-xs sm:text-sm">

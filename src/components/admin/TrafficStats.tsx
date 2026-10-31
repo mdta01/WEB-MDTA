@@ -118,7 +118,7 @@ export default function TrafficStats() {
       {/* Header row — title + live indicator */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#003527] to-[#064e3b] flex items-center justify-center">
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(to bottom right, #003527, #064e3b)' }}>
             <TrendingUp className="h-5 w-5 text-[#cca72f]" />
           </div>
           <div>
@@ -187,7 +187,7 @@ export default function TrafficStats() {
           title="Online Sekarang"
           value={realtime?.onlineNow ?? 0}
           icon={<Activity className="h-5 w-5 text-white" />}
-          color="from-[#064e3b] to-[#003527]"
+          color="linear-gradient(to bottom right, #064e3b, #003527)"
           subtitle="5 menit terakhir"
           pulse
           delay={0}
