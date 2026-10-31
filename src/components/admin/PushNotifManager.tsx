@@ -129,9 +129,9 @@ export default function PushNotifManager() {
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-gradient-to-r from-[#003527] to-[#064e3b] rounded-xl p-6 text-white"
+        className="bg-gradient-to-r from-[#003527] to-[#064e3b] rounded-xl p-4 sm:p-6 text-white"
       >
-        <div className="flex items-center justify-between flex-wrap gap-4">
+        <div className="flex items-center justify-between flex-wrap gap-3 sm:gap-4">
           <div>
             <h1 className="text-2xl font-bold flex items-center gap-2">
               <Bell className="h-6 w-6 text-[#cca72f]" />
@@ -158,7 +158,7 @@ export default function PushNotifManager() {
         </div>
       </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-6">
         {/* Compose form (left, 2 cols) */}
         <div className="lg:col-span-2 space-y-4">
           <Card>

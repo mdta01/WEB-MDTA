@@ -374,38 +374,38 @@ export default function CRUDManager({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div>
-          <h2 className="text-xl font-bold text-[#1b1c1a]">{title}</h2>
-          <p className="text-sm text-[#404944]">Kelola data {itemName.toLowerCase()}</p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3">
+        <div className="min-w-0">
+          <h2 className="text-lg sm:text-xl font-bold text-[#1b1c1a] truncate">{title}</h2>
+          <p className="text-xs sm:text-sm text-[#404944] truncate">Kelola data {itemName.toLowerCase()}</p>
         </div>
         {canCreate && (
           <Button
             onClick={openCreateForm}
-            className="bg-[#003527] hover:bg-[#003527] text-white"
+            className="bg-[#003527] hover:bg-[#003527] text-white h-9 sm:h-10 shrink-0"
           >
-            <Plus className="h-4 w-4 mr-2" />
-            Tambah {itemName}
+            <Plus className="h-4 w-4 mr-1.5" />
+            <span className="text-sm">Tambah</span>
           </Button>
         )}
       </div>
 
       {/* Search */}
-      <div className="relative max-w-sm">
+      <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#404944]/70" />
         <Input
           placeholder={`Cari ${itemName.toLowerCase()}...`}
           value={search}
           onChange={(e) => handleSearchChange(e.target.value)}
-          className="pl-10"
+          className="pl-10 h-10"
         />
       </div>
 
       {/* Table */}
       <div className="border rounded-lg bg-[#ffffff] overflow-hidden">
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto overscroll-contain">
           <Table>
             <TableHeader>
               <TableRow className="bg-[#fbf9f5]">
@@ -499,27 +499,27 @@ export default function CRUDManager({
 
         {/* Pagination */}
         {filteredItems.length > pageSize && (
-          <div className="flex items-center justify-between px-4 py-3 border-t bg-[#fbf9f5]">
-            <p className="text-sm text-[#404944]">
-              Menampilkan {(page - 1) * pageSize + 1}-{Math.min(page * pageSize, filteredItems.length)} dari {filteredItems.length} data
+          <div className="flex items-center justify-between px-3 sm:px-4 py-2 sm:py-3 border-t bg-[#fbf9f5] gap-2">
+            <p className="text-xs sm:text-sm text-[#404944] shrink-0">
+              {((page - 1) * pageSize + 1)}-{Math.min(page * pageSize, filteredItems.length)} / {filteredItems.length}
             </p>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1 shrink-0">
               <Button
                 variant="outline"
                 size="icon"
-                className="h-8 w-8"
+                className="h-8 w-8 sm:h-9 sm:w-9"
                 onClick={() => setPage(Math.max(1, page - 1))}
                 disabled={page === 1}
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
-              <span className="text-sm px-2">
+              <span className="text-xs sm:text-sm px-1 sm:px-2">
                 {page} / {totalPages}
               </span>
               <Button
                 variant="outline"
                 size="icon"
-                className="h-8 w-8"
+                className="h-8 w-8 sm:h-9 sm:w-9"
                 onClick={() => setPage(Math.min(totalPages, page + 1))}
                 disabled={page === totalPages}
               >
@@ -532,19 +532,19 @@ export default function CRUDManager({
 
       {/* Create/Edit Form Dialog */}
       <Dialog open={formOpen} onOpenChange={(open) => { if (!open) closeForm() }}>
-        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto overscroll-contain p-4 sm:p-6">
           <DialogHeader>
-            <DialogTitle>
+            <DialogTitle className="text-base sm:text-lg">
               {editingItem ? `Edit ${itemName}` : `Tambah ${itemName}`}
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-xs sm:text-sm">
               {editingItem
                 ? `Perbarui data ${itemName.toLowerCase()} di bawah ini`
                 : `Isi data ${itemName.toLowerCase()} baru di bawah ini`}
             </DialogDescription>
           </DialogHeader>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 py-3 sm:py-4">
             {formFields.map((field) => (
               <div
                 key={field.name}

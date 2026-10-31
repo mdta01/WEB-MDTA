@@ -181,8 +181,8 @@ export default function TrafficStats() {
         </div>
       </div>
 
-      {/* Realtime stat cards — 4 cards in a row (responsive) */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      {/* Realtime stat cards — 2 cols mobile, 4 cols desktop */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
         <RealtimeCard
           title="Online Sekarang"
           value={realtime?.onlineNow ?? 0}
@@ -221,7 +221,7 @@ export default function TrafficStats() {
       {/* Chart card with filter */}
       <Card className="overflow-hidden">
         <CardHeader className="pb-2">
-          <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3">
             <div className="flex items-center gap-2">
               <CardTitle className="text-base font-semibold text-[#1b1c1a]">
                 Grafik Kunjungan

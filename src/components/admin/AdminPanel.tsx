@@ -2669,7 +2669,7 @@ export default function AdminPanel({ adminName: adminNameProp, onLogout }: Admin
   })
 
   return (
-    <div className="h-screen overflow-hidden flex bg-[#fbf9f5]">
+    <div className="h-[100dvh] overflow-hidden flex bg-[#fbf9f5]">
       {/* Sidebar Overlay (mobile) */}
       <AnimatePresence>
         {sidebarOpen && (
@@ -2685,43 +2685,43 @@ export default function AdminPanel({ adminName: adminNameProp, onLogout }: Admin
 
       {/* Sidebar — fixed full-height on desktop (h-screen), slide-in drawer on mobile */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#003527] text-white transform transition-transform duration-300 lg:static lg:translate-x-0 lg:h-screen lg:z-auto shrink-0 ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        className={`fixed inset-y-0 left-0 z-50 w-[80vw] max-w-[280px] bg-[#003527] text-white transform transition-transform duration-300 lg:static lg:translate-x-0 lg:h-screen lg:z-auto lg:w-64 shrink-0 ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}
       >
         {/* Kraton pattern overlay */}
         <div className="absolute inset-0 kraton-pattern opacity-[0.07] pointer-events-none" aria-hidden />
         <div className="relative flex flex-col h-full">
           {/* Logo — fixed at top, tidak scroll */}
-          <div className="p-4 border-b border-[#064e3b] shrink-0">
+          <div className="p-3 lg:p-4 border-b border-[#064e3b] shrink-0">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg overflow-hidden shadow">
+              <div className="flex items-center gap-2 lg:gap-3 min-w-0">
+                <div className="w-9 h-9 lg:w-10 lg:h-10 rounded-lg overflow-hidden shadow shrink-0">
                   <img src="/images/logo-madin-warna.png" alt="Logo" className="w-full h-full object-contain" />
                 </div>
-                <div>
-                  <p className="font-bold text-sm leading-tight">MDTA Miftahul Ulum</p>
-                  <p className="text-[#ffe088] text-xs">Admin Panel</p>
+                <div className="min-w-0">
+                  <p className="font-bold text-xs lg:text-sm leading-tight truncate">MDTA Miftahul Ulum</p>
+                  <p className="text-[#ffe088] text-[10px] lg:text-xs">Admin Panel</p>
                 </div>
               </div>
               <Button
                 variant="ghost"
                 size="icon"
-                className="lg:hidden text-[#b0f0d6] hover:text-white hover:bg-[#064e3b] h-8 w-8"
+                className="lg:hidden text-[#b0f0d6] hover:text-white hover:bg-[#064e3b] h-8 w-8 shrink-0"
                 onClick={() => setSidebarOpen(false)}
               >
-                <X className="h-4 w-4" />
+                <X className="h-5 w-5" />
               </Button>
             </div>
           </div>
 
           {/* Navigation — scroll sendiri, tidak ikut halaman */}
-          <div className="flex-1 overflow-y-auto py-2 min-h-0">
-            <div className="px-3">
+          <div className="flex-1 overflow-y-auto py-2 min-h-0 overscroll-contain">
+            <div className="px-2 lg:px-3">
               {groupedNav.map((group) => (
-                <div key={group.group || 'main'} className="mb-2">
+                <div key={group.group || 'main'} className="mb-1">
                   {group.group && (
-                    <p className="text-[#ffe088]/70 text-[10px] font-semibold uppercase tracking-wider px-3 py-2 mt-2">
+                    <p className="text-[#ffe088]/70 text-[10px] font-semibold uppercase tracking-wider px-3 py-2 mt-1 hidden sm:block">
                       {group.group}
                     </p>
                   )}
@@ -2729,14 +2729,14 @@ export default function AdminPanel({ adminName: adminNameProp, onLogout }: Admin
                     <button
                       key={item.id}
                       onClick={() => handleNavigate(item.id)}
-                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors relative ${
+                      className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors relative ${
                         activeSection === item.id
                           ? 'active-nav-pill bg-[#064e3b] text-[#ffe088] font-medium'
-                          : 'text-[#b0f0d6] hover:bg-[#064e3b]/30 hover:text-white'
+                          : 'text-[#b0f0d6] hover:bg-[#064e3b]/30 hover:text-white active:bg-[#064e3b]/50'
                       }`}
                     >
                       {item.icon}
-                      <span>{item.label}</span>
+                      <span className="truncate">{item.label}</span>
                     </button>
                   ))}
                 </div>
@@ -2745,15 +2745,15 @@ export default function AdminPanel({ adminName: adminNameProp, onLogout }: Admin
           </div>
 
           {/* User & Logout — fixed at bottom, tidak scroll */}
-          <div className="p-4 border-t border-[#064e3b] shrink-0">
-            <div className="flex items-center justify-between mb-3">
+          <div className="p-3 lg:p-4 border-t border-[#064e3b] shrink-0">
+            <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2 min-w-0">
                 <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0">
                   <img src="/images/logo-madin-warna.png" alt="Logo" className="w-full h-full object-contain" />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-sm font-medium truncate">{adminName || 'Admin'}</p>
-                  <p className="text-xs text-[#ffe088]/70">Administrator</p>
+                  <p className="text-xs lg:text-sm font-medium truncate">{adminName || 'Admin'}</p>
+                  <p className="text-[10px] lg:text-xs text-[#ffe088]/70">Administrator</p>
                 </div>
               </div>
               <Button
@@ -2777,58 +2777,58 @@ export default function AdminPanel({ adminName: adminNameProp, onLogout }: Admin
       </aside>
 
       {/* Main Content — full height, internal scroll (sidebar stays fixed) */}
-      <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+      <div className="flex-1 flex flex-col min-w-0 h-[100dvh] overflow-hidden">
         {/* Top Bar — fixed at top of main content (not window) */}
         <header className="shrink-0 z-30 bg-[#fbf9f5]/95 backdrop-blur-md border-b border-[#e4e2de]/30 shadow-sm">
-          <div className="flex items-center justify-between h-14 px-4">
-            <div className="flex items-center gap-3">
+          <div className="flex items-center justify-between h-12 lg:h-14 px-2 sm:px-4 gap-2">
+            <div className="flex items-center gap-2 min-w-0">
               <Button
                 variant="ghost"
                 size="icon"
-                className="lg:hidden h-8 w-8"
+                className="lg:hidden h-9 w-9 shrink-0"
                 onClick={() => setSidebarOpen(true)}
               >
                 <Menu className="h-5 w-5" />
               </Button>
-              <div className="flex items-center gap-2 text-sm text-[#404944]">
-                <LayoutDashboard className="h-4 w-4" />
-                <span>Admin</span>
-                <ChevronRight className="h-3 w-3" />
-                <span className="text-[#1b1c1a] font-medium">{getBreadcrumb()}</span>
+              <div className="flex items-center gap-1.5 text-xs lg:text-sm text-[#404944] min-w-0">
+                <LayoutDashboard className="h-4 w-4 shrink-0 hidden sm:block" />
+                <span className="hidden sm:inline">Admin</span>
+                <ChevronRight className="h-3 w-3 shrink-0 hidden sm:block" />
+                <span className="text-[#1b1c1a] font-medium truncate">{getBreadcrumb()}</span>
               </div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
               <a href="/" target="_blank" rel="noopener noreferrer">
                 <Button
                   variant="outline"
                   size="sm"
-                  className="text-[#003527] hover:text-[#064e3b] hover:bg-[#f5f3ef] border-[#e4e2de]"
+                  className="text-[#003527] hover:text-[#064e3b] hover:bg-[#f5f3ef] border-[#e4e2de] h-8 px-2 sm:px-3"
                 >
                   <span className="hidden sm:inline">Lihat Website</span>
-                  <span className="sm:hidden">Website</span>
+                  <span className="sm:hidden text-xs">Web</span>
                 </Button>
               </a>
-              <div className="hidden sm:flex items-center gap-2 text-sm text-[#404944]">
+              <div className="hidden md:flex items-center gap-2 text-sm text-[#404944]">
                 <div className="w-7 h-7 rounded-full bg-[#003527]/15 flex items-center justify-center text-[#003527] font-bold text-xs">
                   {(adminName || 'A').charAt(0).toUpperCase()}
                 </div>
-                <span>{adminName || 'Admin'}</span>
+                <span className="truncate max-w-[100px]">{adminName || 'Admin'}</span>
               </div>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleLogout}
-                className="text-[#ba1a1a] hover:text-[#ba1a1a] hover:bg-[#ba1a1a]/10 border-[#ba1a1a]/30"
+                className="text-[#ba1a1a] hover:text-[#ba1a1a] hover:bg-[#ba1a1a]/10 border-[#ba1a1a]/30 h-8 px-2 sm:px-3"
               >
-                <LogOut className="h-4 w-4 mr-1" />
-                <span className="hidden sm:inline">Keluar</span>
+                <LogOut className="h-4 w-4" />
+                <span className="hidden sm:inline ml-1">Keluar</span>
               </Button>
             </div>
           </div>
         </header>
 
         {/* Page Content — scrolls independently, sidebar + topbar stay fixed */}
-        <main className="flex-1 p-4 md:p-6 overflow-y-auto overflow-x-hidden">
+        <main className="flex-1 p-3 sm:p-4 md:p-6 overflow-y-auto overflow-x-hidden overscroll-contain">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeSection}

@@ -292,13 +292,13 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
       <motion.div
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-gradient-to-r from-emerald-700 to-emerald-800 rounded-xl p-6 text-white"
+        className="bg-gradient-to-r from-emerald-700 to-emerald-800 rounded-xl p-4 sm:p-5 lg:p-6 text-white"
       >
-        <h1 className="text-2xl font-bold">Dashboard Admin</h1>
-        <p className="text-[#b0f0d6] mt-1">
+        <h1 className="text-lg sm:text-xl lg:text-2xl font-bold">Dashboard Admin</h1>
+        <p className="text-[#b0f0d6] mt-1 text-xs sm:text-sm">
           Selamat datang di panel admin MDTA Miftahul Ulum 01
         </p>
-        <div className="flex gap-4 mt-4">
+        <div className="flex flex-wrap gap-2 sm:gap-4 mt-3 sm:mt-4">
           <div className="bg-white/10 rounded-lg px-4 py-2">
             <p className="text-xs text-[#b0f0d6]">Berita Dipublikasi</p>
             <p className="text-lg font-bold">{publishedNews}</p>
@@ -318,14 +318,14 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
       <TrafficStats />
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-2 sm:gap-3 lg:gap-4">
         {stats.map((stat) => (
           <StatCard key={stat.title} {...stat} />
         ))}
       </div>
 
       {/* Recent Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
         {/* Recent PPDB Registrations */}
         <Card>
           <CardHeader className="pb-3">
@@ -450,7 +450,7 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
             <Button
               variant="outline"
               className="h-auto py-3 flex flex-col items-center gap-1 hover:bg-[#064e3b]/8 hover:border-[#064e3b]/30 hover:text-[#003527]"
