@@ -2602,6 +2602,29 @@ export default function AdminPanel({ adminName: adminNameProp, onLogout }: Admin
     sidebarOpenRef.current = sidebarOpen
   }, [sidebarOpen])
 
+  // Manage sidebar transform via direct DOM manipulation (not Tailwind utilities).
+  // Tailwind v4 uses CSS `translate` property which has inconsistent behavior in
+  // TWA WebView. Using `transform: translateX()` via inline style is more reliable.
+  useEffect(() => {
+    const sidebar = document.getElementById('admin-sidebar')
+    if (!sidebar) return
+
+    const updateTransform = () => {
+      const isDesktop = window.matchMedia('(min-width: 1024px)').matches
+      if (isDesktop) {
+        // Desktop: sidebar is static, no transform needed
+        sidebar.style.transform = 'none'
+      } else {
+        // Mobile: slide in/out based on sidebarOpen
+        sidebar.style.transform = sidebarOpen ? 'translateX(0)' : 'translateX(-100%)'
+      }
+    }
+
+    updateTransform()
+    window.addEventListener('resize', updateTransform)
+    return () => window.removeEventListener('resize', updateTransform)
+  }, [sidebarOpen])
+
   // Handle Android back button (TWA DelegationService forwards back press to web)
   // This effect runs ONCE on mount (empty deps) to set up the popstate listener.
   // It uses refs to read current state, so it doesn't re-run on every state change.
@@ -2720,10 +2743,15 @@ export default function AdminPanel({ adminName: adminNameProp, onLogout }: Admin
         )}
       </AnimatePresence>
 
-      {/* Sidebar — fixed full-height on desktop (h-screen), slide-in drawer on mobile */}
+      {/* Sidebar — fixed full-height on desktop, slide-in drawer on mobile.
+          Uses inline style for transform (not Tailwind translate utilities)
+          because Tailwind v4's translate uses CSS `translate` property
+          which has inconsistent behavior in TWA WebView.
+          On desktop (lg+), sidebar is always visible (static, no transform). */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-[80vw] max-w-[280px] bg-[#003527] text-white transform transition-transform duration-300 lg:static lg:translate-x-0 lg:h-screen lg:z-auto lg:w-64 shrink-0 ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+        id="admin-sidebar"
+        className={`fixed inset-y-0 left-0 z-50 w-[80vw] max-w-[280px] bg-[#003527] text-white transition-all duration-300 ease-out lg:static lg:h-screen lg:z-auto lg:w-64 shrink-0 ${
+          sidebarOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none lg:opacity-100 lg:pointer-events-auto'
         }`}
       >
         {/* Kraton pattern overlay */}
