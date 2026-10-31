@@ -55,6 +55,11 @@ jobs:
           echo "code=$VC" >> $GITHUB_OUTPUT
           echo "Build version: $VERSION (code: $VC)"
 
+      - name: 📦 Setup Gradle 8.7
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.7"
+
       - name: ⚙️ Setup Android SDK path
         run: |
           # Write local.properties (needed by gradle to find Android SDK)

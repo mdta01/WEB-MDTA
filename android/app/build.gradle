@@ -29,14 +29,16 @@ def appVersionName = project.hasProperty('appVersionName')
 //
 // When those variables are not present (e.g. local dev builds), the release
 // variant falls back to the debug signing config so the APK can still be built.
-def keystorePath = System.getenv('KEYSTORE_PATH') ?: ''
-def keystorePassword = System.getenv('KEYSTORE_PASSWORD') ?: ''
-def keyAlias = System.getenv('KEY_ALIAS') ?: ''
-def keyPassword = System.getenv('KEY_PASSWORD') ?: ''
-def hasReleaseKeystore = !keystorePath.isEmpty()
-        && !keystorePassword.isEmpty()
-        && !keyAlias.isEmpty()
-        && !keyPassword.isEmpty()
+// NOTE: local variable names must NOT collide with DSL property names,
+// otherwise Groovy interprets "keyAlias keyAlias" as a method call on String.
+def ksPath = System.getenv('KEYSTORE_PATH') ?: ''
+def ksPass = System.getenv('KEYSTORE_PASSWORD') ?: ''
+def kAlias = System.getenv('KEY_ALIAS') ?: ''
+def kPass = System.getenv('KEY_PASSWORD') ?: ''
+def hasReleaseKeystore = !ksPath.isEmpty()
+        && !ksPass.isEmpty()
+        && !kAlias.isEmpty()
+        && !kPass.isEmpty()
 
 android {
     namespace 'id.sch.mdta.miftahululum01.admin'
@@ -53,12 +55,10 @@ android {
     signingConfigs {
         release {
             if (hasReleaseKeystore) {
-                // rootProject.file() handles both absolute and project-relative
-                // paths correctly.
-                storeFile rootProject.file(keystorePath)
-                storePassword keystorePassword
-                keyAlias keyAlias
-                keyPassword keyPassword
+                storeFile rootProject.file(ksPath)
+                storePassword ksPass
+                keyAlias kAlias
+                keyPassword kPass
             }
         }
     }
