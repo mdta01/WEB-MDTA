@@ -4,7 +4,7 @@
     "target": {
       "namespace": "android_app",
       "package_name": "id.sch.mdta.miftahululum01.admin",
-      "sha256_cert_fingerprints": ["3E:5E:B8:1E:A3:11:A4:B6:6D:A6:67:1C:F0:EE:B6:2C:D0:A7:CE:62:9B:3E:42:B8:98:9A:0C:A0:42:36:A2:86"]
+      "sha256_cert_fingerprints": ["73:5A:B9:53:49:55:DC:C8:AC:DC:74:C8:5D:16:91:F8:DA:A6:BD:FC:52:0D:2D:82:E4:06:79:CB:13:1C:6E:9F"]
     }
   }
 ]
