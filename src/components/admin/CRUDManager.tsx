@@ -405,8 +405,8 @@ export default function CRUDManager({
 
       {/* Table */}
       <div className="border rounded-lg bg-[#ffffff] overflow-hidden">
-        <div className="overflow-x-auto overscroll-contain">
-          <Table>
+        <div className="overflow-x-auto overscroll-contain -webkit-overflow-scrolling-touch">
+          <Table className="whitespace-nowrap">
             <TableHeader>
               <TableRow className="bg-[#fbf9f5]">
                 <TableHead className="w-12 text-center">#</TableHead>
@@ -532,7 +532,7 @@ export default function CRUDManager({
 
       {/* Create/Edit Form Dialog */}
       <Dialog open={formOpen} onOpenChange={(open) => { if (!open) closeForm() }}>
-        <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto overscroll-contain p-4 sm:p-6">
+        <DialogContent className="sm:max-w-2xl p-4 sm:p-6">
           <DialogHeader>
             <DialogTitle className="text-base sm:text-lg">
               {editingItem ? `Edit ${itemName}` : `Tambah ${itemName}`}

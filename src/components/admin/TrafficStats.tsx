@@ -196,7 +196,7 @@ export default function TrafficStats() {
           title="Pengunjung Hari Ini"
           value={realtime?.todayVisitors ?? 0}
           icon={<Users className="h-5 w-5 text-white" />}
-          color="from-[#003527] to-[#064e3b]"
+          color="linear-gradient(to bottom right, #003527, #064e3b)"
           subtitle="Sejak 00:00"
           delay={0.05}
         />
@@ -204,7 +204,7 @@ export default function TrafficStats() {
           title="Total Page Views"
           value={realtime?.todayPageViews ?? 0}
           icon={<MousePointerClick className="h-5 w-5 text-white" />}
-          color="from-[#895033] to-[#a06643]"
+          color="linear-gradient(to bottom right, #895033, #a06643)"
           subtitle="Hari ini"
           delay={0.1}
         />
@@ -212,7 +212,7 @@ export default function TrafficStats() {
           title="Total Pengunjung"
           value={realtime?.totalVisitors ?? 0}
           icon={<Eye className="h-5 w-5 text-white" />}
-          color="from-[#cca72f] to-[#d4b547]"
+          color="linear-gradient(to bottom right, #cca72f, #d4b547)"
           subtitle="Sepanjang waktu"
           delay={0.15}
         />
@@ -373,7 +373,7 @@ interface RealtimeCardProps {
   title: string
   value: number
   icon: React.ReactNode
-  color: string // gradient classes "from-x to-y"
+  color: string // CSS background value, e.g. 'linear-gradient(to bottom right, #003527, #064e3b)'
   subtitle?: string
   pulse?: boolean
   delay?: number
@@ -398,7 +398,10 @@ function RealtimeCard({ title, value, icon, color, subtitle, pulse, delay = 0 }:
                 <p className="text-[9px] sm:text-[10px] text-[#404944]/70 mt-1 truncate">{subtitle}</p>
               )}
             </div>
-            <div className={`relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center shrink-0`}>
+            <div
+              className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center shrink-0"
+              style={{ background: color }}
+            >
               {pulse && (
                 <span className="absolute inset-0 rounded-xl bg-white/20 animate-ping" />
               )}
@@ -414,8 +417,8 @@ function RealtimeCard({ title, value, icon, color, subtitle, pulse, delay = 0 }:
 function ChartSkeleton() {
   return (
     <div className="space-y-4">
-      <div className="h-[180px] sm:h-[220px] w-full bg-gradient-to-br from-[#f5f3ef] to-[#efeeea] rounded-lg animate-pulse" />
-      <div className="h-[120px] sm:h-[140px] w-full bg-gradient-to-br from-[#f5f3ef] to-[#efeeea] rounded-lg animate-pulse" />
+      <div className="h-[180px] sm:h-[220px] w-full rounded-lg animate-pulse" style={{ background: 'linear-gradient(to bottom right, #f5f3ef, #efeeea)' }} />
+      <div className="h-[120px] sm:h-[140px] w-full rounded-lg animate-pulse" style={{ background: 'linear-gradient(to bottom right, #f5f3ef, #efeeea)' }} />
     </div>
   )
 }

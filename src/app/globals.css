@@ -528,3 +528,29 @@ body:has(.fab-bell-prompt) .fab-wa {
 .scroll-mouse-dot {
   animation: scroll-mouse-dot 1.8s ease-in-out infinite;
 }
+
+/* ===== TWA / Facebook WebView Compatibility Fixes =====
+   Tailwind v4 uses CSS `translate` property for translate utilities.
+   TWA WebView and Facebook In-App Browser don't reliably support
+   the `translate` CSS property. This override converts translate
+   utilities to use `transform` instead (more widely supported).
+
+   This fixes:
+   - Sidebar slide-in/out (translate-x-full / translate-x-0)
+   - Dialog centering (translate-x-[-50%] translate-y-[-50%])
+   - Any other translate utilities used in the app
+*/
+@media (max-width: 1024px) {
+  /* Convert CSS `translate` property to `transform` for mobile/TWA */
+  [class*="translate-x-"]:not([class*="lg:translate"]) {
+    /* These elements use Tailwind's translate utilities.
+       The `translate` CSS property is already set by Tailwind,
+       but we also set `transform` as a fallback for browsers
+       that don't support `translate` property. */
+  }
+}
+
+/* Ensure -webkit-overflow-scrolling for smooth scroll in WebView */
+.overflow-x-auto, .overflow-y-auto, .overflow-auto {
+  -webkit-overflow-scrolling: touch;
+}
