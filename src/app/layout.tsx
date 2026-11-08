@@ -43,6 +43,10 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Montserrat:wght@400;600;700&display=swap"
           rel="stylesheet"
         />
+        {/* Preload critical images — hero is above the fold, needs to load ASAP.
+            Logo is used in header on every page. */}
+        <link rel="preload" as="image" href="/images/hero-madrasah.png" fetchPriority="high" />
+        <link rel="preload" as="image" href="/images/logo-madin-warna.png" fetchPriority="high" />
         {/* ChunkLoadError auto-reload */}
         <script dangerouslySetInnerHTML={{ __html: `
           (function() {

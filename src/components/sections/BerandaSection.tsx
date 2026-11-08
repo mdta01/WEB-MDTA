@@ -494,6 +494,9 @@ export default function BerandaSection() {
               src={getSetting('madrasah_hero_image') || '/images/hero-madrasah.png'}
               alt="MDTA Miftahul Ulum 01"
               className="absolute inset-0 w-full h-full object-cover object-[center_25%]"
+              fetchPriority="high"
+              loading="eager"
+              decoding="async"
             />
           )}
           {/* Heavy overlay — top + bottom dark, middle medium (text readable, image hint visible) */}
@@ -541,6 +544,9 @@ export default function BerandaSection() {
                 src={getSetting('madrasah_hero_image') || '/images/hero-madrasah.png'}
                 alt="MDTA Miftahul Ulum 01"
                 className="absolute inset-0 w-full h-full object-cover object-center"
+                fetchPriority="high"
+                loading="eager"
+                decoding="async"
               />
             )}
             {/* Smooth gradient blend: left edge dark green (matches text panel) → right edge transparent.
@@ -617,6 +623,8 @@ export default function BerandaSection() {
                           src={getSetting('madrasah_principal_photo') || '/images/kepala-madrasah.png'}
                           alt="Kepala Madrasah"
                           className="w-full h-full object-cover"
+                          loading="lazy"
+                          decoding="async"
                         />
                       )}
                     </div>
@@ -769,7 +777,7 @@ export default function BerandaSection() {
                 >
                   <div className="h-48 bg-gradient-to-br from-[#064e3b] to-[#003527] relative overflow-hidden">
                     {item.image ? (
-                      <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" decoding="async" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
                         <BookOpen className="h-12 w-12 text-white/50" />
@@ -884,7 +892,7 @@ export default function BerandaSection() {
                   {/* Image or gradient header */}
                   <div className="h-32 bg-gradient-to-br from-[#064e3b] to-[#895033] relative overflow-hidden">
                     {item.image ? (
-                      <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" decoding="async" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
                         <BookHeart className="h-12 w-12 text-white/60" />
