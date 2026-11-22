@@ -45,8 +45,10 @@ export default function LiveAnnouncement() {
           >
             <span>{announcementText}</span>
             {/* Separator gap before duplicate */}
-            <span className="px-8">•</span>
-            <span>{announcementText}</span>
+            <span className="px-8" aria-hidden="true">•</span>
+            {/* Duplicate copy hidden from screen readers — purely visual,
+                exists only so the marquee can scroll seamlessly. */}
+            <span aria-hidden="true">{announcementText}</span>
           </div>
         </div>
       </div>

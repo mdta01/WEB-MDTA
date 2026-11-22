@@ -81,7 +81,7 @@ export default function AlumniSection() {
                     </div>
                   )}
                   {item.currentActivity && (
-                    <div className="mt-3 flex items-center justify-center gap-1 text-xs text-[#404944]/70">
+                    <div className="mt-3 flex items-center justify-center gap-1 text-xs text-[#404944]/80">
                       <Briefcase className="h-3 w-3" />
                       {item.currentActivity}
                     </div>

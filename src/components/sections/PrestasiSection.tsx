@@ -70,6 +70,7 @@ export default function PrestasiSection() {
         </div>
         {years.length > 0 && (
           <select
+            aria-label="Filter tahun"
             value={selectedYear}
             onChange={(e) => setSelectedYear(e.target.value)}
             className="px-4 py-2 rounded-full text-sm border border-[#e4e2de] bg-[#ffffff] text-[#003527] focus:outline-none focus:ring-2 focus:ring-[#cca72f]/40 focus:border-[#003527] font-body"
@@ -123,7 +124,7 @@ export default function PrestasiSection() {
                         <h4 className="font-semibold text-[#003527] text-sm line-clamp-2 font-display">{item.title}</h4>
                         <p className="text-xs text-[#404944] mt-1 font-body">{item.achiever}</p>
                         {item.description && (
-                          <p className="text-xs text-[#404944]/70 mt-1 line-clamp-2 font-body">{item.description}</p>
+                          <p className="text-xs text-[#404944]/80 mt-1 line-clamp-2 font-body">{item.description}</p>
                         )}
                         <div className="flex items-center gap-2 mt-2 flex-wrap">
                           <Badge className={`text-xs ${level.color} border-0`}>

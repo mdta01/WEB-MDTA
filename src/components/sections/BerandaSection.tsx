@@ -17,7 +17,7 @@ import { SmartImage, pickImage } from '@/components/ui/smart-image'
 import { EmptyState, EmptyStateCard } from '@/components/ui/empty-state'
 import { RippleButton } from '@/components/ui/ripple-button'
 import { TiltCard } from '@/components/ui/tilt-card'
-import { useMagneticButton, useTilt3D } from '@/lib/microinteractions'
+import { useMagneticButton, useTilt3D, usePrefersReducedMotion } from '@/lib/microinteractions'
 import { LQIP } from '@/lib/lqip'
 import { SocialBar } from '@/components/social/SocialBar'
 import { CalendarModal } from '@/components/sections/CalendarModal'
@@ -104,17 +104,27 @@ function useTypewriter(text: string, opts?: { startDelay?: number; typeSpeed?: n
   const startDelay = opts?.startDelay ?? 400
   const typeSpeed = opts?.typeSpeed ?? 35
   const [state, dispatch] = useReducer(typewriterReducer, { count: 0, phase: 'idle' })
+  const reducedMotion = usePrefersReducedMotion()
 
   // Reset when text changes (e.g. when settings load from API)
   useEffect(() => {
     if (!text) return // wait until real text is available
+
+    // If reduced motion is preferred, skip the typewriter animation
+    // entirely and show the full text immediately.
+    if (reducedMotion) {
+      dispatch({ type: 'finish' })
+      return
+    }
+
     dispatch({ type: 'reset' })
     const startTimer = setTimeout(() => dispatch({ type: 'begin-typing' }), startDelay)
     return () => clearTimeout(startTimer)
-  }, [text, startDelay])
+  }, [text, startDelay, reducedMotion])
 
   // Type next character
   useEffect(() => {
+    if (reducedMotion) return // Skip typing animation entirely
     if (state.phase !== 'typing') return
     if (state.count >= text.length) {
       dispatch({ type: 'finish' })
@@ -122,11 +132,13 @@ function useTypewriter(text: string, opts?: { startDelay?: number; typeSpeed?: n
     }
     const timer = setTimeout(() => dispatch({ type: 'type-next' }), typeSpeed)
     return () => clearTimeout(timer)
-  }, [state.phase, state.count, text, typeSpeed])
+  }, [state.phase, state.count, text, typeSpeed, reducedMotion])
 
   return {
-    display: text.slice(0, state.count),
-    done: state.phase === 'done' || (state.phase === 'typing' && state.count >= text.length),
+    display: reducedMotion ? text : text.slice(0, state.count),
+    done: reducedMotion
+      ? true
+      : (state.phase === 'done' || (state.phase === 'typing' && state.count >= text.length)),
   }
 }
 
@@ -134,19 +146,26 @@ function AnimatedCounter({ target, duration = 2000 }: { target: number; duration
   const [count, setCount] = useState(0)
   const ref = useRef<HTMLDivElement>(null)
   const started = useRef(false)
+  const reducedMotion = usePrefersReducedMotion()
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting && !started.current) {
           started.current = true
+
+          // If user prefers reduced motion, show final value immediately
+          // without the animated count-up.
+          if (reducedMotion) {
+            setCount(target)
+            return
+          }
+
+          // Normal animated count-up (easeOutExpo — dramatic deceleration)
           const startTime = performance.now()
           const animate = (currentTime: number) => {
             const elapsed = currentTime - startTime
             const progress = Math.min(elapsed / duration, 1)
-            // Premium easing: easeOutExpo — dramatic deceleration.
-            // Starts fast (instant feedback), slows to a gentle stop (premium feel).
-            // Better than linear (robotic) or easeOutCubic (less dramatic).
             const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress)
             setCount(Math.floor(target * eased))
             // Ensure final value is EXACTLY the target (Math.floor of eased*target
@@ -164,7 +183,7 @@ function AnimatedCounter({ target, duration = 2000 }: { target: number; duration
     )
     if (ref.current) observer.observe(ref.current)
     return () => observer.disconnect()
-  }, [target, duration])
+  }, [target, duration, reducedMotion])
 
   return <div ref={ref}>{count}</div>
 }
@@ -338,13 +357,13 @@ function HeroContent({ getSetting, typedDescription, typingDone, setCurrentPage 
       </motion.div>
 
       {/* Madrasah name — white + gold accent on second part */}
-      <h1
+      <h2
         className="text-2xl md:text-4xl lg:text-5xl font-bold mb-4 leading-[1.1] tracking-wide uppercase"
         style={{ filter: 'drop-shadow(0 2px 12px rgba(0,0,0,0.6))' }}
       >
         <span className="text-white">MDTA</span>{' '}
         <span className="text-gradient-amber">Miftahul Ulum 01</span>
-      </h1>
+      </h2>
 
       {/* Location pin (clickable ke Google Maps jika GPS tersedia) */}
       <div className="mb-6">
@@ -831,8 +850,16 @@ export default function BerandaSection() {
             {news.map((item: { id: string; title: string; excerpt?: string; content?: string; category: string; createdAt: string; image?: string }, idx: number) => (
               <TiltCard key={item.id} delay={idx * 0.1} maxTilt={5}>
                 <Card
-                  className="overflow-hidden border border-[#e4e2de] shadow-premium card-hover group cursor-pointer rounded-2xl bg-[#ffffff] h-full"
+                  role="button"
+                  tabIndex={0}
+                  className="overflow-hidden border border-[#e4e2de] shadow-premium card-hover group cursor-pointer focus-visible:ring-2 focus-visible:ring-[#cca72f]/40 focus-visible:outline-none rounded-2xl bg-[#ffffff] h-full"
                   onClick={() => setSelectedNews(item as typeof selectedNews)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      setSelectedNews(item as typeof selectedNews)
+                    }
+                  }}
                 >
                   <div className="h-48 bg-gradient-to-br from-[#064e3b] to-[#003527] relative overflow-hidden">
                     {item.image ? (
@@ -856,7 +883,7 @@ export default function BerandaSection() {
                     </Badge>
                   </div>
                   <CardContent className="p-4">
-                    <p className="text-xs text-[#404944]/70 mb-1">
+                    <p className="text-xs text-[#404944]/80 mb-1">
                       {new Date(item.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
                     </p>
                     <h3 className="font-semibold text-[#003527] line-clamp-2 mb-2 group-hover:text-[#064e3b] transition-colors">{item.title}</h3>
@@ -884,7 +911,7 @@ export default function BerandaSection() {
         <Dialog open={!!selectedNews} onOpenChange={() => setSelectedNews(null)}>
           <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto" showCloseButton={false}>
             <DialogClose asChild>
-              <Button variant="ghost" size="icon" className="absolute right-4 top-4 z-10">
+              <Button variant="ghost" size="icon" aria-label="Tutup" className="absolute right-4 top-4 z-10">
                 <X className="h-4 w-4" />
               </Button>
             </DialogClose>
@@ -897,7 +924,7 @@ export default function BerandaSection() {
                   <Badge className="bg-[#cca72f]/20 text-[#895033]">
                     {selectedNews.category}
                   </Badge>
-                  <span className="text-xs text-[#404944]/70 flex items-center gap-1">
+                  <span className="text-xs text-[#404944]/80 flex items-center gap-1">
                     <Calendar className="h-3 w-3" />
                     {new Date(selectedNews.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
                   </span>
@@ -959,8 +986,16 @@ export default function BerandaSection() {
             {dakwahList.map((item: { id: string; title: string; content: string; category: string; author?: string; image?: string; videoUrl?: string; createdAt: string }, idx: number) => (
               <TiltCard key={item.id} delay={idx * 0.1} maxTilt={5}>
                 <Card
-                  className="overflow-hidden border border-[#e4e2de] shadow-premium card-hover group cursor-pointer h-full flex flex-col rounded-2xl bg-[#ffffff]"
+                  role="button"
+                  tabIndex={0}
+                  className="overflow-hidden border border-[#e4e2de] shadow-premium card-hover group cursor-pointer focus-visible:ring-2 focus-visible:ring-[#cca72f]/40 focus-visible:outline-none h-full flex flex-col rounded-2xl bg-[#ffffff]"
                   onClick={() => setSelectedDakwah(item)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      setSelectedDakwah(item)
+                    }
+                  }}
                 >
                   {/* Image or gradient header */}
                   <div className="h-32 bg-gradient-to-br from-[#064e3b] to-[#895033] relative overflow-hidden">
@@ -999,7 +1034,7 @@ export default function BerandaSection() {
                     <p className="text-sm text-[#404944] line-clamp-2 mb-3 flex-1">
                       {item.content.substring(0, 120)}...
                     </p>
-                    <div className="flex items-center justify-between text-xs text-[#404944]/70 mt-auto">
+                    <div className="flex items-center justify-between text-xs text-[#404944]/80 mt-auto">
                       <span className="flex items-center gap-1">
                         <User className="h-3 w-3" />
                         {item.author || 'Tim Dakwah'}
@@ -1032,7 +1067,7 @@ export default function BerandaSection() {
         <Dialog open={!!selectedDakwah} onOpenChange={() => setSelectedDakwah(null)}>
           <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto" showCloseButton={false}>
             <DialogClose asChild>
-              <Button variant="ghost" size="icon" className="absolute right-4 top-4 z-10">
+              <Button variant="ghost" size="icon" aria-label="Tutup" className="absolute right-4 top-4 z-10">
                 <X className="h-4 w-4" />
               </Button>
             </DialogClose>
@@ -1045,11 +1080,11 @@ export default function BerandaSection() {
                   <Badge className="bg-[#cca72f]/20 text-[#895033] capitalize">
                     {selectedDakwah.category}
                   </Badge>
-                  <span className="text-xs text-[#404944]/70 flex items-center gap-1">
+                  <span className="text-xs text-[#404944]/80 flex items-center gap-1">
                     <User className="h-3 w-3" />
                     {selectedDakwah.author || 'Tim Dakwah'}
                   </span>
-                  <span className="text-xs text-[#404944]/70 flex items-center gap-1">
+                  <span className="text-xs text-[#404944]/80 flex items-center gap-1">
                     <Calendar className="h-3 w-3" />
                     {new Date(selectedDakwah.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
                   </span>
@@ -1101,8 +1136,16 @@ export default function BerandaSection() {
             transition={{ duration: 0.5 }}
           >
           <Card
-            className="border-0 shadow-premium-lg overflow-hidden cursor-pointer hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group rounded-2xl"
+            role="button"
+            tabIndex={0}
+            className="border-0 shadow-premium-lg overflow-hidden cursor-pointer focus-visible:ring-2 focus-visible:ring-[#cca72f]/40 focus-visible:outline-none hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group rounded-2xl"
             onClick={() => setCalendarModal({ open: true, type: 'hijri' })}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                setCalendarModal({ open: true, type: 'hijri' })
+              }
+            }}
           >
             <div className="bg-gradient-to-br from-[#003527] via-[#064e3b] to-[#003527] text-white relative">
               {/* Kraton pattern overlay */}
@@ -1168,8 +1211,16 @@ export default function BerandaSection() {
             transition={{ duration: 0.5 }}
           >
           <Card
-            className="border-0 shadow-premium-lg overflow-hidden cursor-pointer hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group rounded-2xl"
+            role="button"
+            tabIndex={0}
+            className="border-0 shadow-premium-lg overflow-hidden cursor-pointer focus-visible:ring-2 focus-visible:ring-[#cca72f]/40 focus-visible:outline-none hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group rounded-2xl"
             onClick={() => setCalendarModal({ open: true, type: 'masehi' })}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                setCalendarModal({ open: true, type: 'masehi' })
+              }
+            }}
           >
             <div className="bg-gradient-to-br from-[#895033] via-[#a86644] to-[#895033] text-white relative">
               {/* Decorative Kraton pattern */}
@@ -1297,7 +1348,7 @@ export default function BerandaSection() {
                   </div>
                   {testimonials.length > 1 && (
                     <div className="flex justify-center gap-2 mt-6">
-                      <Button variant="outline" size="icon" onClick={prevTestimonial} className="h-8 w-8">
+                      <Button variant="outline" size="icon" aria-label="Testimonial sebelumnya" onClick={prevTestimonial} className="h-8 w-8">
                         <ChevronLeft className="h-4 w-4" />
                       </Button>
                       <div className="flex items-center gap-1">
@@ -1311,7 +1362,7 @@ export default function BerandaSection() {
                           />
                         ))}
                       </div>
-                      <Button variant="outline" size="icon" onClick={nextTestimonial} className="h-8 w-8">
+                      <Button variant="outline" size="icon" aria-label="Testimonial berikutnya" onClick={nextTestimonial} className="h-8 w-8">
                         <ChevronRight className="h-4 w-4" />
                       </Button>
                     </div>

@@ -99,7 +99,7 @@ export default function PengumumanSection() {
                   <Badge variant="outline" className={`text-[10px] uppercase tracking-wide border-0 ${config.bg} ${config.color}`}>
                     {config.label}
                   </Badge>
-                  <span className="flex items-center gap-1 text-[10px] text-[#404944]/70">
+                  <span className="flex items-center gap-1 text-[10px] text-[#404944]/80">
                     <Clock className="h-2.5 w-2.5" />
                     {new Date(item.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                   </span>

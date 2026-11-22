@@ -90,8 +90,16 @@ export default function DakwahSection() {
                 transition={{ delay: Math.min(idx * 0.05, 0.3), duration: 0.4 }}
               >
                 <Card
-                  className="border border-[#e4e2de] shadow-premium wood-carved-shadow card-hover cursor-pointer group h-full overflow-hidden rounded-2xl bg-[#ffffff] relative"
+                  role="button"
+                  tabIndex={0}
+                  className="border border-[#e4e2de] shadow-premium wood-carved-shadow card-hover cursor-pointer focus-visible:ring-2 focus-visible:ring-[#cca72f]/40 focus-visible:outline-none group h-full overflow-hidden rounded-2xl bg-[#ffffff] relative"
                   onClick={() => setSelectedItem(item)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      setSelectedItem(item)
+                    }
+                  }}
                 >
                   {/* Top gold accent bar — appears on hover */}
                   <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-[#cca72f] via-[#ffe088] to-[#cca72f] opacity-0 group-hover:opacity-100 transition-opacity z-10" aria-hidden />
@@ -142,7 +150,7 @@ export default function DakwahSection() {
                     <p className="text-xs sm:text-sm text-[#404944] line-clamp-3 mb-3 leading-relaxed">
                       {item.content.substring(0, 150)}...
                     </p>
-                    <div className="flex items-center justify-between text-[10px] text-[#404944]/70 pt-2 border-t border-[#e4e2de]">
+                    <div className="flex items-center justify-between text-[10px] text-[#404944]/80 pt-2 border-t border-[#e4e2de]">
                       <div className="flex items-center gap-1">
                         <User className="h-3 w-3 text-[#cca72f]" />
                         {item.author || 'Tim Dakwah'}
@@ -171,7 +179,7 @@ export default function DakwahSection() {
       <Dialog open={!!selectedItem} onOpenChange={() => setSelectedItem(null)}>
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto" showCloseButton={false}>
           <DialogClose asChild>
-            <Button variant="ghost" size="icon" className="absolute right-4 top-4 z-10">
+            <Button variant="ghost" size="icon" aria-label="Tutup" className="absolute right-4 top-4 z-10">
               <X className="h-4 w-4" />
             </Button>
           </DialogClose>
@@ -184,8 +192,8 @@ export default function DakwahSection() {
                 <Badge className={categoryColors[selectedItem.category] || 'bg-[#f5f3ef] text-[#404944]'}>
                   {selectedItem.category}
                 </Badge>
-                <span className="text-xs text-[#404944]/70">{selectedItem.author || 'Tim Dakwah'}</span>
-                <span className="text-xs text-[#404944]/70">
+                <span className="text-xs text-[#404944]/80">{selectedItem.author || 'Tim Dakwah'}</span>
+                <span className="text-xs text-[#404944]/80">
                   {new Date(selectedItem.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
                 </span>
               </div>

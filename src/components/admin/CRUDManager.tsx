@@ -394,7 +394,7 @@ export default function CRUDManager({
 
       {/* Search */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#404944]/70" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#404944]/80" />
         <Input
           placeholder={`Cari ${itemName.toLowerCase()}...`}
           value={search}
@@ -443,7 +443,7 @@ export default function CRUDManager({
               ) : (
                 paginatedItems.map((item, idx) => (
                   <TableRow key={(item.id as string) || idx}>
-                    <TableCell className="text-center text-[#404944]/70 text-xs">
+                    <TableCell className="text-center text-[#404944]/80 text-xs">
                       {(page - 1) * pageSize + idx + 1}
                     </TableCell>
                     {columns
@@ -707,7 +707,7 @@ export default function CRUDManager({
                   {field.type === 'image'
                     ? (viewItem[field.name]
                       ? <img src={String(viewItem[field.name])} alt={field.label} className="max-h-24 rounded border" />
-                      : <span className="text-[#404944]/70">-</span>)
+                      : <span className="text-[#404944]/80">-</span>)
                     : field.type === 'switch'
                       ? (viewItem[field.name] ? 'Ya' : 'Tidak')
                       : field.type === 'select' && field.options
@@ -731,7 +731,7 @@ export default function CRUDManager({
 // --- Default Cell Renderer ---
 
 function renderDefaultCell(value: unknown, key: string) {
-  if (value === null || value === undefined) return <span className="text-[#404944]/70">-</span>
+  if (value === null || value === undefined) return <span className="text-[#404944]/80">-</span>
 
   if (typeof value === 'boolean') {
     return value

@@ -5,6 +5,7 @@ import {
   User, Users, FileCheck, CheckCircle2,
   AlertCircle,
 } from 'lucide-react'
+import { useId, isValidElement, cloneElement, type ReactElement } from 'react'
 
 /**
  * PPDBFormParts — Shared sub-components for the PPDB multi-step form.
@@ -167,16 +168,41 @@ export function Field({
   hint?: string
   children: React.ReactNode
 }) {
+  // Generate a stable, unique id for label/input association.
+  // useId() is SSR-safe (React 18+) — same id on server and client.
+  const fieldId = useId()
+  const errorId = `${fieldId}-error`
+
+  // Clone the child input element (Input / Textarea / <select>) to inject
+  // id + aria-* attributes. This avoids requiring callers to thread props
+  // manually and keeps the public Field API minimal.
+  const fieldElement = isValidElement(children)
+    ? cloneElement(
+        children as ReactElement<{
+          id?: string
+          'aria-required'?: boolean
+          'aria-invalid'?: boolean
+          'aria-describedby'?: string
+        }>,
+        {
+          id: fieldId,
+          'aria-required': required,
+          'aria-invalid': !!error,
+          'aria-describedby': error ? errorId : undefined,
+        }
+      )
+    : children
+
   return (
     <div className="space-y-1.5">
-      <label className="text-sm font-medium text-[#003527] font-body flex items-center gap-1">
+      <label htmlFor={fieldId} className="text-sm font-medium text-[#003527] font-body flex items-center gap-1">
         {label}
-        {required && <span className="text-[#cca72f]" aria-hidden>*</span>}
+        {required && <span className="text-[#895033]" aria-hidden>*</span>}
       </label>
-      {children}
-      {hint && !error && <p className="text-xs text-[#404944]/70">{hint}</p>}
+      {fieldElement}
+      {hint && !error && <p className="text-xs text-[#404944]/80">{hint}</p>}
       {error && (
-        <p className="text-xs text-[#ba1a1a] flex items-center gap-1">
+        <p id={errorId} role="alert" className="text-xs text-[#ba1a1a] flex items-center gap-1">
           <AlertCircle className="h-3 w-3 shrink-0" /> {error}
         </p>
       )}

@@ -395,7 +395,7 @@ function RealtimeCard({ title, value, icon, color, subtitle, pulse, delay = 0 }:
                 {value.toLocaleString('id-ID')}
               </p>
               {subtitle && (
-                <p className="text-[9px] sm:text-[10px] text-[#404944]/70 mt-1 truncate">{subtitle}</p>
+                <p className="text-[9px] sm:text-[10px] text-[#404944]/80 mt-1 truncate">{subtitle}</p>
               )}
             </div>
             <div

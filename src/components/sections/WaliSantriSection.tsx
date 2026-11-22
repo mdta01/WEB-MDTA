@@ -173,7 +173,7 @@ export default function WaliSantriSection() {
                                 <p className="text-xs text-[#404944] mt-0.5 line-clamp-2 leading-relaxed">{a.content}</p>
                               )}
                               <div className="flex items-center justify-between mt-1.5">
-                                <span className="text-[10px] text-[#404944]/70 flex items-center gap-1">
+                                <span className="text-[10px] text-[#404944]/80 flex items-center gap-1">
                                   <Clock className="h-2.5 w-2.5" />
                                   {new Date(a.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                                 </span>
@@ -290,7 +290,7 @@ export default function WaliSantriSection() {
                             <p className="text-xs text-[#404944]">{payment.description}</p>
                           )}
                           {payment.dueDate && (
-                            <p className="text-xs text-[#404944]/70 mt-1 flex items-center gap-1">
+                            <p className="text-xs text-[#404944]/80 mt-1 flex items-center gap-1">
                               <Clock className="h-3 w-3" />
                               Jatuh tempo: {new Date(payment.dueDate).toLocaleDateString('id-ID')}
                             </p>
@@ -388,7 +388,7 @@ export default function WaliSantriSection() {
       <Dialog open={!!selectedAnnouncement} onOpenChange={() => setSelectedAnnouncement(null)}>
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto" showCloseButton={false}>
           <DialogClose asChild>
-            <Button variant="ghost" size="icon" className="absolute right-4 top-4 z-10">
+            <Button variant="ghost" size="icon" aria-label="Tutup" className="absolute right-4 top-4 z-10">
               <X className="h-4 w-4" />
             </Button>
           </DialogClose>
@@ -401,7 +401,7 @@ export default function WaliSantriSection() {
                 <Badge className="bg-[#cca72f]/20 text-[#895033] capitalize">
                   {selectedAnnouncement.type || 'pengumuman'}
                 </Badge>
-                <span className="text-xs text-[#404944]/70 flex items-center gap-1">
+                <span className="text-xs text-[#404944]/80 flex items-center gap-1">
                   <Calendar className="h-3 w-3" />
                   {new Date(selectedAnnouncement.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
                 </span>

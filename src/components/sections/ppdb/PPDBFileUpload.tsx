@@ -395,7 +395,7 @@ export function PPDBFileUpload({
             </div>
             <p className="text-sm font-medium text-[#003527] text-center">
               Tarik & lepas file di sini, atau{' '}
-              <span className="text-[#cca72f] underline">pilih file</span>
+              <span className="text-[#895033] underline">pilih file</span>
             </p>
             <p className="text-xs text-[#404944] text-center">
               {allowPdf ? 'Gambar (JPG/PNG) atau PDF' : 'Gambar saja (JPG/PNG)'} • Maks{' '}
@@ -439,7 +439,7 @@ function Label({
       className="text-sm font-medium text-[#003527] font-body flex items-center gap-1"
     >
       {children}
-      {required && <span className="text-[#cca72f]" aria-hidden>*</span>}
+      {required && <span className="text-[#895033]" aria-hidden>*</span>}
     </label>
   )
 }

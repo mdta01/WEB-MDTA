@@ -299,12 +299,14 @@ export function EmptyState({
       transition={{ duration: 0.4, ease: 'easeOut' }}
       className={`flex flex-col items-center justify-center text-center ${isCompact ? 'py-6' : 'py-12 md:py-16'} px-4 ${className}`}
     >
-      {/* Illustration — custom SVG (premium, NOT generic Lucide icon) */}
+      {/* Illustration — custom SVG (premium, NOT generic Lucide icon).
+          Marked aria-hidden because the SVG is purely decorative —
+          the title/message below conveys the same meaning to screen readers. */}
       {!isCompact && (
         <div className={`mb-${isCompact ? '3' : '5'} relative`}>
           {/* Gold ring glow */}
           <div className="absolute inset-0 bg-[#cca72f]/10 rounded-full blur-2xl scale-150 pointer-events-none" aria-hidden />
-          <div className={`relative ${isSearch ? 'w-24 h-24' : 'w-28 h-28 md:w-32 md:h-32'}`}>
+          <div className={`relative ${isSearch ? 'w-24 h-24' : 'w-28 h-28 md:w-32 md:h-32'}`} aria-hidden="true">
             <Illustration />
           </div>
         </div>

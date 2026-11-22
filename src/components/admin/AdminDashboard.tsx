@@ -429,7 +429,7 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
                         {(msg.subject as string) || (msg.message as string)?.slice(0, 60)}
                       </p>
                     </div>
-                    <span className="text-xs text-[#404944]/70 flex-shrink-0 ml-2">
+                    <span className="text-xs text-[#404944]/80 flex-shrink-0 ml-2">
                       {msg.createdAt
                         ? new Date(msg.createdAt as string).toLocaleDateString('id-ID')
                         : '-'}

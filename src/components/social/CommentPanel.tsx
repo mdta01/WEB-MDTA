@@ -263,7 +263,7 @@ export function CommentPanel() {
                 </div>
                 <div className="min-w-0">
                   <h3 className="font-bold text-sm text-[#003527] truncate">Komentar</h3>
-                  <p className="text-[10px] text-[#404944]/70 truncate" title={itemTitle}>
+                  <p className="text-[10px] text-[#404944]/80 truncate" title={itemTitle}>
                     {itemTitle || 'Konten'}
                   </p>
                 </div>
@@ -285,7 +285,7 @@ export function CommentPanel() {
               {loading ? (
                 <div className="flex flex-col items-center justify-center py-12 gap-3">
                   <div className="w-8 h-8 border-2 border-[#003527] border-t-transparent rounded-full animate-spin" />
-                  <p className="text-xs text-[#404944]/70">Memuat komentar...</p>
+                  <p className="text-xs text-[#404944]/80">Memuat komentar...</p>
                 </div>
               ) : error ? (
                 <div className="flex flex-col items-center justify-center py-12 gap-3 text-center">
@@ -304,7 +304,7 @@ export function CommentPanel() {
                     <MessageCircle className="h-7 w-7 text-[#003527]/50" />
                   </div>
                   <p className="text-sm font-semibold text-[#003527]">Belum ada komentar</p>
-                  <p className="text-xs text-[#404944]/70 mt-1">
+                  <p className="text-xs text-[#404944]/80 mt-1">
                     Jadilah yang pertama berkomentar di konten ini
                   </p>
                 </div>
@@ -386,6 +386,7 @@ export function CommentPanel() {
                 <input
                   ref={nameRef}
                   type="text"
+                  aria-label="Nama Anda"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Nama Anda"
@@ -407,6 +408,7 @@ export function CommentPanel() {
                 <div className="flex-1 relative">
                   <textarea
                     ref={inputRef}
+                    aria-label="Komentar Anda"
                     value={text}
                     onChange={(e) => setText(e.target.value)}
                     onKeyDown={handleKeyDown}

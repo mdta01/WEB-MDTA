@@ -106,7 +106,7 @@ export default function KelembagaanSection() {
                       <Icon className="h-6 w-6 text-white" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-xs text-[#404944]/70 uppercase tracking-wider font-semibold font-body">{item.label}</p>
+                      <p className="text-xs text-[#404944]/80 uppercase tracking-wider font-semibold font-body">{item.label}</p>
                       <p className="font-semibold text-[#003527] mt-1 font-display">{item.value}</p>
                     </div>
                   </CardContent>
@@ -146,7 +146,7 @@ export default function KelembagaanSection() {
                 <span className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 h-1.5 w-1.5 sm:h-2 sm:w-2 rotate-45 bg-[#cca72f]/40" aria-hidden />
 
                 <div className="text-center mb-4">
-                  <p className="text-xs text-[#404944]/70 uppercase tracking-widest font-body">Dokumen Resmi</p>
+                  <p className="text-xs text-[#404944]/80 uppercase tracking-widest font-body">Dokumen Resmi</p>
                   <h4 className="text-lg font-bold text-[#003527] mt-1 font-display">Identitas Madrasah</h4>
                   <KratonDivider variant="minimal" align="center" className="mt-2" />
                 </div>

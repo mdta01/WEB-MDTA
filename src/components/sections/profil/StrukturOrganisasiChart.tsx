@@ -180,7 +180,7 @@ export function StrukturOrganisasiChart({ struktur }: { struktur: StrukturItem[]
                         {getInitials(item.name)}
                       </span>
                     </div>
-                    <p className="text-[10px] uppercase tracking-wider font-semibold text-[#cca72f] mb-1">
+                    <p className="text-[10px] uppercase tracking-wider font-semibold text-[#895033] mb-1">
                       Staff
                     </p>
                     <p className="text-xs font-bold text-[#003527] leading-tight">{item.role}</p>

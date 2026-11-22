@@ -127,8 +127,16 @@ export default function BeritaSection() {
                 transition={{ delay: Math.min(idx * 0.05, 0.3), duration: 0.4 }}
               >
                 <Card
-                  className="overflow-hidden border border-[#e4e2de] shadow-premium wood-carved-shadow card-hover cursor-pointer group h-full flex flex-col rounded-2xl bg-[#ffffff] relative"
+                  role="button"
+                  tabIndex={0}
+                  className="overflow-hidden border border-[#e4e2de] shadow-premium wood-carved-shadow card-hover cursor-pointer focus-visible:ring-2 focus-visible:ring-[#cca72f]/40 focus-visible:outline-none group h-full flex flex-col rounded-2xl bg-[#ffffff] relative"
                   onClick={() => setSelectedNews(item)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      setSelectedNews(item)
+                    }
+                  }}
                 >
                   {/* Top gold accent bar — appears on hover */}
                   <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-[#cca72f] via-[#ffe088] to-[#cca72f] opacity-0 group-hover:opacity-100 transition-opacity z-10" aria-hidden />
@@ -160,7 +168,7 @@ export default function BeritaSection() {
 
                   <CardContent className="p-4 flex-1 flex flex-col">
                     {/* Date — with Clock icon */}
-                    <div className="flex items-center gap-1.5 text-[10px] text-[#404944]/70 mb-2">
+                    <div className="flex items-center gap-1.5 text-[10px] text-[#404944]/80 mb-2">
                       <Clock className="h-3 w-3 text-[#cca72f]" />
                       {new Date(item.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                     </div>
@@ -249,7 +257,7 @@ export default function BeritaSection() {
       <Dialog open={!!selectedNews} onOpenChange={() => setSelectedNews(null)}>
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto" showCloseButton={false}>
           <DialogClose asChild>
-            <Button variant="ghost" size="icon" className="absolute right-4 top-4 z-10">
+            <Button variant="ghost" size="icon" aria-label="Tutup" className="absolute right-4 top-4 z-10">
               <X className="h-4 w-4" />
             </Button>
           </DialogClose>
@@ -262,7 +270,7 @@ export default function BeritaSection() {
                 <Badge className={categoryColors[selectedNews.category] || 'bg-[#f5f3ef] text-[#404944]'}>
                   {selectedNews.category}
                 </Badge>
-                <span className="text-xs text-[#404944]/70 flex items-center gap-1">
+                <span className="text-xs text-[#404944]/80 flex items-center gap-1">
                   <Calendar className="h-3 w-3" />
                   {new Date(selectedNews.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
                 </span>

@@ -175,7 +175,7 @@ export default function DownloadSection() {
                             <h4 className="font-medium text-[#003527] text-sm truncate">{item.title}</h4>
                             <div className="flex items-center gap-2 mt-1">
                               <Badge variant="outline" className="text-xs uppercase">{fileTypeLabels[fileType] || 'FILE'}</Badge>
-                              <span className="text-xs text-[#404944]/70">
+                              <span className="text-xs text-[#404944]/80">
                                 {new Date(item.createdAt).toLocaleDateString('id-ID')}
                               </span>
                             </div>
@@ -245,6 +245,7 @@ export default function DownloadSection() {
                   <Button
                     size="sm"
                     variant="ghost"
+                    aria-label="Tutup pratinjau"
                     className="text-[#404944] hover:bg-[#f5f3ef] h-9 w-9 p-0 rounded-lg"
                     onClick={() => setPreviewItem(null)}
                   >

@@ -30,7 +30,7 @@ function getPrefersReducedMotionServerSnapshot(): boolean {
   return false // SSR always returns false (no motion preference on server)
 }
 
-function usePrefersReducedMotion(): boolean {
+export function usePrefersReducedMotion(): boolean {
   return useSyncExternalStore(
     subscribePrefersReducedMotion,
     getPrefersReducedMotionSnapshot,

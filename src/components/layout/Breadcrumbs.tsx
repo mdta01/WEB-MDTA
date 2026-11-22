@@ -79,7 +79,7 @@ export function Breadcrumbs() {
       )}
       {/* Visible breadcrumb trail — subtle, premium styling */}
       <nav aria-label="Breadcrumb" className="container mx-auto px-4 sm:px-6 lg:px-8 pt-4">
-        <ol className="flex items-center gap-1.5 text-xs text-[#404944]/70 font-body">
+        <ol className="flex items-center gap-1.5 text-xs text-[#404944]/80 font-body">
           <li>
             <button
               onClick={handleHome}

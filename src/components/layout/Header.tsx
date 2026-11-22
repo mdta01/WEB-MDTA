@@ -310,7 +310,7 @@ export default function Header() {
               {isActive && (
                 <span className="absolute top-0.5 w-1 h-1 rounded-full bg-[#cca72f]" aria-hidden />
               )}
-              <Icon className={`h-4 w-4 ${isActive ? 'text-[#003527]' : 'text-[#404944]/70'}`} />
+              <Icon className={`h-4 w-4 ${isActive ? 'text-[#003527]' : 'text-[#404944]/80'}`} />
               <span className="text-[9px] font-medium leading-none">{item.label}</span>
             </button>
           )

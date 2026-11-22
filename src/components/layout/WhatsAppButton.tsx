@@ -58,6 +58,7 @@ export default function WhatsAppButton() {
               <div className="bg-gradient-to-r from-green-500 to-green-600 p-4 text-white relative">
                 <button
                   onClick={() => setShowMenu(false)}
+                  aria-label="Tutup menu"
                   className="absolute top-3 right-3 text-white/70 hover:text-white"
                 >
                   <X className="h-4 w-4" />
@@ -92,7 +93,7 @@ export default function WhatsAppButton() {
               </div>
               {/* Footer */}
               <div className="border-t border-[#e4e2de] px-4 py-2.5 text-center">
-                <p className="text-[10px] text-[#404944]/70">MDTA Miftahul Ulum 01</p>
+                <p className="text-[10px] text-[#404944]/80">MDTA Miftahul Ulum 01</p>
               </div>
             </motion.div>
           </>

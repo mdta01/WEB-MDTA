@@ -34,6 +34,15 @@ const KontakSection = lazy(() => import('@/components/sections/KontakSection'))
 const FAQSection = lazy(() => import('@/components/sections/FAQSection'))
 const SearchSection = lazy(() => import('@/components/sections/SearchSection'))
 
+const sectionLabels: Record<string, string> = {
+  beranda: 'Beranda', profil: 'Profil', program: 'Program',
+  berita: 'Berita', prestasi: 'Prestasi', galeri: 'Galeri',
+  pengumuman: 'Pengumuman', ppdb: 'PPDB', download: 'Download',
+  dakwah: 'Dakwah & Kajian', kelembagaan: 'Kelembagaan',
+  alumni: 'Alumni', 'wali-santri': 'Wali Santri',
+  kontak: 'Kontak', faq: 'FAQ', search: 'Pencarian',
+}
+
 // Loading fallback — minimal skeleton while section chunk loads
 function SectionLoading() {
   return (
@@ -91,6 +100,7 @@ function SectionRenderer() {
 }
 
 export default function Home() {
+  const { currentPage } = useAppStore()
   // mounted state — prevents hydration mismatch (error 418) caused by
   // React Query's client-side cache. On server, useQuery returns isLoading=true
   // (skeleton shows). On client hydration, if cached data exists, isLoading=false
@@ -176,6 +186,16 @@ export default function Home() {
               This ensures server HTML matches client's first render. */}
           {mounted ? (
             <>
+              {/* sr-only h1 for screen readers — announces current section */}
+              <h1 className="sr-only">
+                {(sectionLabels[currentPage] || 'Beranda')} — MDTA Miftahul Ulum 01
+              </h1>
+              {/* aria-live region — announces section transitions to screen readers.
+                  When currentPage changes, the message updates and polite assertiveness
+                  queues the announcement without interrupting the user. */}
+              <div aria-live="polite" className="sr-only">
+                Memuat {sectionLabels[currentPage] || 'Beranda'}
+              </div>
               <Breadcrumbs />
               <SectionRenderer />
             </>

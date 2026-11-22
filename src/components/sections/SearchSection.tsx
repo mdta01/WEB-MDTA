@@ -118,6 +118,7 @@ export default function SearchSection() {
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-[#003527]/40" />
         <Input
           id="global-search"
+          aria-label="Cari informasi"
           name="q"
           type="search"
           placeholder="Cari berita, program, pengumuman..."
@@ -142,7 +143,7 @@ export default function SearchSection() {
       ) : searchQuery.length >= 2 ? (
         results.length > 0 ? (
           <div className="max-w-xl mx-auto space-y-3">
-            <p className="text-sm text-[#404944]/70 mb-4">Ditemukan {results.length} hasil untuk &ldquo;{searchQuery}&rdquo;</p>
+            <p className="text-sm text-[#404944]/80 mb-4">Ditemukan {results.length} hasil untuk &ldquo;{searchQuery}&rdquo;</p>
             {results.map((result, idx) => {
               const config = typeConfig[result.type] || typeConfig['berita']
               const TypeIcon = config.icon
@@ -154,10 +155,19 @@ export default function SearchSection() {
                   transition={{ delay: idx * 0.03 }}
                 >
                   <Card
-                    className="border border-[#e4e2de] shadow-md hover:shadow-lg transition-shadow cursor-pointer group rounded-2xl bg-[#ffffff]"
+                    role="button"
+                    tabIndex={0}
+                    className="border border-[#e4e2de] shadow-md hover:shadow-lg transition-shadow cursor-pointer focus-visible:ring-2 focus-visible:ring-[#cca72f]/40 focus-visible:outline-none group rounded-2xl bg-[#ffffff]"
                     onClick={() => {
                       setCurrentPage(config.page as 'berita' | 'pengumuman' | 'program' | 'prestasi')
                       window.scrollTo({ top: 0, behavior: 'smooth' })
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault()
+                        setCurrentPage(config.page as 'berita' | 'pengumuman' | 'program' | 'prestasi')
+                        window.scrollTo({ top: 0, behavior: 'smooth' })
+                      }
                     }}
                   >
                     <CardContent className="p-4">
@@ -169,7 +179,7 @@ export default function SearchSection() {
                           <div className="flex items-center gap-2 mb-1">
                             <Badge className={`text-xs ${config.color}`}>{config.label}</Badge>
                             {result.date && (
-                              <span className="text-xs text-[#404944]/70">
+                              <span className="text-xs text-[#404944]/80">
                                 {new Date(result.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
                               </span>
                             )}

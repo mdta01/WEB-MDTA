@@ -193,7 +193,7 @@ export function GPSLocationSetup() {
               Lokasi tersimpan: {lat}, {lng}
             </span>
           ) : (
-            <span className="text-xs text-[#404944]/70">
+            <span className="text-xs text-[#404944]/80">
               Belum ada lokasi GPS. Klik tombol di atas untuk mendeteksi.
             </span>
           )}

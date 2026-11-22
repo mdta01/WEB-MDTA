@@ -213,7 +213,7 @@ export default function PPDBSection() {
                 ) : (
                   <EmptyState illustration="ppdb" variant="compact" title="Biaya pendidikan belum tersedia" message="Hubungi panitia PPDB untuk rincian biaya." />
                 )}
-                <p className="text-xs text-[#404944]/70 mt-3">* Biaya dapat berubah sewaktu-waktu</p>
+                <p className="text-xs text-[#404944]/80 mt-3">* Biaya dapat berubah sewaktu-waktu</p>
               </CardContent>
             </Card>
           </motion.div>

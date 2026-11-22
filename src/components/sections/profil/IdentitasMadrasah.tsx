@@ -130,7 +130,7 @@ export function IdentitasMadrasah({ getSetting }: { getSetting: SettingGetter })
               />
             </div>
             <div className="text-center sm:text-left">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#cca72f] mb-1">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#895033] mb-1">
                 Identitas Madrasah
               </p>
               <h3 className="font-display text-2xl sm:text-3xl font-bold text-[#003527] leading-tight">
@@ -157,7 +157,7 @@ export function IdentitasMadrasah({ getSetting }: { getSetting: SettingGetter })
                     <Icon className="h-4 w-4 text-[#003527]" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <dt className="text-[10px] uppercase tracking-wider font-semibold text-[#404944]/70">
+                    <dt className="text-[10px] uppercase tracking-wider font-semibold text-[#404944]/80">
                       {row.label}
                     </dt>
                     <dd
@@ -178,7 +178,7 @@ export function IdentitasMadrasah({ getSetting }: { getSetting: SettingGetter })
 
           {/* Social media premium buttons */}
           <div className="mt-6">
-            <p className="text-center text-[10px] uppercase tracking-[0.25em] text-[#404944]/70 mb-4 font-semibold">
+            <p className="text-center text-[10px] uppercase tracking-[0.25em] text-[#404944]/80 mb-4 font-semibold">
               Terhubung dengan Kami
             </p>
             <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">

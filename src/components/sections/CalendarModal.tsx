@@ -203,6 +203,9 @@ export function CalendarModal({ open, onClose, initialType = 'masehi' }: Calenda
           onClick={onClose}
         >
           <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Kalender Madrasah"
             initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }}
             transition={{ duration: 0.25 }}
             onClick={e => e.stopPropagation()}
@@ -217,7 +220,7 @@ export function CalendarModal({ open, onClose, initialType = 'masehi' }: Calenda
                     <p className="text-[10px] sm:text-xs text-[#b0f0d6]">Klik tanggal untuk lihat agenda</p>
                   </div>
               </div>
-              <button onClick={onClose} className="w-8 h-8 rounded-full hover:bg-white/20 flex items-center justify-center transition-colors shrink-0">
+              <button onClick={onClose} aria-label="Tutup kalender" className="w-8 h-8 rounded-full hover:bg-white/20 flex items-center justify-center transition-colors shrink-0">
                 <X className="h-4 w-4" />
               </button>
             </div>
@@ -244,14 +247,14 @@ export function CalendarModal({ open, onClose, initialType = 'masehi' }: Calenda
                 <div className="md:col-span-3 p-4 sm:p-5">
                   {/* Month nav */}
                   <div className="flex items-center justify-between mb-3">
-                    <button onClick={goPrev} className="w-8 h-8 rounded-lg hover:bg-[#064e3b]/8 flex items-center justify-center text-[#003527] transition-colors">
+                    <button onClick={goPrev} aria-label="Bulan sebelumnya" className="w-8 h-8 rounded-lg hover:bg-[#064e3b]/8 flex items-center justify-center text-[#003527] transition-colors">
                       <ChevronLeft className="h-5 w-5" />
                     </button>
                     <div className="text-center">
                       <h3 className="font-bold text-[#003527] text-sm sm:text-base">{headerLabel}</h3>
-                      {headerSubLabel && <p className="text-[10px] text-[#404944]/70">{headerSubLabel}</p>}
+                      {headerSubLabel && <p className="text-[10px] text-[#404944]/80">{headerSubLabel}</p>}
                     </div>
-                    <button onClick={goNext} className="w-8 h-8 rounded-lg hover:bg-[#064e3b]/8 flex items-center justify-center text-[#003527] transition-colors">
+                    <button onClick={goNext} aria-label="Bulan berikutnya" className="w-8 h-8 rounded-lg hover:bg-[#064e3b]/8 flex items-center justify-center text-[#003527] transition-colors">
                       <ChevronRight className="h-5 w-5" />
                     </button>
                   </div>
@@ -259,7 +262,7 @@ export function CalendarModal({ open, onClose, initialType = 'masehi' }: Calenda
                   {/* Weekday header */}
                   <div className="grid grid-cols-7 gap-0.5 mb-1">
                     {weekdayNames.map((day, i) => (
-                      <div key={day} className={`text-center text-[10px] sm:text-xs font-bold py-1.5 ${i === 0 ? 'text-[#ba1a1a]/70' : i === 5 ? 'text-[#064e3b]' : 'text-[#404944]/70'}`}>{day}</div>
+                      <div key={day} className={`text-center text-[10px] sm:text-xs font-bold py-1.5 ${i === 0 ? 'text-[#ba1a1a]/70' : i === 5 ? 'text-[#064e3b]' : 'text-[#404944]/80'}`}>{day}</div>
                     ))}
                   </div>
 
@@ -300,12 +303,12 @@ export function CalendarModal({ open, onClose, initialType = 'masehi' }: Calenda
                           {selectedDateEvents.map(ev => (
                             <div key={ev.id} className="bg-[#ffffff] rounded-md p-2 border border-blue-50">
                               <p className="font-medium text-xs text-[#003527]">{ev.title}</p>
-                              {ev.location && <p className="text-[10px] text-[#404944]/70 mt-0.5 flex items-center gap-0.5"><MapPin className="h-2.5 w-2.5" />{ev.location}</p>}
+                              {ev.location && <p className="text-[10px] text-[#404944]/80 mt-0.5 flex items-center gap-0.5"><MapPin className="h-2.5 w-2.5" />{ev.location}</p>}
                             </div>
                           ))}
                         </div>
                       ) : (
-                        <p className="text-[10px] text-[#404944]/70">Tidak ada agenda pada tanggal ini</p>
+                        <p className="text-[10px] text-[#404944]/80">Tidak ada agenda pada tanggal ini</p>
                       )}
                     </div>
                   )}
@@ -332,8 +335,8 @@ export function CalendarModal({ open, onClose, initialType = 'masehi' }: Calenda
                               </div>
                               <div className="min-w-0 flex-1">
                                 <p className="text-xs font-semibold text-[#003527] leading-tight">{ev.title}</p>
-                                <p className="text-[9px] text-[#404944]/70 mt-0.5">{d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })} ({h.day} {hijriMonthNames[h.month-1].slice(0,8)} {h.year} H)</p>
-                                {ev.location && <p className="text-[9px] text-[#404944]/70 flex items-center gap-0.5 mt-0.5"><MapPin className="h-2 w-2" />{ev.location}</p>}
+                                <p className="text-[9px] text-[#404944]/80 mt-0.5">{d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })} ({h.day} {hijriMonthNames[h.month-1].slice(0,8)} {h.year} H)</p>
+                                {ev.location && <p className="text-[9px] text-[#404944]/80 flex items-center gap-0.5 mt-0.5"><MapPin className="h-2 w-2" />{ev.location}</p>}
                               </div>
                             </div>
                           </div>
@@ -341,7 +344,7 @@ export function CalendarModal({ open, onClose, initialType = 'masehi' }: Calenda
                       })}
                     </div>
                   ) : (
-                    <div className="text-center py-3 text-[#404944]/70 text-[10px] mb-3">
+                    <div className="text-center py-3 text-[#404944]/80 text-[10px] mb-3">
                       <CalendarDays className="h-6 w-6 mx-auto mb-1 text-[#404944]/50" />Belum ada agenda
                     </div>
                   )}
@@ -359,7 +362,7 @@ export function CalendarModal({ open, onClose, initialType = 'masehi' }: Calenda
                               <span className="text-sm shrink-0">{h.emoji}</span>
                               <div className="min-w-0">
                                 <p className="text-[11px] font-medium text-[#003527] leading-tight">{h.name}</p>
-                                <p className="text-[9px] text-[#404944]/70">{h.day} {h.monthName} {hijriViewYear} H</p>
+                                <p className="text-[9px] text-[#404944]/80">{h.day} {h.monthName} {hijriViewYear} H</p>
                                 <p className="text-[8px] text-[#404944]/50">≈ {h.gregorian.getDate()} {masehiMonthNames[h.gregorian.getMonth()].slice(0,3)} {h.gregorian.getFullYear()}</p>
                               </div>
                             </div>
@@ -372,7 +375,7 @@ export function CalendarModal({ open, onClose, initialType = 'masehi' }: Calenda
                               <span className="text-sm shrink-0">{h.emoji}</span>
                               <div className="min-w-0">
                                 <p className="text-[11px] font-medium text-[#003527] leading-tight">{h.name}</p>
-                                <p className="text-[9px] text-[#404944]/70">{h.day} {masehiMonthNames[viewMonth].slice(0,3)} {viewYear}</p>
+                                <p className="text-[9px] text-[#404944]/80">{h.day} {masehiMonthNames[viewMonth].slice(0,3)} {viewYear}</p>
                                 <span className={`text-[8px] px-1 py-0.5 rounded-full ${h.type === 'islamic' ? 'bg-[#064e3b]/12 text-[#064e3b]' : 'bg-[#ba1a1a]/10 text-[#ba1a1a]'}`}>{h.type === 'islamic' ? 'Islam' : 'Nasional'}</span>
                               </div>
                             </div>
@@ -380,7 +383,7 @@ export function CalendarModal({ open, onClose, initialType = 'masehi' }: Calenda
                         ))
                       )
                     ) : (
-                      <p className="text-center text-[10px] text-[#404944]/70 py-2">Tidak ada hari besar</p>
+                      <p className="text-center text-[10px] text-[#404944]/80 py-2">Tidak ada hari besar</p>
                     )}
                   </div>
                 </div>
@@ -388,7 +391,7 @@ export function CalendarModal({ open, onClose, initialType = 'masehi' }: Calenda
             </div>
 
             {/* Footer */}
-            <div className="px-4 py-2 bg-[#fbf9f5] border-t text-center text-[10px] text-[#404944]/70 shrink-0">
+            <div className="px-4 py-2 bg-[#fbf9f5] border-t text-center text-[10px] text-[#404944]/80 shrink-0">
               <kbd className="px-1 py-0.5 bg-[#ffffff] border rounded text-[9px]">ESC</kbd> tutup • Klik tanggal untuk agenda • Tombol "Hari Ini" untuk kembali
             </div>
           </motion.div>
@@ -417,9 +420,18 @@ function DayCell({ day, isToday, holiday, islamicHoliday, sublabel, sublabelType
   const isNational = !!islamicHoliday === false && sublabelType === 'national'
   return (
     <div
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      aria-label={holiday?.name || islamicHoliday?.name || (hasEvent ? `Tanggal ${day} — ada agenda` : `Tanggal ${day}`)}
       title={holiday?.name || islamicHoliday?.name || (hasEvent ? 'Ada agenda' : undefined)}
       onClick={onClick}
-      className={`aspect-square rounded-md flex flex-col items-center justify-center text-xs sm:text-sm relative transition-colors ${onClick ? 'cursor-pointer' : ''} ${
+      onKeyDown={onClick ? (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          onClick()
+        }
+      } : undefined}
+      className={`aspect-square rounded-md flex flex-col items-center justify-center text-xs sm:text-sm relative transition-colors ${onClick ? 'cursor-pointer focus-visible:ring-2 focus-visible:ring-[#cca72f]/40 focus-visible:outline-none' : ''} ${
         isToday ? 'bg-[#cca72f] text-white font-bold shadow-sm'
         : isSelected ? 'bg-[#003527]/80 text-white font-bold'
         : hasHoliday ? (isNational ? 'bg-[#ba1a1a]/8 border border-red-200 text-[#003527] font-medium' : 'bg-[#064e3b]/8 border border-[#e4e2de] text-[#003527] font-medium')
@@ -428,7 +440,7 @@ function DayCell({ day, isToday, holiday, islamicHoliday, sublabel, sublabelType
       }`}
     >
       <span className="leading-none">{day}</span>
-      {sublabel && <span className={`text-[8px] leading-none mt-0.5 ${isToday ? 'text-white/70' : 'text-[#404944]/70'}`}>{sublabel}</span>}
+      {sublabel && <span className={`text-[8px] leading-none mt-0.5 ${isToday ? 'text-white/70' : 'text-[#404944]/80'}`}>{sublabel}</span>}
       {hasHoliday && <span className="absolute bottom-0 right-0 text-[8px] sm:text-[9px]">{holiday?.emoji || islamicHoliday?.emoji}</span>}
       {hasEvent && <span className={`absolute bottom-0 left-0 w-1.5 h-1.5 rounded-full ${isToday ? 'bg-white' : 'bg-[#003527]/80'}`} />}
     </div>

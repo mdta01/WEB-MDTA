@@ -68,7 +68,7 @@ export function VisiMisiTujuanInfografis({ vision, missionText, goalsText }: Pro
                   <Eye className="h-8 w-8 text-white" />
                 </div>
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#cca72f]">
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#895033]">
                     Visi
                   </p>
                   <p className="text-[10px] uppercase tracking-wider text-[#404944]/60 mt-0.5">

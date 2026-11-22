@@ -369,7 +369,7 @@ const entityConfigs: Record<string, EntityConfig> = {
       { key: 'category', label: 'Kategori' },
       { key: 'fileUrl', label: 'File', render: (value: unknown) => {
         const url = String(value || '')
-        if (!url) return <span className="text-[#404944]/70">-</span>
+        if (!url) return <span className="text-[#404944]/80">-</span>
         const fileName = url.split('/').pop()?.split('?')[0] || 'file.pdf'
         return (
           <a href={url} target="_blank" rel="noopener noreferrer" download
@@ -815,7 +815,7 @@ function PPDBManager() {
 
           {/* Filter */}
           <div className="flex items-center gap-2 flex-wrap">
-            <Filter className="h-4 w-4 text-[#404944]/70" />
+            <Filter className="h-4 w-4 text-[#404944]/80" />
             <span className="text-sm text-[#404944]">Filter:</span>
             {[
               { value: 'all', label: 'Semua', count: stats.total },
@@ -869,7 +869,7 @@ function PPDBManager() {
                   ) : (
                     filteredItems.map((reg, idx) => (
                       <TableRow key={reg.id as string} className="hover:bg-[#f5f3ef]/50">
-                        <TableCell className="text-[#404944]/70 text-xs">{idx + 1}</TableCell>
+                        <TableCell className="text-[#404944]/80 text-xs">{idx + 1}</TableCell>
                         <TableCell className="font-medium">{reg.name as string}</TableCell>
                         <TableCell className="text-sm">{(reg.gender as string) || '-'}</TableCell>
                         <TableCell className="text-sm">{(reg.fatherName as string) || '-'}</TableCell>
@@ -1884,7 +1884,7 @@ function ContactMessagesManager() {
               ) : (
                 items.map((msg, idx) => (
                   <TableRow key={msg.id as string} className={!msg.isRead ? 'bg-[#cca72f]/5/50' : ''}>
-                    <TableCell className="text-[#404944]/70 text-xs">{idx + 1}</TableCell>
+                    <TableCell className="text-[#404944]/80 text-xs">{idx + 1}</TableCell>
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-2">
                         {!msg.isRead && <span className="w-2 h-2 rounded-full bg-[#cca72f]" />}
@@ -2063,7 +2063,7 @@ function SuggestionsManager() {
               ) : (
                 items.map((item, idx) => (
                   <TableRow key={item.id as string} className={!item.isRead ? 'bg-[#cca72f]/5/50' : ''}>
-                    <TableCell className="text-[#404944]/70 text-xs">{idx + 1}</TableCell>
+                    <TableCell className="text-[#404944]/80 text-xs">{idx + 1}</TableCell>
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-2">
                         {!item.isRead && <span className="w-2 h-2 rounded-full bg-[#cca72f]" />}
