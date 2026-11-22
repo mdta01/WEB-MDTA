@@ -1,7 +1,7 @@
 'use client'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { useState, useEffect, Suspense, lazy } from 'react'
+import { useState, useEffect, Suspense, lazy, useSyncExternalStore } from 'react'
 import { motion, AnimatePresence, MotionConfig } from 'framer-motion'
 import { useAppStore } from '@/store/useAppStore'
 import Header from '@/components/layout/Header'
@@ -90,6 +90,22 @@ function SectionRenderer() {
 }
 
 export default function Home() {
+  // mounted state — prevents hydration mismatch (error 418) caused by
+  // React Query's client-side cache. On server, useQuery returns isLoading=true
+  // (skeleton shows). On client hydration, if cached data exists, isLoading=false
+  // (real content shows). This difference = hydration mismatch.
+  // Fix: render a minimal skeleton on server + first client render, then
+  // swap to real content after mount. SSR-safe, no mismatch possible.
+  //
+  // useSyncExternalStore is the React-recommended pattern for reading
+  // client-only state without triggering the "setState in effect" lint.
+  // It returns false on server (getServerSnapshot) and true on client.
+  const mounted = useSyncExternalStore(
+    () => () => {}, // subscribe (no-op, we only need the snapshot)
+    () => true,     // getClientSnapshot — always true on client
+    () => false    // getServerSnapshot — always false on server
+  )
+
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -153,7 +169,11 @@ export default function Home() {
           className="fb-safe-bottom flex-1 w-full overflow-x-clip"
           tabIndex={-1}
         >
-          <SectionRenderer />
+          {/* mounted check prevents hydration mismatch (error 418).
+              On server + first client render: show loading skeleton.
+              After mount: render full section content with React Query data.
+              This ensures server HTML matches client's first render. */}
+          {mounted ? <SectionRenderer /> : <SectionLoading />}
         </main>
         <Footer />
         <WhatsAppButton />
