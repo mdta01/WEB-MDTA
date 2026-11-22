@@ -2,11 +2,12 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Image as ImageIcon, Play, X, ChevronLeft, ChevronRight, Calendar, ZoomIn } from 'lucide-react'
+import { Play, X, ChevronLeft, ChevronRight, Calendar, ZoomIn } from 'lucide-react'
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { KratonSectionHeader } from '@/components/kraton'
+import { EmptyState } from '@/components/ui/empty-state'
 
 type GalleryItem = {
   id: string
@@ -216,12 +217,25 @@ export default function GaleriSection() {
           ))}
         </div>
       ) : (
-        <div className="text-center py-16">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#064e3b]/10 mb-4">
-            <ImageIcon className="h-10 w-10 text-[#064e3b]/50" />
-          </div>
-          <p className="text-[#404944]">Belum ada foto untuk filter ini</p>
-        </div>
+        <EmptyState
+          illustration="galeri"
+          variant={selectedCategory || safeSelectedYear ? 'search' : 'default'}
+          searchQuery={
+            selectedCategory || safeSelectedYear
+              ? [selectedCategory, safeSelectedYear].filter(Boolean).join(' • ')
+              : undefined
+          }
+          title={
+            selectedCategory || safeSelectedYear
+              ? 'Tidak ada foto untuk filter ini'
+              : 'Galeri masih kosong'
+          }
+          message={
+            selectedCategory || safeSelectedYear
+              ? 'Coba ubah kategori atau tahun filter untuk menemukan foto yang Anda cari.'
+              : 'Dokumentasi kegiatan madrasah akan tampil di sini setelah foto tersedia. Mari kembali berkunjung nanti.'
+          }
+        />
       )}
 
       {/* Premium Lightbox with swipe + keyboard nav */}

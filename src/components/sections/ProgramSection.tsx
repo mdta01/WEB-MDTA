@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { KratonSectionHeader } from '@/components/kraton'
+import { EmptyState, EmptyStateCard } from '@/components/ui/empty-state'
 
 const iconMap: Record<string, React.ElementType> = {
   'quran': BookHeart,
@@ -53,10 +54,11 @@ function getIcon(iconName?: string | null) {
 function ProgramGrid({ items, color }: { items: ProgramItem[]; color: string }) {
   if (items.length === 0) {
     return (
-      <Card className="border border-[#e4e2de] shadow-premium p-8 text-center rounded-2xl bg-[#ffffff]">
-        <BookOpen className="h-12 w-12 text-[#064e3b]/40 mx-auto mb-3" />
-        <p className="text-[#404944]">Data belum tersedia</p>
-      </Card>
+      <EmptyStateCard
+        illustration="default"
+        title="Data program belum tersedia"
+        message="Program pembelajaran madrasah akan tampil di sini setelah admin melengkapi data."
+      />
     )
   }
 
@@ -299,10 +301,7 @@ export default function ProgramSection() {
             })}
           </div>
         ) : (
-          <Card className="p-8 text-center border border-[#e4e2de] shadow-md rounded-2xl bg-[#ffffff]">
-            <CalendarDays className="h-12 w-12 text-[#064e3b]/40 mx-auto mb-3" />
-            <p className="text-[#404944]">Jadwal belum tersedia</p>
-          </Card>
+          <EmptyState illustration="calendar" variant="compact" title="Jadwal belum tersedia" message="Jadwal pembelajaran akan segera diumumkan." />
         )}
       </section>
     </div>

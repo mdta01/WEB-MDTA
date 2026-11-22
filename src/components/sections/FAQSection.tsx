@@ -11,6 +11,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 import { KratonSectionHeader } from '@/components/kraton'
+import { EmptyState, EmptyStateCard } from '@/components/ui/empty-state'
 
 export default function FAQSection() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -97,13 +98,22 @@ export default function FAQSection() {
             ))}
           </Accordion>
         </div>
+      ) : searchQuery.trim() ? (
+        <EmptyState
+          illustration="search"
+          variant="search"
+          searchQuery={searchQuery}
+          title="Tidak ditemukan pertanyaan yang cocok"
+          message="Coba kata kunci lain, atau hubungi kami langsung via WhatsApp untuk pertanyaan Anda."
+          className="max-w-md mx-auto"
+        />
       ) : (
-        <Card className="p-12 text-center border-[#e4e2de] bg-[#ffffff] wood-carved-shadow max-w-md mx-auto rounded-2xl">
-          <HelpCircle className="h-12 w-12 text-[#064e3b]/40 mx-auto mb-3" />
-          <p className="text-[#404944] font-body">
-            {searchQuery.trim() ? 'Tidak ditemukan pertanyaan yang cocok' : 'FAQ belum tersedia'}
-          </p>
-        </Card>
+        <EmptyStateCard
+          illustration="default"
+          title="FAQ belum tersedia"
+          message="Halaman FAQ akan diisi dengan pertanyaan-pertanyaan umum dari wali santri. Sementara itu, silakan hubungi kami langsung untuk pertanyaan apa pun."
+          className="max-w-md mx-auto"
+        />
       )}
     </div>
   )

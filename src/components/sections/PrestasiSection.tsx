@@ -2,12 +2,13 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
-import { Trophy, Medal, Award, Filter } from 'lucide-react'
+import { Trophy, Medal, Filter } from 'lucide-react'
 import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { KratonSectionHeader } from '@/components/kraton'
+import { EmptyStateCard } from '@/components/ui/empty-state'
 
 const categories = [
   { value: '', label: 'Semua' },
@@ -145,10 +146,11 @@ export default function PrestasiSection() {
           })}
         </div>
       ) : (
-        <Card className="p-12 text-center border-[#e4e2de] bg-[#ffffff] wood-carved-shadow rounded-2xl">
-          <Award className="h-12 w-12 text-[#064e3b]/40 mx-auto mb-3" />
-          <p className="text-[#404944] font-body">Belum ada data prestasi</p>
-        </Card>
+        <EmptyStateCard
+          illustration="prestasi"
+          title="Belum ada data prestasi"
+          message="Prestasi santri akan tampil di sini setelah diinput oleh admin. Mari doakan yang terbaik untuk putra-putri kami."
+        />
       )}
     </div>
   )

@@ -1,9 +1,10 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
+import { getCloudinaryUrl, isCloudinaryUrl } from '@/lib/cloudinary'
 
 /**
- * SmartImage — premium image loader with graceful loading states.
+ * SmartImage — premium image loader with graceful loading states + Cloudinary optimization.
  *
  * Problems solved (vs. raw <img>):
  * 1. NO flash of empty/no-image area while data loads — shows the
@@ -54,6 +55,24 @@ type SmartImageProps = {
   fill?: boolean
   /** Optional aria-hidden. */
   'aria-hidden'?: boolean
+  /**
+   * Cloudinary optimization options. When provided AND the src is a Cloudinary URL,
+   * automatically applies f_auto, q_auto, w_<width>, c_<crop>, g_<gravity> params.
+   * Non-Cloudinary URLs are passed through unchanged.
+   *
+   * Default: { width: 800, crop: 'limit' } — sensible for most card images.
+   * Set to `false` to disable optimization entirely (e.g. for already-optimized images).
+   *
+   * @example
+   * <SmartImage src={cloudinaryUrl} optimize={{ width: 600, crop: 'fill' }} />
+   */
+  optimize?: false | {
+    width?: number
+    height?: number
+    crop?: 'fill' | 'limit' | 'scale' | 'fit'
+    gravity?: 'auto' | 'face' | 'center'
+    quality?: 'auto' | 'auto:low' | 'auto:best' | number
+  }
 }
 
 export function SmartImage({
@@ -72,12 +91,21 @@ export function SmartImage({
   objectFit = 'cover',
   objectPosition = 'center',
   fill = false,
+  optimize,
   ...rest
 }: SmartImageProps) {
   // activeSrc is DERIVED from props — no useState, no useEffect, no cascading renders.
   // This is the React-recommended pattern for "state that mirrors props".
   // If `src` is provided (non-empty), use it; otherwise use fallback.
-  const activeSrc = src && src.trim() ? src : fallbackSrc
+  const rawActiveSrc = src && src.trim() ? src : fallbackSrc
+
+  // Cloudinary optimization — auto-applied if `optimize` is not false AND src is Cloudinary URL.
+  // Default behavior: optimize with width=800, crop=limit (resize down only, no upscale).
+  // This reduces photo size from 3MB (original) to ~150KB (w_800 q_auto f_auto).
+  const shouldOptimize = optimize !== false
+  const optimizeOpts = (optimize && optimize !== false) ? optimize : { width: 800, crop: 'limit' as const }
+  const activeSrc = shouldOptimize ? getCloudinaryUrl(rawActiveSrc, optimizeOpts) : rawActiveSrc
+  // Note: fallbackSrc is also optimized if it's a Cloudinary URL (no-op for /images/*.webp)
 
   // Track which src has finished loading. When `activeSrc` changes (props update),
   // `loadedSrc !== activeSrc` so `isLoaded` becomes false again automatically.

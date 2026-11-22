@@ -6,6 +6,7 @@ import { Building2, FileCheck, Hash, Award, Landmark, Shield } from 'lucide-reac
 import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { KratonSectionHeader, KratonDivider } from '@/components/kraton'
+import { EmptyState, EmptyStateCard } from '@/components/ui/empty-state'
 
 // Kraton palette mapping (replacing old emerald/teal/amber Tailwind colors):
 //  - emerald-600  → #064e3b (primary container)
@@ -84,10 +85,7 @@ export default function KelembagaanSection() {
           ))}
         </div>
       ) : allValuesEmpty ? (
-        <Card className="p-8 text-center border-[#e4e2de] bg-[#ffffff] wood-carved-shadow rounded-2xl">
-          <Building2 className="h-12 w-12 text-[#064e3b]/40 mx-auto mb-3" />
-          <p className="text-[#404944] font-body">Data kelembagaan belum tersedia</p>
-        </Card>
+        <EmptyStateCard illustration="profil" title="Data kelembagaan belum tersedia" message="Informasi resmi madrasah akan tampil di sini setelah admin melengkapi data." />
       ) : (
         <div className="grid md:grid-cols-2 gap-6">
           {displayData.filter(item => item.value).map((item, idx) => {
@@ -176,9 +174,7 @@ export default function KelembagaanSection() {
             </div>
           ) : (
             <div className="p-6 bg-[#fbf9f5]">
-              <div className="border-2 border-[#cca72f]/40 rounded-xl p-6 text-center">
-                <p className="text-[#404944]/70 text-sm font-body">Data identitas madrasah belum tersedia</p>
-              </div>
+              <EmptyState illustration="profil" variant="compact" title="Data identitas madrasah belum tersedia" />
             </div>
           )}
         </Card>

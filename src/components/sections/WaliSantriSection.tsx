@@ -17,6 +17,7 @@ import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Dialog, DialogContent, DialogTitle, DialogClose } from '@/components/ui/dialog'
 import { MarkdownRenderer } from '@/components/sections/MarkdownRenderer'
+import { EmptyState, EmptyStateCard } from '@/components/ui/empty-state'
 import { toast } from 'sonner'
 import { useAppStore } from '@/store/useAppStore'
 
@@ -188,11 +189,7 @@ export default function WaliSantriSection() {
                       })}
                     </div>
                   ) : (
-                    <div className="text-center py-8">
-                      <Bell className="h-10 w-10 text-[#064e3b]/30 mx-auto mb-2" />
-                      <p className="text-sm text-[#404944]">Belum ada pengumuman untuk wali santri</p>
-                      <p className="text-xs text-[#404944]/60 mt-1">Periksa kembali secara berkala</p>
-                    </div>
+                    <EmptyState illustration="pengumuman" variant="compact" title="Belum ada pengumuman untuk wali santri" message="Pengumuman terbaru akan tampil di sini." />
                   )}
                 </div>
               </div>
@@ -262,11 +259,7 @@ export default function WaliSantriSection() {
                       </div>
                     ))
                   ) : (
-                    <div className="text-center py-8">
-                      <Calendar className="h-10 w-10 text-[#064e3b]/30 mx-auto mb-2" />
-                      <p className="text-sm text-[#404944]">Jadwal pertemuan belum tersedia</p>
-                      <p className="text-xs text-[#404944]/60 mt-1">Periksa kembali secara berkala</p>
-                    </div>
+                    <EmptyState illustration="calendar" variant="compact" title="Jadwal pertemuan belum tersedia" message="Jadwal akan diperbarui oleh admin." />
                   )}
                 </div>
               </div>
@@ -308,7 +301,7 @@ export default function WaliSantriSection() {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-[#404944]/70 text-sm">Informasi pembayaran belum tersedia</p>
+                  <EmptyState illustration="default" variant="compact" title="Informasi pembayaran belum tersedia" />
                 )}
               </CardContent>
             </Card>
@@ -416,7 +409,7 @@ export default function WaliSantriSection() {
               <div className="mt-4">
                 {selectedAnnouncement.content
                   ? <MarkdownRenderer content={selectedAnnouncement.content} />
-                  : <p className="text-sm text-[#404944]/70 italic">Tidak ada isi pengumuman.</p>}
+                  : <EmptyState illustration="pengumuman" variant="compact" title="Tidak ada isi pengumuman." />}
               </div>
 
               {/* Attachment — Surat Pengumuman (image or PDF) */}

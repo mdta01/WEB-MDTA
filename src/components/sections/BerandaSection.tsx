@@ -14,6 +14,7 @@ import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Dialog, DialogContent, DialogTitle, DialogClose } from '@/components/ui/dialog'
 import { SmartImage, pickImage } from '@/components/ui/smart-image'
+import { EmptyState, EmptyStateCard } from '@/components/ui/empty-state'
 import { LQIP } from '@/lib/lqip'
 import { SocialBar } from '@/components/social/SocialBar'
 import { CalendarModal } from '@/components/sections/CalendarModal'
@@ -844,10 +845,13 @@ export default function BerandaSection() {
             ))}
           </div>
         ) : (
-          <Card className="p-8 text-center border-0">
-            <BookOpen className="h-12 w-12 text-[#064e3b]/40 mx-auto mb-3" />
-            <p className="text-[#404944]">Belum ada berita</p>
-          </Card>
+          <EmptyStateCard
+            illustration="berita"
+            title="Belum ada berita terbaru"
+            message="Tim redaksi kami sedang merangkai kisah inspiratif untuk dibagikan. Sementara itu, jelajahi informasi lainnya di website kami."
+            actionLabel="Lihat Kontak Madrasah"
+            onAction={() => { setCurrentPage('kontak'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+          />
         )}
 
         {/* News Detail Dialog */}
@@ -995,10 +999,13 @@ export default function BerandaSection() {
             ))}
           </div>
         ) : (
-          <Card className="p-8 text-center border-0">
-            <BookHeart className="h-12 w-12 text-[#064e3b]/40 mx-auto mb-3" />
-            <p className="text-[#404944]">Belum ada konten dakwah</p>
-          </Card>
+          <EmptyStateCard
+            illustration="dakwah"
+            title="Belum ada konten dakwah"
+            message="Inspirasi Islami akan segera hadir. Tim dakwah kami sedang menyiapkan kajian dan renungan untuk dambaan hati Anda."
+            actionLabel="Hubungi Tim Dakwah"
+            onAction={() => { setCurrentPage('kontak'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+          />
         )}
 
         {/* Dakwah Detail Dialog */}

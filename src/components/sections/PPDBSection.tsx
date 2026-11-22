@@ -17,6 +17,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table'
+import { EmptyState } from '@/components/ui/empty-state'
 import { toast } from 'sonner'
 
 export default function PPDBSection() {
@@ -188,7 +189,7 @@ export default function PPDBSection() {
                     ))}
                   </ul>
                 ) : (
-                  <p className="text-[#404944]/70 italic text-sm">Persyaratan pendaftaran belum tersedia.</p>
+                  <EmptyState illustration="ppdb" variant="compact" title="Persyaratan belum tersedia" message="Silakan hubungi panitia PPDB untuk informasi terkini." />
                 )}
               </CardContent>
             </Card>
@@ -224,10 +225,7 @@ export default function PPDBSection() {
                     </Table>
                   </div>
                 ) : (
-                  <div className="text-center py-6">
-                    <CreditCard className="h-10 w-10 text-[#064e3b]/40 mx-auto mb-2" />
-                    <p className="text-[#404944]/70 italic text-sm">Informasi biaya pendidikan belum tersedia.</p>
-                  </div>
+                  <EmptyState illustration="ppdb" variant="compact" title="Biaya pendidikan belum tersedia" message="Hubungi panitia PPDB untuk rincian biaya." />
                 )}
                 <p className="text-xs text-[#404944]/70 mt-3">* Biaya dapat berubah sewaktu-waktu</p>
               </CardContent>
@@ -292,10 +290,7 @@ export default function PPDBSection() {
                     })}
                   </div>
                 ) : (
-                  <div className="text-center py-6">
-                    <Calendar className="h-10 w-10 text-[#064e3b]/40 mx-auto mb-2" />
-                    <p className="text-[#404944]/70 italic text-sm">Jadwal pendaftaran belum tersedia. Silakan hubungi panitia untuk informasi lebih lanjut.</p>
-                  </div>
+                  <EmptyState illustration="ppdb" variant="compact" title="Jadwal belum tersedia" message="Silakan hubungi panitia untuk informasi lebih lanjut." />
                 )}
               </CardContent>
             </Card>
@@ -540,7 +535,7 @@ export default function PPDBSection() {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-sm text-[#404944]/70 italic">Kontak panitia belum tersedia.</p>
+                  <EmptyState illustration="ppdb" variant="compact" title="Kontak panitia belum tersedia" />
                 )}
               </CardContent>
             </Card>

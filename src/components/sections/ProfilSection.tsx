@@ -2,11 +2,12 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { motion, AnimatePresence } from 'framer-motion'
-import { BookOpen, Eye, Target, Users, Award, Phone, UserCircle2, ChevronLeft, ChevronRight } from 'lucide-react'
+import { BookOpen, Eye, Target, Award, Phone, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useState, useMemo } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
+import { EmptyState, EmptyStateCard } from '@/components/ui/empty-state'
 import { MarkdownRenderer } from '@/components/sections/MarkdownRenderer'
 import { KratonSectionHeader } from '@/components/kraton'
 
@@ -233,8 +234,7 @@ export default function ProfilSection() {
           ) : (
             <Card className="border border-[#e4e2de] shadow-premium-lg wood-carved-shadow rounded-2xl bg-[#ffffff]">
               <CardContent className="p-8 text-center">
-                <BookOpen className="h-12 w-12 text-[#064e3b]/30 mx-auto mb-3" />
-                <p className="text-[#404944]/70 italic">Sejarah madrasah belum tersedia.</p>
+                <EmptyState illustration="profil" variant="compact" title="Sejarah madrasah belum tersedia" message="Kisah perjalanan madrasah dari 1948 akan segera lengkap." />
               </CardContent>
             </Card>
           )}
@@ -259,7 +259,7 @@ export default function ProfilSection() {
                 {vision ? (
                   <MarkdownRenderer content={vision} className="text-sm" />
                 ) : (
-                  <p className="text-[#404944]/70 italic text-sm">Visi belum tersedia.</p>
+                  <EmptyState illustration="default" variant="compact" title="Visi belum tersedia" />
                 )}
               </CardContent>
             </Card>
@@ -275,7 +275,7 @@ export default function ProfilSection() {
                 {missionItems.length > 0 || getSetting('madrasah_mission') ? (
                   <MarkdownRenderer content={getSetting('madrasah_mission')} className="text-sm" />
                 ) : (
-                  <p className="text-[#404944]/70 italic text-sm">Misi belum tersedia.</p>
+                  <EmptyState illustration="default" variant="compact" title="Misi belum tersedia" />
                 )}
               </CardContent>
             </Card>
@@ -291,7 +291,7 @@ export default function ProfilSection() {
                 {goalItems.length > 0 || getSetting('madrasah_goals') ? (
                   <MarkdownRenderer content={getSetting('madrasah_goals')} className="text-sm" />
                 ) : (
-                  <p className="text-[#404944]/70 italic text-sm">Tujuan belum tersedia.</p>
+                  <EmptyState illustration="default" variant="compact" title="Tujuan belum tersedia" />
                 )}
               </CardContent>
             </Card>
@@ -343,10 +343,7 @@ export default function ProfilSection() {
                 )}
               </div>
             ) : (
-              <div className="text-center py-6">
-                <Users className="h-12 w-12 text-[#064e3b]/40 mx-auto mb-3" />
-                <p className="text-[#404944]">Struktur organisasi belum tersedia.</p>
-              </div>
+              <EmptyStateCard illustration="profil" title="Struktur organisasi belum tersedia" message="Bagan kepengurusan madrasah akan ditampilkan di sini setelah admin mengunggah data." />
             )}
           </CardContent>
         </Card>
@@ -445,10 +442,7 @@ export default function ProfilSection() {
             ))}
           </div>
         ) : (
-          <Card className="p-8 text-center border-0">
-            <UserCircle2 className="h-12 w-12 text-[#064e3b]/40 mx-auto mb-3" />
-            <p className="text-[#404944]">Data guru belum tersedia</p>
-          </Card>
+          <EmptyStateCard illustration="profil" title="Data guru belum tersedia" message="Profil para asatidz madrasah akan segera ditampilkan di sini." />
         )}
       </section>
     </div>

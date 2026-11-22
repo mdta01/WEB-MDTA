@@ -10,6 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import { KratonSectionHeader } from '@/components/kraton'
+import { EmptyStateCard } from '@/components/ui/empty-state'
 
 const categories = [
   { value: '', label: 'Semua' },
@@ -213,10 +214,7 @@ export default function DownloadSection() {
           </div>
         ))
       ) : (
-        <Card className="p-12 text-center border-0">
-          <Download className="h-12 w-12 text-[#064e3b]/40 mx-auto mb-3" />
-          <p className="text-[#404944]">Belum ada file untuk diunduh</p>
-        </Card>
+        <EmptyStateCard illustration="download" title="Belum ada file untuk diunduh" message="Materi dan dokumen akan tersedia untuk diunduh segera. Jika Anda membutuhkan dokumen tertentu, silakan hubungi madrasah." />
       )}
 
       {/* Preview Modal — uses Google Docs Viewer for PDFs (works on mobile + desktop).

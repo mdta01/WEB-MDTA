@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge'
 import { MarkdownRenderer } from '@/components/sections/MarkdownRenderer'
 import { Skeleton } from '@/components/ui/skeleton'
 import { KratonSectionHeader } from '@/components/kraton'
+import { EmptyStateCard } from '@/components/ui/empty-state'
 
 const typeConfig: Record<string, { icon: React.ElementType; color: string; label: string; bg: string }> = {
   'ujian': { icon: FileText, color: 'text-[#064e3b]', label: 'Ujian', bg: 'bg-[#064e3b]/12' },
@@ -240,11 +241,11 @@ export default function PengumumanSection() {
           })}
         </div>
       ) : (
-        <Card className="p-12 text-center border border-[#e4e2de] rounded-2xl bg-[#ffffff] wood-carved-shadow">
-          <Megaphone className="h-12 w-12 text-[#064e3b]/40 mx-auto mb-3" />
-          <p className="text-[#404944]">Belum ada pengumuman saat ini</p>
-          <p className="text-xs text-[#404944]/60 mt-1">Periksa kembali nanti untuk informasi terbaru</p>
-        </Card>
+        <EmptyStateCard
+          illustration="pengumuman"
+          title="Belum ada pengumuman saat ini"
+          message="Pengumuman terbaru dari madrasah akan tampil di sini. Pastikan untuk kembali berkunjung atau aktifkan notifikasi untuk mendapatkan info terkini."
+        />
       )}
     </div>
   )

@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Skeleton } from '@/components/ui/skeleton'
 import { SmartImage } from '@/components/ui/smart-image'
 import { KratonSectionHeader } from '@/components/kraton'
+import { EmptyStateCard } from '@/components/ui/empty-state'
 
 export default function AlumniSection() {
   const { data, isLoading } = useQuery({
@@ -91,10 +92,11 @@ export default function AlumniSection() {
           ))}
         </div>
       ) : (
-        <Card className="p-8 text-center border-0">
-          <GraduationCap className="h-12 w-12 text-[#064e3b]/40 mx-auto mb-3" />
-          <p className="text-[#404944]">Data alumni belum tersedia</p>
-        </Card>
+        <EmptyStateCard
+          illustration="alumni"
+          title="Data alumni belum tersedia"
+          message="Jaringan alumni kami sedang dibangun. Jika Anda alumni MDTA Miftahul Ulum 01, silakan hubungi kami untuk terdaftar."
+        />
       )}
     </div>
   )

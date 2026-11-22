@@ -14,6 +14,7 @@ import { SmartImage } from '@/components/ui/smart-image'
 import { KratonSectionHeader } from '@/components/kraton'
 import { MarkdownRenderer } from '@/components/sections/MarkdownRenderer'
 import { SocialBar } from '@/components/social/SocialBar'
+import { EmptyStateCard } from '@/components/ui/empty-state'
 
 const categoryTabs = [
   { value: 'artikel', label: 'Artikel', icon: FileText },
@@ -162,10 +163,7 @@ export default function DakwahSection() {
             ))}
           </div>
         ) : (
-          <Card className="p-12 text-center border-0">
-            <BookOpen className="h-12 w-12 text-[#064e3b]/40 mx-auto mb-3" />
-            <p className="text-[#404944]">Belum ada konten untuk kategori ini</p>
-          </Card>
+          <EmptyStateCard illustration="dakwah" title="Belum ada konten untuk kategori ini" message="Kajian dan dakwah untuk kategori ini akan segera hadir. Mari doakan keberkahan ilmu yang bermanfaat." />
         )}
       </Tabs>
 
