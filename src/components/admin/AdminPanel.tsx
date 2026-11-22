@@ -518,10 +518,16 @@ function PPDBManager() {
     },
   })
 
-  // Fetch PPDB settings (sync dengan publik)
+  // Fetch PPDB settings — use ADMIN endpoint (no-cache) so admin always
+  // sees fresh data immediately after saving. Public /api/settings is cached
+  // (max-age=60) for performance, which would delay admin's view of changes.
   const { data: settingsData } = useQuery({
-    queryKey: ['settings'],
-    queryFn: () => fetch('/api/settings').then(r => r.json()),
+    queryKey: ['admin', 'settings'],
+    queryFn: async () => {
+      const res = await fetch('/api/admin/settings')
+      if (!res.ok) return []
+      return res.json()
+    },
   })
   const settings = Array.isArray(settingsData) ? settingsData : (settingsData?.settings || [])
   const getSetting = (key: string) => settings.find((s: { key: string }) => s.key === key)?.value || ''
@@ -570,6 +576,10 @@ function PPDBManager() {
       return res.json()
     },
     onSuccess: () => {
+      // Invalidate BOTH admin and public settings queries:
+      // - ['admin', 'settings'] = admin panel (fetches from /api/admin/settings, no-cache)
+      // - ['settings'] = public site (fetches from /api/settings, max-age=60)
+      queryClient.invalidateQueries({ queryKey: ['admin', 'settings'] })
       queryClient.invalidateQueries({ queryKey: ['settings'] })
       setPpdbOverrides({}) // clear overrides after save (base will refresh from server)
       toast.success('Pengaturan PPDB berhasil disimpan')

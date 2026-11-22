@@ -1,31 +1,31 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 
-// Force this route to be dynamic (always queries DB) but cache the response.
-// We use Cache-Control + s-maxage so Vercel's Edge CDN caches the response
-// for 1 hour, with stale-while-revalidate allowing instant response from cache
-// while refreshing in the background.
+// Cache strategy for settings endpoint:
 //
-// CRITICAL: Without caching, every page refresh triggers a fresh Neon DB query
-// (200-500ms). During that window, client components render with FALLBACK values
-// (e.g. "Kepala Madrasah" instead of "Bapak Hasyim Asy'ari",
-// /images/kepala-madrasah.webp instead of Cloudinary URL).
-// This caused the "demo template flash" bug users saw on refresh.
+// Browser cache: 60 seconds (max-age=60)
+//   - Short enough that admin changes propagate within 1 minute
+//   - Long enough to prevent "demo template flash" on rapid refresh
+//   - Browsers will revalidate after 60s (conditional GET, very fast)
 //
-// With this cache:
-//   1. Browser caches the response for 1 hour (max-age=3600)
-//   2. Vercel CDN caches for 24 hours (s-maxage=86400)
-//   3. stale-while-revalidate serves stale instantly while refreshing in BG
-// Result: subsequent page loads get settings INSTANTLY from cache, no flash.
+// CDN cache: 1 hour (s-maxage=3600)
+//   - Vercel Edge CDN caches for 1 hour for anonymous visitors
+//   - Serves from CDN edge (instant) while background-refreshing
+//
+// stale-while-revalidate: 1 hour
+//   - If both browser and CDN cache are stale, serve stale instantly
+//   while fetching fresh data in the background
+//
+// CRITICAL: max-age must NOT be too long (was 3600=1hr) because admin
+// can change settings (ppdb_status, ppdb_info, etc.) at any time.
+// 60 seconds is the sweet spot between performance and freshness.
 export async function GET() {
   try {
     const settings = await db.siteSetting.findMany()
     return NextResponse.json(settings, {
       headers: {
-        // Browser cache: 1 hour. CDN cache: 24 hours. SWR: 24 hours.
-        // 'public' allows Vercel CDN to cache. 'must-revalidate' ensures
-        // we don't serve stale data past max-age.
-        'Cache-Control': 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=86400',
+        // Browser cache: 60s. CDN cache: 1 hour. SWR: 1 hour.
+        'Cache-Control': 'public, max-age=60, s-maxage=3600, stale-while-revalidate=3600',
       },
     })
   } catch (error) {
