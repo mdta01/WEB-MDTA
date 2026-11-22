@@ -36,9 +36,16 @@ import { PPDBFAQ } from './ppdb/PPDBFAQ'
  */
 export default function PPDBSection() {
   // ============ Data fetching ============
+  // PPDB status CRITICAL: must always reflect latest admin change.
+  // Override global staleTime (5 min) → 0 = always stale → refetch on every mount.
+  // Also use cache: 'no-store' to bypass browser HTTP cache (max-age=60).
+  // This ensures admin's "Buka/Tutup PPDB" toggle is visible to public users
+  // within seconds, not minutes.
   const { data: settingsData, isLoading: settingsLoading } = useQuery({
     queryKey: ['settings'],
-    queryFn: () => fetch('/api/settings').then(r => r.json()),
+    queryFn: () => fetch('/api/settings', { cache: 'no-store' }).then(r => r.json()),
+    staleTime: 0,           // Always stale → refetch on mount
+    refetchOnMount: 'always', // Force refetch when PPDBSection mounts
   })
   const settings = Array.isArray(settingsData) ? settingsData : (settingsData?.settings || [])
   const getSetting = (key: string) => settings.find((s: { key: string }) => s.key === key)?.value || ''

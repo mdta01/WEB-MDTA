@@ -10,7 +10,12 @@ export async function GET() {
     }
 
     const settings = await db.siteSetting.findMany()
-    return NextResponse.json(settings)
+    // No-cache: admin should always see fresh data (no browser/CDN cache)
+    return NextResponse.json(settings, {
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+      },
+    })
   } catch (error) {
     console.error('Admin settings fetch error:', error)
     return NextResponse.json({ error: 'Terjadi kesalahan server' }, { status: 500 })
@@ -42,7 +47,12 @@ export async function PUT(request: NextRequest) {
     await Promise.all(updates)
 
     const updatedSettings = await db.siteSetting.findMany()
-    return NextResponse.json(updatedSettings)
+    // No-cache: ensure admin always sees the updated settings immediately
+    return NextResponse.json(updatedSettings, {
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+      },
+    })
   } catch (error) {
     console.error('Admin settings update error:', error)
     return NextResponse.json({ error: 'Terjadi kesalahan server' }, { status: 500 })
