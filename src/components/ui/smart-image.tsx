@@ -114,7 +114,15 @@ export function SmartImage({
 
   // Determine if blur background should show:
   // - enabled by `blur` prop AND blurDataURL provided AND image not yet loaded
-  const showBlur = blur && !!blurDataURL && !isLoaded
+  // - AND NOT noFade (because noFade means "show image immediately at opacity:1",
+  //   so showing a blur placeholder behind it would create a DUPLICATE image effect)
+  //
+  // CRITICAL: This was the root cause of "logo duplicate" bug — when noFade=true
+  // (used for logos), the actual Cloudinary transparent PNG was opacity:1 (visible)
+  // WHILE the LQIP blur placeholder (generated from the colored logo with bg)
+  // was also visible behind it. User saw both: colored logo (LQIP) + transparent
+  // logo (actual). Now, noFade automatically disables the blur placeholder.
+  const showBlur = blur && !!blurDataURL && !isLoaded && !noFade
 
   const imgStyle: React.CSSProperties = {
     objectFit,
