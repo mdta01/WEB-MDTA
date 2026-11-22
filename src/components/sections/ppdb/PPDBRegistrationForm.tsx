@@ -3,9 +3,9 @@
 import { useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  User, Users, FileCheck, CheckCircle2, ChevronRight, ChevronLeft,
-  Send, AlertCircle, Loader2, UserCheck, Image as ImageIcon,
-  FileText, Home, Phone, School, MapPin, Calendar,
+  User, Users, CheckCircle2, ChevronRight, ChevronLeft,
+  Send, Loader2, UserCheck,
+  Home, Phone, School, MapPin, Calendar,
 } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -17,30 +17,31 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select'
 import { toast } from 'sonner'
-import { PPDBFileUpload } from './PPDBFileUpload'
 import {
   STEPS, ProgressIndicator, StepHeader, Field,
-  PreviewSection, PreviewRow, BerkasPreview,
+  PreviewSection, PreviewRow,
   formatDate, formatGender,
 } from './PPDBFormParts'
 
 /**
- * PPDBRegistrationForm — Multi-step registration form (4 steps).
+ * PPDBRegistrationForm — Multi-step registration form (3 steps).
  *
  * Steps:
  *  1. Data Diri Santri (name, nickname, gender, birth, address, previous school)
  *  2. Data Orang Tua/Wali (father, mother, phone, address)
- *  3. Berkas Persyaratan (KK, Akta, Pas Foto — drag-drop upload)
- *  4. Konfirmasi & Submit (live preview + checkbox + submit)
+ *  3. Konfirmasi & Submit (live preview + checkbox + submit)
+ *
+ * Berkas persyaratan (KK, Akta, Pas Foto) tidak lagi diunggah melalui
+ * form — calon santri menyerahkan berkas secara offline ke panitia.
+ * PPDBFileUpload.tsx tetap dipertahankan untuk penggunaan mendatang.
  *
  * Features:
  *  - Progress indicator with clickable completed steps
  *  - Per-step validation (required fields, format checks)
- *  - Live preview of all entered data on step 4
+ *  - Live preview of all entered data on step 3
  *  - Framer-motion slide/fade transitions between steps
  *  - Toast notifications on submit success/error
- *  - Files uploaded to Cloudinary via /api/ppdb/upload-signature
- *  - Submits to /api/ppdb with all data + file URLs
+ *  - Submits to /api/ppdb with all entered data
  *
  * Shared sub-components (ProgressIndicator, StepHeader, Field, Preview*)
  * live in ./PPDBFormParts to keep this file under 800 lines.
@@ -64,10 +65,6 @@ interface PPDBFormData {
   motherJob: string
   parentPhone: string
   parentAddress: string // only filled if different from santri's address
-  // Step 3 — Berkas
-  kkUrl: string
-  aktaUrl: string
-  fotoUrl: string
 }
 
 const EMPTY_FORM: PPDBFormData = {
@@ -75,7 +72,6 @@ const EMPTY_FORM: PPDBFormData = {
   address: '', previousSchool: '',
   fatherName: '', fatherJob: '', motherName: '', motherJob: '',
   parentPhone: '', parentAddress: '',
-  kkUrl: '', aktaUrl: '', fotoUrl: '',
 }
 
 // ============ Main Component ============
@@ -131,12 +127,6 @@ export function PPDBRegistrationForm() {
       }
 
       if (currentStep === 2) {
-        if (!formData.kkUrl) newErrors.kkUrl = 'Kartu Keluarga wajib diunggah'
-        if (!formData.aktaUrl) newErrors.aktaUrl = 'Akta Kelahiran wajib diunggah'
-        if (!formData.fotoUrl) newErrors.fotoUrl = 'Pas foto wajib diunggah'
-      }
-
-      if (currentStep === 3) {
         if (!confirmChecked) {
           toast.error('Harap centang pernyataan kebenaran data sebelum mengirim')
           return false
@@ -188,7 +178,7 @@ export function PPDBRegistrationForm() {
   // ============ Form submission ============
   const handleSubmit = async () => {
     // Final validation — run all steps
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 2; i++) {
       if (!validateStep(i)) {
         setStep(i)
         return
@@ -218,9 +208,6 @@ export function PPDBRegistrationForm() {
         motherJob: formData.motherJob.trim(),
         fatherPhone: formData.parentPhone.trim(),
         motherPhone: formData.parentPhone.trim(),
-        kkUrl: formData.kkUrl,
-        aktaUrl: formData.aktaUrl,
-        fotoUrl: formData.fotoUrl,
       }
 
       const res = await fetch('/api/ppdb', {
@@ -311,7 +298,7 @@ export function PPDBRegistrationForm() {
             Daftar Jadi Santri Baru
           </h3>
           <p className="mt-1 text-sm text-[#404944] font-body">
-            Isi data dengan benar. Berkas dapat diunggah di langkah 3.
+            Isi data dengan benar. Berkas persyaratan diserahkan offline ke panitia.
           </p>
         </div>
 
@@ -343,13 +330,6 @@ export function PPDBRegistrationForm() {
                 />
               )}
               {step === 2 && (
-                <Step3Berkas
-                  formData={formData}
-                  errors={errors}
-                  updateField={updateField}
-                />
-              )}
-              {step === 3 && (
                 <Step4Konfirmasi
                   formData={formData}
                   confirmChecked={confirmChecked}
@@ -576,66 +556,7 @@ function Step2DataOrangTua({
   )
 }
 
-// ============ Step 3 — Berkas Persyaratan ============
-
-function Step3Berkas({
-  formData,
-  errors,
-  updateField,
-}: {
-  formData: PPDBFormData
-  errors: Partial<Record<keyof PPDBFormData, string>>
-  updateField: <K extends keyof PPDBFormData>(key: K, val: PPDBFormData[K]) => void
-}) {
-  return (
-    <div className="space-y-4">
-      <StepHeader
-        icon={FileCheck}
-        title="Berkas Persyaratan"
-        subtitle="Unggah dokumen asli (scan/foto jelas). Format JPG/PNG/PDF."
-      />
-      <div className="grid md:grid-cols-2 gap-4">
-        <PPDBFileUpload
-          label="Kartu Keluarga (KK)"
-          hint="Format JPG/PNG/PDF, maks 2 MB"
-          accept="image/*,.pdf"
-          allowPdf
-          maxSize={2 * 1024 * 1024}
-          value={formData.kkUrl}
-          onChange={(url) => updateField('kkUrl', url)}
-          required
-        />
-        <PPDBFileUpload
-          label="Akta Kelahiran"
-          hint="Format JPG/PNG/PDF, maks 2 MB"
-          accept="image/*,.pdf"
-          allowPdf
-          maxSize={2 * 1024 * 1024}
-          value={formData.aktaUrl}
-          onChange={(url) => updateField('aktaUrl', url)}
-          required
-        />
-      </div>
-      <PPDBFileUpload
-        label="Pas Foto Berwarna"
-        hint="Format JPG/PNG, maks 1 MB. Foto formal ukuran 3×4."
-        accept="image/*"
-        maxSize={1 * 1024 * 1024}
-        value={formData.fotoUrl}
-        onChange={(url) => updateField('fotoUrl', url)}
-        required
-      />
-      {(errors.kkUrl || errors.aktaUrl || errors.fotoUrl) && (
-        <div className="flex items-center gap-2 p-3 rounded-lg bg-[#ba1a1a]/8 border border-[#ba1a1a]/20 text-[#ba1a1a] text-sm">
-          <AlertCircle className="h-4 w-4 shrink-0" />
-          Semua berkas wajib diunggah untuk melanjutkan.
-        </div>
-      )}
-    </div>
-  )
-}
-
-// ============ Step 4 — Konfirmasi & Submit ============
+// ============ Step 3 — Konfirmasi & Submit ============
 
 function Step4Konfirmasi({
   formData,
@@ -676,14 +597,6 @@ function Step4Konfirmasi({
           {formData.parentAddress && (
             <PreviewRow icon={Home} label="Alamat" value={formData.parentAddress} multiline />
           )}
-        </PreviewSection>
-
-        <PreviewSection icon={FileCheck} title="Berkas Persyaratan" className="sm:col-span-2">
-          <div className="grid grid-cols-3 gap-3">
-            <BerkasPreview label="Kartu Keluarga" url={formData.kkUrl} icon={FileText} />
-            <BerkasPreview label="Akta Kelahiran" url={formData.aktaUrl} icon={FileText} />
-            <BerkasPreview label="Pas Foto" url={formData.fotoUrl} icon={ImageIcon} />
-          </div>
         </PreviewSection>
       </div>
 

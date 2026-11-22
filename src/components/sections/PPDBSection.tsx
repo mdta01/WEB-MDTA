@@ -27,7 +27,6 @@ import { PPDBFAQ } from './ppdb/PPDBFAQ'
  *  - Persyaratan (requirements) — pulled from settings (ppdb_requirements)
  *  - Biaya pendidikan — from /api/payments
  *  - Jadwal pendaftaran — from /api/ppdb/schedules (sync realtime)
- *  - Agenda PPDB — from /api/events (category: ppdb)
  *  - Multi-step registration form (4 steps, file upload, live preview) — PPDBRegistrationForm
  *  - Inline FAQ specific to PPDB — PPDBFAQ
  *  - Contact panitia (WhatsApp) — from settings (ppdb_contact, ppdb_panitia_phone)
@@ -57,12 +56,6 @@ export default function PPDBSection() {
   })
   const payments = Array.isArray(paymentsData) ? paymentsData : (paymentsData?.payments || [])
 
-  const { data: eventsData, isLoading: eventsLoading } = useQuery({
-    queryKey: ['events'],
-    queryFn: () => fetch('/api/events').then(r => r.json()),
-  })
-  const events = Array.isArray(eventsData) ? eventsData : (eventsData?.events || [])
-  const ppdbEvents = events.filter((e: { category: string }) => e.category === 'ppdb')
 
   // Fetch PPDB schedules (jadwal pendaftaran) — sync realtime via API
   const { data: ppdbSchedulesData, isLoading: ppdbSchedulesLoading } = useQuery({
@@ -114,7 +107,6 @@ export default function PPDBSection() {
       <KratonSectionHeader
         badge="Penerimaan Santri Baru"
         title="Pendaftaran Peserta Didik Baru (PPDB)"
-        subtitle="Bergabunglah bersama kami dalam membentuk generasi Qur'ani yang berakhlak mulia. Isi formulir online di bawah untuk mendaftarkan putra/putri Anda."
         align="center"
       />
 
@@ -284,59 +276,6 @@ export default function PPDBSection() {
                   </div>
                 ) : (
                   <EmptyState illustration="ppdb" variant="compact" title="Jadwal belum tersedia" message="Silakan hubungi panitia untuk informasi lebih lanjut." />
-                )}
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* ============ Agenda PPDB ============ */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.225 }}>
-            <Card className="border-0 shadow-premium rounded-2xl">
-              <CardContent className="p-6">
-                <h3 className="text-lg font-bold text-[#003527] flex items-center gap-2 mb-4 font-display">
-                  <Calendar className="h-5 w-5 text-[#cca72f]" />
-                  Agenda PPDB
-                </h3>
-                {eventsLoading ? (
-                  <div className="space-y-3">
-                    <Skeleton className="h-20 w-full" />
-                    <Skeleton className="h-20 w-full" />
-                  </div>
-                ) : ppdbEvents.length > 0 ? (
-                  <div className="space-y-3">
-                    {ppdbEvents.map((e: { id: string; title: string; description?: string | null; date: string; location?: string | null }, idx: number) => {
-                      const eventDate = new Date(e.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
-                      return (
-                        <div key={e.id || idx} className="flex gap-4 p-3 rounded-lg bg-[#064e3b]/5">
-                          <div className="bg-[#003527] text-white rounded-lg p-2 text-center min-w-[50px]">
-                            <div className="text-base font-bold">
-                              {new Date(e.date).getDate()}
-                            </div>
-                            <div className="text-xs uppercase">
-                              {new Date(e.date).toLocaleDateString('id-ID', { month: 'short' })}
-                            </div>
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="font-semibold text-sm text-[#003527] font-body">{e.title}</p>
-                            <p className="text-xs text-[#404944] flex items-center gap-1 mt-1 font-body">
-                              <Calendar className="h-3 w-3 text-[#cca72f]" />
-                              {eventDate}
-                            </p>
-                            {e.location && (
-                              <p className="text-xs text-[#404944] flex items-center gap-1 mt-1 font-body">
-                                <MapPin className="h-3 w-3 text-[#cca72f]" /> {e.location}
-                              </p>
-                            )}
-                            {e.description && (
-                              <p className="text-xs text-[#404944] mt-1 line-clamp-2 font-body">{e.description}</p>
-                            )}
-                          </div>
-                        </div>
-                      )
-                    })}
-                  </div>
-                ) : (
-                  <EmptyState illustration="ppdb" variant="compact" title="Agenda belum tersedia" message="Pantau pengumuman untuk informasi agenda PPDB terkini." />
                 )}
               </CardContent>
             </Card>

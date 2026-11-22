@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import {
-  User, Users, FileCheck, CheckCircle2,
+  User, Users, CheckCircle2,
   AlertCircle,
 } from 'lucide-react'
 import { useId, isValidElement, cloneElement, type ReactElement } from 'react'
@@ -17,8 +17,12 @@ import { useId, isValidElement, cloneElement, type ReactElement } from 'react'
  *  - STEPS constant + ProgressIndicator (top of form, clickable)
  *  - StepHeader (icon + title + subtitle for each step)
  *  - Field (label + input wrapper with inline error/hint)
- *  - PreviewSection / PreviewRow / BerkasPreview (live summary on step 4)
+ *  - PreviewSection / PreviewRow (live summary on step 3)
  *  - formatDate / formatGender helpers
+ *
+ * Berkas (file upload) step has been removed — files are now handled
+ * offline by the panitia. The BerkasPreview component was deleted along
+ * with that step.
  *
  * All components use the brand palette (emerald + gold on parchment).
  */
@@ -28,8 +32,7 @@ import { useId, isValidElement, cloneElement, type ReactElement } from 'react'
 export const STEPS = [
   { id: 0, label: 'Data Diri', icon: User, short: 'Diri' },
   { id: 1, label: 'Orang Tua', icon: Users, short: 'Wali' },
-  { id: 2, label: 'Berkas', icon: FileCheck, short: 'Berkas' },
-  { id: 3, label: 'Konfirmasi', icon: CheckCircle2, short: 'Kirim' },
+  { id: 2, label: 'Konfirmasi', icon: CheckCircle2, short: 'Kirim' },
 ] as const
 
 // ============ Progress Indicator ============
@@ -210,7 +213,7 @@ export function Field({
   )
 }
 
-// ============ Live preview components (step 4) ============
+// ============ Live preview components (step 3) ============
 
 export function PreviewSection({
   icon: Icon,
@@ -259,52 +262,6 @@ export function PreviewRow({
       >
         {value}
       </span>
-    </div>
-  )
-}
-
-/**
- * BerkasPreview — small thumbnail card showing uploaded file (image or PDF).
- * If url is empty, shows a "not yet uploaded" placeholder.
- */
-export function BerkasPreview({
-  label,
-  url,
-  icon: Icon,
-}: {
-  label: string
-  url: string
-  icon: React.ElementType
-}) {
-  if (!url) {
-    return (
-      <div className="rounded-lg border border-dashed border-[#e4e2de] p-3 text-center">
-        <Icon className="h-6 w-6 mx-auto text-[#404944]/40" />
-        <p className="text-xs text-[#404944]/60 mt-1">{label}</p>
-        <p className="text-[10px] text-[#ba1a1a]/70 mt-0.5">Belum diunggah</p>
-      </div>
-    )
-  }
-  const isImage = url.match(/\.(jpg|jpeg|png|webp|gif)$/i) || url.includes('/image/upload/')
-  const isPdf = url.toLowerCase().endsWith('.pdf') || url.includes('/raw/upload/')
-  return (
-    <div className="rounded-lg border border-[#e4e2de] bg-white p-3 text-center">
-      {isImage ? (
-        <img
-          src={url}
-          alt={label}
-          className="h-16 w-full object-cover rounded mb-1"
-          loading="lazy"
-        />
-      ) : (
-        <div className="h-16 flex items-center justify-center bg-[#064e3b]/8 rounded mb-1">
-          <Icon className="h-6 w-6 text-[#ba1a1a]" />
-        </div>
-      )}
-      <p className="text-xs font-medium text-[#003527]">{label}</p>
-      <p className="text-[10px] text-[#064e3b] flex items-center justify-center gap-0.5 mt-0.5">
-        <CheckCircle2 className="h-2.5 w-2.5" /> Terunggah{isPdf ? ' (PDF)' : ''}
-      </p>
     </div>
   )
 }
