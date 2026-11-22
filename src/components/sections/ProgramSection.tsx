@@ -168,19 +168,79 @@ export default function ProgramSection() {
         </TabsList>
 
         <TabsContent value="kelas">
-          <ProgramGrid items={kelasPrograms} color={categoryColors['kelas']} />
+          {programsLoading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[1, 2, 3].map(i => (
+                <Card key={i} className="p-5 flex items-start gap-4 space-y-0 border border-[#e4e2de] shadow-premium rounded-2xl bg-[#ffffff]">
+                  <Skeleton className="w-12 h-12 rounded-xl shrink-0" />
+                  <div className="space-y-2 flex-1">
+                    <Skeleton className="h-5 w-3/4" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-2/3" />
+                  </div>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <ProgramGrid items={kelasPrograms} color={categoryColors['kelas']} />
+          )}
         </TabsContent>
 
         <TabsContent value="kurikulum">
-          <ProgramGrid items={kurikulumPrograms} color={categoryColors['kurikulum']} />
+          {programsLoading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[1, 2, 3].map(i => (
+                <Card key={i} className="p-5 flex items-start gap-4 space-y-0 border border-[#e4e2de] shadow-premium rounded-2xl bg-[#ffffff]">
+                  <Skeleton className="w-12 h-12 rounded-xl shrink-0" />
+                  <div className="space-y-2 flex-1">
+                    <Skeleton className="h-5 w-3/4" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-2/3" />
+                  </div>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <ProgramGrid items={kurikulumPrograms} color={categoryColors['kurikulum']} />
+          )}
         </TabsContent>
 
         <TabsContent value="unggulan">
-          <ProgramGrid items={unggulanPrograms} color={categoryColors['unggulan']} />
+          {programsLoading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[1, 2, 3].map(i => (
+                <Card key={i} className="p-5 flex items-start gap-4 space-y-0 border border-[#e4e2de] shadow-premium rounded-2xl bg-[#ffffff]">
+                  <Skeleton className="w-12 h-12 rounded-xl shrink-0" />
+                  <div className="space-y-2 flex-1">
+                    <Skeleton className="h-5 w-3/4" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-2/3" />
+                  </div>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <ProgramGrid items={unggulanPrograms} color={categoryColors['unggulan']} />
+          )}
         </TabsContent>
 
         <TabsContent value="ekskul">
-          <ProgramGrid items={ekskulPrograms} color={categoryColors['ekstrakurikuler']} />
+          {programsLoading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[1, 2, 3].map(i => (
+                <Card key={i} className="p-5 flex items-start gap-4 space-y-0 border border-[#e4e2de] shadow-premium rounded-2xl bg-[#ffffff]">
+                  <Skeleton className="w-12 h-12 rounded-xl shrink-0" />
+                  <div className="space-y-2 flex-1">
+                    <Skeleton className="h-5 w-3/4" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-2/3" />
+                  </div>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <ProgramGrid items={ekskulPrograms} color={categoryColors['ekstrakurikuler']} />
+          )}
         </TabsContent>
       </Tabs>
 

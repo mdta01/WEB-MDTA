@@ -15,6 +15,9 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Dialog, DialogContent, DialogTitle, DialogClose } from '@/components/ui/dialog'
 import { SmartImage, pickImage } from '@/components/ui/smart-image'
 import { EmptyState, EmptyStateCard } from '@/components/ui/empty-state'
+import { RippleButton } from '@/components/ui/ripple-button'
+import { TiltCard } from '@/components/ui/tilt-card'
+import { useMagneticButton, useTilt3D } from '@/lib/microinteractions'
 import { LQIP } from '@/lib/lqip'
 import { SocialBar } from '@/components/social/SocialBar'
 import { CalendarModal } from '@/components/sections/CalendarModal'
@@ -137,14 +140,22 @@ function AnimatedCounter({ target, duration = 2000 }: { target: number; duration
       ([entry]) => {
         if (entry.isIntersecting && !started.current) {
           started.current = true
-          const start = 0
           const startTime = performance.now()
           const animate = (currentTime: number) => {
             const elapsed = currentTime - startTime
             const progress = Math.min(elapsed / duration, 1)
-            const eased = 1 - Math.pow(1 - progress, 3)
-            setCount(Math.floor(start + (target - start) * eased))
-            if (progress < 1) requestAnimationFrame(animate)
+            // Premium easing: easeOutExpo — dramatic deceleration.
+            // Starts fast (instant feedback), slows to a gentle stop (premium feel).
+            // Better than linear (robotic) or easeOutCubic (less dramatic).
+            const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress)
+            setCount(Math.floor(target * eased))
+            // Ensure final value is EXACTLY the target (Math.floor of eased*target
+            // might be off by 1 due to floating point)
+            if (progress < 1) {
+              requestAnimationFrame(animate)
+            } else {
+              setCount(target)
+            }
           }
           requestAnimationFrame(animate)
         }
@@ -300,6 +311,11 @@ function HeroContent({ getSetting, typedDescription, typingDone, setCurrentPage 
   typingDone: boolean
   setCurrentPage: (page: string) => void
 }) {
+  // Magnetic button hooks — cursor-following translate for premium CTA feel.
+  // Strength 0.4 = medium (good for hero CTAs, noticeable but not distracting).
+  // Destructure to avoid lint false-positive (linter flags object.ref.* access).
+  const { ref: ppdbBtnRef, onMouseMove: onPPDBMouseMove, onMouseLeave: onPPDBMouseLeave } = useMagneticButton(0.4)
+  const { ref: profilBtnRef, onMouseMove: onProfilMouseMove, onMouseLeave: onProfilMouseLeave } = useMagneticButton(0.4)
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
@@ -376,22 +392,38 @@ function HeroContent({ getSetting, typedDescription, typingDone, setCurrentPage 
         />
       </p>
 
-      {/* CTA buttons */}
+      {/* CTA buttons — premium microinteractions:
+          - Magnetic button: wrapper div translates slightly toward cursor on hover
+          - Ripple effect: Material-style click feedback on the button inside */}
       <div className="flex flex-wrap gap-3">
-        <Button
-          onClick={() => { setCurrentPage('ppdb'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
-          className="bg-[#cca72f] hover:bg-[#ffe088] text-[#003527] font-bold px-7 shadow-lg shadow-[#cca72f]/30 hover:shadow-[#cca72f]/50 hover:scale-105 transition-all rounded-xl"
-          size="lg"
+        <div
+          ref={ppdbBtnRef}
+          onMouseMove={onPPDBMouseMove}
+          onMouseLeave={onPPDBMouseLeave}
+          className="magnetic-button inline-block"
         >
-          Daftar PPDB
-        </Button>
-        <Button
-          onClick={() => { setCurrentPage('profil'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
-          className="bg-white/10 hover:bg-white/20 text-white font-semibold px-7 backdrop-blur-sm hover:scale-105 transition-all rounded-xl"
-          size="lg"
+          <RippleButton
+            onClick={() => { setCurrentPage('ppdb'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+            className="bg-[#cca72f] hover:bg-[#ffe088] text-[#003527] font-bold px-7 shadow-lg shadow-[#cca72f]/30 hover:shadow-[#cca72f]/50 hover:scale-105 transition-all rounded-xl"
+            size="lg"
+          >
+            Daftar PPDB
+          </RippleButton>
+        </div>
+        <div
+          ref={profilBtnRef}
+          onMouseMove={onProfilMouseMove}
+          onMouseLeave={onProfilMouseLeave}
+          className="magnetic-button inline-block"
         >
-          Tentang Kami
-        </Button>
+          <RippleButton
+            onClick={() => { setCurrentPage('profil'); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+            className="bg-white/10 hover:bg-white/20 text-white font-semibold px-7 backdrop-blur-sm hover:scale-105 transition-all rounded-xl"
+            size="lg"
+          >
+            Tentang Kami
+          </RippleButton>
+        </div>
       </div>
     </motion.div>
   )
@@ -797,15 +829,9 @@ export default function BerandaSection() {
         ) : news.length > 0 ? (
           <div className="grid md:grid-cols-3 gap-6">
             {news.map((item: { id: string; title: string; excerpt?: string; content?: string; category: string; createdAt: string; image?: string }, idx: number) => (
-              <motion.div
-                key={item.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ delay: idx * 0.1, duration: 0.5 }}
-              >
+              <TiltCard key={item.id} delay={idx * 0.1} maxTilt={5}>
                 <Card
-                  className="overflow-hidden border border-[#e4e2de] shadow-premium card-hover group cursor-pointer rounded-2xl bg-[#ffffff]"
+                  className="overflow-hidden border border-[#e4e2de] shadow-premium card-hover group cursor-pointer rounded-2xl bg-[#ffffff] h-full"
                   onClick={() => setSelectedNews(item as typeof selectedNews)}
                 >
                   <div className="h-48 bg-gradient-to-br from-[#064e3b] to-[#003527] relative overflow-hidden">
@@ -841,7 +867,7 @@ export default function BerandaSection() {
                     </div>
                   </CardContent>
                 </Card>
-              </motion.div>
+              </TiltCard>
             ))}
           </div>
         ) : (
@@ -931,13 +957,7 @@ export default function BerandaSection() {
         ) : dakwahList.length > 0 ? (
           <div className="grid md:grid-cols-3 gap-6">
             {dakwahList.map((item: { id: string; title: string; content: string; category: string; author?: string; image?: string; videoUrl?: string; createdAt: string }, idx: number) => (
-              <motion.div
-                key={item.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ delay: idx * 0.1, duration: 0.5 }}
-              >
+              <TiltCard key={item.id} delay={idx * 0.1} maxTilt={5}>
                 <Card
                   className="overflow-hidden border border-[#e4e2de] shadow-premium card-hover group cursor-pointer h-full flex flex-col rounded-2xl bg-[#ffffff]"
                   onClick={() => setSelectedDakwah(item)}
@@ -995,7 +1015,7 @@ export default function BerandaSection() {
                     </div>
                   </CardContent>
                 </Card>
-              </motion.div>
+              </TiltCard>
             ))}
           </div>
         ) : (
@@ -1215,8 +1235,35 @@ export default function BerandaSection() {
         </div>
       </section>
 
-      {/* Testimonials */}
-      {testimonials.length > 0 && (
+      {/* Testimonials — show skeleton while loading, hide entirely when no data */}
+      {testimonialsLoading ? (
+        <section className="relative bg-mesh-emerald py-12 overflow-hidden">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative">
+            <KratonSectionHeader
+              badge="Kata Mereka"
+              title="Testimoni"
+              align="center"
+            />
+            <div className="max-w-2xl mx-auto">
+              <Card className="border border-white/40 shadow-premium-lg glass rounded-2xl">
+                <CardContent className="p-8 text-center space-y-4">
+                  <Skeleton className="h-10 w-10 rounded-full mx-auto" />
+                  <Skeleton className="h-4 w-3/4 mx-auto" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-5/6 mx-auto" />
+                  <div className="flex items-center justify-center gap-3 mt-6">
+                    <Skeleton className="h-10 w-10 rounded-full" />
+                    <div className="text-left space-y-2">
+                      <Skeleton className="h-4 w-24" />
+                      <Skeleton className="h-3 w-20" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </section>
+      ) : testimonials.length > 0 && (
         <section className="relative bg-mesh-emerald py-12 overflow-hidden">
           {/* Decorative glow */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#064e3b]/20 rounded-full blur-3xl pointer-events-none" aria-hidden />
@@ -1276,8 +1323,34 @@ export default function BerandaSection() {
         </section>
       )}
 
-      {/* Upcoming Events */}
-      {events.length > 0 && (
+      {/* Upcoming Events — show skeleton while loading, hide when no data */}
+      {eventsLoading ? (
+        <section className="bg-[#cca72f]/5 py-12">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <KratonSectionHeader
+              badge="Agenda"
+              title="Kegiatan Mendatang"
+              align="center"
+            />
+            <div className="grid md:grid-cols-3 gap-6">
+              {[1, 2, 3].map(i => (
+                <Card key={i} className="border border-[#e4e2de] shadow-premium rounded-2xl bg-[#ffffff]">
+                  <CardContent className="p-6">
+                    <div className="flex gap-4">
+                      <Skeleton className="w-[60px] h-[60px] rounded-xl shrink-0" />
+                      <div className="flex-1 space-y-2">
+                        <Skeleton className="h-5 w-3/4" />
+                        <Skeleton className="h-3 w-1/2" />
+                        <Skeleton className="h-3 w-2/3" />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+      ) : events.length > 0 && (
         <section className="bg-[#cca72f]/5 py-12">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <KratonSectionHeader

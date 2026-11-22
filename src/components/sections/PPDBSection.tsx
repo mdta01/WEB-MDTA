@@ -36,7 +36,7 @@ export default function PPDBSection() {
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
 
-  const { data: settingsData } = useQuery({
+  const { data: settingsData, isLoading: settingsLoading } = useQuery({
     queryKey: ['settings'],
     queryFn: () => fetch('/api/settings').then(r => r.json()),
   })
@@ -45,13 +45,13 @@ export default function PPDBSection() {
   const getSetting = (key: string) => settings.find((s: { key: string }) => s.key === key)?.value || ''
   const ppdbStatus = getSetting('ppdb_status') || 'open'
 
-  const { data: paymentsData } = useQuery({
+  const { data: paymentsData, isLoading: paymentsLoading } = useQuery({
     queryKey: ['payments'],
     queryFn: () => fetch('/api/payments').then(r => r.json()),
   })
   const payments = Array.isArray(paymentsData) ? paymentsData : (paymentsData?.payments || [])
 
-  const { data: eventsData } = useQuery({
+  const { data: eventsData, isLoading: eventsLoading } = useQuery({
     queryKey: ['events'],
     queryFn: () => fetch('/api/events').then(r => r.json()),
   })
@@ -149,24 +149,33 @@ export default function PPDBSection() {
 
       {/* Status Banner */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-        <Card className={`border-0 shadow-lg overflow-hidden ${ppdbStatus === 'open' ? 'ring-2 ring-[#064e3b]/40' : 'ring-2 ring-red-300'}`}>
-          <div className={`p-6 text-center ${ppdbStatus === 'open' ? 'bg-gradient-to-r from-[#003527] to-[#064e3b]' : 'bg-gradient-to-r from-red-500 to-red-700'} text-white`}>
-            <GraduationCap className="h-12 w-12 mx-auto mb-3" />
-            <h3 className="text-xl font-bold mb-2">
-              {ppdbStatus === 'open' ? 'Pendaftaran Dibuka!' : 'Pendaftaran Ditutup'}
-            </h3>
-            <p className="text-sm opacity-90">
-              {ppdbStatus === 'open'
-                ? 'Silakan isi formulir pendaftaran di bawah ini untuk mendaftarkan putra/putri Anda.'
-                : 'Pendaftaran saat ini belum dibuka. Pantau pengumuman untuk informasi lebih lanjut.'}
-            </p>
-            {ppdbStatus === 'open' && (
-              <Badge className="mt-3 bg-[#cca72f] text-[#003527] font-bold">
-                <CheckCircle className="h-3 w-3 mr-1" /> Pendaftaran Dibuka
-              </Badge>
-            )}
-          </div>
-        </Card>
+        {settingsLoading ? (
+          <Card className="border-0 shadow-lg overflow-hidden">
+            <div className="p-6 space-y-3">
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-4 w-2/3 mx-auto" />
+            </div>
+          </Card>
+        ) : (
+          <Card className={`border-0 shadow-lg overflow-hidden ${ppdbStatus === 'open' ? 'ring-2 ring-[#064e3b]/40' : 'ring-2 ring-red-300'}`}>
+            <div className={`p-6 text-center ${ppdbStatus === 'open' ? 'bg-gradient-to-r from-[#003527] to-[#064e3b]' : 'bg-gradient-to-r from-red-500 to-red-700'} text-white`}>
+              <GraduationCap className="h-12 w-12 mx-auto mb-3" />
+              <h3 className="text-xl font-bold mb-2">
+                {ppdbStatus === 'open' ? 'Pendaftaran Dibuka!' : 'Pendaftaran Ditutup'}
+              </h3>
+              <p className="text-sm opacity-90">
+                {ppdbStatus === 'open'
+                  ? 'Silakan isi formulir pendaftaran di bawah ini untuk mendaftarkan putra/putri Anda.'
+                  : 'Pendaftaran saat ini belum dibuka. Pantau pengumuman untuk informasi lebih lanjut.'}
+              </p>
+              {ppdbStatus === 'open' && (
+                <Badge className="mt-3 bg-[#cca72f] text-[#003527] font-bold">
+                  <CheckCircle className="h-3 w-3 mr-1" /> Pendaftaran Dibuka
+                </Badge>
+              )}
+            </div>
+          </Card>
+        )}
       </motion.div>
 
       {ppdbStatus === 'open' && (
@@ -179,7 +188,14 @@ export default function PPDBSection() {
                   <ClipboardList className="h-5 w-5 text-[#cca72f]" />
                   Persyaratan Pendaftaran
                 </h3>
-                {requirements.length > 0 ? (
+                {settingsLoading ? (
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-5/6" />
+                    <Skeleton className="h-4 w-2/3" />
+                  </div>
+                ) : requirements.length > 0 ? (
                   <ul className="space-y-2">
                     {requirements.map((item, idx) => (
                       <li key={idx} className="flex items-start gap-2 text-sm text-[#404944]">
@@ -203,7 +219,13 @@ export default function PPDBSection() {
                   <CreditCard className="h-5 w-5 text-[#cca72f]" />
                   Biaya Pendidikan
                 </h3>
-                {payments.length > 0 ? (
+                {paymentsLoading ? (
+                  <div className="space-y-2">
+                    <Skeleton className="h-16 w-full" />
+                    <Skeleton className="h-16 w-full" />
+                    <Skeleton className="h-16 w-full" />
+                  </div>
+                ) : payments.length > 0 ? (
                   <div className="overflow-x-auto">
                     <Table>
                       <TableHeader>
@@ -244,8 +266,8 @@ export default function PPDBSection() {
                   <div className="space-y-3">
                     {[1, 2, 3].map(i => (
                       <div key={i} className="border-l-4 border-[#cca72f]/50 pl-4 py-2">
-                        <div className="h-4 w-1/2 bg-[#e4e2de] rounded animate-pulse mb-2" />
-                        <div className="h-3 w-1/3 bg-[#e4e2de] rounded animate-pulse" />
+                        <Skeleton className="h-4 w-1/2 mb-2" />
+                        <Skeleton className="h-3 w-1/3" />
                       </div>
                     ))}
                   </div>
@@ -291,6 +313,59 @@ export default function PPDBSection() {
                   </div>
                 ) : (
                   <EmptyState illustration="ppdb" variant="compact" title="Jadwal belum tersedia" message="Silakan hubungi panitia untuk informasi lebih lanjut." />
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Agenda PPDB — from events API (category: ppdb) */}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.225 }}>
+            <Card className="border-0 shadow-md">
+              <CardContent className="p-6">
+                <h3 className="text-lg font-bold text-[#003527] flex items-center gap-2 mb-4">
+                  <Calendar className="h-5 w-5 text-[#cca72f]" />
+                  Agenda PPDB
+                </h3>
+                {eventsLoading ? (
+                  <div className="space-y-3">
+                    <Skeleton className="h-20 w-full" />
+                    <Skeleton className="h-20 w-full" />
+                  </div>
+                ) : ppdbEvents.length > 0 ? (
+                  <div className="space-y-3">
+                    {ppdbEvents.map((e: { id: string; title: string; description?: string | null; date: string; location?: string | null }, idx: number) => {
+                      const eventDate = new Date(e.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
+                      return (
+                        <div key={e.id || idx} className="flex gap-4 p-3 rounded-lg bg-[#064e3b]/5">
+                          <div className="bg-[#003527] text-white rounded-lg p-2 text-center min-w-[50px]">
+                            <div className="text-base font-bold">
+                              {new Date(e.date).getDate()}
+                            </div>
+                            <div className="text-xs uppercase">
+                              {new Date(e.date).toLocaleDateString('id-ID', { month: 'short' })}
+                            </div>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold text-sm text-[#003527]">{e.title}</p>
+                            <p className="text-xs text-[#404944] flex items-center gap-1 mt-1">
+                              <Calendar className="h-3 w-3 text-[#cca72f]" />
+                              {eventDate}
+                            </p>
+                            {e.location && (
+                              <p className="text-xs text-[#404944] flex items-center gap-1 mt-1">
+                                <MapPin className="h-3 w-3 text-[#cca72f]" /> {e.location}
+                              </p>
+                            )}
+                            {e.description && (
+                              <p className="text-xs text-[#404944] mt-1 line-clamp-2">{e.description}</p>
+                            )}
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                ) : (
+                  <EmptyState illustration="ppdb" variant="compact" title="Agenda belum tersedia" message="Pantau pengumuman untuk informasi agenda PPDB terkini." />
                 )}
               </CardContent>
             </Card>
@@ -514,7 +589,12 @@ export default function PPDBSection() {
                   </Button>
                 )}
 
-                {contacts.length > 0 ? (
+                {settingsLoading ? (
+                  <div className="space-y-2">
+                    <Skeleton className="h-12 w-full" />
+                    <Skeleton className="h-12 w-full" />
+                  </div>
+                ) : contacts.length > 0 ? (
                   <div className="space-y-2 text-sm text-[#003527]">
                     {contacts.map((contact, idx) => (
                       <div key={idx} className="flex items-center justify-center gap-2 flex-wrap">

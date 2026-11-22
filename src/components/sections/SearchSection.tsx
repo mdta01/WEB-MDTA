@@ -28,25 +28,25 @@ export default function SearchSection() {
     enabled: searchQuery.length >= 2,
   })
 
-  const { data: announcementsData } = useQuery({
+  const { data: announcementsData, isLoading: announcementsLoading } = useQuery({
     queryKey: ['announcements-search'],
     queryFn: () => fetch('/api/announcements').then(r => r.json()),
     enabled: searchQuery.length >= 2,
   })
 
-  const { data: programsData } = useQuery({
+  const { data: programsData, isLoading: programsLoading } = useQuery({
     queryKey: ['programs-search'],
     queryFn: () => fetch('/api/programs').then(r => r.json()),
     enabled: searchQuery.length >= 2,
   })
 
-  const { data: achievementsData } = useQuery({
+  const { data: achievementsData, isLoading: achievementsLoading } = useQuery({
     queryKey: ['achievements-search'],
     queryFn: () => fetch('/api/achievements').then(r => r.json()),
     enabled: searchQuery.length >= 2,
   })
 
-  const { data: eventsData } = useQuery({
+  const { data: eventsData, isLoading: eventsLoading } = useQuery({
     queryKey: ['events-search'],
     queryFn: () => fetch('/api/events').then(r => r.json()),
     enabled: searchQuery.length >= 2,
@@ -103,7 +103,7 @@ export default function SearchSection() {
     'kegiatan': { icon: Calendar, label: 'Kegiatan', color: 'bg-[#003527]/15 text-[#003527]', page: 'berita' },
   }
 
-  const isLoading = newsLoading
+  const isLoading = newsLoading || announcementsLoading || programsLoading || achievementsLoading || eventsLoading
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8">
