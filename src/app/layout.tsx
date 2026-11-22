@@ -116,7 +116,7 @@ export default function RootLayout({
           })();
         `}} />
       </head>
-      <body className="antialiased bg-background text-foreground font-body">
+      <body className="antialiased bg-background text-foreground font-body" suppressHydrationWarning>
         {children}
         {/* Visitor traffic tracker — fires on every route change, sends
             fire-and-forget POST to /api/track-visitor. Mounted at root so
