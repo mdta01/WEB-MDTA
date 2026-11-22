@@ -53,6 +53,10 @@ export async function POST(request: NextRequest) {
         motherJob: body.motherJob || null,
         motherAddress: body.motherAddress || null,
         motherPhone: body.motherPhone || null,
+        // Berkas persyaratan (URL Cloudinary)
+        kkUrl: typeof body.kkUrl === 'string' && body.kkUrl ? body.kkUrl : null,
+        aktaUrl: typeof body.aktaUrl === 'string' && body.aktaUrl ? body.aktaUrl : null,
+        fotoUrl: typeof body.fotoUrl === 'string' && body.fotoUrl ? body.fotoUrl : null,
         // Legacy (backward compat — map father phone/name to parent fields)
         parentName: body.fatherName || body.motherName || null,
         parentPhone: body.fatherPhone || body.motherPhone || null,

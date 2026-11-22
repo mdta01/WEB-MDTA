@@ -203,6 +203,10 @@ model PPDBRegistration {
   motherJob         String?  @db.VarChar(100)
   motherAddress     String?  @db.Text
   motherPhone       String?  @db.VarChar(20)
+  // Berkas persyaratan (URL Cloudinary)
+  kkUrl             String?  @db.VarChar(500)
+  aktaUrl           String?  @db.VarChar(500)
+  fotoUrl           String?  @db.VarChar(500)
   // Legacy fields (backward compat)
   parentName        String?  @db.VarChar(100)
   parentPhone       String?  @db.VarChar(20)

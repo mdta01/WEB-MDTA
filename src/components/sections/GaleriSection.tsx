@@ -1,13 +1,35 @@
 'use client'
 
+/**
+ * GaleriSection — premium gallery experience.
+ *
+ * Features:
+ *  - Animated filter chips (icon + label + count) with emerald gradient
+ *    + gold ring on active. Categories derived from data + Foto/Video type
+ *    filters + separate year filter row.
+ *  - Masonry layout (CSS columns + break-inside-avoid) with TiltCard 3D hover.
+ *  - SmartImage with Cloudinary optimization (`{ width: 600, crop: 'fill' }}`).
+ *  - Hover overlay: title + category badge + year + zoom icon + video play badge.
+ *  - Stagger entrance animation via TiltCard's whileInView.
+ *  - Premium lightbox: PremiumLightbox (separate component) with keyboard nav,
+ *    zoom, caption, thumbnail strip, touch gestures.
+ *  - Empty state via <EmptyState illustration="galeri">.
+ */
+
 import { useQuery } from '@tanstack/react-query'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Play, X, ChevronLeft, ChevronRight, Calendar, ZoomIn } from 'lucide-react'
-import { useState, useEffect, useMemo, useCallback } from 'react'
+import {
+  Play, Calendar, ZoomIn, LayoutGrid, Camera, Video, Image as ImageIcon,
+  type LucideIcon,
+} from 'lucide-react'
+import { useState, useMemo, useCallback } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { KratonSectionHeader } from '@/components/kraton'
 import { EmptyState } from '@/components/ui/empty-state'
+import { TiltCard } from '@/components/ui/tilt-card'
+import { SmartImage } from '@/components/ui/smart-image'
+import { PremiumLightbox } from './galeri/PremiumLightbox'
 
 type GalleryItem = {
   id: string
@@ -16,14 +38,18 @@ type GalleryItem = {
   category: string
   year?: string
   type: string
+  description?: string
 }
 
-const categories = [
-  { value: '', label: 'Semua' },
-  { value: 'kegiatan', label: 'Kegiatan' },
-  { value: 'acara', label: 'Acara' },
-  { value: 'tahunan', label: 'Tahunan' },
-]
+type ActiveFilter =
+  | { kind: 'all' }
+  | { kind: 'type'; value: 'photo' | 'video' }
+  | { kind: 'category'; value: string }
+
+type FilterChip =
+  | { kind: 'all'; label: string; icon: LucideIcon; count: number }
+  | { kind: 'type'; value: 'photo' | 'video'; label: string; icon: LucideIcon; count: number }
+  | { kind: 'category'; value: string; label: string; icon: LucideIcon; count: number }
 
 const categoryColors: Record<string, string> = {
   kegiatan: 'bg-[#003527] text-white',
@@ -31,23 +57,33 @@ const categoryColors: Record<string, string> = {
   tahunan: 'bg-[#064e3b] text-white',
 }
 
+function getCategoryColor(cat: string) {
+  return categoryColors[cat] || 'bg-[#404944] text-white'
+}
+
 const gradientVariants = [
-  'from-[#064e3b] to-[#003527]',
-  'from-[#003527] to-[#064e3b]',
   'from-[#064e3b] to-[#003527]',
   'from-[#003527] to-[#064e3b]',
   'from-[#895033] to-[#a86644]',
   'from-[#064e3b] to-[#895033]',
 ]
 
+// Treat both 'photo' (spec) and 'foto' (legacy DB default) as photo type
+function isPhotoType(t: string) {
+  return t === 'photo' || t === 'foto'
+}
+function isVideoType(t: string) {
+  return t === 'video'
+}
+
 export default function GaleriSection() {
-  const [selectedCategory, setSelectedCategory] = useState('')
+  const [activeFilter, setActiveFilter] = useState<ActiveFilter>({ kind: 'all' })
   const [selectedYear, setSelectedYear] = useState('')
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
 
   const { data, isLoading } = useQuery({
     queryKey: ['gallery'],
-    queryFn: () => fetch('/api/gallery').then(r => r.json()),
+    queryFn: () => fetch('/api/gallery').then((r) => r.json()),
   })
 
   const allGallery: GalleryItem[] = Array.isArray(data) ? data : (data?.gallery || [])
@@ -61,45 +97,55 @@ export default function GaleriSection() {
     return Array.from(yearSet).sort((a, b) => Number(b) - Number(a))
   }, [allGallery])
 
-  // Clamp selectedYear in render (not in effect) in case data shrinks
+  // Clamp selectedYear in render in case data shrinks
   const safeSelectedYear = selectedYear && availableYears.includes(selectedYear) ? selectedYear : ''
 
-  // Filtered gallery (client-side by category + year)
+  // Categories derived from data
+  const dataCategories = useMemo(() => {
+    const set = new Set<string>()
+    allGallery.forEach((item) => set.add(item.category))
+    return Array.from(set).sort()
+  }, [allGallery])
+
+  // Filter chips with counts
+  const filterChips: FilterChip[] = useMemo(() => {
+    const photoCount = allGallery.filter((i) => isPhotoType(i.type)).length
+    const videoCount = allGallery.filter((i) => isVideoType(i.type)).length
+    return [
+      { kind: 'all', label: 'Semua', icon: LayoutGrid, count: allGallery.length },
+      { kind: 'type', value: 'photo', label: 'Foto', icon: Camera, count: photoCount },
+      { kind: 'type', value: 'video', label: 'Video', icon: Video, count: videoCount },
+      ...dataCategories.map((cat) => ({
+        kind: 'category' as const,
+        value: cat,
+        label: cat.charAt(0).toUpperCase() + cat.slice(1),
+        icon: ImageIcon,
+        count: allGallery.filter((i) => i.category === cat).length,
+      })),
+    ]
+  }, [allGallery, dataCategories])
+
+  // Filtered gallery (by active filter + year)
   const filteredGallery = useMemo(() => {
     return allGallery.filter((item) => {
-      if (selectedCategory && item.category !== selectedCategory) return false
+      if (activeFilter.kind === 'type') {
+        if (activeFilter.value === 'photo' && !isPhotoType(item.type)) return false
+        if (activeFilter.value === 'video' && !isVideoType(item.type)) return false
+      }
+      if (activeFilter.kind === 'category' && item.category !== activeFilter.value) return false
       if (safeSelectedYear && item.year !== safeSelectedYear) return false
       return true
     })
-  }, [allGallery, selectedCategory, safeSelectedYear])
+  }, [allGallery, activeFilter, safeSelectedYear])
 
-  // Lightbox navigation
-  const goNext = useCallback(() => {
-    setLightboxIndex((idx) => (idx === null ? null : (idx + 1) % filteredGallery.length))
-  }, [filteredGallery.length])
+  const isChipActive = useCallback((chip: FilterChip): boolean => {
+    if (chip.kind === 'all') return activeFilter.kind === 'all'
+    if (chip.kind === 'type') return activeFilter.kind === 'type' && activeFilter.value === chip.value
+    if (chip.kind === 'category') return activeFilter.kind === 'category' && activeFilter.value === chip.value
+    return false
+  }, [activeFilter])
 
-  const goPrev = useCallback(() => {
-    setLightboxIndex((idx) => (idx === null ? null : (idx - 1 + filteredGallery.length) % filteredGallery.length))
-  }, [filteredGallery.length])
-
-  // Keyboard navigation
-  useEffect(() => {
-    if (lightboxIndex === null) return
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowRight') goNext()
-      else if (e.key === 'ArrowLeft') goPrev()
-      else if (e.key === 'Escape') setLightboxIndex(null)
-    }
-    window.addEventListener('keydown', handleKey)
-    // Lock body scroll when lightbox open
-    document.body.style.overflow = 'hidden'
-    return () => {
-      window.removeEventListener('keydown', handleKey)
-      document.body.style.overflow = ''
-    }
-  }, [lightboxIndex, goNext, goPrev])
-
-  const closeLightbox = () => setLightboxIndex(null)
+  const hasActiveFilter = activeFilter.kind !== 'all' || !!safeSelectedYear
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8">
@@ -111,226 +157,214 @@ export default function GaleriSection() {
         subtitle={filteredGallery.length > 0 ? `${filteredGallery.length} foto` : undefined}
       />
 
-      {/* Filters — Category + Year */}
-      <div className="space-y-3">
-        {/* Category */}
+      {/* === Filters === */}
+      <div className="space-y-4">
+        {/* Category chips */}
         <div className="flex flex-wrap gap-2 justify-center">
-          {categories.map((cat) => (
-            <button
-              key={cat.value}
-              onClick={() => setSelectedCategory(cat.value)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-                selectedCategory === cat.value
-                  ? 'bg-[#003527] text-white shadow-md shadow-[#003527]/30 scale-105'
-                  : 'bg-[#f5f3ef] text-[#003527] hover:bg-[#efeeea] hover:scale-105'
-              }`}
-            >
-              {cat.label}
-            </button>
-          ))}
+          {filterChips.map((chip) => {
+            const Icon = chip.icon
+            const active = isChipActive(chip)
+            const key = chip.kind === 'all' ? 'all' : `${chip.kind}-${chip.value}`
+            return (
+              <motion.button
+                key={key}
+                layout
+                onClick={() => {
+                  if (chip.kind === 'all') setActiveFilter({ kind: 'all' })
+                  else if (chip.kind === 'type') setActiveFilter({ kind: 'type', value: chip.value })
+                  else setActiveFilter({ kind: 'category', value: chip.value })
+                }}
+                whileTap={{ scale: 0.95 }}
+                whileHover={{ y: -1 }}
+                className={`relative inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 font-body ${
+                  active
+                    ? 'bg-gradient-to-br from-[#064e3b] to-[#003527] text-white shadow-md shadow-[#003527]/30 ring-2 ring-[#cca72f] ring-offset-2 ring-offset-[#fbf9f5]'
+                    : 'bg-[#f5f3ef] text-[#003527] hover:bg-[#efeeea] border border-[#e4e2de]'
+                }`}
+                aria-pressed={active}
+              >
+                <Icon className="h-3.5 w-3.5" />
+                <span>{chip.label}</span>
+                <span
+                  className={`text-xs px-1.5 py-0.5 rounded-full tabular-nums font-semibold ${
+                    active
+                      ? 'bg-white/20 text-white'
+                      : 'bg-[#003527]/10 text-[#003527]/70'
+                  }`}
+                >
+                  {chip.count}
+                </span>
+              </motion.button>
+            )
+          })}
         </div>
 
         {/* Year filter (auto-populated from data) */}
         {availableYears.length > 0 && (
           <div className="flex flex-wrap gap-2 justify-center items-center">
-            <span className="text-xs text-[#404944] font-medium flex items-center gap-1 mr-1">
+            <span className="text-xs text-[#404944] font-medium flex items-center gap-1 mr-1 font-body">
               <Calendar className="h-3 w-3" /> Tahun:
             </span>
-            <button
+            <motion.button
+              layout
               onClick={() => setSelectedYear('')}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-300 ${
+              whileTap={{ scale: 0.95 }}
+              whileHover={{ y: -1 }}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-300 font-body ${
                 safeSelectedYear === ''
-                  ? 'bg-[#cca72f] text-white shadow-md scale-105'
-                  : 'bg-[#cca72f]/10 text-[#895033] hover:bg-[#cca72f]/20 hover:scale-105'
+                  ? 'bg-[#cca72f] text-white shadow-md shadow-[#cca72f]/30 ring-2 ring-[#cca72f]/40'
+                  : 'bg-[#cca72f]/10 text-[#895033] hover:bg-[#cca72f]/20 border border-[#cca72f]/30'
               }`}
+              aria-pressed={safeSelectedYear === ''}
             >
               Semua
-            </button>
+            </motion.button>
             {availableYears.map((year) => (
-              <button
+              <motion.button
                 key={year}
+                layout
                 onClick={() => setSelectedYear(year)}
-                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-300 ${
+                whileTap={{ scale: 0.95 }}
+                whileHover={{ y: -1 }}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-300 font-body tabular-nums ${
                   safeSelectedYear === year
-                    ? 'bg-[#cca72f] text-white shadow-md scale-105'
-                    : 'bg-[#cca72f]/10 text-[#895033] hover:bg-[#cca72f]/20 hover:scale-105'
+                    ? 'bg-[#cca72f] text-white shadow-md shadow-[#cca72f]/30 ring-2 ring-[#cca72f]/40'
+                    : 'bg-[#cca72f]/10 text-[#895033] hover:bg-[#cca72f]/20 border border-[#cca72f]/30'
                 }`}
+                aria-pressed={safeSelectedYear === year}
               >
                 {year}
-              </button>
+              </motion.button>
             ))}
           </div>
         )}
       </div>
 
-      {/* Gallery Masonry Grid */}
+      {/* === Gallery Masonry Grid === */}
       {isLoading ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
+          {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
             <Skeleton key={i} className="aspect-square rounded-xl" />
           ))}
         </div>
       ) : filteredGallery.length > 0 ? (
         <div className="columns-2 md:columns-3 lg:columns-4 gap-4 [column-fill:_balance]">
           {filteredGallery.map((item, idx) => (
-            <motion.div
+            <TiltCard
               key={item.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ delay: Math.min(idx * 0.04, 0.4), duration: 0.5 }}
-              className="break-inside-avoid mb-4 cursor-pointer group"
-              onClick={() => setLightboxIndex(idx)}
+              delay={Math.min(idx * 0.04, 0.4)}
+              maxTilt={4}
+              className="break-inside-avoid mb-4"
             >
-              <div className="relative rounded-2xl overflow-hidden shadow-premium card-hover bg-[#f5f3ef]">
-                {item.type === 'video' ? (
-                  <div className={`aspect-video bg-gradient-to-br ${gradientVariants[idx % gradientVariants.length]} flex items-center justify-center`}>
-                    <Play className="h-12 w-12 text-white/70" />
+              <div
+                onClick={() => setLightboxIndex(idx)}
+                className="relative overflow-hidden rounded-2xl border border-[#e4e2de] bg-[#064e3b] shadow-premium group cursor-pointer"
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    setLightboxIndex(idx)
+                  }
+                }}
+                aria-label={`Buka ${item.title} di lightbox`}
+              >
+                {/* Image / video placeholder */}
+                {isVideoType(item.type) ? (
+                  <div
+                    className={`aspect-video bg-gradient-to-br ${gradientVariants[idx % gradientVariants.length]} flex items-center justify-center`}
+                  >
+                    <Play
+                      className="h-12 w-12 text-white/70 ml-1"
+                      fill="currentColor"
+                    />
                   </div>
                 ) : (
-                  <img
-                    src={item.image}
-                    alt={item.title}
-                    loading="lazy"
-                    className="w-full h-auto object-cover group-hover:scale-110 transition-transform duration-700"
-                  />
+                  <div className="overflow-hidden transition-transform duration-700 group-hover:scale-105">
+                    <SmartImage
+                      src={item.image}
+                      fallbackSrc="/images/hero-madrasah.webp"
+                      alt={item.title}
+                      optimize={{ width: 600, crop: 'fill' }}
+                      loading="lazy"
+                      className="w-full h-auto block"
+                    />
+                  </div>
                 )}
+
                 {/* Hover overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
-                  <p className="text-white text-sm font-medium line-clamp-2 mb-2">{item.title}</p>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 pointer-events-none">
+                  <p className="text-white text-sm font-medium line-clamp-2 mb-2 font-body">
+                    {item.title}
+                  </p>
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${categoryColors[item.category] || 'bg-[#404944] text-white'}`}>
+                    <span
+                      className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${getCategoryColor(item.category)}`}
+                    >
                       {item.category}
                     </span>
                     {item.year && (
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/20 text-white font-medium backdrop-blur-sm">
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/20 text-white font-medium backdrop-blur-sm flex items-center gap-1">
+                        <Calendar className="h-2.5 w-2.5" />
                         {item.year}
                       </span>
                     )}
                   </div>
-                  <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                    <ZoomIn className="h-4 w-4 text-white" />
-                  </div>
                 </div>
+
+                {/* Zoom icon (top-right, appears on hover) */}
+                <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                  <ZoomIn className="h-4 w-4 text-white" />
+                </div>
+
+                {/* Video badge (top-left, always visible for video items) */}
+                {isVideoType(item.type) && (
+                  <div className="absolute top-3 left-3 w-8 h-8 rounded-full bg-[#cca72f] flex items-center justify-center shadow-md shadow-[#cca72f]/40">
+                    <Play className="h-3.5 w-3.5 text-white ml-0.5" fill="currentColor" />
+                  </div>
+                )}
               </div>
-            </motion.div>
+            </TiltCard>
           ))}
         </div>
       ) : (
         <EmptyState
           illustration="galeri"
-          variant={selectedCategory || safeSelectedYear ? 'search' : 'default'}
+          variant={hasActiveFilter ? 'search' : 'default'}
           searchQuery={
-            selectedCategory || safeSelectedYear
-              ? [selectedCategory, safeSelectedYear].filter(Boolean).join(' • ')
+            hasActiveFilter
+              ? [
+                  activeFilter.kind === 'type'
+                    ? activeFilter.value
+                    : activeFilter.kind === 'category'
+                      ? activeFilter.value
+                      : '',
+                  safeSelectedYear,
+                ].filter(Boolean).join(' • ')
               : undefined
           }
           title={
-            selectedCategory || safeSelectedYear
+            hasActiveFilter
               ? 'Tidak ada foto untuk filter ini'
               : 'Galeri masih kosong'
           }
           message={
-            selectedCategory || safeSelectedYear
+            hasActiveFilter
               ? 'Coba ubah kategori atau tahun filter untuk menemukan foto yang Anda cari.'
               : 'Dokumentasi kegiatan madrasah akan tampil di sini setelah foto tersedia. Mari kembali berkunjung nanti.'
           }
         />
       )}
 
-      {/* Premium Lightbox with swipe + keyboard nav */}
+      {/* === Premium Lightbox === */}
       <AnimatePresence>
         {lightboxIndex !== null && filteredGallery[lightboxIndex] && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center"
-            onClick={closeLightbox}
-          >
-            {/* Close button */}
-            <button
-              onClick={closeLightbox}
-              className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors"
-              aria-label="Tutup"
-            >
-              <X className="h-5 w-5" />
-            </button>
-
-            {/* Counter */}
-            <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 bg-white/10 backdrop-blur-sm text-white text-sm px-4 py-1.5 rounded-full">
-              {lightboxIndex + 1} / {filteredGallery.length}
-            </div>
-
-            {/* Prev button (desktop) */}
-            {filteredGallery.length > 1 && (
-              <button
-                onClick={(e) => { e.stopPropagation(); goPrev() }}
-                className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors"
-                aria-label="Sebelumnya"
-              >
-                <ChevronLeft className="h-6 w-6" />
-              </button>
-            )}
-
-            {/* Next button (desktop) */}
-            {filteredGallery.length > 1 && (
-              <button
-                onClick={(e) => { e.stopPropagation(); goNext() }}
-                className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors"
-                aria-label="Berikutnya"
-              >
-                <ChevronRight className="h-6 w-6" />
-              </button>
-            )}
-
-            {/* Image with swipe (framer-motion drag) */}
-            <motion.div
-              key={filteredGallery[lightboxIndex].id}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.25 }}
-              drag={filteredGallery.length > 1 ? 'x' : false}
-              dragConstraints={{ left: 0, right: 0 }}
-              dragElastic={0.6}
-              onDragEnd={(event, info) => {
-                // Swipe threshold: 100px horizontal
-                if (info.offset.x < -100) goNext()
-                else if (info.offset.x > 100) goPrev()
-              }}
-              onClick={(e) => e.stopPropagation()}
-              className="max-w-[90vw] max-h-[85vh] flex flex-col items-center"
-            >
-              <img
-                src={filteredGallery[lightboxIndex].image}
-                alt={filteredGallery[lightboxIndex].title}
-                className="max-w-full max-h-[75vh] object-contain rounded-lg"
-                draggable={false}
-              />
-              {/* Caption */}
-              <div className="mt-4 text-center px-4 max-w-2xl">
-                <h3 className="text-white font-semibold text-lg mb-2">{filteredGallery[lightboxIndex].title}</h3>
-                <div className="flex items-center justify-center gap-2 flex-wrap">
-                  <span className={`text-xs px-3 py-1 rounded-full font-medium ${categoryColors[filteredGallery[lightboxIndex].category] || 'bg-[#404944] text-white'}`}>
-                    {filteredGallery[lightboxIndex].category}
-                  </span>
-                  {filteredGallery[lightboxIndex].year && (
-                    <span className="text-xs px-3 py-1 rounded-full bg-white/10 text-white font-medium backdrop-blur-sm flex items-center gap-1">
-                      <Calendar className="h-3 w-3" />
-                      {filteredGallery[lightboxIndex].year}
-                    </span>
-                  )}
-                </div>
-                {filteredGallery.length > 1 && (
-                  <p className="text-white/50 text-xs mt-3">
-                    Geser untuk navigasi • ← → untuk panah • ESC untuk tutup
-                  </p>
-                )}
-              </div>
-            </motion.div>
-          </motion.div>
+          <PremiumLightbox
+            items={filteredGallery}
+            index={lightboxIndex}
+            onClose={() => setLightboxIndex(null)}
+            onNavigate={(newIndex) => setLightboxIndex(newIndex)}
+          />
         )}
       </AnimatePresence>
     </div>

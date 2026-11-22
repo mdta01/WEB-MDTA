@@ -4,43 +4,42 @@ import { useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
 import {
   GraduationCap, ClipboardList, CreditCard, Calendar, Phone,
-  CheckCircle, AlertCircle, Send, User, MapPin, MessageCircle,
+  CheckCircle, Send, MapPin, MessageCircle,
 } from 'lucide-react'
-import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table'
 import { EmptyState } from '@/components/ui/empty-state'
+import { KratonSectionHeader } from '@/components/kraton'
 import { toast } from 'sonner'
+import { PPDBRegistrationForm } from './ppdb/PPDBRegistrationForm'
+import { PPDBFAQ } from './ppdb/PPDBFAQ'
 
+/**
+ * PPDBSection — Pendaftaran Peserta Didik Baru.
+ *
+ * Premium multi-step interactive registration experience:
+ *  - Status banner (open/closed) with CTA
+ *  - Persyaratan (requirements) — pulled from settings (ppdb_requirements)
+ *  - Biaya pendidikan — from /api/payments
+ *  - Jadwal pendaftaran — from /api/ppdb/schedules (sync realtime)
+ *  - Agenda PPDB — from /api/events (category: ppdb)
+ *  - Multi-step registration form (4 steps, file upload, live preview) — PPDBRegistrationForm
+ *  - Inline FAQ specific to PPDB — PPDBFAQ
+ *  - Contact panitia (WhatsApp) — from settings (ppdb_contact, ppdb_panitia_phone)
+ *
+ * Brand palette: emerald (#003527) + gold (#cca72f) on parchment (#fbf9f5).
+ */
 export default function PPDBSection() {
-  const [formData, setFormData] = useState({
-    // A. Data Calon Santri
-    name: '', nik: '', nokk: '', birthPlace: '', birthDate: '', gender: '',
-    // B. Asal Sekolah
-    previousSchool: '', schoolClass: '', schoolAddress: '',
-    // C. Data Ayah
-    fatherName: '', fatherStatus: '', fatherNik: '', fatherBirthPlace: '', fatherBirthDate: '',
-    fatherEducation: '', fatherJob: '', fatherAddress: '', fatherPhone: '',
-    // C. Data Ibu
-    motherName: '', motherStatus: '', motherNik: '', motherBirthPlace: '', motherBirthDate: '',
-    motherEducation: '', motherJob: '', motherAddress: '', motherPhone: '',
-  })
-  const [submitting, setSubmitting] = useState(false)
-  const [submitted, setSubmitted] = useState(false)
-
+  // ============ Data fetching ============
   const { data: settingsData, isLoading: settingsLoading } = useQuery({
     queryKey: ['settings'],
     queryFn: () => fetch('/api/settings').then(r => r.json()),
   })
-
   const settings = Array.isArray(settingsData) ? settingsData : (settingsData?.settings || [])
   const getSetting = (key: string) => settings.find((s: { key: string }) => s.key === key)?.value || ''
   const ppdbStatus = getSetting('ppdb_status') || 'open'
@@ -81,10 +80,8 @@ export default function PPDBSection() {
   // Nomor WhatsApp utama panitia (setting terpisah, opsional)
   const panitiaPhone = getSetting('ppdb_panitia_phone') || ''
 
+  // ============ WhatsApp helpers ============
   // Format nomor HP ke format WhatsApp (62XXXXXXXXXXX)
-  // - Hapus karakter non-digit (spasi, dash, dll)
-  // - Ganti leading 0 dengan 62
-  // - Hapus leading +62 / 62 jika ada, lalu tambahkan 62
   function formatWhatsAppNumber(raw: string): string {
     let digits = (raw || '').replace(/\D/g, '')
     if (digits.startsWith('62')) {
@@ -103,51 +100,18 @@ export default function PPDBSection() {
 
   const defaultWaMessage = 'Assalamualaikum, saya ingin bertanya tentang pendaftaran PPDB di MDTA Miftahul Ulum 01'
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }))
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!formData.name || !formData.birthPlace || !formData.birthDate) {
-      toast.error('Harap isi Nama, Tempat Lahir, dan Tanggal Lahir calon santri')
-      return
-    }
-    if (!formData.fatherName && !formData.motherName) {
-      toast.error('Harap isi minimal data salah satu orang tua (Ayah atau Ibu)')
-      return
-    }
-    setSubmitting(true)
-    try {
-      const res = await fetch('/api/ppdb', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      })
-      if (res.ok) {
-        toast.success('Pendaftaran berhasil dikirim! Tim panitia akan menghubungi Anda.')
-        setSubmitted(true)
-        setFormData({ name: '', birthPlace: '', birthDate: '', parentName: '', parentPhone: '', address: '', previousSchool: '' })
-      } else {
-        toast.error('Terjadi kesalahan. Silakan coba lagi.')
-      }
-    } catch {
-      toast.error('Gagal mengirim pendaftaran. Periksa koneksi internet Anda.')
-    } finally {
-      setSubmitting(false)
-    }
-  }
-
+  // ============ Render ============
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8">
-      <div className="text-center mb-8">
-        <h2 className="text-2xl md:text-3xl font-bold text-[#003527]">
-          Pendaftaran Peserta Didik Baru (PPDB)
-        </h2>
-        <div className="w-20 h-1 bg-[#cca72f] mx-auto mt-2 rounded-full" />
-      </div>
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-12">
+      {/* Section header — Kraton brand */}
+      <KratonSectionHeader
+        badge="Penerimaan Santri Baru"
+        title="Pendaftaran Peserta Didik Baru (PPDB)"
+        subtitle="Bergabunglah bersama kami dalam membentuk generasi Qur'ani yang berakhlak mulia. Isi formulir online di bawah untuk mendaftarkan putra/putri Anda."
+        align="center"
+      />
 
-      {/* Status Banner */}
+      {/* ============ Status Banner ============ */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
         {settingsLoading ? (
           <Card className="border-0 shadow-lg overflow-hidden">
@@ -157,19 +121,19 @@ export default function PPDBSection() {
             </div>
           </Card>
         ) : (
-          <Card className={`border-0 shadow-lg overflow-hidden ${ppdbStatus === 'open' ? 'ring-2 ring-[#064e3b]/40' : 'ring-2 ring-red-300'}`}>
+          <Card className={`border-0 shadow-premium overflow-hidden ${ppdbStatus === 'open' ? 'ring-2 ring-[#064e3b]/40' : 'ring-2 ring-red-300'}`}>
             <div className={`p-6 text-center ${ppdbStatus === 'open' ? 'bg-gradient-to-r from-[#003527] to-[#064e3b]' : 'bg-gradient-to-r from-red-500 to-red-700'} text-white`}>
               <GraduationCap className="h-12 w-12 mx-auto mb-3" />
-              <h3 className="text-xl font-bold mb-2">
+              <h3 className="text-xl font-bold mb-2 font-display">
                 {ppdbStatus === 'open' ? 'Pendaftaran Dibuka!' : 'Pendaftaran Ditutup'}
               </h3>
-              <p className="text-sm opacity-90">
+              <p className="text-sm opacity-90 font-body max-w-lg mx-auto">
                 {ppdbStatus === 'open'
-                  ? 'Silakan isi formulir pendaftaran di bawah ini untuk mendaftarkan putra/putri Anda.'
+                  ? 'Silakan isi formulir pendaftaran online di bawah ini untuk mendaftarkan putra/putri Anda.'
                   : 'Pendaftaran saat ini belum dibuka. Pantau pengumuman untuk informasi lebih lanjut.'}
               </p>
               {ppdbStatus === 'open' && (
-                <Badge className="mt-3 bg-[#cca72f] text-[#003527] font-bold">
+                <Badge className="mt-3 bg-[#cca72f] text-[#003527] font-bold hover:bg-[#cca72f]">
                   <CheckCircle className="h-3 w-3 mr-1" /> Pendaftaran Dibuka
                 </Badge>
               )}
@@ -180,11 +144,11 @@ export default function PPDBSection() {
 
       {ppdbStatus === 'open' && (
         <>
-          {/* Persyaratan */}
+          {/* ============ Persyaratan Pendaftaran ============ */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-            <Card className="border-0 shadow-md">
+            <Card className="border-0 shadow-premium rounded-2xl">
               <CardContent className="p-6">
-                <h3 className="text-lg font-bold text-[#003527] flex items-center gap-2 mb-4">
+                <h3 className="text-lg font-bold text-[#003527] flex items-center gap-2 mb-4 font-display">
                   <ClipboardList className="h-5 w-5 text-[#cca72f]" />
                   Persyaratan Pendaftaran
                 </h3>
@@ -198,7 +162,7 @@ export default function PPDBSection() {
                 ) : requirements.length > 0 ? (
                   <ul className="space-y-2">
                     {requirements.map((item, idx) => (
-                      <li key={idx} className="flex items-start gap-2 text-sm text-[#404944]">
+                      <li key={idx} className="flex items-start gap-2 text-sm text-[#404944] font-body">
                         <CheckCircle className="h-4 w-4 text-[#003527] mt-0.5 shrink-0" />
                         {item}
                       </li>
@@ -211,11 +175,11 @@ export default function PPDBSection() {
             </Card>
           </motion.div>
 
-          {/* Biaya Pendidikan */}
+          {/* ============ Biaya Pendidikan ============ */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
-            <Card className="border-0 shadow-md">
+            <Card className="border-0 shadow-premium rounded-2xl">
               <CardContent className="p-6">
-                <h3 className="text-lg font-bold text-[#003527] flex items-center gap-2 mb-4">
+                <h3 className="text-lg font-bold text-[#003527] flex items-center gap-2 mb-4 font-display">
                   <CreditCard className="h-5 w-5 text-[#cca72f]" />
                   Biaya Pendidikan
                 </h3>
@@ -254,11 +218,11 @@ export default function PPDBSection() {
             </Card>
           </motion.div>
 
-          {/* Jadwal Pendaftaran — from PPDBSchedule API (sync realtime) */}
+          {/* ============ Jadwal Pendaftaran ============ */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-            <Card className="border-0 shadow-md">
+            <Card className="border-0 shadow-premium rounded-2xl">
               <CardContent className="p-6">
-                <h3 className="text-lg font-bold text-[#003527] flex items-center gap-2 mb-4">
+                <h3 className="text-lg font-bold text-[#003527] flex items-center gap-2 mb-4 font-display">
                   <Calendar className="h-5 w-5 text-[#cca72f]" />
                   Jadwal Pendaftaran
                 </h3>
@@ -289,8 +253,8 @@ export default function PPDBSection() {
                               {typeof s.order === 'number' ? s.order : idx + 1}
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="font-semibold text-sm text-[#003527]">{s.title}</p>
-                              <div className="flex flex-wrap items-center gap-3 mt-1 text-xs text-[#404944]">
+                              <p className="font-semibold text-sm text-[#003527] font-body">{s.title}</p>
+                              <div className="flex flex-wrap items-center gap-3 mt-1 text-xs text-[#404944] font-body">
                                 <span className="flex items-center gap-1">
                                   <Calendar className="h-3 w-3 text-[#cca72f]" />
                                   {start}{end ? ` — ${end}` : ''}
@@ -303,7 +267,7 @@ export default function PPDBSection() {
                                 )}
                               </div>
                               {s.description && (
-                                <p className="text-xs text-[#404944] mt-2">{s.description}</p>
+                                <p className="text-xs text-[#404944] mt-2 font-body">{s.description}</p>
                               )}
                             </div>
                           </div>
@@ -318,11 +282,11 @@ export default function PPDBSection() {
             </Card>
           </motion.div>
 
-          {/* Agenda PPDB — from events API (category: ppdb) */}
+          {/* ============ Agenda PPDB ============ */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.225 }}>
-            <Card className="border-0 shadow-md">
+            <Card className="border-0 shadow-premium rounded-2xl">
               <CardContent className="p-6">
-                <h3 className="text-lg font-bold text-[#003527] flex items-center gap-2 mb-4">
+                <h3 className="text-lg font-bold text-[#003527] flex items-center gap-2 mb-4 font-display">
                   <Calendar className="h-5 w-5 text-[#cca72f]" />
                   Agenda PPDB
                 </h3>
@@ -346,18 +310,18 @@ export default function PPDBSection() {
                             </div>
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="font-semibold text-sm text-[#003527]">{e.title}</p>
-                            <p className="text-xs text-[#404944] flex items-center gap-1 mt-1">
+                            <p className="font-semibold text-sm text-[#003527] font-body">{e.title}</p>
+                            <p className="text-xs text-[#404944] flex items-center gap-1 mt-1 font-body">
                               <Calendar className="h-3 w-3 text-[#cca72f]" />
                               {eventDate}
                             </p>
                             {e.location && (
-                              <p className="text-xs text-[#404944] flex items-center gap-1 mt-1">
+                              <p className="text-xs text-[#404944] flex items-center gap-1 mt-1 font-body">
                                 <MapPin className="h-3 w-3 text-[#cca72f]" /> {e.location}
                               </p>
                             )}
                             {e.description && (
-                              <p className="text-xs text-[#404944] mt-1 line-clamp-2">{e.description}</p>
+                              <p className="text-xs text-[#404944] mt-1 line-clamp-2 font-body">{e.description}</p>
                             )}
                           </div>
                         </div>
@@ -371,212 +335,33 @@ export default function PPDBSection() {
             </Card>
           </motion.div>
 
-          {/* Registration Form */}
+          {/* ============ Premium Multi-Step Registration Form ============ */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
-            <Card className="border-0 shadow-lg">
-              <CardContent className="p-6">
-                <h3 className="text-lg font-bold text-[#003527] flex items-center gap-2 mb-6">
-                  <Send className="h-5 w-5 text-[#cca72f]" />
-                  Formulir Pendaftaran Online
-                </h3>
-                {submitted ? (
-                  <div className="text-center py-8">
-                    <CheckCircle className="h-16 w-16 text-[#003527] mx-auto mb-4" />
-                    <h4 className="text-xl font-bold text-[#003527] mb-2">Pendaftaran Berhasil!</h4>
-                    <p className="text-[#404944]">Data Anda telah terkirim. Tim panitia akan menghubungi Anda melalui nomor yang tercantum.</p>
-                    <Button onClick={() => setSubmitted(false)} className="mt-4 bg-[#003527] hover:bg-[#064e3b]">
-                      Daftar Lagi
-                    </Button>
-                  </div>
-                ) : (
-                  <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* A. Data Calon Santri */}
-                    <div>
-                      <h4 className="text-sm font-bold text-[#003527] bg-[#003527]/5 px-3 py-2 rounded-lg mb-3">
-                        A. Data Calon Santri
-                      </h4>
-                      <div className="grid md:grid-cols-2 gap-4">
-                        <div className="space-y-1.5">
-                          <Label htmlFor="name" className="text-sm font-medium">Nama Lengkap *</Label>
-                          <Input id="name" name="name" value={formData.name} onChange={handleChange} placeholder="Nama lengkap calon santri" required />
-                        </div>
-                        <div className="space-y-1.5">
-                          <Label htmlFor="nik" className="text-sm font-medium">NIK</Label>
-                          <Input id="nik" name="nik" value={formData.nik} onChange={handleChange} placeholder="Nomor Induk Kependudukan" maxLength={20} />
-                        </div>
-                        <div className="space-y-1.5">
-                          <Label htmlFor="nokk" className="text-sm font-medium">Nomor KK</Label>
-                          <Input id="nokk" name="nokk" value={formData.nokk} onChange={handleChange} placeholder="Nomor Kartu Keluarga" maxLength={20} />
-                        </div>
-                        <div className="space-y-1.5">
-                          <Label htmlFor="gender" className="text-sm font-medium">Jenis Kelamin</Label>
-                          <select
-                            id="gender"
-                            name="gender"
-                            value={formData.gender}
-                            onChange={handleChange}
-                            className="w-full h-9 rounded-md border border-input bg-transparent px-3 text-sm"
-                          >
-                            <option value="">Pilih...</option>
-                            <option value="laki-laki">Laki-laki</option>
-                            <option value="perempuan">Perempuan</option>
-                          </select>
-                        </div>
-                        <div className="space-y-1.5">
-                          <Label htmlFor="birthPlace" className="text-sm font-medium">Tempat Lahir *</Label>
-                          <Input id="birthPlace" name="birthPlace" value={formData.birthPlace} onChange={handleChange} placeholder="Kota kelahiran" required />
-                        </div>
-                        <div className="space-y-1.5">
-                          <Label htmlFor="birthDate" className="text-sm font-medium">Tanggal Lahir *</Label>
-                          <Input id="birthDate" name="birthDate" type="date" value={formData.birthDate} onChange={handleChange} required />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* B. Asal Sekolah */}
-                    <div>
-                      <h4 className="text-sm font-bold text-[#003527] bg-[#003527]/5 px-3 py-2 rounded-lg mb-3">
-                        B. Asal Sekolah
-                      </h4>
-                      <div className="grid md:grid-cols-2 gap-4">
-                        <div className="space-y-1.5">
-                          <Label htmlFor="previousSchool" className="text-sm font-medium">Nama Sekolah</Label>
-                          <Input id="previousSchool" name="previousSchool" value={formData.previousSchool} onChange={handleChange} placeholder="Nama sekolah asal" />
-                        </div>
-                        <div className="space-y-1.5">
-                          <Label htmlFor="schoolClass" className="text-sm font-medium">Kelas</Label>
-                          <Input id="schoolClass" name="schoolClass" value={formData.schoolClass} onChange={handleChange} placeholder="Kelas (mis: 6 SD)" />
-                        </div>
-                      </div>
-                      <div className="space-y-1.5 mt-4">
-                        <Label htmlFor="schoolAddress" className="text-sm font-medium">Alamat Sekolah</Label>
-                        <Textarea id="schoolAddress" name="schoolAddress" value={formData.schoolAddress} onChange={handleChange} placeholder="Alamat sekolah asal" rows={2} />
-                      </div>
-                    </div>
-
-                    {/* C. Data Ayah */}
-                    <div>
-                      <h4 className="text-sm font-bold text-[#003527] bg-[#003527]/5 px-3 py-2 rounded-lg mb-3">
-                        C. Data Ayah
-                      </h4>
-                      <div className="grid md:grid-cols-2 gap-4">
-                        <div className="space-y-1.5">
-                          <Label htmlFor="fatherName" className="text-sm font-medium">Nama Ayah</Label>
-                          <Input id="fatherName" name="fatherName" value={formData.fatherName} onChange={handleChange} placeholder="Nama lengkap ayah" />
-                        </div>
-                        <div className="space-y-1.5">
-                          <Label htmlFor="fatherStatus" className="text-sm font-medium">Status</Label>
-                          <select id="fatherStatus" name="fatherStatus" value={formData.fatherStatus} onChange={handleChange}
-                            className="w-full h-9 rounded-md border border-input bg-transparent px-3 text-sm">
-                            <option value="">Pilih...</option>
-                            <option value="hidup">Hidup</option>
-                            <option value="meninggal">Meninggal</option>
-                          </select>
-                        </div>
-                        <div className="space-y-1.5">
-                          <Label htmlFor="fatherNik" className="text-sm font-medium">NIK</Label>
-                          <Input id="fatherNik" name="fatherNik" value={formData.fatherNik} onChange={handleChange} placeholder="NIK Ayah" maxLength={20} />
-                        </div>
-                        <div className="space-y-1.5">
-                          <Label htmlFor="fatherBirthPlace" className="text-sm font-medium">Tempat Lahir</Label>
-                          <Input id="fatherBirthPlace" name="fatherBirthPlace" value={formData.fatherBirthPlace} onChange={handleChange} placeholder="Tempat lahir ayah" />
-                        </div>
-                        <div className="space-y-1.5">
-                          <Label htmlFor="fatherBirthDate" className="text-sm font-medium">Tanggal Lahir</Label>
-                          <Input id="fatherBirthDate" name="fatherBirthDate" type="date" value={formData.fatherBirthDate} onChange={handleChange} />
-                        </div>
-                        <div className="space-y-1.5">
-                          <Label htmlFor="fatherEducation" className="text-sm font-medium">Pendidikan</Label>
-                          <Input id="fatherEducation" name="fatherEducation" value={formData.fatherEducation} onChange={handleChange} placeholder="Pendidikan terakhir" />
-                        </div>
-                        <div className="space-y-1.5">
-                          <Label htmlFor="fatherJob" className="text-sm font-medium">Pekerjaan</Label>
-                          <Input id="fatherJob" name="fatherJob" value={formData.fatherJob} onChange={handleChange} placeholder="Pekerjaan ayah" />
-                        </div>
-                        <div className="space-y-1.5">
-                          <Label htmlFor="fatherPhone" className="text-sm font-medium">No. HP</Label>
-                          <Input id="fatherPhone" name="fatherPhone" type="tel" value={formData.fatherPhone} onChange={handleChange} placeholder="08xxxxxxxxxx" />
-                        </div>
-                      </div>
-                      <div className="space-y-1.5 mt-4">
-                        <Label htmlFor="fatherAddress" className="text-sm font-medium">Alamat</Label>
-                        <Textarea id="fatherAddress" name="fatherAddress" value={formData.fatherAddress} onChange={handleChange} placeholder="Alamat tempat tinggal ayah" rows={2} />
-                      </div>
-                    </div>
-
-                    {/* C. Data Ibu */}
-                    <div>
-                      <h4 className="text-sm font-bold text-[#003527] bg-[#003527]/5 px-3 py-2 rounded-lg mb-3">
-                        D. Data Ibu
-                      </h4>
-                      <div className="grid md:grid-cols-2 gap-4">
-                        <div className="space-y-1.5">
-                          <Label htmlFor="motherName" className="text-sm font-medium">Nama Ibu</Label>
-                          <Input id="motherName" name="motherName" value={formData.motherName} onChange={handleChange} placeholder="Nama lengkap ibu" />
-                        </div>
-                        <div className="space-y-1.5">
-                          <Label htmlFor="motherStatus" className="text-sm font-medium">Status</Label>
-                          <select id="motherStatus" name="motherStatus" value={formData.motherStatus} onChange={handleChange}
-                            className="w-full h-9 rounded-md border border-input bg-transparent px-3 text-sm">
-                            <option value="">Pilih...</option>
-                            <option value="hidup">Hidup</option>
-                            <option value="meninggal">Meninggal</option>
-                          </select>
-                        </div>
-                        <div className="space-y-1.5">
-                          <Label htmlFor="motherNik" className="text-sm font-medium">NIK</Label>
-                          <Input id="motherNik" name="motherNik" value={formData.motherNik} onChange={handleChange} placeholder="NIK Ibu" maxLength={20} />
-                        </div>
-                        <div className="space-y-1.5">
-                          <Label htmlFor="motherBirthPlace" className="text-sm font-medium">Tempat Lahir</Label>
-                          <Input id="motherBirthPlace" name="motherBirthPlace" value={formData.motherBirthPlace} onChange={handleChange} placeholder="Tempat lahir ibu" />
-                        </div>
-                        <div className="space-y-1.5">
-                          <Label htmlFor="motherBirthDate" className="text-sm font-medium">Tanggal Lahir</Label>
-                          <Input id="motherBirthDate" name="motherBirthDate" type="date" value={formData.motherBirthDate} onChange={handleChange} />
-                        </div>
-                        <div className="space-y-1.5">
-                          <Label htmlFor="motherEducation" className="text-sm font-medium">Pendidikan</Label>
-                          <Input id="motherEducation" name="motherEducation" value={formData.motherEducation} onChange={handleChange} placeholder="Pendidikan terakhir" />
-                        </div>
-                        <div className="space-y-1.5">
-                          <Label htmlFor="motherJob" className="text-sm font-medium">Pekerjaan</Label>
-                          <Input id="motherJob" name="motherJob" value={formData.motherJob} onChange={handleChange} placeholder="Pekerjaan ibu" />
-                        </div>
-                        <div className="space-y-1.5">
-                          <Label htmlFor="motherPhone" className="text-sm font-medium">No. HP</Label>
-                          <Input id="motherPhone" name="motherPhone" type="tel" value={formData.motherPhone} onChange={handleChange} placeholder="08xxxxxxxxxx" />
-                        </div>
-                      </div>
-                      <div className="space-y-1.5 mt-4">
-                        <Label htmlFor="motherAddress" className="text-sm font-medium">Alamat</Label>
-                        <Textarea id="motherAddress" name="motherAddress" value={formData.motherAddress} onChange={handleChange} placeholder="Alamat tempat tinggal ibu" rows={2} />
-                      </div>
-                    </div>
-
-                    <Button type="submit" disabled={submitting} className="w-full bg-[#003527] hover:bg-[#064e3b] text-white font-bold py-3">
-                      {submitting ? 'Mengirim...' : 'Kirim Pendaftaran'}
-                      <Send className="ml-2 h-4 w-4" />
-                    </Button>
-                  </form>
-                )}
-              </CardContent>
-            </Card>
+            <PPDBRegistrationForm />
           </motion.div>
 
-          {/* Contact Panitia */}
+          {/* ============ Inline FAQ specific to PPDB ============ */}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.275 }}>
+            <PPDBFAQ />
+          </motion.div>
+
+          {/* ============ Contact Panitia ============ */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-            <Card className="border-0 shadow-md bg-[#064e3b]/5">
+            <Card className="border-0 shadow-premium rounded-2xl bg-[#064e3b]/5 overflow-hidden">
               <CardContent className="p-6 text-center">
-                <Phone className="h-8 w-8 text-[#003527] mx-auto mb-3" />
-                <h4 className="font-bold text-[#003527] mb-2">Hubungi Panitia PPDB</h4>
-                <p className="text-sm text-[#404944] mb-3">Untuk informasi lebih lanjut, silakan hubungi:</p>
+                <div className="inline-flex p-3 rounded-full bg-[#003527] mb-3">
+                  <Phone className="h-6 w-6 text-[#ffe088]" />
+                </div>
+                <h4 className="font-bold text-[#003527] mb-2 font-display text-lg">Hubungi Panitia PPDB</h4>
+                <p className="text-sm text-[#404944] mb-4 font-body max-w-md mx-auto">
+                  Untuk informasi lebih lanjut atau pertanyaan seputar pendaftaran, silakan hubungi panitia kami.
+                </p>
 
                 {/* Primary WhatsApp button — pakai ppdb_panitia_phone jika diisi admin */}
                 {panitiaPhone && (
                   <Button
                     asChild
-                    className="bg-green-500 hover:bg-green-600 text-white font-bold mb-4"
+                    className="bg-[#003527] hover:bg-[#064e3b] text-white font-bold mb-4 rounded-xl shadow-md"
                   >
                     <a
                       href={buildWhatsAppUrl(panitiaPhone, defaultWaMessage)}
@@ -598,13 +383,13 @@ export default function PPDBSection() {
                   <div className="space-y-2 text-sm text-[#003527]">
                     {contacts.map((contact, idx) => (
                       <div key={idx} className="flex items-center justify-center gap-2 flex-wrap">
-                        <span className="font-medium">{contact.name}</span>
+                        <span className="font-medium font-body">{contact.name}</span>
                         {contact.phone && (
                           <a
                             href={buildWhatsAppUrl(contact.phone, defaultWaMessage)}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 bg-green-100 hover:bg-green-200 text-green-700 px-3 py-1 rounded-full text-xs font-semibold transition-colors"
+                            className="inline-flex items-center gap-1.5 bg-[#064e3b]/10 hover:bg-[#064e3b]/20 text-[#003527] px-3 py-1 rounded-full text-xs font-semibold transition-colors border border-[#064e3b]/15"
                             title={`Chat WhatsApp ${contact.name}`}
                           >
                             <MessageCircle className="h-3 w-3" />
