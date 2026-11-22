@@ -185,6 +185,7 @@ export function SmartImage({
         {/* LQIP blur background — covers the entire wrapper while full image loads */}
         {showBlur && (
           <img
+            suppressHydrationWarning
             src={blurDataURL}
             alt=""
             aria-hidden
@@ -205,6 +206,7 @@ export function SmartImage({
           />
         )}
         <img
+          suppressHydrationWarning
           ref={imgCallbackRef}
           src={effectiveSrc}
           alt={alt}
@@ -235,6 +237,7 @@ export function SmartImage({
     <div className="relative w-full h-full">
       {showBlur && (
         <img
+          suppressHydrationWarning
           src={blurDataURL}
           alt=""
           aria-hidden
@@ -253,6 +256,7 @@ export function SmartImage({
         />
       )}
       <img
+        suppressHydrationWarning
         ref={imgCallbackRef}
         src={effectiveSrc}
         alt={alt}
