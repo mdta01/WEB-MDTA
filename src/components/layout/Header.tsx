@@ -10,6 +10,8 @@ import {
 import { useAppStore, type PageSection } from '@/store/useAppStore'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet'
+import { SmartImage, pickImage } from '@/components/ui/smart-image'
+import { LQIP } from '@/lib/lqip'
 
 type NavItem = { label: string; page: PageSection; icon: React.ElementType }
 
@@ -81,7 +83,8 @@ export default function Header() {
 
   const madrasahName = getSetting('madrasah_name') || 'MDTA Miftahul Ulum 01'
   const madrasahSubtitle = getSetting('madrasah_subtitle') || 'Madrasah Diniyah Takmiliyah Awaliyah'
-  const madrasahLogo = getSetting('madrasah_logo') || '/images/logo-madin-warna.png'
+  // Use WebP default (63% smaller than PNG) — API override still supported via pickImage.
+  const madrasahLogo = pickImage(getSetting('madrasah_logo') || undefined, '/images/logo-madin-warna.webp')
 
   return (
     <>
@@ -103,10 +106,16 @@ export default function Header() {
               className="flex items-center gap-3 group"
             >
               <div className="w-10 h-10 md:w-11 md:h-11 group-hover:scale-110 group-active:scale-95 transition-all duration-300 shrink-0">
-                <img
+                <SmartImage
                   src={madrasahLogo}
+                  fallbackSrc="/images/logo-madin-warna.webp"
+                  blurDataURL={LQIP['logo-madin-warna']}
                   alt={`Logo ${madrasahName}`}
-                  className="w-full h-full object-contain"
+                  fill
+                  className="object-contain"
+                  loading="eager"
+                  fetchPriority="high"
+                  noFade
                 />
               </div>
               <div className="flex flex-col">
@@ -160,10 +169,15 @@ export default function Header() {
                     {/* Logo + name */}
                     <div className="relative flex items-center gap-3">
                       <div className="w-12 h-12 shrink-0">
-                        <img
+                        <SmartImage
                           src={madrasahLogo}
+                          fallbackSrc="/images/logo-madin-warna.webp"
+                          blurDataURL={LQIP['logo-madin-warna']}
                           alt="Logo"
-                          className="w-full h-full object-contain"
+                          fill
+                          className="object-contain"
+                          loading="lazy"
+                          noFade
                         />
                       </div>
                       <div className="min-w-0">

@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Dialog, DialogContent, DialogTitle, DialogClose } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
+import { SmartImage } from '@/components/ui/smart-image'
 import { MarkdownRenderer } from '@/components/sections/MarkdownRenderer'
 import { KratonSectionHeader } from '@/components/kraton'
 import { SocialBar } from '@/components/social/SocialBar'
@@ -135,7 +136,16 @@ export default function BeritaSection() {
                   {/* Image area */}
                   <div className="h-44 sm:h-48 bg-gradient-to-br from-[#064e3b] to-[#003527] relative overflow-hidden">
                     {item.image ? (
-                      <img src={item.image} alt={item.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                      <SmartImage
+                        src={item.image}
+                        fallbackSrc="/images/hero-madrasah.webp"
+                        alt={item.title}
+                        fill
+                        className="object-cover group-hover:scale-110 transition-transform duration-700"
+                        loading="lazy"
+                        blur={false}
+                        noFade
+                      />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
                         <BookOpen className="h-12 w-12 text-white/40" />
@@ -258,8 +268,17 @@ export default function BeritaSection() {
                 </span>
               </div>
               {selectedNews.image && (
-                <div className="mt-4 rounded-lg overflow-hidden">
-                  <img src={selectedNews.image} alt={selectedNews.title} className="w-full h-auto" />
+                <div className="mt-4 rounded-lg overflow-hidden relative aspect-video bg-[#064e3b]">
+                  <SmartImage
+                    src={selectedNews.image}
+                    fallbackSrc="/images/hero-madrasah.webp"
+                    alt={selectedNews.title}
+                    fill
+                    className="object-cover"
+                    loading="lazy"
+                    blur={false}
+                    noFade
+                  />
                 </div>
               )}
               <div className="mt-4">

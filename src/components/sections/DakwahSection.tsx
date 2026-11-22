@@ -10,6 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Dialog, DialogContent, DialogTitle, DialogClose } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { SmartImage } from '@/components/ui/smart-image'
 import { KratonSectionHeader } from '@/components/kraton'
 import { MarkdownRenderer } from '@/components/sections/MarkdownRenderer'
 import { SocialBar } from '@/components/social/SocialBar'
@@ -98,7 +99,16 @@ export default function DakwahSection() {
                   {(item.image || item.videoUrl) && (
                     <div className="h-36 sm:h-40 bg-gradient-to-br from-[#064e3b] to-[#003527] relative overflow-hidden">
                       {item.image ? (
-                        <img src={item.image} alt={item.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                        <SmartImage
+                          src={item.image}
+                          fallbackSrc="/images/hero-madrasah.webp"
+                          alt={item.title}
+                          fill
+                          className="object-cover group-hover:scale-110 transition-transform duration-700"
+                          loading="lazy"
+                          blur={false}
+                          noFade
+                        />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
                           <BookHeart className="h-12 w-12 text-white/40" />
@@ -183,8 +193,17 @@ export default function DakwahSection() {
               </div>
               {/* Image (if no video, show image; if video exists, show video embed instead) */}
               {selectedItem.image && !selectedItem.videoUrl && (
-                <div className="mt-4 rounded-lg overflow-hidden">
-                  <img src={selectedItem.image} alt={selectedItem.title} className="w-full h-auto" />
+                <div className="mt-4 rounded-lg overflow-hidden relative aspect-video bg-[#064e3b]">
+                  <SmartImage
+                    src={selectedItem.image}
+                    fallbackSrc="/images/hero-madrasah.webp"
+                    alt={selectedItem.title}
+                    fill
+                    className="object-cover"
+                    loading="lazy"
+                    blur={false}
+                    noFade
+                  />
                 </div>
               )}
               {/* Video embed */}

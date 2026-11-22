@@ -2,6 +2,8 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { Facebook, Instagram, Youtube, MapPin, Phone, Mail, Clock } from 'lucide-react'
+import { SmartImage, pickImage } from '@/components/ui/smart-image'
+import { LQIP } from '@/lib/lqip'
 
 const socialLinks = [
   { icon: Facebook, label: 'Facebook', key: 'madrasah_facebook' },
@@ -20,7 +22,8 @@ export default function Footer() {
 
   const madrasahName = getSetting('madrasah_name') || 'MDTA Miftahul Ulum 01'
   const madrasahSubtitle = getSetting('madrasah_subtitle') || 'Madrasah Diniyah Takmiliyah Awaliyah'
-  const madrasahLogo = getSetting('madrasah_logo') || '/images/logo-madin-warna.png'
+  // Use WebP default (63% smaller than PNG).
+  const madrasahLogo = pickImage(getSetting('madrasah_logo') || undefined, '/images/logo-madin-warna.webp')
 
   return (
     <footer className="relative bg-[#003527] text-[#b0f0d6] mt-auto overflow-hidden">
@@ -40,7 +43,16 @@ export default function Footer() {
           <div>
             <div className="flex items-center gap-3 mb-4">
               <div className="w-12 h-12 shrink-0">
-                <img src={madrasahLogo} alt={`Logo ${madrasahName}`} className="w-full h-full object-contain" />
+                <SmartImage
+                  src={madrasahLogo}
+                  fallbackSrc="/images/logo-madin-warna.webp"
+                  blurDataURL={LQIP['logo-madin-warna']}
+                  alt={`Logo ${madrasahName}`}
+                  fill
+                  className="object-contain"
+                  loading="lazy"
+                  noFade
+                />
               </div>
               <div>
                 <h3 className="font-bold text-white text-lg leading-tight">{madrasahName}</h3>

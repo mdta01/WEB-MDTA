@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Skeleton } from '@/components/ui/skeleton'
+import { SmartImage } from '@/components/ui/smart-image'
 import { KratonSectionHeader } from '@/components/kraton'
 
 export default function AlumniSection() {
@@ -51,7 +52,16 @@ export default function AlumniSection() {
                 <CardContent className="p-6 text-center">
                   <Avatar className="w-16 h-16 mx-auto mb-3">
                     {item.image ? (
-                      <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                      <SmartImage
+                        src={item.image}
+                        fallbackSrc="/images/kepala-madrasah.webp"
+                        alt={item.name}
+                        fill
+                        className="object-cover"
+                        loading="lazy"
+                        blur={false}
+                        noFade
+                      />
                     ) : (
                       <AvatarFallback className="bg-[#003527] text-white text-xl font-bold">
                         {item.name.charAt(0)}

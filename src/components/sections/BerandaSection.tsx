@@ -13,6 +13,8 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Dialog, DialogContent, DialogTitle, DialogClose } from '@/components/ui/dialog'
+import { SmartImage, pickImage } from '@/components/ui/smart-image'
+import { LQIP } from '@/lib/lqip'
 import { SocialBar } from '@/components/social/SocialBar'
 import { CalendarModal } from '@/components/sections/CalendarModal'
 import { MarkdownRenderer } from '@/components/sections/MarkdownRenderer'
@@ -489,16 +491,18 @@ export default function BerandaSection() {
       <section className="relative overflow-hidden bg-[#003527]">
         {/* Mobile: full-bg image + heavy overlay (text readable, image subtle) */}
         <div className="lg:hidden relative h-[480px] overflow-hidden">
-          {!settingsLoading && (
-            <img
-              src={getSetting('madrasah_hero_image') || '/images/hero-madrasah.png'}
-              alt="MDTA Miftahul Ulum 01"
-              className="absolute inset-0 w-full h-full object-cover object-[center_25%]"
-              fetchPriority="high"
-              loading="eager"
-              decoding="async"
-            />
-          )}
+          <SmartImage
+            src={getSetting('madrasah_hero_image') ? pickImage(getSetting('madrasah_hero_image'), '/images/hero-madrasah.webp') : undefined}
+            fallbackSrc="/images/hero-madrasah.webp"
+            blurDataURL={LQIP['hero-madrasah']}
+            alt="MDTA Miftahul Ulum 01"
+            fill
+            className="object-cover"
+            objectPosition="center 25%"
+            loading="eager"
+            fetchPriority="high"
+            noFade={false}
+          />
           {/* Heavy overlay — top + bottom dark, middle medium (text readable, image hint visible) */}
           <div
             className="absolute inset-0 pointer-events-none"
@@ -539,16 +543,17 @@ export default function BerandaSection() {
 
           {/* RIGHT — image panel, full visible + smooth gradient overlay from left (blends with text panel) */}
           <div className="w-1/2 relative overflow-hidden">
-            {!settingsLoading && (
-              <img
-                src={getSetting('madrasah_hero_image') || '/images/hero-madrasah.png'}
-                alt="MDTA Miftahul Ulum 01"
-                className="absolute inset-0 w-full h-full object-cover object-center"
-                fetchPriority="high"
-                loading="eager"
-                decoding="async"
-              />
-            )}
+            <SmartImage
+              src={getSetting('madrasah_hero_image') ? pickImage(getSetting('madrasah_hero_image'), '/images/hero-madrasah.webp') : undefined}
+              fallbackSrc="/images/hero-madrasah.webp"
+              blurDataURL={LQIP['hero-madrasah']}
+              alt="MDTA Miftahul Ulum 01"
+              fill
+              className="object-cover object-center"
+              loading="eager"
+              fetchPriority="high"
+              noFade={false}
+            />
             {/* Smooth gradient blend: left edge dark green (matches text panel) → right edge transparent.
                 Wide gradient (0% to 45%) so transition is SMOOTH, no sharp vertical line. */}
             <div
@@ -615,18 +620,17 @@ export default function BerandaSection() {
                   <div className="relative mb-4">
                     {/* Outer gold ring glow */}
                     <div className="absolute -inset-1 bg-[#cca72f]/30 rounded-full blur-md" aria-hidden />
-                    <div className="relative w-28 h-28 md:w-36 md:h-36 rounded-full overflow-hidden border-4 border-[#cca72f] shadow-xl ring-4 ring-white/15 bg-white/10">
-                      {settingsLoading ? (
-                        <div className="w-full h-full bg-white/20 animate-pulse" />
-                      ) : (
-                        <img
-                          src={getSetting('madrasah_principal_photo') || '/images/kepala-madrasah.png'}
-                          alt="Kepala Madrasah"
-                          className="w-full h-full object-cover"
-                          loading="lazy"
-                          decoding="async"
-                        />
-                      )}
+                    <div className="relative w-28 h-28 md:w-36 md:h-36 rounded-full overflow-hidden border-4 border-[#cca72f] shadow-xl ring-4 ring-white/15 bg-[#064e3b]/40">
+                      <SmartImage
+                        src={getSetting('madrasah_principal_photo') ? pickImage(getSetting('madrasah_principal_photo'), '/images/kepala-madrasah.webp') : undefined}
+                        fallbackSrc="/images/kepala-madrasah.webp"
+                        blurDataURL={LQIP['kepala-madrasah']}
+                        alt="Kepala Madrasah"
+                        fill
+                        className="object-cover"
+                        loading="lazy"
+                        fetchPriority="auto"
+                      />
                     </div>
                   </div>
                   {/* Name plate — formal, with gold divider */}
@@ -777,7 +781,16 @@ export default function BerandaSection() {
                 >
                   <div className="h-48 bg-gradient-to-br from-[#064e3b] to-[#003527] relative overflow-hidden">
                     {item.image ? (
-                      <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" decoding="async" />
+                      <SmartImage
+                        src={item.image}
+                        fallbackSrc="/images/hero-madrasah.webp"
+                        alt={item.title}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                        loading="lazy"
+                        blur={false}
+                        noFade
+                      />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
                         <BookOpen className="h-12 w-12 text-white/50" />
@@ -832,8 +845,16 @@ export default function BerandaSection() {
                   </span>
                 </div>
                 {selectedNews.image && (
-                  <div className="mt-4 rounded-lg overflow-hidden">
-                    <img src={selectedNews.image} alt={selectedNews.title} className="w-full h-auto" />
+                  <div className="mt-4 rounded-lg overflow-hidden relative aspect-video bg-[#064e3b]">
+                    <SmartImage
+                      src={selectedNews.image}
+                      fallbackSrc="/images/hero-madrasah.webp"
+                      alt={selectedNews.title}
+                      fill
+                      className="object-cover"
+                      loading="lazy"
+                      blur={false}
+                    />
                   </div>
                 )}
                 <div className="mt-4">
@@ -892,7 +913,16 @@ export default function BerandaSection() {
                   {/* Image or gradient header */}
                   <div className="h-32 bg-gradient-to-br from-[#064e3b] to-[#895033] relative overflow-hidden">
                     {item.image ? (
-                      <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" decoding="async" />
+                      <SmartImage
+                        src={item.image}
+                        fallbackSrc="/images/hero-madrasah.webp"
+                        alt={item.title}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                        loading="lazy"
+                        blur={false}
+                        noFade
+                      />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
                         <BookHeart className="h-12 w-12 text-white/60" />
@@ -971,8 +1001,16 @@ export default function BerandaSection() {
                 </div>
                 {/* Image (if no video) */}
                 {selectedDakwah.image && !selectedDakwah.videoUrl && (
-                  <div className="mt-4 rounded-lg overflow-hidden">
-                    <img src={selectedDakwah.image} alt={selectedDakwah.title} className="w-full h-auto" />
+                  <div className="mt-4 rounded-lg overflow-hidden relative aspect-video bg-[#064e3b]">
+                    <SmartImage
+                      src={selectedDakwah.image}
+                      fallbackSrc="/images/hero-madrasah.webp"
+                      alt={selectedDakwah.title}
+                      fill
+                      className="object-cover"
+                      loading="lazy"
+                      blur={false}
+                    />
                   </div>
                 )}
                 {/* Video embed */}

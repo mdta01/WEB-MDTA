@@ -133,7 +133,7 @@ export default function Home() {
           This is critical for Facebook In-App Browser, Instagram, TikTok WebView,
           which all render top/bottom toolbars that eat into 100vh.
           100dvh adjusts to the *visible* area only — no more clipped content. */}
-      <div className="min-h-screen-fb-safe flex flex-col bg-background overflow-x-clip">
+      <div className="min-h-screen-fb-safe flex flex-col bg-background overflow-x-clip page-reveal">
         {/* Skip to main content — keyboard accessibility (Tab key reveals link) */}
         <a
           href="#main-content"

@@ -289,6 +289,39 @@
   animation: shimmer 2s linear infinite;
 }
 
+/* Premium skeleton — emerald-tinted shimmer for brand consistency.
+   Used by <Skeleton> components in news/dakwah/stat cards while data loads. */
+.skeleton-premium {
+  background: linear-gradient(
+    90deg,
+    rgba(0, 53, 39, 0.06) 0%,
+    rgba(0, 53, 39, 0.12) 50%,
+    rgba(0, 53, 39, 0.06) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s ease-in-out infinite;
+}
+
+/* Page-load fade-in — masks any minor hydration reflow for a "premium" feel.
+   Applied to the root wrapper. Animation runs ONCE on initial mount. */
+@keyframes pageReveal {
+  from { opacity: 0.4; }
+  to   { opacity: 1; }
+}
+.page-reveal {
+  animation: pageReveal 0.4s ease-out forwards;
+}
+
+/* Image fade-in helper — used by SmartImage when noFade={false}.
+   Defined here so SSR HTML can include it immediately. */
+.smart-image-wrap {
+  background-color: #064e3b;
+}
+.smart-image-wrap img {
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
 /* ===== Glassmorphism ===== */
 .glass {
   background: rgba(251, 249, 245, 0.75);

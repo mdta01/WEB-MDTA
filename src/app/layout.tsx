@@ -44,9 +44,13 @@ export default function RootLayout({
           rel="stylesheet"
         />
         {/* Preload critical images — hero is above the fold, needs to load ASAP.
-            Logo is used in header on every page. */}
-        <link rel="preload" as="image" href="/images/hero-madrasah.png" fetchPriority="high" />
-        <link rel="preload" as="image" href="/images/logo-madin-warna.png" fetchPriority="high" />
+            Logo is used in header on every page.
+            Using WebP versions (60-70% smaller than PNG) for instant hero display.
+            Also preconnect to Cloudinary for any remote content images. */}
+        <link rel="preconnect" href="https://res.cloudinary.com" />
+        <link rel="dns-prefetch" href="https://res.cloudinary.com" />
+        <link rel="preload" as="image" href="/images/hero-madrasah.webp" fetchPriority="high" />
+        <link rel="preload" as="image" href="/images/logo-madin-warna.webp" fetchPriority="high" />
         {/* ChunkLoadError auto-reload */}
         <script dangerouslySetInnerHTML={{ __html: `
           (function() {
