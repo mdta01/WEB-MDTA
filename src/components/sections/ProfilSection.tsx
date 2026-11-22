@@ -12,7 +12,6 @@ import { KratonSectionHeader } from '@/components/kraton'
 import { MadrasahTimeline } from '@/components/sections/profil/MadrasahTimeline'
 import { VisiMisiTujuanInfografis } from '@/components/sections/profil/VisiMisiTujuanInfografis'
 import { StrukturOrganisasiChart } from '@/components/sections/profil/StrukturOrganisasiChart'
-import { IdentitasMadrasah } from '@/components/sections/profil/IdentitasMadrasah'
 
 // Split history text into "pages" — each page = ~2 paragraphs (or ~600 chars if no paragraph breaks)
 function splitIntoPages(text: string, charsPerPage = 600): string[] {
@@ -257,16 +256,9 @@ export default function ProfilSection() {
         />
       </section>
 
-      {/* Identitas Madrasah — Document-style card */}
-      <section>
-        <KratonSectionHeader
-          badge="Legalitas"
-          title="Identitas Madrasah"
-          align="center"
-          subtitle="Profil resmi madrasah sebagai dasar hukum dan akreditasi kelembagaan."
-        />
-        <IdentitasMadrasah getSetting={getSetting} />
-      </section>
+      {/* Note: Identitas/Legalitas Madrasah (NSDT, SK, Akreditasi, dll) dipindahkan
+          ke KelembagaanSection untuk menghindari duplikasi. ProfilSection fokus
+          pada sejarah, visi-misi-tujuan, struktur organisasi, dan tenaga pengajar. */}
 
       {/* Struktur Organisasi — Visual Hierarchy Chart */}
       <section>

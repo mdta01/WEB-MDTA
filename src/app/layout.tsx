@@ -4,18 +4,97 @@ import { Toaster } from "@/components/ui/sonner";
 import { NotificationManager } from "@/components/layout/NotificationManager";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import VisitorTracker from "@/components/layout/VisitorTracker";
+import { getOrganizationSchema, getWebsiteSchema } from "@/lib/structured-data";
 
-export const metadata: Metadata = {
-  title: "MDTA Miftahul Ulum 01 - Madrasah Diniyah Takmiliyah Awaliyah",
-  description: "Website resmi MDTA Miftahul Ulum 01 - Madrasah Diniyah Takmiliyah Awaliyah. Mencetak generasi Muslim yang berilmu, berakhlak mulia, dan berprestasi.",
-  keywords: ["MDTA", "Miftahul Ulum", "Madrasah Diniyah", "Pondok Pesantren", "Tahfidz Quran", "Pendidikan Islam"],
-  authors: [{ name: "MDTA Miftahul Ulum 01" }],
-  openGraph: {
-    title: "MDTA Miftahul Ulum 01",
-    description: "Mencetak generasi Muslim yang berilmu, berakhlak mulia, dan berprestasi",
-    type: "website",
-  },
-};
+// Force dynamic — fetch settings from DB for metadata + JSON-LD
+export const dynamic = "force-dynamic"
+
+// Revalidate every hour — balances freshness with performance
+export const revalidate = 3600
+
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://mdta-tawangsari.vercel.app'
+
+// ============ Dynamic Metadata (SEO) ============
+// Generates metadata from DB settings — title, description, OG image, etc.
+// This runs on the server (SSR) so search engines see the full metadata.
+async function getSettingsForMetadata() {
+  try {
+    const { db } = await import('@/lib/db')
+    const settings = await db.siteSetting.findMany()
+    const map = new Map(settings.map((s: { key: string; value: string }) => [s.key, s.value]))
+    return map
+  } catch {
+    return new Map<string, string>()
+  }
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSettingsForMetadata()
+  const get = (key: string) => settings.get(key) || ''
+
+  const name = get('madrasah_name') || 'MDTA Miftahul Ulum 01'
+  const subtitle = get('madrasah_subtitle') || 'Madrasah Diniyah Takmiliyah Awaliyah'
+  const description = get('madrasah_description') || 'Website resmi MDTA Miftahul Ulum 01 — Madrasah Diniyah Takmiliyah Awaliyah. Mencetak generasi Muslim yang berilmu, berakhlak mulia, dan berprestasi.'
+  const logo = get('madrasah_logo') || `${BASE_URL}/images/logo-madin-warna.webp`
+  const heroImage = get('madrasah_hero_image') || `${BASE_URL}/images/hero-madrasah.webp`
+  const facebook = get('madrasah_facebook')
+  const instagram = get('madrasah_instagram')
+  const youtube = get('madrasah_youtube')
+  const keywords = [
+    'MDTA', 'Miftahul Ulum', 'Madrasah Diniyah', 'Madrasah Diniyah Takmiliyah Awaliyah',
+    'Pondok Pesantren', 'Tahfidz Quran', 'Pendidikan Islam', 'Tawangsari', 'Pujon', 'Malang',
+    subtitle, name,
+  ]
+
+  return {
+    title: {
+      default: `${name} - ${subtitle}`,
+      template: `%s | ${name}`,
+    },
+    description,
+    keywords,
+    authors: [{ name }],
+    creator: name,
+    publisher: name,
+    metadataBase: new URL(BASE_URL),
+    alternates: { canonical: BASE_URL },
+    openGraph: {
+      title: name,
+      description,
+      type: 'website',
+      locale: 'id_ID',
+      url: BASE_URL,
+      siteName: name,
+      images: [
+        {
+          url: heroImage,
+          width: 1200,
+          height: 630,
+          alt: name,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: name,
+      description,
+      images: [heroImage],
+    },
+    icons: {
+      icon: logo,
+      apple: logo,
+    },
+    manifest: '/manifest.webmanifest',
+    category: 'education',
+    other: {
+      'og:logo': logo,
+      'og:image:width': '1200',
+      'og:image:height': '630',
+      // Social profile links for Google Knowledge Panel
+      ...(facebook ? { 'og:see_also': facebook } : {}),
+    },
+  } as Metadata
+}
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -26,11 +105,17 @@ export const viewport: Viewport = {
   themeColor: "#003527",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Fetch structured data schemas (JSON-LD) for SEO rich snippets
+  const [orgSchema, websiteSchema] = await Promise.all([
+    getOrganizationSchema(),
+    getWebsiteSchema(),
+  ])
+
   return (
     <html lang="id" suppressHydrationWarning>
       <head>
@@ -115,6 +200,19 @@ export default function RootLayout({
             } catch (e) {}
           })();
         `}} />
+        {/* ============ JSON-LD Structured Data (SEO) ============
+            Injects schema.org JSON-LD for rich snippets in Google search results.
+            - EducationalOrganization: logo, address, contact, social profiles
+            - WebSite: sitelinks, search box
+            These run on the server (SSR) so search engines always see them. */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+        />
       </head>
       <body className="antialiased bg-background text-foreground font-body" suppressHydrationWarning>
         {children}

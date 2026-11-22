@@ -8,6 +8,7 @@ import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import WhatsAppButton from '@/components/layout/WhatsAppButton'
 import LiveAnnouncement from '@/components/layout/LiveAnnouncement'
+import { Breadcrumbs } from '@/components/layout/Breadcrumbs'
 import { Toaster } from '@/components/ui/sonner'
 import { Skeleton } from '@/components/ui/skeleton'
 import { CommentPanel } from '@/components/social/CommentPanel'
@@ -173,7 +174,12 @@ export default function Home() {
               On server + first client render: show loading skeleton.
               After mount: render full section content with React Query data.
               This ensures server HTML matches client's first render. */}
-          {mounted ? <SectionRenderer /> : <SectionLoading />}
+          {mounted ? (
+            <>
+              <Breadcrumbs />
+              <SectionRenderer />
+            </>
+          ) : <SectionLoading />}
         </main>
         <Footer />
         <WhatsAppButton />
