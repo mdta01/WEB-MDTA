@@ -49,6 +49,7 @@ export default function Footer() {
                   blurDataURL={LQIP['logo-madin-warna']}
                   alt={`Logo ${madrasahName}`}
                   fill
+                  objectFit="contain"
                   className="object-contain"
                   loading="lazy"
                   noFade

@@ -112,6 +112,7 @@ export default function Header() {
                   blurDataURL={LQIP['logo-madin-warna']}
                   alt={`Logo ${madrasahName}`}
                   fill
+                  objectFit="contain"
                   className="object-contain"
                   loading="eager"
                   fetchPriority="high"
@@ -175,6 +176,7 @@ export default function Header() {
                           blurDataURL={LQIP['logo-madin-warna']}
                           alt="Logo"
                           fill
+                          objectFit="contain"
                           className="object-contain"
                           loading="lazy"
                           noFade

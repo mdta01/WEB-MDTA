@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 
 /**
  * SmartImage — premium image loader with graceful loading states.
@@ -81,7 +81,6 @@ export function SmartImage({
 
   // Track which src has finished loading. When `activeSrc` changes (props update),
   // `loadedSrc !== activeSrc` so `isLoaded` becomes false again automatically.
-  // No effect needed — this is derived state during render.
   const [loadedSrc, setLoadedSrc] = useState<string | null>(null)
   // If the primary src fails to load, swap to fallbackSrc (tracked via state).
   const [errorSrc, setErrorSrc] = useState<string | null>(null)
@@ -89,6 +88,20 @@ export function SmartImage({
   // Effective src — if the activeSrc errored, use fallback.
   const effectiveSrc = errorSrc === activeSrc ? fallbackSrc : activeSrc
   const isLoaded = loadedSrc === effectiveSrc
+
+  // Callback ref pattern — fires whenever the <img> mounts OR when its src
+  // changes. This catches the critical "image already complete from browser
+  // cache" race condition where onLoad doesn't fire (because the load
+  // completed before React bound the handler).
+  //
+  // Using a callback ref (instead of useEffect + useRef) avoids the
+  // "setState in effect" lint warning AND is more correct: this runs
+  // synchronously after the DOM is updated, BEFORE the browser paints.
+  const imgCallbackRef = useCallback((img: HTMLImageElement | null) => {
+    if (img && img.complete && img.naturalWidth > 0 && loadedSrc !== effectiveSrc) {
+      setLoadedSrc(effectiveSrc)
+    }
+  }, [effectiveSrc, loadedSrc])
 
   const handleLoad = useCallback(() => {
     setLoadedSrc(effectiveSrc)
@@ -156,6 +169,7 @@ export function SmartImage({
           />
         )}
         <img
+          ref={imgCallbackRef}
           src={effectiveSrc}
           alt={alt}
           width={width}
@@ -172,9 +186,17 @@ export function SmartImage({
     )
   }
 
-  // Fill mode — image is absolutely positioned to fill parent
+  // Fill mode — image is absolutely positioned to fill its parent.
+  // IMPORTANT: We wrap in a `relative w-full h-full` div so the absolute
+  // positioning is contained. Otherwise the img would escape to whatever
+  // ancestor has `position: relative` (e.g. a sticky header), causing the
+  // image to fill the ENTIRE ancestor instead of just its intended container.
+  //
+  // Consumer's `className` (e.g. "object-contain", "group-hover:scale-105")
+  // is applied to the <img>, NOT the wrapper div, so hover effects + object-fit
+  // work as expected.
   return (
-    <>
+    <div className="relative w-full h-full">
       {showBlur && (
         <img
           src={blurDataURL}
@@ -195,6 +217,7 @@ export function SmartImage({
         />
       )}
       <img
+        ref={imgCallbackRef}
         src={effectiveSrc}
         alt={alt}
         fetchPriority={fetchPriority}
@@ -205,7 +228,7 @@ export function SmartImage({
         onLoad={handleLoad}
         onError={handleError}
       />
-    </>
+    </div>
   )
 }
 
