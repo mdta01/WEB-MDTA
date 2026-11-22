@@ -56,7 +56,7 @@ export default function Header() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
 
-  const { data: settingsData } = useQuery({
+  const { data: settingsData, isLoading: settingsLoading } = useQuery({
     queryKey: ['settings'],
     queryFn: () => fetch('/api/settings').then(r => r.json()),
   })
@@ -121,9 +121,16 @@ export default function Header() {
               </div>
               <div className="flex flex-col">
                 <span className="font-bold text-sm md:text-base leading-tight uppercase tracking-wide text-[#003527] group-hover:text-[#895033] transition-colors duration-300">{madrasahName}</span>
-                <span className="text-[#404944] text-[10px] md:text-xs hidden sm:block">
-                  {madrasahSubtitle}
-                </span>
+                {/* Subtitle — show skeleton while settingsLoading to prevent
+                    fallback "Awaliyah" (without 'w') from briefly appearing before
+                    the DB value "Awwaliyah" (with 'w') loads. */}
+                {settingsLoading ? (
+                  <span className="hidden sm:block h-3 w-44 skeleton-premium rounded" aria-hidden />
+                ) : (
+                  <span className="text-[#404944] text-[10px] md:text-xs hidden sm:block">
+                    {madrasahSubtitle}
+                  </span>
+                )}
               </div>
             </button>
 

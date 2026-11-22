@@ -487,22 +487,32 @@ export default function BerandaSection() {
   return (
     <div className="space-y-16 pb-8">
       {/* Hero Section — split layout: text left (solid emerald) + image right (full visible, smooth gradient blend).
-          Mobile: image full-bg with heavy overlay + text overlay (compact). */}
+          Mobile: image full-bg with heavy overlay + text overlay (compact).
+
+          CRITICAL: While settingsLoading=true, we render a skeleton (solid emerald + shimmer)
+          instead of the fallback hero image. This prevents the "demo template flash" where
+          the default /images/hero-madrasah.webp (a generic mosque photo) briefly appears
+          before the real Cloudinary URL loads from the Neon DB settings. */}
       <section className="relative overflow-hidden bg-[#003527]">
         {/* Mobile: full-bg image + heavy overlay (text readable, image subtle) */}
         <div className="lg:hidden relative h-[480px] overflow-hidden">
-          <SmartImage
-            src={getSetting('madrasah_hero_image') ? pickImage(getSetting('madrasah_hero_image'), '/images/hero-madrasah.webp') : undefined}
-            fallbackSrc="/images/hero-madrasah.webp"
-            blurDataURL={LQIP['hero-madrasah']}
-            alt="MDTA Miftahul Ulum 01"
-            fill
-            className="object-cover"
-            objectPosition="center 25%"
-            loading="eager"
-            fetchPriority="high"
-            noFade={false}
-          />
+          {settingsLoading ? (
+            // Skeleton — solid emerald with premium shimmer (matches hero bg)
+            <div className="absolute inset-0 bg-[#064e3b] skeleton-premium" aria-hidden />
+          ) : (
+            <SmartImage
+              src={pickImage(getSetting('madrasah_hero_image'), '/images/hero-madrasah.webp')}
+              fallbackSrc="/images/hero-madrasah.webp"
+              blurDataURL={LQIP['hero-madrasah']}
+              alt="MDTA Miftahul Ulum 01"
+              fill
+              className="object-cover"
+              objectPosition="center 25%"
+              loading="eager"
+              fetchPriority="high"
+              noFade={false}
+            />
+          )}
           {/* Heavy overlay — top + bottom dark, middle medium (text readable, image hint visible) */}
           <div
             className="absolute inset-0 pointer-events-none"
@@ -543,17 +553,21 @@ export default function BerandaSection() {
 
           {/* RIGHT — image panel, full visible + smooth gradient overlay from left (blends with text panel) */}
           <div className="w-1/2 relative overflow-hidden">
-            <SmartImage
-              src={getSetting('madrasah_hero_image') ? pickImage(getSetting('madrasah_hero_image'), '/images/hero-madrasah.webp') : undefined}
-              fallbackSrc="/images/hero-madrasah.webp"
-              blurDataURL={LQIP['hero-madrasah']}
-              alt="MDTA Miftahul Ulum 01"
-              fill
-              className="object-cover object-center"
-              loading="eager"
-              fetchPriority="high"
-              noFade={false}
-            />
+            {settingsLoading ? (
+              <div className="absolute inset-0 bg-[#064e3b] skeleton-premium" aria-hidden />
+            ) : (
+              <SmartImage
+                src={pickImage(getSetting('madrasah_hero_image'), '/images/hero-madrasah.webp')}
+                fallbackSrc="/images/hero-madrasah.webp"
+                blurDataURL={LQIP['hero-madrasah']}
+                alt="MDTA Miftahul Ulum 01"
+                fill
+                className="object-cover object-center"
+                loading="eager"
+                fetchPriority="high"
+                noFade={false}
+              />
+            )}
             {/* Smooth gradient blend: left edge dark green (matches text panel) → right edge transparent.
                 Wide gradient (0% to 45%) so transition is SMOOTH, no sharp vertical line. */}
             <div
@@ -621,22 +635,36 @@ export default function BerandaSection() {
                     {/* Outer gold ring glow */}
                     <div className="absolute -inset-1 bg-[#cca72f]/30 rounded-full blur-md" aria-hidden />
                     <div className="relative w-28 h-28 md:w-36 md:h-36 rounded-full overflow-hidden border-4 border-[#cca72f] shadow-xl ring-4 ring-white/15 bg-[#064e3b]/40">
-                      <SmartImage
-                        src={getSetting('madrasah_principal_photo') ? pickImage(getSetting('madrasah_principal_photo'), '/images/kepala-madrasah.webp') : undefined}
-                        fallbackSrc="/images/kepala-madrasah.webp"
-                        blurDataURL={LQIP['kepala-madrasah']}
-                        alt="Kepala Madrasah"
-                        fill
-                        className="object-cover"
-                        loading="lazy"
-                        fetchPriority="auto"
-                      />
+                      {settingsLoading ? (
+                        // Skeleton — shimmer circle while settings load from Neon DB
+                        // Prevents the default /images/kepala-madrasah.webp (a different person)
+                        // from briefly appearing as "demo template" before the real
+                        // Cloudinary photo of Bapak Hasyim Asy'ari loads.
+                        <div className="w-full h-full skeleton-premium" aria-hidden />
+                      ) : (
+                        <SmartImage
+                          src={pickImage(getSetting('madrasah_principal_photo'), '/images/kepala-madrasah.webp')}
+                          fallbackSrc="/images/kepala-madrasah.webp"
+                          blurDataURL={LQIP['kepala-madrasah']}
+                          alt="Kepala Madrasah"
+                          fill
+                          className="object-cover"
+                          loading="lazy"
+                          fetchPriority="auto"
+                        />
+                      )}
                     </div>
                   </div>
-                  {/* Name plate — formal, with gold divider */}
-                  <h3 className="font-display font-bold text-base md:text-lg text-center leading-tight">
-                    {getSetting('madrasah_principals_name') || 'Kepala Madrasah'}
-                  </h3>
+                  {/* Name plate — formal, with gold divider.
+                      While settingsLoading, show skeleton text bar instead of fallback "Kepala Madrasah"
+                      to prevent the "demo template" name flash before real name (Bapak Hasyim Asy'ari) loads. */}
+                  {settingsLoading ? (
+                    <div className="h-5 w-32 skeleton-premium rounded-md" aria-hidden />
+                  ) : (
+                    <h3 className="font-display font-bold text-base md:text-lg text-center leading-tight">
+                      {getSetting('madrasah_principals_name') || 'Kepala Madrasah'}
+                    </h3>
+                  )}
                   {/* Gold divider under name */}
                   <div className="flex items-center gap-2 mt-2 mb-2">
                     <span className="h-px w-8 bg-gradient-to-r from-transparent to-[#cca72f]" />

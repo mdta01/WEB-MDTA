@@ -51,6 +51,14 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://res.cloudinary.com" />
         <link rel="preload" as="image" href="/images/hero-madrasah.webp" fetchPriority="high" />
         <link rel="preload" as="image" href="/images/logo-madin-warna.webp" fetchPriority="high" />
+        {/* CRITICAL: Preload /api/settings so browser starts fetching BEFORE React hydrates.
+            Without this, the client components render with FALLBACK values
+            (default name "Kepala Madrasah", default photo, default subtitle)
+            during the 200-500ms it takes for fetch('/api/settings') to resolve.
+            This was the root cause of the "demo template flash" on refresh.
+            With preload, settings data is available MUCH faster — usually
+            before any component tries to read it. */}
+        <link rel="preload" as="fetch" href="/api/settings" crossOrigin="anonymous" fetchPriority="high" />
         {/* ChunkLoadError auto-reload */}
         <script dangerouslySetInnerHTML={{ __html: `
           (function() {
