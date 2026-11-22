@@ -9,7 +9,7 @@ import {
   Download, Mail, Lightbulb, Settings, LogOut, Menu, X, Bell,
   ChevronRight, Shield, Loader2, Save, DollarSign, Clock, Star,
   UserCheck, UserX, UserPlus, Eye, Filter, ClipboardList, Phone, MapPin,
-  Plus, Pencil, Trash2,
+  Plus, Pencil, Trash2, Database,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -494,6 +494,7 @@ function PPDBManager() {
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [detailReg, setDetailReg] = useState<Record<string, unknown> | null>(null)
   const [activeTab, setActiveTab] = useState<'pendaftar' | 'jadwal' | 'settings'>('pendaftar')
+  const [migrating, setMigrating] = useState(false)
   // PPDB schedule form + delete state
   const [scheduleForm, setScheduleForm] = useState<{
     id?: string
@@ -1065,6 +1066,54 @@ function PPDBManager() {
       {/* Tab: Settings PPDB (sync dengan publik) */}
       {activeTab === 'settings' && (
         <div className="space-y-4">
+          {/* Database Migration Tool — adds kkUrl, aktaUrl, fotoUrl columns */}
+          <Card className="border-[#cca72f]/30 bg-[#cca72f]/5">
+            <CardHeader>
+              <CardTitle className="text-base flex items-center gap-2">
+                <Database className="h-4 w-4 text-[#895033]" />
+                Migrasi Database PPDB
+              </CardTitle>
+              <p className="text-xs text-[#404944]">
+                Tambahkan kolom kkUrl, aktaUrl, fotoUrl ke tabel PPDBRegistration.
+                Jalankan sekali setelah update form PPDB multi-step.
+              </p>
+            </CardHeader>
+            <CardContent>
+              <Button
+                size="sm"
+                onClick={async () => {
+                  try {
+                    setMigrating(true)
+                    const res = await fetch('/api/admin/migrate-ppdb', { method: 'POST' })
+                    const data = await res.json()
+                    if (res.ok && data.success) {
+                      toast.success('Migrasi berhasil!', {
+                        description: 'Kolom kkUrl, aktaUrl, fotoUrl sudah tersedia.',
+                      })
+                    } else {
+                      toast.error('Migrasi gagal', {
+                        description: data.message || 'Cek log untuk detail.',
+                      })
+                    }
+                  } catch {
+                    toast.error('Gagal menjalankan migrasi')
+                  } finally {
+                    setMigrating(false)
+                  }
+                }}
+                disabled={migrating}
+                className="bg-[#895033] hover:bg-[#7a4f26] text-white"
+              >
+                {migrating ? (
+                  <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                ) : (
+                  <Database className="h-4 w-4 mr-1" />
+                )}
+                {migrating ? 'Migrasi...' : 'Jalankan Migrasi'}
+              </Button>
+            </CardContent>
+          </Card>
+
           <Card>
             <CardHeader>
               <CardTitle className="text-base flex items-center gap-2">
